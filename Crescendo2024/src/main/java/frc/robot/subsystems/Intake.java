@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ModuleConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.IntakeConstants;
 
 public class Intake {
@@ -63,6 +62,7 @@ public class Intake {
         intake.setInverted(false);
         // rightIntake.setControl(new Follower(intake.getDeviceID(), false));
         pivot.setInverted(false);
+        init();
     }
 
     public void configurePID() {
@@ -124,10 +124,10 @@ public class Intake {
         StatusCode statusPivot = pivot.getConfigurator().apply(pivotMotorConfigs);
 
         if (!statusIntake.isOK()){
-            DriverStation.reportError("Could not apply intake shooter configs, error code:"+ statusIntake.toString(), null);
+            DriverStation.reportError("Could not apply intake configs, error code:"+ statusIntake.toString(), null);
         }
         // if (!statusRight.isOK()){
-        //     DriverStation.reportError("Could not apply right shooter configs, error code:"+ statusRight.toString(), null);
+        //     DriverStation.reportError("Could not apply right configs, error code:"+ statusRight.toString(), null);
         // }
         if (!statusPivot.isOK()){
             DriverStation.reportError("Could not apply pivot configs, error code:"+ statusPivot.toString(), null);
@@ -141,7 +141,7 @@ public class Intake {
 
     public Command resetEncoder() {
         return Commands.runOnce(() -> {
-            pivot.setPosition(throughBore.getAbsolutePosition() * ShooterConstants.kGearRatio);
+            pivot.setPosition(throughBore.getAbsolutePosition() * IntakeConstants.kGearRatio);
         });
     }
 
