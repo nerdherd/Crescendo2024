@@ -142,19 +142,21 @@ public class RobotContainer {
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
 
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
-      commandDriverController.povUp().onTrue(shooter.increaseLeft());
-      commandDriverController.povDown().onTrue(shooter.decreaseLeft());
-  
-      commandDriverController.povLeft().onTrue(shooter.increaseRight());
-      commandDriverController.povRight().onTrue(shooter.decreaseRight());
-  
-      commandDriverController.cross()
-        .onTrue(shooter.setSpeed())
-        .onFalse(shooter.setPowerZeroCommand());
-      
-      commandDriverController.square()
-        .onTrue(shooter.setSpeed())
-        .onFalse(shooter.setPowerZeroCommand());
+    commandDriverController.povUp().onTrue(shooter.increaseLeft());
+    commandDriverController.povDown().onTrue(shooter.decreaseLeft());
+
+    commandDriverController.povLeft().onTrue(shooter.increaseRight());
+    commandDriverController.povRight().onTrue(shooter.decreaseRight());
+
+    commandDriverController.cross()
+      .onTrue(shooter.setSpeed())
+      .onFalse(shooter.setPowerZeroCommand());
+    
+    commandDriverController.square()
+      .onTrue(shooter.setSpeed())
+      .onFalse(shooter.setPowerZeroCommand());
+
+    commandOperatorController.share().onTrue(Commands.runOnce(() -> shooter.resetEncoder()));
   }
 
   private void initAutoChoosers() {

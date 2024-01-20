@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import javax.swing.text.Position;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
@@ -8,6 +10,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -45,6 +48,8 @@ public class Shooter {
 
     final VelocityVoltage m_leftVelocity = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
     final VelocityVoltage m_rightVelocity = new VelocityVoltage(0, 0, true, 0,0, false, false, false);
+    final PositionVoltage m_pivotPosition = new PositionVoltage(0, 0, true, 0,0, false, false, false);
+
 
     final NeutralOut m_brake = new NeutralOut();
 
@@ -57,6 +62,7 @@ public class Shooter {
         leftShooter.setInverted(false);
         // rightShooter.setControl(new Follower(leftShooter.getDeviceID(), false));
         pivot.setInverted(false);
+        throughBore.setDistancePerRotation(1);
 
     }
 
@@ -80,18 +86,37 @@ public class Shooter {
         ShooterConstants.kIRightMotor.loadPreferences();
         ShooterConstants.kDRightMotor.loadPreferences();
         ShooterConstants.kVRightMotor.loadPreferences();
+
         rightMotorConfigs.Slot0.kP = ShooterConstants.kPRightMotor.get();
         rightMotorConfigs.Slot0.kI = ShooterConstants.kIRightMotor.get();
         rightMotorConfigs.Slot0.kD = ShooterConstants.kDRightMotor.get();
         rightMotorConfigs.Slot0.kV = ShooterConstants.kVRightMotor.get();
 
+        TalonFXConfiguration pivotMotorConfigs = new TalonFXConfiguration();
+
+        pivot.getConfigurator().refresh(pivotMotorConfigs);
+        ShooterConstants.kPPivotMotor.loadPreferences();
+        ShooterConstants.kIPivotMotor.loadPreferences();
+        ShooterConstants.kDPivotMotor.loadPreferences();
+        ShooterConstants.kVPivotMotor.loadPreferences();
+
+        pivotMotorConfigs.Slot0.kP = ShooterConstants.kPPivotMotor.get();
+        pivotMotorConfigs.Slot0.kI = ShooterConstants.kIPivotMotor.get();
+        pivotMotorConfigs.Slot0.kD = ShooterConstants.kDPivotMotor.get();
+        pivotMotorConfigs.Slot0.kV = ShooterConstants.kVPivotMotor.get();
+
         leftMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         leftMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
+
         rightMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         rightMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
 
-        StatusCode statusLeft = leftShooter.getConfigurator().apply(rightMotorConfigs);
-        StatusCode statusRight = rightShooter.getConfigurator().apply(leftMotorConfigs);
+        pivotMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
+        pivotMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
+
+        StatusCode statusLeft = leftShooter.getConfigurator().apply(leftMotorConfigs);
+        StatusCode statusRight = rightShooter.getConfigurator().apply(rightMotorConfigs);
+        StatusCode statusPivot = pivot.getConfigurator().apply(pivotMotorConfigs);
 
         if (!statusLeft.isOK()){
             DriverStation.reportError("Could not apply left shooter configs, error code:"+ statusLeft.toString(), null);
@@ -99,6 +124,19 @@ public class Shooter {
         if (!statusRight.isOK()){
             DriverStation.reportError("Could not apply right shooter configs, error code:"+ statusRight.toString(), null);
         }
+        if (!statusPivot.isOK()){
+            DriverStation.reportError("Could not apply pivot configs, error code:"+ statusPivot.toString(), null);
+        }
+    }
+
+    public void init() {
+        resetEncoder();
+    }
+
+    public Command resetEncoder() {
+        return Commands.runOnce(() -> {
+            pivot.setPosition(throughBore.getAbsolutePosition() * 2048 * ShooterConstants.kGearRatio);
+        });
     }
 
     public Command setSpeed() {
@@ -158,6 +196,33 @@ public class Shooter {
             }
             SmartDashboard.putBoolean("Too high", tooHigh);
 
+        });
+    }
+
+    public Command setPosition(double position) {
+        return Commands.runOnce(() -> {
+            m_pivotPosition.Slot = 0;
+            pivot.setControl(m_pivotPosition.withPosition(position));
+
+        });
+    }
+
+    public Command stow() {
+        return Commands.runOnce(() -> {
+            setPosition(ShooterConstants.kStowPosition);
+        });
+    }
+
+    public Command setAmpPosition() {
+        return Commands.runOnce(() -> {
+            setPosition(ShooterConstants.kAmpPosition);
+
+        });
+    }
+
+    public Command setSpeaker() {
+        return Commands.runOnce(() -> {
+            setPosition(ShooterConstants.kSpeakerPosition);
         });
     }
 
