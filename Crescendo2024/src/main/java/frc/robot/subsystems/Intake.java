@@ -16,12 +16,14 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.IntakeConstants;
 
 public class Intake {
@@ -29,6 +31,8 @@ public class Intake {
     // final TalonFX rightIntake;
     final TalonFX intake;
     final TalonFX pivot;
+    final DutyCycleEncoder throughBore;
+
     private boolean tooHigh = false;
     private boolean tooLow = false;
 
@@ -54,6 +58,7 @@ public class Intake {
         intake = new TalonFX(IntakeConstants.kIntakeMotorID, ModuleConstants.kCANivoreName);
         // rightIntake = new TalonFX(IntakeConstants.kRightMotorID, ModuleConstants.kCANivoreName);
         pivot = new TalonFX(IntakeConstants.kPivotMotorID, ModuleConstants.kCANivoreName);
+        throughBore = new DutyCycleEncoder(IntakeConstants.kThroughBorePort);
 
         intake.setInverted(false);
         // rightIntake.setControl(new Follower(intake.getDeviceID(), false));
@@ -136,17 +141,8 @@ public class Intake {
 
     public Command resetEncoder() {
         return Commands.runOnce(() -> {
-            setIntakeTargetTicks((int)(pivot.getPosition().getValueAsDouble()));
+            pivot.setPosition(throughBore.getAbsolutePosition() * ShooterConstants.kGearRatio);
         });
-    }
-
-    public void resetEncoderStow() {
-        pivot.setPosition(IntakeConstants.kStowPosition);
-        targetTicks = IntakeConstants.kStowPosition;
-    }
-
-    public void setIntakeTargetTicks(int targetTicks) {
-        this.targetTicks = targetTicks;
     }
 
     public Command setIntakeSpeed() {
