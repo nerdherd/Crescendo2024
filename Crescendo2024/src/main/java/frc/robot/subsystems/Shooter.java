@@ -3,12 +3,14 @@ package frc.robot.subsystems;
 import javax.swing.text.Position;
 
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.Slot2Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -22,6 +24,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ShooterConstants;
 
@@ -46,9 +49,11 @@ public class Shooter {
     final DutyCycleOut m_leftDutyCycleRequest = new DutyCycleOut(0);
     final DutyCycleOut m_rightDutyCycleRequest = new DutyCycleOut(0);
 
-    final VelocityVoltage m_leftVelocity = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
-    final VelocityVoltage m_rightVelocity = new VelocityVoltage(0, 0, true, 0,0, false, false, false);
-    final PositionVoltage m_pivotPosition = new PositionVoltage(0, 0, true, 0,0, false, false, false);
+    final VelocityVoltage m_leftVelocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
+    final VelocityVoltage m_rightVelocityRequest = new VelocityVoltage(0, 0, true, 0,0, false, false, false);
+    
+    final MotionMagicVoltage m_pivotMotionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
+    final PositionVoltage m_pivotPositionRequest = new PositionVoltage(0, 0, true, 0,0, false, false, false);
 
 
     final NeutralOut m_brake = new NeutralOut();
@@ -105,6 +110,10 @@ public class Shooter {
         pivotMotorConfigs.Slot0.kD = ShooterConstants.kDPivotMotor.get();
         pivotMotorConfigs.Slot0.kV = ShooterConstants.kVPivotMotor.get();
 
+        MotionMagicConfigs pivotMMConfigs = pivotMotorConfigs.MotionMagic;
+        pivotMMConfigs.MotionMagicCruiseVelocity = ShooterConstants.kShooterCruiseVelocity;
+        pivotMMConfigs.MotionMagicCruiseVelocity = ShooterConstants.kShooterCruiseAcceleration;
+
         leftMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         leftMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
 
@@ -130,6 +139,7 @@ public class Shooter {
     }
 
     public void init() {
+        configurePID();
         resetEncoder();
     }
 
@@ -139,7 +149,7 @@ public class Shooter {
         });
     }
 
-    public Command setSpeed() {
+    public Command setShooterSpeed() {
         return Commands.runOnce(() -> {
 
             // Percent Ouput
@@ -147,16 +157,16 @@ public class Shooter {
             // leftShooter.setControl(m_leftDutyCycleRequest.withOutput(rightSpeeds[index]));
 
             // Velocity Control
-            m_leftVelocity.Slot = 0;
-            m_rightVelocity.Slot = 0;
+            m_leftVelocityRequest.Slot = 0;
+            m_rightVelocityRequest.Slot = 0;
 
-            leftShooter.setControl(m_leftVelocity.withVelocity(velocityLeft));
-            rightShooter.setControl(m_rightVelocity.withVelocity(velocityRight));
+            leftShooter.setControl(m_leftVelocityRequest.withVelocity(velocityLeft));
+            rightShooter.setControl(m_rightVelocityRequest.withVelocity(velocityRight));
             SmartDashboard.putBoolean("Pressed", true);
         });
     }
 
-    public Command setPowerZeroCommand() {
+    public Command setShooterPowerZeroCommand() {
         return Commands.runOnce(() -> {
             leftShooter.setControl(m_brake);
             rightShooter.setControl(m_brake);
@@ -164,14 +174,14 @@ public class Shooter {
         });
     }
 
-    public void setPowerZero() {
+    public void setShooterPowerZero() {
         leftShooter.setControl(m_brake);
         rightShooter.setControl(m_brake);
         SmartDashboard.putBoolean("Pressed", false);
 
     }
 
-    public Command increaseLeft() {
+    public Command increaseShooterLeft() {
         return Commands.runOnce(() -> {
 
             if (velocityLeft <= 21000) {
@@ -184,7 +194,7 @@ public class Shooter {
             SmartDashboard.putBoolean("Too high", tooHigh);
         });
     }
-    public Command increaseRight() {
+    public Command increaseShooterRight() {
         return Commands.runOnce(() -> {
 
             if (velocityRight <= 21000) {
@@ -201,13 +211,13 @@ public class Shooter {
 
     public Command setPosition(double position) {
         return Commands.runOnce(() -> {
-            m_pivotPosition.Slot = 0;
-            pivot.setControl(m_pivotPosition.withPosition(position));
+            m_pivotMotionMagicRequest.Slot = 0;
+            pivot.setControl(m_pivotMotionMagicRequest.withPosition(position));
 
         });
     }
 
-    public Command stow() {
+    public Command stowShooter() {
         return Commands.runOnce(() -> {
             setPosition(ShooterConstants.kStowPosition);
         });
@@ -220,13 +230,13 @@ public class Shooter {
         });
     }
 
-    public Command setSpeaker() {
+    public Command setSpeakerPosition() {
         return Commands.runOnce(() -> {
             setPosition(ShooterConstants.kSpeakerPosition);
         });
     }
 
-    public Command decreaseLeft() {
+    public Command decreaseShooterLeft() {
         return Commands.runOnce(() -> {
             // if(percentOutputTop >= 0.051) {
             //     this.speedsLeft[2] -= 0.05; // TODO DEBUG
@@ -243,7 +253,7 @@ public class Shooter {
             SmartDashboard.putBoolean("Too low", tooLow);
         });
     }
-    public Command decreaseRight() {
+    public Command decreaseShooterRight() {
         return Commands.runOnce(() -> {
             // if(percentOutputBottom >= 0.051) {
             //     this.speedsRight[2] -= 0.05; // TODO DEBUG
@@ -260,9 +270,9 @@ public class Shooter {
         });
     }
 
-    public void printSpeeds() {
-        SmartDashboard.putNumber("Ticks Per Second Top: ", velocityLeft);
-        SmartDashboard.putNumber("Ticks Per Second Bottom ", velocityRight);
+    public void printShooterSpeeds() {
+        SmartDashboard.putNumber("Shooter Ticks Per Second Top: ", velocityLeft);
+        SmartDashboard.putNumber("Shooter Ticks Per Second Bottom ", velocityRight);
     }
 
     public void initShuffleboard() {

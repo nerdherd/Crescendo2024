@@ -33,6 +33,7 @@ import frc.robot.commands.SwerveJoystickCommand.DodgeDirection;
 import frc.robot.commands.autos.Auto4Notes;
 // import frc.robot.commands.VisionAutos.ToNearestGridDebug;
 import frc.robot.commands.autos.PathPlannerAutos;
+import frc.robot.subsystems.Intake;
 // import frc.robot.commands.autos.SquareTest;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
@@ -58,6 +59,7 @@ import frc.robot.subsystems.vision.farfuture.EMPeach;
 public class RobotContainer {
   // public Gyro imu = new NavX();
   public Shooter shooter = new Shooter();
+  public Intake intake = new Intake();
   public Gyro imu = new PigeonV2(1);
   // public Gyro imu = new NavX();
   public SwerveDrivetrain swerveDrive;
@@ -142,21 +144,45 @@ public class RobotContainer {
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
 
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
-    commandDriverController.povUp().onTrue(shooter.increaseLeft());
-    commandDriverController.povDown().onTrue(shooter.decreaseLeft());
 
-    commandDriverController.povLeft().onTrue(shooter.increaseRight());
-    commandDriverController.povRight().onTrue(shooter.decreaseRight());
-
-    commandDriverController.cross()
-      .onTrue(shooter.setSpeed())
-      .onFalse(shooter.setPowerZeroCommand());
-    
-    commandDriverController.square()
-      .onTrue(shooter.setSpeed())
-      .onFalse(shooter.setPowerZeroCommand());
-
+    // Shooter Controls
     commandOperatorController.share().onTrue(Commands.runOnce(() -> shooter.resetEncoder()));
+
+    commandOperatorController.povUp().onTrue(shooter.increaseShooterLeft());
+    commandOperatorController.povDown().onTrue(shooter.decreaseShooterLeft());
+    commandOperatorController.povLeft().onTrue(shooter.increaseShooterRight());
+    commandOperatorController.povRight().onTrue(shooter.decreaseShooterRight());
+
+    commandOperatorController.L2()
+      .onTrue(shooter.setShooterSpeed())
+      .onFalse(shooter.setShooterPowerZeroCommand());
+    
+    commandOperatorController.triangle()
+      .onTrue(shooter.stowShooter())
+      .onFalse(shooter.setShooterPowerZeroCommand());
+
+    commandOperatorController.circle()
+      .onTrue(shooter.setAmpPosition())
+      .onFalse(shooter.setShooterPowerZeroCommand());
+
+    commandOperatorController.square()
+      .onTrue(shooter.setSpeakerPosition())
+      .onFalse(shooter.setShooterPowerZeroCommand());
+
+    // Intake Controls
+    commandOperatorController.options().onTrue(Commands.runOnce(() -> intake.resetEncoder()));
+    
+    commandOperatorController.cross()
+      .onTrue(intake.stowIntake())
+      .onFalse(intake.setIntakePowerZeroCommand());
+    
+    commandOperatorController.R1()
+      .onTrue(intake.intakePosition())
+      .onFalse(intake.setIntakePowerZeroCommand());
+
+    commandOperatorController.R2()
+      .onTrue(intake.setIntakeSpeed())
+      .onFalse(intake.setIntakePowerZeroCommand());
   }
 
   private void initAutoChoosers() {

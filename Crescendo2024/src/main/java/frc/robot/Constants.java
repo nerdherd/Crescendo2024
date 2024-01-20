@@ -257,6 +257,9 @@ public final class Constants {
     public static final int kAmpPosition = 0;
     public static final int kSpeakerPosition = 0;
 
+    public static final int kShooterCruiseAcceleration = 0;
+    public static final int kShooterCruiseVelocity = 0;
+
     public static final int kGearRatio = 240;
 
     public static final int kIntakePower = 0;
@@ -286,6 +289,9 @@ public final class Constants {
 
     public static final int kIntakePosition = 0;
     public static final int kStowPosition = 0;
+
+    public static final int kIntakeCruiseAcceleration = 0;
+    public static final int kIntakeCruiseVelocity = 0;
 
     public static final int kGearRatio = 5;
 
