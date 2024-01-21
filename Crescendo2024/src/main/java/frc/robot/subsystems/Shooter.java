@@ -112,7 +112,7 @@ public class Shooter {
 
         MotionMagicConfigs pivotMMConfigs = pivotMotorConfigs.MotionMagic;
         pivotMMConfigs.MotionMagicCruiseVelocity = ShooterConstants.kShooterCruiseVelocity;
-        pivotMMConfigs.MotionMagicCruiseVelocity = ShooterConstants.kShooterCruiseAcceleration;
+        pivotMMConfigs.MotionMagicAcceleration = ShooterConstants.kShooterCruiseAcceleration;
 
         leftMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         leftMotorConfigs.Voltage.PeakReverseVoltage = -11.5;

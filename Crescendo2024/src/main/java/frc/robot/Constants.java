@@ -295,19 +295,19 @@ public final class Constants {
 
     public static final int kGearRatio = 5;
 
-    public static final PrefDouble kPIntakeMotor = new PrefDouble("P Left Motor", 0);
-    public static final PrefDouble kIIntakeMotor = new PrefDouble("I Left Motor", 0);
-    public static final PrefDouble kDIntakeMotor = new PrefDouble("D Left Motor", 0);
-    public static final PrefDouble kVIntakeMotor = new PrefDouble("V Left Motor", 0);
+    public static final PrefDouble kPIntakeMotor = new PrefDouble("kP Intake Motor", 0);
+    public static final PrefDouble kIIntakeMotor = new PrefDouble("kI Intake Motor", 0);
+    public static final PrefDouble kDIntakeMotor = new PrefDouble("kD Intake Motor", 0);
+    public static final PrefDouble kVIntakeMotor = new PrefDouble("kV Intake Motor", 0);
 
     // public static final PrefDouble kPRightMotor = new PrefDouble("P Right Motor", 0);
     // public static final PrefDouble kIRightMotor = new PrefDouble("I Right Motor", 0);
     // public static final PrefDouble kDRightMotor = new PrefDouble("D Right Motor", 0);
     // public static final PrefDouble kVRightMotor = new PrefDouble("v Right Motor", 0);
 
-    public static final PrefDouble kPPivotMotor = new PrefDouble("P Pivot Motor", 0);
-    public static final PrefDouble kIPivotMotor = new PrefDouble("I Pivot Motor", 0);
-    public static final PrefDouble kDPivotMotor = new PrefDouble("D Pivot Motor", 0);
-    public static final PrefDouble kVPivotMotor = new PrefDouble("v Pivot Motor", 0);
+    public static final PrefDouble kPPivotMotor = new PrefDouble("kP Intake Pivot Motor", 0);
+    public static final PrefDouble kIPivotMotor = new PrefDouble("kI Intake Pivot Motor", 0);
+    public static final PrefDouble kDPivotMotor = new PrefDouble("kD Intake Pivot Motor", 0);
+    public static final PrefDouble kVPivotMotor = new PrefDouble("kV Intake Pivot Motor", 0);
   }
 }

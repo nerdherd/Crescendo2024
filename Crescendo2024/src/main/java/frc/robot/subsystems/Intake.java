@@ -107,7 +107,7 @@ public class Intake {
 
         MotionMagicConfigs pivotMMConfigs = pivotMotorConfigs.MotionMagic;
         pivotMMConfigs.MotionMagicCruiseVelocity = IntakeConstants.kIntakeCruiseVelocity;
-        pivotMMConfigs.MotionMagicCruiseVelocity = IntakeConstants.kIntakeCruiseAcceleration;
+        pivotMMConfigs.MotionMagicAcceleration = IntakeConstants.kIntakeCruiseAcceleration;
 
 
         intakeMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
