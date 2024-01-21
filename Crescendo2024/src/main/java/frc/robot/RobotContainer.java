@@ -58,11 +58,11 @@ import frc.robot.subsystems.vision.farfuture.EMPeach;
  */
 public class RobotContainer {
   // public Gyro imu = new NavX();
-  public Shooter shooter = new Shooter();
+  // public Shooter shooter = new Shooter();
   public Intake intake = new Intake();
-  public Gyro imu = new PigeonV2(1);
+  // public Gyro imu = new PigeonV2(1);
   // public Gyro imu = new NavX();
-  public SwerveDrivetrain swerveDrive;
+  // public SwerveDrivetrain swerveDrive;
   public PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
 
   private final CommandPS4Controller commandDriverController = new CommandPS4Controller(
@@ -91,7 +91,7 @@ public class RobotContainer {
       // Pass in "sunflowers" in reverse order of priority (most important last)
       // swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontSunflower);
       vision = new EMPeach(VisionConstants.kLimelightFrontName);
-      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, vision);
+      // swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, vision);
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
@@ -109,68 +109,32 @@ public class RobotContainer {
   }
 
   public void initDefaultCommands() {
-    swerveDrive.setDefaultCommand(
-      new SwerveJoystickCommand(
-        swerveDrive,
-        () -> -commandDriverController.getLeftY(), // Horizontal translation
-        commandDriverController::getLeftX, // Vertical Translation
-        // () -> 0.0, // debug
-        commandDriverController::getRightX, // Rotationaq
+    // swerveDrive.setDefaultCommand(
+    //   new SwerveJoystickCommand(
+    //     swerveDrive,
+    //     () -> -commandDriverController.getLeftY(), // Horizontal translation
+    //     commandDriverController::getLeftX, // Vertical Translation
+    //     // () -> 0.0, // debug
+    //     commandDriverController::getRightX, // Rotationaq
 
-        // driverController::getSquareButton, // Field oriented
-        () -> false, // Field oriented
+    //     // driverController::getSquareButton, // Field oriented
+    //     () -> false, // Field oriented
 
-        driverController::getCrossButton, // Towing
-        // driverController::getR2Button, // Precision/"Sniper Button"
-        () -> driverController.getR2Button(), // Precision mode (disabled)
-        () -> driverController.getCircleButton(), // Turn to angle
-        // () -> false, // Turn to angle (disabled)
-        () -> { // Turn To angle Direction
-          return 0.0;
-        }
-      ));
+    //     driverController::getCrossButton, // Towing
+    //     // driverController::getR2Button, // Precision/"Sniper Button"
+    //     () -> driverController.getR2Button(), // Precision mode (disabled)
+    //     () -> driverController.getCircleButton(), // Turn to angle
+    //     // () -> false, // Turn to angle (disabled)
+    //     () -> { // Turn To angle Direction
+    //       return 0.0;
+    //     }
+    //   ));
   }
 
   private void configureBindings() {
-    // Note: whileTrue() does not restart the command if it ends while the button is
-    // still being held
-    commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
-    commandDriverController.options().onTrue(Commands.runOnce(swerveDrive::resetEncoders));
-    commandDriverController.triangle()
-      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
-      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
-
-    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 10, 0, 6)));
-    commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
-
-    // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
-
-    // Shooter Controls
-    commandOperatorController.share().onTrue(Commands.runOnce(() -> shooter.resetEncoder()));
-
-    commandOperatorController.povUp().onTrue(shooter.increaseShooterLeft());
-    commandOperatorController.povDown().onTrue(shooter.decreaseShooterLeft());
-    commandOperatorController.povLeft().onTrue(shooter.increaseShooterRight());
-    commandOperatorController.povRight().onTrue(shooter.decreaseShooterRight());
-
-    commandOperatorController.L2()
-      .onTrue(shooter.setShooterSpeed())
-      .onFalse(shooter.setShooterPowerZeroCommand());
-    
-    commandOperatorController.triangle()
-      .onTrue(shooter.stowShooter())
-      .onFalse(shooter.setShooterPowerZeroCommand());
-
-    commandOperatorController.circle()
-      .onTrue(shooter.setAmpPosition())
-      .onFalse(shooter.setShooterPowerZeroCommand());
-
-    commandOperatorController.square()
-      .onTrue(shooter.setSpeakerPosition())
-      .onFalse(shooter.setShooterPowerZeroCommand());
 
     // Intake Controls
-    commandOperatorController.options().onTrue(Commands.runOnce(() -> intake.resetEncoder()));
+    // commandOperatorController.options().onTrue(Commands.runOnce(() -> intake.resetEncoder()));
     
     commandOperatorController.cross()
       .onTrue(intake.stowIntake())
@@ -213,11 +177,11 @@ public class RobotContainer {
 	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands::none);
 
-    for (String path : paths) {
-      if(path.equals("4PAuto"))
-        autoChooser.addOption(path, () -> new Auto4Notes(swerveDrive, path));
-      //else if ....
-    }
+    // for (String path : paths) {
+    //   if(path.equals("4PAuto"))
+    //     autoChooser.addOption(path, () -> new Auto4Notes(swerveDrive, path));
+    //   //else if ....
+    // }
 
     // these are the auto paths in the old format (not the actual full auto command)
     // autoChooser.addOption("Path Planner Test Auto", () -> PathPlannerAutos.pathplannerAuto("TestPath", swerveDrive));
@@ -228,12 +192,12 @@ public class RobotContainer {
   }
   
   public void initShuffleboard() {
-    imu.initShuffleboard(loggingLevel);
-    shooter.initShuffleboard();
-    // backSunflower.initShuffleboard(loggingLevel);
-    // frontSunflower.initShuffleboard(loggingLevel);
-    swerveDrive.initShuffleboard(loggingLevel);
-    swerveDrive.initModuleShuffleboard(loggingLevel);
+    // imu.initShuffleboard(loggingLevel);
+    // shooter.initShuffleboard();
+    // // backSunflower.initShuffleboard(loggingLevel);
+    // // frontSunflower.initShuffleboard(loggingLevel);
+    // swerveDrive.initShuffleboard(loggingLevel);
+    // swerveDrive.initModuleShuffleboard(loggingLevel);
     vision.initShuffleboard(loggingLevel);
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
@@ -256,7 +220,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command currentAuto = autoChooser.getSelected().get();
 
-    swerveDrive.setDriveMode(DRIVE_MODE.AUTONOMOUS);
+    // swerveDrive.setDriveMode(DRIVE_MODE.AUTONOMOUS);
     return currentAuto;
   }
 }

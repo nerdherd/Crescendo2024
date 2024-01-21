@@ -32,7 +32,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     // m_robotContainer.initShuffleboard();
-    m_robotContainer.swerveDrive.resetEncoders();
+    // m_robotContainer.swerveDrive.resetEncoders();
 	
     DataLogManager.start("/media/sda1/logs");
     DataLogManager.logNetworkTables(true);
@@ -54,7 +54,7 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    m_robotContainer.shooter.printShooterSpeeds();
+    // m_robotContainer.shooter.printShooterSpeeds();
 
   }
 
@@ -71,10 +71,10 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_robotContainer.swerveDrive.resetEncoders();
-    m_robotContainer.imu.zeroHeading();
-    m_robotContainer.imu.zeroAll();
-    m_robotContainer.imu.setOffset(180);
+    // m_robotContainer.swerveDrive.resetEncoders();
+    // m_robotContainer.imu.zeroHeading();
+    // m_robotContainer.imu.zeroAll();
+    // m_robotContainer.imu.setOffset(180);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -103,11 +103,13 @@ public class Robot extends TimedRobot {
     // m_robotContainer.imu.setOffset(180);
 
     m_robotContainer.initDefaultCommands();
-    m_robotContainer.shooter.setShooterPowerZero();
+    // m_robotContainer.shooter.setShooterPowerZero();
 
     // m_robotContainer.wrist.zeroEncodersStow();
 
     // m_robotContainer.imu.resetRoll();
+
+    m_robotContainer.intake.init();
   }
 
   /** This function is called periodically during operator control. */

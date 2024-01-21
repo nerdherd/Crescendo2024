@@ -284,16 +284,21 @@ public final class Constants {
   public static final class IntakeConstants {
     public static final int kIntakeMotorID = 17;
     // public static final int kRightMotorID = 18;
-    public static final int kPivotMotorID = 18;
+    public static final int kPivotMotorID = 10; // ID 18
     public static final int kThroughBorePort = 0;
 
-    public static final int kIntakePosition = 0;
+    public static final int kIntakePosition = 50;
     public static final int kStowPosition = 0;
 
-    public static final int kIntakeCruiseAcceleration = 0;
-    public static final int kIntakeCruiseVelocity = 0;
+    public static final int kIntakeCruiseAcceleration = 50;
+    public static final int kIntakeCruiseVelocity = 50;
 
-    public static final int kGearRatio = 5;
+    public static final int kGearRatio = 4;
+
+    public static final PrefDouble kPPivotIntakeMotor = new PrefDouble("P Pivot Intake Motor", 0);
+    public static final PrefDouble kIPivotIntakeMotor = new PrefDouble("I Pivot Intake Motor", 0);
+    public static final PrefDouble kDPivotIntakeMotor = new PrefDouble("D Pivot Intake Motor", 0);
+    public static final PrefDouble kVPivotIntakeMotor = new PrefDouble("v Pivot Intake Motor", 0);
 
     public static final PrefDouble kPIntakeMotor = new PrefDouble("P Left Motor", 0);
     public static final PrefDouble kIIntakeMotor = new PrefDouble("I Left Motor", 0);

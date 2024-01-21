@@ -28,7 +28,7 @@ import frc.robot.Constants.IntakeConstants;
 public class Intake {
     
     // final TalonFX rightIntake;
-    final TalonFX intake;
+    // final TalonFX intake;
     final TalonFX pivot;
     final DutyCycleEncoder throughBore;
 
@@ -54,29 +54,29 @@ public class Intake {
     final NeutralOut m_brake = new NeutralOut();
 
     public Intake(){
-        intake = new TalonFX(IntakeConstants.kIntakeMotorID, ModuleConstants.kCANivoreName);
+        // intake = new TalonFX(IntakeConstants.kIntakeMotorID); // ModuleConstants.kCANivoreName
         // rightIntake = new TalonFX(IntakeConstants.kRightMotorID, ModuleConstants.kCANivoreName);
-        pivot = new TalonFX(IntakeConstants.kPivotMotorID, ModuleConstants.kCANivoreName);
+        pivot = new TalonFX(IntakeConstants.kPivotMotorID);
         throughBore = new DutyCycleEncoder(IntakeConstants.kThroughBorePort);
 
-        intake.setInverted(false);
+        // intake.setInverted(false);
         // rightIntake.setControl(new Follower(intake.getDeviceID(), false));
         pivot.setInverted(false);
         init();
     }
 
     public void configurePID() {
-        TalonFXConfiguration intakeMotorConfigs = new TalonFXConfiguration();
+        // TalonFXConfiguration intakeMotorConfigs = new TalonFXConfiguration();
         
-        intake.getConfigurator().refresh(intakeMotorConfigs);
-        IntakeConstants.kPIntakeMotor.loadPreferences();
-        IntakeConstants.kIIntakeMotor.loadPreferences();
-        IntakeConstants.kDIntakeMotor.loadPreferences();
-        IntakeConstants.kVIntakeMotor.loadPreferences();
-        intakeMotorConfigs.Slot0.kP = IntakeConstants.kPIntakeMotor.get();
-        intakeMotorConfigs.Slot0.kI = IntakeConstants.kIIntakeMotor.get();
-        intakeMotorConfigs.Slot0.kD = IntakeConstants.kDIntakeMotor.get();
-        intakeMotorConfigs.Slot0.kV = IntakeConstants.kVIntakeMotor.get();
+        // intake.getConfigurator().refresh(intakeMotorConfigs);
+        // IntakeConstants.kPIntakeMotor.loadPreferences();
+        // IntakeConstants.kIIntakeMotor.loadPreferences();
+        // IntakeConstants.kDIntakeMotor.loadPreferences();
+        // IntakeConstants.kVIntakeMotor.loadPreferences();
+        // intakeMotorConfigs.Slot0.kP = IntakeConstants.kPIntakeMotor.get();
+        // intakeMotorConfigs.Slot0.kI = IntakeConstants.kIIntakeMotor.get();
+        // intakeMotorConfigs.Slot0.kD = IntakeConstants.kDIntakeMotor.get();
+        // intakeMotorConfigs.Slot0.kV = IntakeConstants.kVIntakeMotor.get();
         
         // TalonFXConfiguration rightMotorConfigs = new TalonFXConfiguration();
         
@@ -107,11 +107,11 @@ public class Intake {
 
         MotionMagicConfigs pivotMMConfigs = pivotMotorConfigs.MotionMagic;
         pivotMMConfigs.MotionMagicCruiseVelocity = IntakeConstants.kIntakeCruiseVelocity;
-        pivotMMConfigs.MotionMagicCruiseVelocity = IntakeConstants.kIntakeCruiseAcceleration;
+        pivotMMConfigs.MotionMagicAcceleration = IntakeConstants.kIntakeCruiseAcceleration;
 
 
-        intakeMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
-        intakeMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
+        // intakeMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
+        // intakeMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
 
         // rightMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         // rightMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
@@ -119,23 +119,23 @@ public class Intake {
         pivotMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         pivotMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
 
-        StatusCode statusIntake = intake.getConfigurator().apply(intakeMotorConfigs);
+        // StatusCode statusIntake = intake.getConfigurator().apply(intakeMotorConfigs);
         // StatusCode statusRight = rightIntake.getConfigurator().apply(rightMotorConfigs);
         StatusCode statusPivot = pivot.getConfigurator().apply(pivotMotorConfigs);
 
-        if (!statusIntake.isOK()){
-            DriverStation.reportError("Could not apply intake configs, error code:"+ statusIntake.toString(), null);
-        }
+        // if (!statusIntake.isOK()){
+        //     DriverStation.reportError("Could not apply intake configs, error code:"+ statusIntake.toString(), null);
+        // }
         // if (!statusRight.isOK()){
         //     DriverStation.reportError("Could not apply right configs, error code:"+ statusRight.toString(), null);
         // }
         if (!statusPivot.isOK()){
-            DriverStation.reportError("Could not apply pivot configs, error code:"+ statusPivot.toString(), null);
+            // DriverStation.reportError("Could not apply pivot configs, error code:"+ statusPivot.toString(), null);
         }
     }
 
     public void init() {
-        resetEncoder();
+        // resetEncoder();
         configurePID();
     }
 
@@ -156,7 +156,7 @@ public class Intake {
             m_intakeVelocityRequest.Slot = 0;
             // m_rightVelocity.Slot = 0;
 
-            intake.setControl(m_intakeVelocityRequest.withVelocity(velocityIntake));
+            // intake.setControl(m_intakeVelocityRequest.withVelocity(velocityIntake));
             // rightIntake.setControl(m_rightVelocity.withVelocity(velocityRight));
             SmartDashboard.putBoolean("Pressed", true);
         });
@@ -164,16 +164,16 @@ public class Intake {
 
     public Command setIntakePowerZeroCommand() {
         return Commands.runOnce(() -> {
-            intake.setControl(m_brake);
+            // intake.setControl(m_brake);
             // rightIntake.setControl(m_brake);
-            resetEncoder();
+            // resetEncoder();
             SmartDashboard.putBoolean("Pressed", false);
         });
     }
 
     public void setIntakePowerZero() {
-        intake.setControl(m_brake);
-        resetEncoder();
+        // intake.setControl(m_brake);
+        // resetEncoder();
         // rightIntake.setControl(m_brake);
         SmartDashboard.putBoolean("Pressed", false);
 
@@ -225,6 +225,7 @@ public class Intake {
     public Command intakePosition() {
         return Commands.runOnce(() -> {
             setPosition(IntakeConstants.kIntakePosition);
+            SmartDashboard.putBoolean("is pressed?", true);
         });
     }
 
@@ -270,7 +271,7 @@ public class Intake {
 
     public void initShuffleboard() {
         ShuffleboardTab tab = Shuffleboard.getTab("Intake");
-        tab.addNumber("Velocity", ()-> intake.getVelocity().getValueAsDouble());
+        // tab.addNumber("Velocity", ()-> intake.getVelocity().getValueAsDouble());
         // tab.addNumber("Bottom Velocity", ()-> rightIntake.getVelocity().getValueAsDouble());
 
     }
