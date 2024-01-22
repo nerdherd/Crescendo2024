@@ -210,7 +210,7 @@ public class Intake {
 
     public Command setPosition(double position) {
         return Commands.runOnce(() -> {
-            m_pivotMotionMagicRequest.Slot = 0;
+           // m_pivotMotionMagicRequest.Slot = 0;
             pivot.setControl(m_pivotMotionMagicRequest.withPosition(position));
 
         });

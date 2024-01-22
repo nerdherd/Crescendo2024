@@ -52,7 +52,7 @@ public class Shooter {
     final VelocityVoltage m_rightVelocityRequest = new VelocityVoltage(0, 0, true, 0,0, false, false, false);
     
     final MotionMagicVoltage m_pivotMotionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
-    final PositionVoltage m_pivotPositionRequest = new PositionVoltage(0, 0, true, 0,0, false, false, false);
+    // final PositionVoltage m_pivotPositionRequest = new PositionVoltage(0, 0, true, 0,0, false, false, false);
 
 
     final NeutralOut m_brake = new NeutralOut();
@@ -211,7 +211,6 @@ public class Shooter {
 
     public Command setPosition(double position) {
         return Commands.runOnce(() -> {
-            m_pivotMotionMagicRequest.Slot = 0;
             pivot.setControl(m_pivotMotionMagicRequest.withPosition(position));
 
         });
