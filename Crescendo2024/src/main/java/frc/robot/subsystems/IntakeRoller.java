@@ -25,12 +25,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.IntakeConstants;
 
-public class Intake {
+public class IntakeRoller {
     
     // final TalonFX rightIntake;
     final TalonFX intake;
-    final TalonFX pivot;
-    final DutyCycleEncoder throughBore;
 
     private boolean tooHigh = false;
     private boolean tooLow = false;
@@ -40,7 +38,6 @@ public class Intake {
 
     final VoltageOut m_intakeVoltageRequest = new VoltageOut(0);
     // final VoltageOut m_rightVoltageRequest = new VoltageOut(0);
-    final VoltageOut m_pivotVoltageRequest = new VoltageOut(0);
 
     final DutyCycleOut m_intakeDutyCycleRequest = new DutyCycleOut(0);
     // final DutyCycleOut m_rightDutyCycleRequest = new DutyCycleOut(0);
@@ -48,20 +45,15 @@ public class Intake {
     final VelocityVoltage m_intakeVelocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
     // final VelocityVoltage m_rightVelocity = new VelocityVoltage(0, 0, true, 0,0, false, false, false);
 
-    final PositionVoltage m_pivotPositionRequest = new PositionVoltage(0, 0, true, 0,0, false, false, false);
-    final MotionMagicVoltage m_pivotMotionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
-
     final NeutralOut m_brake = new NeutralOut();
 
-    public Intake(){
+    public IntakeRoller(){
         intake = new TalonFX(IntakeConstants.kIntakeMotorID, ModuleConstants.kCANivoreName);
         // rightIntake = new TalonFX(IntakeConstants.kRightMotorID, ModuleConstants.kCANivoreName);
-        pivot = new TalonFX(IntakeConstants.kPivotMotorID, ModuleConstants.kCANivoreName);
-        throughBore = new DutyCycleEncoder(IntakeConstants.kThroughBorePort);
 
         intake.setInverted(false);
         // rightIntake.setControl(new Follower(intake.getDeviceID(), false));
-        pivot.setInverted(false);
+
         init();
     }
 
@@ -91,37 +83,15 @@ public class Intake {
         // rightMotorConfigs.Slot0.kD = IntakeConstants.kDRightMotor.get();
         // rightMotorConfigs.Slot0.kV = IntakeConstants.kVRightMotor.get();
 
-        TalonFXConfiguration pivotMotorConfigs = new TalonFXConfiguration();
-
-        pivot.getConfigurator().refresh(pivotMotorConfigs);
-        
-        IntakeConstants.kPPivotMotor.loadPreferences();
-        IntakeConstants.kIPivotMotor.loadPreferences();
-        IntakeConstants.kDPivotMotor.loadPreferences();
-        IntakeConstants.kVPivotMotor.loadPreferences();
-
-        pivotMotorConfigs.Slot0.kP = IntakeConstants.kPPivotMotor.get();
-        pivotMotorConfigs.Slot0.kI = IntakeConstants.kIPivotMotor.get();
-        pivotMotorConfigs.Slot0.kD = IntakeConstants.kDPivotMotor.get();
-        pivotMotorConfigs.Slot0.kV = IntakeConstants.kVPivotMotor.get();
-
-        MotionMagicConfigs pivotMMConfigs = pivotMotorConfigs.MotionMagic;
-        pivotMMConfigs.MotionMagicCruiseVelocity = IntakeConstants.kIntakeCruiseVelocity;
-        pivotMMConfigs.MotionMagicAcceleration = IntakeConstants.kIntakeCruiseAcceleration;
-
-
         intakeMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         intakeMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
 
         // rightMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         // rightMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
 
-        pivotMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
-        pivotMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
 
         StatusCode statusIntake = intake.getConfigurator().apply(intakeMotorConfigs);
         // StatusCode statusRight = rightIntake.getConfigurator().apply(rightMotorConfigs);
-        StatusCode statusPivot = pivot.getConfigurator().apply(pivotMotorConfigs);
 
         if (!statusIntake.isOK()){
             DriverStation.reportError("Could not apply intake configs, error code:"+ statusIntake.toString(), null);
@@ -129,20 +99,10 @@ public class Intake {
         // if (!statusRight.isOK()){
         //     DriverStation.reportError("Could not apply right configs, error code:"+ statusRight.toString(), null);
         // }
-        if (!statusPivot.isOK()){
-            DriverStation.reportError("Could not apply pivot configs, error code:"+ statusPivot.toString(), null);
-        }
     }
 
     public void init() {
-        resetEncoder();
         configurePID();
-    }
-
-    public Command resetEncoder() {
-        return Commands.runOnce(() -> {
-            pivot.setPosition(throughBore.getAbsolutePosition() * IntakeConstants.kGearRatio);
-        });
     }
 
     public Command setIntakeSpeed() {
@@ -166,14 +126,12 @@ public class Intake {
         return Commands.runOnce(() -> {
             intake.setControl(m_brake);
             // rightIntake.setControl(m_brake);
-            resetEncoder();
             SmartDashboard.putBoolean("Pressed", false);
         });
     }
 
     public void setIntakePowerZero() {
         intake.setControl(m_brake);
-        resetEncoder();
         // rightIntake.setControl(m_brake);
         SmartDashboard.putBoolean("Pressed", false);
 
@@ -207,26 +165,6 @@ public class Intake {
 
     //     });
     // }
-
-    public Command setPosition(double position) {
-        return Commands.runOnce(() -> {
-            m_pivotMotionMagicRequest.Slot = 0;
-            pivot.setControl(m_pivotMotionMagicRequest.withPosition(position));
-
-        });
-    }
-
-    public Command stowIntake() {
-        return Commands.runOnce(() -> {
-            setPosition(IntakeConstants.kStowPosition);
-        });
-    }
-
-    public Command intakePosition() {
-        return Commands.runOnce(() -> {
-            setPosition(IntakeConstants.kIntakePosition);
-        });
-    }
 
     public Command decreaseIntake() {
         return Commands.runOnce(() -> {

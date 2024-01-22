@@ -33,9 +33,11 @@ import frc.robot.commands.SwerveJoystickCommand.DodgeDirection;
 import frc.robot.commands.autos.Auto4Notes;
 // import frc.robot.commands.VisionAutos.ToNearestGridDebug;
 import frc.robot.commands.autos.PathPlannerAutos;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.IntakePivot;
+import frc.robot.subsystems.IntakeRoller;
+import frc.robot.subsystems.ShooterPivot;
 // import frc.robot.commands.autos.SquareTest;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.ShooterRoller;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.imu.NavX;
@@ -58,8 +60,10 @@ import frc.robot.subsystems.vision.farfuture.EMPeach;
  */
 public class RobotContainer {
   // public Gyro imu = new NavX();
-  public Shooter shooter = new Shooter();
-  public Intake intake = new Intake();
+  public ShooterRoller shooterRoller = new ShooterRoller();
+  public ShooterPivot shooterPivot = new ShooterPivot();
+  public IntakeRoller intakeRoller = new IntakeRoller();
+  public IntakePivot intakePivot = new IntakePivot();
   public Gyro imu = new PigeonV2(1);
   // public Gyro imu = new NavX();
   public SwerveDrivetrain swerveDrive;
@@ -146,43 +150,43 @@ public class RobotContainer {
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
 
     // Shooter Controls
-    commandOperatorController.share().onTrue(Commands.runOnce(() -> shooter.resetEncoder()));
+    commandOperatorController.share().onTrue(Commands.runOnce(() -> shooterPivot.resetEncoder()));
 
-    commandOperatorController.povUp().onTrue(shooter.increaseShooterLeft());
-    commandOperatorController.povDown().onTrue(shooter.decreaseShooterLeft());
-    commandOperatorController.povLeft().onTrue(shooter.increaseShooterRight());
-    commandOperatorController.povRight().onTrue(shooter.decreaseShooterRight());
+    commandOperatorController.povUp().onTrue(shooterRoller.increaseShooterLeft());
+    commandOperatorController.povDown().onTrue(shooterRoller.decreaseShooterLeft());
+    commandOperatorController.povLeft().onTrue(shooterRoller.increaseShooterRight());
+    commandOperatorController.povRight().onTrue(shooterRoller.decreaseShooterRight());
 
     commandOperatorController.L2()
-      .onTrue(shooter.setShooterSpeed())
-      .onFalse(shooter.setShooterPowerZeroCommand());
+      .onTrue(shooterRoller.setShooterSpeed())
+      .onFalse(shooterRoller.setShooterPowerZeroCommand());
     
     commandOperatorController.triangle()
-      .onTrue(shooter.stowShooter())
-      .onFalse(shooter.setShooterPowerZeroCommand());
+      .onTrue(shooterPivot.stowShooter())
+      .onFalse(shooterPivot.setShooterPowerZeroCommand());
 
     commandOperatorController.circle()
-      .onTrue(shooter.setAmpPosition())
-      .onFalse(shooter.setShooterPowerZeroCommand());
+      .onTrue(shooterPivot.setAmpPosition())
+      .onFalse(shooterPivot.setShooterPowerZeroCommand());
 
     commandOperatorController.square()
-      .onTrue(shooter.setSpeakerPosition())
-      .onFalse(shooter.setShooterPowerZeroCommand());
+      .onTrue(shooterPivot.setSpeakerPosition())
+      .onFalse(shooterPivot.setShooterPowerZeroCommand());
 
-    // Intake Controls
-    commandOperatorController.options().onTrue(Commands.runOnce(() -> intake.resetEncoder()));
+    // intakeRoller Controls
+    commandOperatorController.options().onTrue(Commands.runOnce(() -> intakePivot.resetEncoder()));
     
     commandOperatorController.cross()
-      .onTrue(intake.stowIntake())
-      .onFalse(intake.setIntakePowerZeroCommand());
+      .onTrue(intakePivot.stowIntake())
+      .onFalse(intakePivot.setIntakePowerZeroCommand());
     
     commandOperatorController.R1()
-      .onTrue(intake.intakePosition())
-      .onFalse(intake.setIntakePowerZeroCommand());
+      .onTrue(intakePivot.intakePosition())
+      .onFalse(intakePivot.setIntakePowerZeroCommand());
 
     commandOperatorController.R2()
-      .onTrue(intake.setIntakeSpeed())
-      .onFalse(intake.setIntakePowerZeroCommand());
+      .onTrue(intakeRoller.setIntakeSpeed())
+      .onFalse(intakeRoller.setIntakePowerZeroCommand());
   }
 
   private void initAutoChoosers() {
@@ -229,7 +233,7 @@ public class RobotContainer {
   
   public void initShuffleboard() {
     imu.initShuffleboard(loggingLevel);
-    shooter.initShuffleboard();
+    shooterRoller.initShuffleboard();
     // backSunflower.initShuffleboard(loggingLevel);
     // frontSunflower.initShuffleboard(loggingLevel);
     swerveDrive.initShuffleboard(loggingLevel);
@@ -243,7 +247,7 @@ public class RobotContainer {
   // public void reportAllToSmartDashboard() {
   //   imu.reportToSmartDashboard(loggingLevel);
   //   wrist.reportToSmartDashboard(loggingLevel);
-  //   shooter.reportToSmartDashboard(loggingLevel);
+  //   shooterRoller.reportToSmartDashboard(loggingLevel);
   //   swerveDrive.reportToSmartDashboard(loggingLevel);
   //   swerveDrive.reportModulesToSmartDashboard(loggingLevel);
   // }
