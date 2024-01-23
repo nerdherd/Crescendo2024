@@ -33,6 +33,7 @@ import frc.robot.commands.SwerveJoystickCommand.DodgeDirection;
 import frc.robot.commands.autos.Auto4Notes;
 // import frc.robot.commands.VisionAutos.ToNearestGridDebug;
 import frc.robot.commands.autos.PathPlannerAutos;
+import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.IntakeRoller;
 import frc.robot.subsystems.ShooterPivot;
@@ -64,6 +65,7 @@ public class RobotContainer {
   public ShooterPivot shooterPivot = new ShooterPivot();
   public IntakeRoller intakeRoller = new IntakeRoller();
   public IntakePivot intakePivot = new IntakePivot();
+  public Indexer indexer = new Indexer();
   public Gyro imu = new PigeonV2(1);
   // public Gyro imu = new NavX();
   public SwerveDrivetrain swerveDrive;
@@ -219,7 +221,7 @@ public class RobotContainer {
 
     for (String path : paths) {
       if(path.equals("4PAuto"))
-        autoChooser.addOption(path, () -> new Auto4Notes(swerveDrive, path));
+        autoChooser.addOption(path, () -> new Auto4Notes(swerveDrive, intakeRoller, path));
       //else if ....
     }
 

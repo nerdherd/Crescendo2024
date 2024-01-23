@@ -289,6 +289,9 @@ public final class Constants {
 
     public static final int kIntakePosition = 0;
     public static final int kStowPosition = 0;
+    public static final int kNeutralPosition = 0;
+
+    public static final int kIntakeVelocity = 0;
 
     public static final int kIntakeCruiseAcceleration = 0;
     public static final int kIntakeCruiseVelocity = 0;
@@ -309,5 +312,13 @@ public final class Constants {
     public static final PrefDouble kIPivotMotor = new PrefDouble("kI Intake Pivot Motor", 0);
     public static final PrefDouble kDPivotMotor = new PrefDouble("kD Intake Pivot Motor", 0);
     public static final PrefDouble kVPivotMotor = new PrefDouble("kV Intake Pivot Motor", 0);
+  }
+  public static final class IndexerConstants {
+    public static final int kIntakeMoterID = 0;
+    public static final PrefDouble kPIndexerMotor = new PrefDouble("kP Indexer Pivot Motor", 0);
+    public static final PrefDouble kIIndexerMotor = new PrefDouble("kI Indexer Pivot Motor", 0);
+    public static final PrefDouble kDIndexerMotor = new PrefDouble("kD Indexer Pivot Motor", 0);
+    public static final PrefDouble kVIndexerMotor = new PrefDouble("kV Indexer Pivot Motor", 0);
+    
   }
 }

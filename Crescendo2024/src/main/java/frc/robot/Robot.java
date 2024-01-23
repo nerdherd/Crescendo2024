@@ -54,7 +54,7 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    m_robotContainer.shooter.printShooterSpeeds();
+    m_robotContainer.shooterRoller.printShooterSpeeds();
 
   }
 
@@ -99,14 +99,17 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
 
-    m_robotContainer.shooter.init();
-    m_robotContainer.intake.init();
+    m_robotContainer.shooterRoller.init();
+    m_robotContainer.intakeRoller.init();
+    m_robotContainer.shooterPivot.init();
+    m_robotContainer.intakePivot.init();
+    m_robotContainer.indexer.init();
     }
     
     // m_robotContainer.imu.setOffset(180);
 
     m_robotContainer.initDefaultCommands();
-    m_robotContainer.shooter.setShooterPowerZero();
+    m_robotContainer.shooterRoller.setShooterPowerZero();
 
     // m_robotContainer.wrist.zeroEncodersStow();
 
