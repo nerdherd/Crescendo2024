@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
@@ -15,6 +17,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -23,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.util.NerdyMath;
 import frc.robot.Constants.IntakeConstants;
 
 public class IntakePivot {
@@ -32,7 +36,7 @@ public class IntakePivot {
     final DutyCycleEncoder throughBore;
 
     int velocityIntake = 0;
-    int targetTicks = IntakeConstants.kStowPosition;
+    int targetTicks;
 
     final VoltageOut m_intakeVoltageRequest = new VoltageOut(0);
     // final VoltageOut m_rightVoltageRequest = new VoltageOut(0);
@@ -49,6 +53,8 @@ public class IntakePivot {
 
     final NeutralOut m_brake = new NeutralOut();
 
+    public BooleanSupplier atTargetPosition;
+
     public IntakePivot(){
         // rightIntake = new TalonFX(IntakeConstants.kRightMotorID, ModuleConstants.kCANivoreName);
         pivot = new TalonFX(IntakeConstants.kPivotMotorID, ModuleConstants.kCANivoreName);
@@ -57,6 +63,8 @@ public class IntakePivot {
         // rightIntake.setControl(new Follower(intake.getDeviceID(), false));
         pivot.setInverted(false);
         init();
+
+        atTargetPosition = () -> NerdyMath.inRange(pivot.getPosition().getValueAsDouble() * 2048, targetTicks - 40000, targetTicks + 40000);
     }
 
     public void configurePID() {
@@ -156,7 +164,7 @@ public class IntakePivot {
 
     public Command intakePosition() {
         return Commands.runOnce(() -> {
-            setPosition(IntakeConstants.kIntakePosition);
+            setPosition(IntakeConstants.kPickupPosition);
         });
     }
 

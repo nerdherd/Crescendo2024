@@ -69,7 +69,6 @@ public class ShooterPivot {
 
         pivotMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         pivotMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
-
         StatusCode statusPivot = pivot.getConfigurator().apply(pivotMotorConfigs);
 
         if (!statusPivot.isOK()){
@@ -98,7 +97,7 @@ public class ShooterPivot {
 
     public Command stowShooter() {
         return Commands.runOnce(() -> {
-            setPosition(ShooterConstants.kStowPosition);
+            setPosition(ShooterConstants.kSpeakerPosition);
         });
     }
 
