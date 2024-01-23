@@ -124,6 +124,22 @@ public class ShooterRoller {
         });
     }
 
+    public Command ShootSpeaker(int velocity) {
+        return Commands.runOnce(() -> {
+
+            // Percent Ouput
+            // leftShooter.setControl(m_leftDutyCycleRequest.withOutput(leftSpeeds[index]));
+            // leftShooter.setControl(m_leftDutyCycleRequest.withOutput(rightSpeeds[index]));
+
+            // Velocity Control
+            m_leftVelocityRequest.Slot = 0;
+            m_rightVelocityRequest.Slot = 0;
+
+            leftShooter.setControl(m_leftVelocityRequest.withVelocity(velocity));
+            rightShooter.setControl(m_rightVelocityRequest.withVelocity(velocity));
+        });
+    }
+
     public Command setShooterPowerZeroCommand() {
         return Commands.runOnce(() -> {
             leftShooter.setControl(m_brake);

@@ -38,6 +38,7 @@ import frc.robot.subsystems.IntakeRoller;
 import frc.robot.subsystems.ShooterPivot;
 // import frc.robot.commands.autos.SquareTest;
 import frc.robot.subsystems.ShooterRoller;
+import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.imu.NavX;
@@ -60,14 +61,15 @@ import frc.robot.subsystems.vision.farfuture.EMPeach;
  */
 public class RobotContainer {
   // public Gyro imu = new NavX();
-  public ShooterRoller shooterRoller = new ShooterRoller();
-  public ShooterPivot shooterPivot = new ShooterPivot();
-  public IntakeRoller intakeRoller = new IntakeRoller();
-  public IntakePivot intakePivot = new IntakePivot();
+  // public ShooterRoller shooterRoller = new ShooterRoller();
+  // public ShooterPivot shooterPivot = new ShooterPivot();
+  // public IntakeRoller intakeRoller = new IntakeRoller();
+  // public IntakePivot intakePivot = new IntakePivot();
   public Gyro imu = new PigeonV2(1);
   // public Gyro imu = new NavX();
   public SwerveDrivetrain swerveDrive;
   public PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
+  public SuperSystem theSystem = new SuperSystem();
 
   private final CommandPS4Controller commandDriverController = new CommandPS4Controller(
       ControllerConstants.kDriverControllerPort);
@@ -150,43 +152,14 @@ public class RobotContainer {
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
 
     // Shooter Controls
-    commandOperatorController.share().onTrue(Commands.runOnce(() -> shooterPivot.resetEncoder()));
 
-    commandOperatorController.povUp().onTrue(shooterRoller.increaseShooterLeft());
-    commandOperatorController.povDown().onTrue(shooterRoller.decreaseShooterLeft());
-    commandOperatorController.povLeft().onTrue(shooterRoller.increaseShooterRight());
-    commandOperatorController.povRight().onTrue(shooterRoller.decreaseShooterRight());
+    // TODO: BIND OPERATOR
 
-    commandOperatorController.L2()
-      .onTrue(shooterRoller.setShooterSpeed())
-      .onFalse(shooterRoller.setShooterPowerZeroCommand());
-    
-    commandOperatorController.triangle()
-      .onTrue(shooterPivot.stowShooter())
-      .onFalse(shooterPivot.setShooterPowerZeroCommand());
+    // commandOperatorController.share().onTrue(Commands.runOnce(() -> shooterPivot.resetEncoder()));
 
-    commandOperatorController.circle()
-      .onTrue(shooterPivot.setAmpPosition())
-      .onFalse(shooterPivot.setShooterPowerZeroCommand());
-
-    commandOperatorController.square()
-      .onTrue(shooterPivot.setSpeakerPosition())
-      .onFalse(shooterPivot.setShooterPowerZeroCommand());
-
-    // intakeRoller Controls
-    commandOperatorController.options().onTrue(Commands.runOnce(() -> intakePivot.resetEncoder()));
-    
-    commandOperatorController.cross()
-      .onTrue(intakePivot.stowIntake())
-      .onFalse(intakePivot.setIntakePowerZeroCommand());
-    
-    commandOperatorController.R1()
-      .onTrue(intakePivot.intakePosition())
-      .onFalse(intakePivot.setIntakePowerZeroCommand());
-
-    commandOperatorController.R2()
-      .onTrue(intakeRoller.setIntakeSpeed())
-      .onFalse(intakeRoller.setIntakePowerZeroCommand());
+    // commandOperatorController.R2()
+    //   .onTrue(intakeRoller.setIntakeSpeed())
+    //   .onFalse(intakeRoller.setIntakePowerZeroCommand());
   }
 
   private void initAutoChoosers() {
@@ -233,7 +206,7 @@ public class RobotContainer {
   
   public void initShuffleboard() {
     imu.initShuffleboard(loggingLevel);
-    shooterRoller.initShuffleboard();
+    theSystem.initShooterRollerShuffleboard();
     // backSunflower.initShuffleboard(loggingLevel);
     // frontSunflower.initShuffleboard(loggingLevel);
     swerveDrive.initShuffleboard(loggingLevel);

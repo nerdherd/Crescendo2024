@@ -253,17 +253,21 @@ public final class Constants {
     public static final int kPivotMotorID = 18;
 
     public static final int kThroughBorePort = 0;
-    public static final int kStowPosition = 0;
-    public static final int kAmpPosition = 0;
+
     public static final int kSpeakerPosition = 0;
+    public static final int kNeutralPosition = 0;
+    public static final int kAmpPosition = 0;
+
+    public static final int kOuttakeHigh = 50;
+    public static final int kOuttakeLow = 20;
+    public static final int kIntake = -10;
 
     public static final int kShooterCruiseAcceleration = 0;
     public static final int kShooterCruiseVelocity = 0;
 
     public static final int kGearRatio = 240;
 
-    public static final int kIntakePower = 0;
-    public static final int kOuttakePower = 0;
+    
 
     public static final PrefDouble kPLeftMotor = new PrefDouble("P Left Motor", 0);
     public static final PrefDouble kILeftMotor = new PrefDouble("I Left Motor", 0);
@@ -287,7 +291,8 @@ public final class Constants {
     public static final int kPivotMotorID = 18;
     public static final int kThroughBorePort = 0;
 
-    public static final int kIntakePosition = 0;
+    public static final int kPickupPosition = 0;
+    public static final int kNeutralPosition = 0;
     public static final int kStowPosition = 0;
 
     public static final int kIntakeCruiseAcceleration = 0;
