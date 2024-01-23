@@ -17,6 +17,8 @@ public class SuperSystem {
         intakeRoller = new IntakeRoller();
         shooterPivot = new ShooterPivot();
         shooterRoller = new ShooterRoller();
+
+        shooterRoller.setShooterPowerZero();
     }
 
     public void IntakeStow() {
@@ -64,6 +66,6 @@ public class SuperSystem {
 
     public void initShooterRollerShuffleboard() {
         shooterRoller.initShuffleboard();
-
+        shooterRoller.printShooterSpeeds();
     }
 }
