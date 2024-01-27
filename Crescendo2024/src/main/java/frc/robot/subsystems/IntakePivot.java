@@ -54,11 +54,13 @@ public class IntakePivot {
     final NeutralOut m_brake = new NeutralOut();
 
     public BooleanSupplier atTargetPosition;
+    private double TargetPosition = 0;
 
     public IntakePivot(){
         // rightIntake = new TalonFX(IntakeConstants.kRightMotorID, ModuleConstants.kCANivoreName);
         pivot = new TalonFX(IntakeConstants.kPivotMotorID, ModuleConstants.kCANivoreName);
         throughBore = new DutyCycleEncoder(IntakeConstants.kThroughBorePort);
+        
 
         // rightIntake.setControl(new Follower(intake.getDeviceID(), false));
         pivot.setInverted(false);
@@ -166,6 +168,15 @@ public class IntakePivot {
         return Commands.runOnce(() -> {
             setPosition(IntakeConstants.kPickupPosition);
         });
+    }
+
+    public boolean reachNeutralPosition() {
+        if (NerdyMath.inRange(pivot.getPosition().getValue(), IntakeConstants.kNeutralPosition - IntakeConstants.kPivotDeadband.get(), IntakeConstants.kNeutralPosition + IntakeConstants.kPivotDeadband.get())) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
 }

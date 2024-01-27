@@ -294,7 +294,6 @@ public final class Constants {
     public static final int kPickupPosition = 0;
     public static final int kNeutralPosition = 0;
     public static final int kStowPosition = 0;
-    public static final int kNeutralPosition = 0;
 
     public static final int kIntakeVelocity = 0;
 
@@ -317,6 +316,7 @@ public final class Constants {
     public static final PrefDouble kIPivotMotor = new PrefDouble("kI Intake Pivot Motor", 0);
     public static final PrefDouble kDPivotMotor = new PrefDouble("kD Intake Pivot Motor", 0);
     public static final PrefDouble kVPivotMotor = new PrefDouble("kV Intake Pivot Motor", 0);
+    public static final PrefDouble kPivotDeadband = new PrefDouble("Pivot Deadband", 0);
   }
   public static final class IndexerConstants {
     public static final int kIntakeMoterID = 0;
@@ -324,6 +324,9 @@ public final class Constants {
     public static final PrefDouble kIIndexerMotor = new PrefDouble("kI Indexer Pivot Motor", 0);
     public static final PrefDouble kDIndexerMotor = new PrefDouble("kD Indexer Pivot Motor", 0);
     public static final PrefDouble kVIndexerMotor = new PrefDouble("kV Indexer Pivot Motor", 0);
-    
+  }
+
+  public static final class ColorSensorConstants {
+    public static final int inProximity = 0;
   }
 }

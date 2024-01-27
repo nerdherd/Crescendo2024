@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -21,6 +22,8 @@ public class SuperSystem {
         shooterRoller.setShooterPowerZero();
     }
 
+
+
     public void IntakeStow() {
         Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kStowPosition)); // TODO: If structure with Run commands
 
@@ -35,16 +38,39 @@ public class SuperSystem {
     }
 
     public void ShooterSpeaker() {
-        Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kSpeakerPosition)); // TODO: Run command
+
+        if (intakePivot.reachNeutralPosition()) {
+            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kSpeakerPosition));
+            SmartDashboard.putBoolean("Not within Tolerance", true);
+        }
+        else {
+            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition));
+            SmartDashboard.putBoolean("Not within Tolerance", false);
+            }
 
     }
     public void ShooterNeutral() {
-        Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition));
-
+        
+        if (intakePivot.reachNeutralPosition()) {
+            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition));
+            SmartDashboard.putBoolean("Not within Tolerance", true);
+        }
+        else {
+            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition));
+            SmartDashboard.putBoolean("Not within Tolerance", false);
+            }
     }
+    
     public void ShooterAmp() {
-        Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kAmpPosition));
 
+        if (intakePivot.reachNeutralPosition()) {
+            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kAmpPosition));
+            SmartDashboard.putBoolean("Not within Tolerance", true);
+        }
+        else {
+            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition));
+            SmartDashboard.putBoolean("Not within Tolerance", false);
+            }
     }
 
     public void ShootHigh() {

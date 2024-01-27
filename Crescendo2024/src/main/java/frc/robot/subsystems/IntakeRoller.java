@@ -103,6 +103,7 @@ public class IntakeRoller {
 
     public void init() {
         configurePID();
+        
     }
 
     public Command setIntakeSpeed() {
