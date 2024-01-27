@@ -67,6 +67,7 @@ public class RobotContainer {
   public ShooterPivot shooterPivot = new ShooterPivot();
   public IntakeRoller intakeRoller = new IntakeRoller();
   public IntakePivot intakePivot = new IntakePivot();
+  public SuperSystem superSystem = new SuperSystem();
   public Indexer indexer = new Indexer();
   public Gyro imu = new PigeonV2(1);
   // public Gyro imu = new NavX();
@@ -214,7 +215,7 @@ public class RobotContainer {
 
     for (String path : paths) {
       if(path.equals("4PAuto"))
-        autoChooser.addOption(path, () -> new Auto4Notes(swerveDrive, path));
+        autoChooser.addOption(path, () -> new Auto4Notes(swerveDrive, path, superSystem));
       //else if ....
     }
 

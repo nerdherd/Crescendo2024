@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.util.NerdyMath;
 
 public class ShooterPivot extends SubsystemBase{
@@ -43,7 +44,7 @@ public class ShooterPivot extends SubsystemBase{
     private double TargetPosition = 0;
 
     public ShooterPivot(){
-        pivot = new TalonFX(ShooterConstants.kPivotMotorID, ModuleConstants.kCANivoreName);
+        pivot = new TalonFX(ShooterConstants.kPivotMotorID, SuperStructureConstants.kCANivoreBusName);
         throughBore = new DutyCycleEncoder(ShooterConstants.kThroughBorePort);
 
         // rightShooter.setControl(new Follower(leftShooter.getDeviceID(), false));

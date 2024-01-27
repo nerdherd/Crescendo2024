@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.Constants.IntakeConstants;
 
 public class IntakeRoller extends SubsystemBase{
@@ -49,13 +50,14 @@ public class IntakeRoller extends SubsystemBase{
     final NeutralOut m_brake = new NeutralOut();
 
     public IntakeRoller(){
-        intake = new TalonFX(IntakeConstants.kIntakeMotorID, ModuleConstants.kCANivoreName);
+        intake = new TalonFX(IntakeConstants.kIntakeMotorID, SuperStructureConstants.kCANivoreBusName);
         // rightIntake = new TalonFX(IntakeConstants.kRightMotorID, ModuleConstants.kCANivoreName);
 
         intake.setInverted(false);
         // rightIntake.setControl(new Follower(intake.getDeviceID(), false));
 
-        init();
+        configurePID();
+
     }
 
     public void configurePID() {
@@ -100,11 +102,6 @@ public class IntakeRoller extends SubsystemBase{
         // if (!statusRight.isOK()){
         //     DriverStation.reportError("Could not apply right configs, error code:"+ statusRight.toString(), null);
         // }
-    }
-
-    public void init() {
-        configurePID();
-        
     }
 
     public Command setIntakeSpeed(int velocity) {

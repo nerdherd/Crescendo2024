@@ -3,13 +3,9 @@ package frc.robot.subsystems;
 import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.Slot1Configs;
-import com.ctre.phoenix6.configs.Slot2Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -17,16 +13,14 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.util.NerdyMath;
 import frc.robot.Constants.IntakeConstants;
 
@@ -43,23 +37,16 @@ public class IntakePivot extends SubsystemBase{
     // final VoltageOut m_rightVoltageRequest = new VoltageOut(0);
     final VoltageOut m_pivotVoltageRequest = new VoltageOut(0);
 
-    final DutyCycleOut m_intakeDutyCycleRequest = new DutyCycleOut(0);
-    // final DutyCycleOut m_rightDutyCycleRequest = new DutyCycleOut(0);
-
-    final VelocityVoltage m_intakeVelocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
-    // final VelocityVoltage m_rightVelocity = new VelocityVoltage(0, 0, true, 0,0, false, false, false);
-
     final PositionVoltage m_pivotPositionRequest = new PositionVoltage(0, 0, true, 0,0, false, false, false);
     final MotionMagicVoltage m_pivotMotionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
 
     final NeutralOut m_brake = new NeutralOut();
 
     public BooleanSupplier atTargetPosition;
-    private double TargetPosition = 0;
 
     public IntakePivot(){
         // rightIntake = new TalonFX(IntakeConstants.kRightMotorID, ModuleConstants.kCANivoreName);
-        pivot = new TalonFX(IntakeConstants.kPivotMotorID, ModuleConstants.kCANivoreName);
+        pivot = new TalonFX(IntakeConstants.kPivotMotorID, SuperStructureConstants.kCANivoreBusName);
         throughBore = new DutyCycleEncoder(IntakeConstants.kThroughBorePort);
         
 

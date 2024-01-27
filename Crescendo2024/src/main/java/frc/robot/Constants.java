@@ -321,7 +321,7 @@ public final class Constants {
     public static final PrefDouble kPivotDeadband = new PrefDouble("Pivot Deadband", 0);
   }
   public static final class IndexerConstants {
-    public static final int kIntakeMoterID = 0;
+    public static final int kIndexerMotorID = 0;
     public static final PrefDouble kPIndexerMotor = new PrefDouble("kP Indexer Pivot Motor", 0);
     public static final PrefDouble kIIndexerMotor = new PrefDouble("kI Indexer Pivot Motor", 0);
     public static final PrefDouble kDIndexerMotor = new PrefDouble("kD Indexer Pivot Motor", 0);
@@ -330,5 +330,10 @@ public final class Constants {
     
 public static final class ColorSensorConstants {
     public static final int inProximity = 0;
-  }
+}
+
+public static final class SuperStructureConstants {
+  public static final String kCANivoreBusName = "";
+}
+
 }

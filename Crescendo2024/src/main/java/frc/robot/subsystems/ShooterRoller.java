@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.SuperStructureConstants;
 
 public class ShooterRoller extends SubsystemBase{
     
@@ -51,13 +52,13 @@ public class ShooterRoller extends SubsystemBase{
     final NeutralOut m_brake = new NeutralOut();
 
     public ShooterRoller(){
-        leftShooter = new TalonFX(ShooterConstants.kLeftMotorID, ModuleConstants.kCANivoreName);
-        rightShooter = new TalonFX(ShooterConstants.kRightMotorID, ModuleConstants.kCANivoreName);
+        leftShooter = new TalonFX(ShooterConstants.kLeftMotorID, SuperStructureConstants.kCANivoreBusName);
+        rightShooter = new TalonFX(ShooterConstants.kRightMotorID, SuperStructureConstants.kCANivoreBusName);
 
         leftShooter.setInverted(false);
         // rightShooter.setControl(new Follower(leftShooter.getDeviceID(), false));
         
-        init();
+        configurePID();
     }
 
     public void configurePID() {
@@ -103,10 +104,6 @@ public class ShooterRoller extends SubsystemBase{
         }
     }
 
-    public void init() {
-        configurePID();
-    }
-
 
     public Command setShooterSpeed() {
         return Commands.runOnce(() -> {
@@ -126,6 +123,22 @@ public class ShooterRoller extends SubsystemBase{
     }
 
     public Command ShootSpeaker(int velocity) {
+        return Commands.runOnce(() -> {
+
+            // Percent Ouput
+            // leftShooter.setControl(m_leftDutyCycleRequest.withOutput(leftSpeeds[index]));
+            // leftShooter.setControl(m_leftDutyCycleRequest.withOutput(rightSpeeds[index]));
+
+            // Velocity Control
+            m_leftVelocityRequest.Slot = 0;
+            m_rightVelocityRequest.Slot = 0;
+
+            leftShooter.setControl(m_leftVelocityRequest.withVelocity(velocity));
+            rightShooter.setControl(m_rightVelocityRequest.withVelocity(velocity));
+        });
+    }
+
+    public Command ShootAmp(int velocity) {
         return Commands.runOnce(() -> {
 
             // Percent Ouput

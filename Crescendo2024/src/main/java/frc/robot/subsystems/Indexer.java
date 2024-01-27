@@ -16,16 +16,14 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ModuleConstants;
-import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.Constants.IndexerConstants;
-import frc.robot.Constants.IntakeConstants;
 
 public class Indexer {
     
@@ -46,9 +44,9 @@ public class Indexer {
     final NeutralOut m_brake = new NeutralOut();
 
     public Indexer(){
-        indexer = new TalonFX(IntakeConstants.kIntakeMotorID, ModuleConstants.kCANivoreName);
+        indexer = new TalonFX(IndexerConstants.kIndexerMotorID, SuperStructureConstants.kCANivoreBusName);
         // rightIntake = new TalonFX(IntakeConstants.kRightMotorID, ModuleConstants.kCANivoreName);
-        init();
+        configurePID();
     }
 
     public void configurePID() {
@@ -72,10 +70,6 @@ public class Indexer {
         if (!statusIndexer.isOK()){
             DriverStation.reportError("Could not apply indexer configs, error code:"+ statusIndexer.toString(), null);
         }
-    }
-
-    public void init() {
-        configurePID();
     }
 
    public Command setIndexerSpeed() {
