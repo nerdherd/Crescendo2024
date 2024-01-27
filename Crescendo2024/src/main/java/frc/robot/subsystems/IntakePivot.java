@@ -179,7 +179,8 @@ public class IntakePivot extends SubsystemBase{
     }
 
     public boolean reachNeutralPosition() {
-        if (NerdyMath.inRange(pivot.getPosition().getValue(), IntakeConstants.kNeutralPosition - IntakeConstants.kPivotDeadband.get(), IntakeConstants.kNeutralPosition + IntakeConstants.kPivotDeadband.get())) {
+        if (NerdyMath.inRange(pivot.getPosition().getValue(), IntakeConstants.kNeutralPosition - IntakeConstants.kPivotDeadband.get(), IntakeConstants.kNeutralPosition + IntakeConstants.kPivotDeadband.get())
+            || (NerdyMath.inRange(pivot.getPosition().getValue(), IntakeConstants.kPickupPosition - IntakeConstants.kPivotDeadband.get(), IntakeConstants.kPickupPosition + IntakeConstants.kPivotDeadband.get()))) {
             return true;
         }
         else {

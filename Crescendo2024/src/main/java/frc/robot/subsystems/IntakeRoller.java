@@ -107,7 +107,7 @@ public class IntakeRoller extends SubsystemBase{
         
     }
 
-    public Command setIntakeSpeed() {
+    public Command setIntakeSpeed(int velocity) {
         return Commands.runOnce(() -> {
 
             // Percent Output
@@ -118,7 +118,7 @@ public class IntakeRoller extends SubsystemBase{
             m_intakeVelocityRequest.Slot = 0;
             // m_rightVelocity.Slot = 0;
 
-            intake.setControl(m_intakeVelocityRequest.withVelocity(velocityIntake));
+            intake.setControl(m_intakeVelocityRequest.withVelocity(velocity));
             // rightIntake.setControl(m_rightVelocity.withVelocity(velocityRight));
             SmartDashboard.putBoolean("Pressed", true);
         });
