@@ -22,23 +22,49 @@ public class SuperSystem {
         shooterRoller.setShooterPowerZero();
     }
 
-
-
     public void IntakeStow() {
-        Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kStowPosition)); // TODO: If structure with Run commands
 
-    }
+        if (shooterPivot.reachNeutralPosition()) {
+            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kStowPosition));
+            SmartDashboard.putBoolean("Within tolerance", true);
+        } 
+        else {
+            SmartDashboard.putBoolean("Within tolerance", false);
+            Commands.runOnce (() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition));
+        }
+        }
+
+    
     public void IntakeNeutral() {
         Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition));
+
+        if (shooterPivot.reachNeutralPosition()) {
+            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition));
+            SmartDashboard.putBoolean("Within tolerance", true);
+        }
+        else {
+            SmartDashboard.putBoolean("Within tolerance", false);
+            Commands.runOnce (() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition));
+        }
 
     }
     public void IntakePickup() {
         Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kPickupPosition));
 
+        if (shooterPivot.reachNeutralPosition()) {
+            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kPickupPosition));
+            SmartDashboard.putBoolean("Within tolerance", true);
+        }
+        else {
+            SmartDashboard.putBoolean("Within tolerance", false);
+            Commands.runOnce (() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition));
+        }
+
+
     }
 
     public void ShooterSpeaker() {
-
+        
         if (intakePivot.reachNeutralPosition()) {
             Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kSpeakerPosition));
             SmartDashboard.putBoolean("Not within Tolerance", true);
@@ -53,14 +79,14 @@ public class SuperSystem {
         
         if (intakePivot.reachNeutralPosition()) {
             Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition));
-            SmartDashboard.putBoolean("Not within Tolerance", true);
+SmartDashboard.putBoolean("Not within Tolerance", true);
         }
         else {
             Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition));
             SmartDashboard.putBoolean("Not within Tolerance", false);
             }
     }
-    
+
     public void ShooterAmp() {
 
         if (intakePivot.reachNeutralPosition()) {

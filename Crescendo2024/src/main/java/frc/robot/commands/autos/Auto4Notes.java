@@ -18,11 +18,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.subsystems.IntakeRoller;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
 public class Auto4Notes extends SequentialCommandGroup {
-    public Auto4Notes(SwerveDrivetrain swerve, IntakeRoller intakeRoller, String autoPath) {     
+    public Auto4Notes(SwerveDrivetrain swerve, String autoPath) {     
         
         // Use the PathPlannerAuto class to get a path group from an auto
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);

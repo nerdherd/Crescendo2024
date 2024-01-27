@@ -1,8 +1,8 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants.ColorSensorConstants;
-import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.I2C;
+import com.revrobotics.ColorSensorV3;
 
 
 public class ColorSensor{

@@ -215,7 +215,7 @@ public class RobotContainer {
 
     for (String path : paths) {
       if(path.equals("4PAuto"))
-        autoChooser.addOption(path, () -> new Auto4Notes(swerveDrive, intakeRoller, path));
+        autoChooser.addOption(path, () -> new Auto4Notes(swerveDrive, path));
       //else if ....
     }
 

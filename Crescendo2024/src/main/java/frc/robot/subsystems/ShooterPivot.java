@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.util.NerdyMath;
 
 public class ShooterPivot {
     
@@ -37,6 +38,8 @@ public class ShooterPivot {
     final MotionMagicVoltage m_pivotMotionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
 
     final NeutralOut m_brake = new NeutralOut();
+
+    private double TargetPosition = 0;
 
     public ShooterPivot(){
         pivot = new TalonFX(ShooterConstants.kPivotMotorID, ModuleConstants.kCANivoreName);
@@ -121,4 +124,12 @@ public class ShooterPivot {
         });
     }
 
-}
+    public boolean reachNeutralPosition(){
+        if (NerdyMath.inRange(pivot.getPosition().getValue(), ShooterConstants.kNeutralPosition - ShooterConstants.kPivotDeadband.get(), ShooterConstants.kNeutralPosition + ShooterConstants.kPivotDeadband.get())){
+            return true;   
+        } else {
+            return false;
+        }
+    }
+
+}  
