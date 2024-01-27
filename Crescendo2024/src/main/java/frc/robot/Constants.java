@@ -257,6 +257,7 @@ public final class Constants {
     public static final int kSpeakerPosition = 0;
     public static final int kNeutralPosition = 0;
     public static final int kAmpPosition = 0;
+    public static final int kHandoffPosition = 0;
 
     public static final int kOuttakeHigh = 50;
     public static final int kOuttakeLow = 20;

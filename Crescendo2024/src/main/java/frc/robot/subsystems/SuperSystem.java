@@ -54,6 +54,7 @@ public class SuperSystem {
         if (shooterPivot.reachNeutralPosition()) {
             Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kPickupPosition));
             SmartDashboard.putBoolean("Within tolerance", true);
+            Commands.runOnce(() -> intakeRoller.setIntakeSpeed());
         }
         else {
             SmartDashboard.putBoolean("Within tolerance", false);

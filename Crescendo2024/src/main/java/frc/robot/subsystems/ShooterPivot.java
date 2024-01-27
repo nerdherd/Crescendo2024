@@ -117,6 +117,12 @@ public class ShooterPivot {
         });
     }
 
+    public Command setHandoffPosition() {
+        return Commands.runOnce(() -> {
+            setPosition(ShooterConstants.kHandoffPosition);
+        })
+    }
+
     public Command setShooterPowerZeroCommand() {
         return Commands.runOnce(() -> {
             pivot.setControl(m_brake);
