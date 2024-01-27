@@ -1,29 +1,30 @@
-// import frc.robot.subsystems.*;
-// import com.revrobotics.ColorMatch;
-// import com.revrobotics.ColorMatchResult;
-// import com.revrobotics.ColorSensorV3;
+package frc.robot.subsystems;
 
-// import edu.wpi.first.wpilibj.I2C;
-// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-// import edu.wpi.first.wpilibj.util.Color;
+import frc.robot.Constants.ColorSensorConstants;
+import com.revrobotics.ColorSensorV3;
+import edu.wpi.first.wpilibj.I2C;
 
-// public class ColorSensor{
-//     private final I2C.Port i2cPort;
-//     private final ColorSensorV3 colorSensor;
 
-//     private boolean noteIntook;
+public class ColorSensor{
+    private final I2C.Port i2cPort;
+    private final ColorSensorV3 colorSensor;
 
-//     private int proximity;
+    private int proximity;
 
-//     public ColorSensor(){
-//         i2cPort = I2C.Port.kOnboard;
-//         colorSensor = new ColorSensorV3(i2cPort);
-//     }
+    public ColorSensor(){
+        i2cPort = I2C.Port.kOnboard;
+        colorSensor = new ColorSensorV3(i2cPort);
+    }
 
-//     public void noteIntook() {
-      
-//         Color detectedColor = colorSensor.getColor();
-//         proximity = colorSensor.getProximity();
+    public boolean noteIntook() {
         
-//   }
-// }
+        proximity = colorSensor.getProximity();
+        if (proximity < ColorSensorConstants.inProximity){
+            return true;
+        } 
+        else {
+            return false;
+        }
+    
+  }
+}
