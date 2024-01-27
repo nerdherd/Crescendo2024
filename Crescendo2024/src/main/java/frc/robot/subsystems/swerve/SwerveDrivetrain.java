@@ -29,7 +29,7 @@ import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.imu.Gyro;
-import frc.robot.subsystems.vision.farfuture.EMPeach;
+import frc.robot.subsystems.vision.farfuture.DriverAssist;
 import frc.robot.subsystems.Reportable;
 
 import static frc.robot.Constants.PathPlannerConstants.kPPMaxVelocity;
@@ -51,7 +51,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     // private final SwerveDriveOdometry odometer;
     private boolean isTest = false;
     private final SwerveDrivePoseEstimator poseEstimator;
-    private final EMPeach vision; 
+    private final DriverAssist vision; 
     private DRIVE_MODE driveMode = DRIVE_MODE.FIELD_ORIENTED;
     private int counter = 0;
     private int visionFrequency = 1;
@@ -74,10 +74,10 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     /**
      * Construct a new {@link SwerveDrivetrain}
      */
-    public SwerveDrivetrain(Gyro gyro, SwerveModuleType moduleType, EMPeach vision) throws IllegalArgumentException {
+    public SwerveDrivetrain(Gyro gyro, SwerveModuleType moduleType, DriverAssist vision) throws IllegalArgumentException {
         switch (moduleType) {
             case CANCODER:
-                frontLeft = new CANSwerveModule(
+                frontLeft = new SwerveModule(
                     kFLDriveID,
                     kFLTurningID,
                     kFLDriveReversed,
@@ -85,7 +85,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
                     CANCoderConstants.kFLCANCoderID,
                     CANCoderConstants.kFLOffsetDeg,
                     CANCoderConstants.kFLCANCoderReversed);
-                frontRight = new CANSwerveModule(
+                frontRight = new SwerveModule(
                     kFRDriveID,
                     kFRTurningID,
                     kFRDriveReversed,
@@ -93,7 +93,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
                     CANCoderConstants.kFRCANCoderID,
                     CANCoderConstants.kFROffsetDeg,
                     CANCoderConstants.kFRCANCoderReversed);
-                backLeft = new CANSwerveModule(
+                backLeft = new SwerveModule(
                     kBLDriveID,
                     kBLTurningID,
                     kBLDriveReversed,
@@ -101,7 +101,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
                     CANCoderConstants.kBLCANCoderID,
                     CANCoderConstants.kBLOffsetDeg,
                     CANCoderConstants.kBLCANCoderReversed);
-                backRight = new CANSwerveModule(
+                backRight = new SwerveModule(
                     kBRDriveID,
                     kBRTurningID,
                     kBRDriveReversed,
@@ -152,6 +152,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
 
     double previousVisionX = -1;
 
+    boolean initPoseByVisionDone = false;
     /**
      * Have modules move towards states and update odometry
      */
@@ -163,28 +164,19 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         // odometer.update(gyro.getRotation2d(), getModulePositions());
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
         counter = (counter + 1) % visionFrequency;
-        
-        if (counter == 0) {
-            Pose3d sunflowerPose3d = vision.getCurrentGrassTile();
-            if (sunflowerPose3d != null && vision.getEMPRadius() > VisionConstants.kMinimumTA) {
-                SmartDashboard.putNumber("Vision X Value", sunflowerPose3d.getX());
-                SmartDashboard.putNumber("Vision Y Value", sunflowerPose3d.getY());
-                if (previousVisionX != -1) {
-                    if ((Math.abs(previousVisionX - sunflowerPose3d.toPose2d().getX())) < (previousVisionX * 0.2) ) {
-                        poseEstimator.addVisionMeasurement(sunflowerPose3d.toPose2d(), Timer.getFPGATimestamp());
-                        SmartDashboard.putBoolean("Vision Used", true);
-                        previousVisionX = sunflowerPose3d.toPose2d().getX();
-                    }
-                    SmartDashboard.putBoolean("Filtered out", (Math.abs(previousVisionX - sunflowerPose3d.toPose2d().getX())) < (previousVisionX * 0.2));
-                    SmartDashboard.putNumber("Prev Vis X", previousVisionX);
-                } else {
-                    previousVisionX = sunflowerPose3d.toPose2d().getX();
-                }
-            } else {
-                SmartDashboard.putBoolean("Vision Used", false);
-            }
+
+        if(vision != null && vision.getAprilTagID() != -1)
+        {
+            // TODO: Commented this out
+            // if(vision.getTA() > 0.5) {
+            //     SmartDashboard.putBoolean("Vision Used", true);
+            //     poseEstimator.addVisionMeasurement(vision.getCurrentPose3DVision().toPose2d(), 
+            //     vision.getVisionFrameTimestamp());
+            // }
+            
         }
-        else {
+        else
+        {
             SmartDashboard.putBoolean("Vision Used", false);
         }
         // field.setRobotPose(poseEstimator.getEstimatedPosition());
@@ -192,6 +184,22 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     
     //****************************** RESETTERS ******************************/
 
+    public void resetInitPoseByVision()
+    {
+        if(vision != null && vision.getAprilTagID() != -1)
+        {
+            // 7 is blue side, 4 is red side, center of speaker
+            if(!initPoseByVisionDone && (vision.getAprilTagID() == 7 || vision.getAprilTagID() == 4))
+            {
+                initPoseByVisionDone = true;
+                Pose3d p = vision.getCurrentPose3DVision();
+                resetOdometry(p.toPose2d());
+                //Units.radiansToDegrees(p.getRotation().getZ())
+                //gyro.resetHeading(p.toPose2d().getRotation().getDegrees());
+                gyro.setOffset(p.getRotation().getZ());
+            }
+        }
+    }
 
     /**
      * Resets the odometry to given pose 
@@ -222,6 +230,13 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         frontRight.resetEncoder();
         backLeft.resetEncoder();
         backRight.resetEncoder();
+    }
+	
+	public void refreshModulePID() {
+        frontLeft.refreshPID();
+        backLeft.refreshPID();
+        frontRight.refreshPID();  
+        backRight.refreshPID();
     }
 
     public void zeroModules() {
@@ -416,6 +431,14 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         poseEstimator.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
     }
 
+	 public void setPoseMetersWithAlliance(Pose2d pose){
+	        var alliance = DriverStation.getAlliance();
+	        if (alliance.isPresent() && alliance.get().equals(Alliance.Red)) {
+	            setPoseMeters(GeometryUtil.flipFieldPose(pose));
+	        } else {
+	            setPoseMeters(pose);
+	        }
+	    }
     public void initShuffleboard(LOG_LEVEL level) {
         if (level == LOG_LEVEL.OFF)  {
             return;
