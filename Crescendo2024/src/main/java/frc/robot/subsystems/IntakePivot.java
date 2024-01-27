@@ -25,11 +25,12 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.util.NerdyMath;
 import frc.robot.Constants.IntakeConstants;
 
-public class IntakePivot {
+public class IntakePivot extends SubsystemBase{
     
     // final TalonFX rightIntake;
     final TalonFX pivot;
@@ -155,6 +156,13 @@ public class IntakePivot {
             //m_pivotMotionMagicRequest.Slot = 0;
             pivot.setControl(m_pivotMotionMagicRequest.withPosition(position));
 
+        });
+    }
+
+    public Command manualControlPosition(double tickChange) {
+        double pos = (pivot.getPosition().getValueAsDouble() * 2048) + tickChange; // Increase by 200 ticks?
+        return Commands.runOnce(() -> {
+            pivot.setPosition(pos);
         });
     }
 

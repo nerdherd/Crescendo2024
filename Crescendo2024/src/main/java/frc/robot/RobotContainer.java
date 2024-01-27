@@ -119,24 +119,23 @@ public class RobotContainer {
 
   public void initDefaultCommands() {
 
-    // TODO: Look into ChargedUp2023 for reference
-    // intakePivot.setDefaultCommand(
-    //   new RunCommand(
-    //     () -> {
-    //       intakePivot.moveArmMotionMagicJoystick(operatorController.getLeftY(), intakePivot.percentExtended());
-    //       // SmartDashboard.putNumber("Arm input", operatorController.getLeftY());
-    //     },
-    //     intakePivot
-    //   ));
+    intakePivot.setDefaultCommand(
+      new RunCommand(
+        () -> {
+          //TODO: FIND OUT IF THIS SHOULD BE NEG OR NOT (and for shooter too)
+          intakePivot.manualControlPosition(operatorController.getRightY() * 0.125); 
+          // SmartDashboard.putNumber("Arm input", operatorController.getRightY());
+        },
+        intakePivot
+      ));
     
-    // shooterPivot.setDefaultCommand(
-    //   new RunCommand(
-    //     () -> {
-    //       shooterPivot.moveElevatorJoystick(operatorController.getRightY() * -0.125, shooterPivot.getArmAngle());
-    //       // SmartDashboard.putNumber("Elevator input", operatorController.getRightY());
-    //     }, 
-    //     shooterPivot
-    //   ));
+    shooterPivot.setDefaultCommand(
+      new RunCommand(
+        () -> {
+          shooterPivot.manualControlPosition(operatorController.getLeftY() * 0.125); //-0.125 for IsMe Elevator
+        }, 
+        shooterPivot
+      ));
 
     swerveDrive.setDefaultCommand(
       new SwerveJoystickCommand(
