@@ -89,13 +89,6 @@ public class SwerveModule implements Reportable {
 
         this.brakeRequest = new NeutralOut();
 
-        MotorOutputConfigs turnConfigs = new MotorOutputConfigs();
-        this.turnConfigurator.refresh(turnConfigs);
-        turnConfigs.NeutralMode = NeutralModeValue.Coast;
-        turnConfigs.DutyCycleNeutralDeadband =  ModuleConstants.kTurnMotorDeadband;
-        this.turnConfigurator.apply(turnConfigs);
-
-
         this.driveMotorID = driveMotorId;
         this.turnMotorID = turningMotorId;
         this.CANCoderID = CANCoderId;
@@ -120,6 +113,11 @@ public class SwerveModule implements Reportable {
         driveMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
         driveMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         driveMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ModuleConstants.kDriveMotorDeadband;
+        driveMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        driveMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        driveMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
+        driveMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        driveMotorConfigs.Audio.AllowMusicDurDisable = true;
         driveConfigurator.apply(driveMotorConfigs);
 
         TalonFXConfiguration turnMotorConfigs = new TalonFXConfiguration();
@@ -128,10 +126,17 @@ public class SwerveModule implements Reportable {
         turnMotorConfigs.Feedback.FeedbackRemoteSensorID = CANCoderId;
         turnMotorConfigs.Feedback.RotorToSensorRatio = 150.0/7.0;
         turnMotorConfigs.Feedback.SensorToMechanismRatio = 1;
+        turnMotorConfigs.ClosedLoopGeneral.ContinuousWrap = true;
         turnMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         turnMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
         turnMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         turnMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ModuleConstants.kDriveMotorDeadband;
+        turnMotorConfigs.CurrentLimits.SupplyCurrentLimit = 30;
+        turnMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        turnMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 20;
+        turnMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        turnMotorConfigs.Audio.AllowMusicDurDisable = true;
+        turnConfigurator.apply(turnMotorConfigs);
 
         refreshPID();
     }
