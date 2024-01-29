@@ -1,15 +1,25 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import java.util.Arrays;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Reportable;
 import frc.robot.util.NerdyMath;
 
@@ -132,9 +142,6 @@ public class Limelight implements Reportable{
 
     public Limelight(String keyN)
     {
-        m_botPos = NetworkTableInstance.getDefault().getTable(keyN).getEntry("botpose");
-        m_camPos = NetworkTableInstance.getDefault().getTable(keyN).getEntry("targetpose_cameraspace");
-
         reinitBuffer(); // need to reset everytime change pipeline
 
         table = NetworkTableInstance.getDefault().getTable(keyN);
@@ -143,11 +150,33 @@ public class Limelight implements Reportable{
         tx = table.getEntry("tx");
         ty = table.getEntry("ty");
         ta = table.getEntry("ta");
+
+        // same as Pathfinder's Coordinate System
+        if(!DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red))
+        {
+            m_botPos = table.getEntry("botpose_wpired");
+        }
+        else
+        {
+            m_botPos = table.getEntry("botpose_wpiblue");
+        }
+
+        m_camPos = table.getEntry("targetpose_cameraspace");
+
         setLightState(LIGHT_OFF);
     }
 
-    public double periodic() {
-        // double[] botPose = m_botPos.getDoubleArray(new double[6]);
+    public void resetLists() {
+        tAList = new double[10]; // do not need it?
+        initDoneTA = false;
+        tXList = new double[10]; // do not need it?
+        initDoneTX = false;
+        indexTX = 0;
+        indexTA = 0;
+    }
+
+    public double getCamPoseSkew() {
+        //double[] botPose = m_botPos.getDoubleArray(new double[6]);
         double[] camPose = m_camPos.getDoubleArray(new double[6]);
 
         // if(botPose.length != 0) {
@@ -171,6 +200,24 @@ public class Limelight implements Reportable{
         }
 
         return camPose[4];
+    }
+
+    public Pose2d getBotPose2D()
+    {
+        double[] botPose = m_botPos.getDoubleArray(new double[6]);
+
+        Translation2d tran2d = new Translation2d(botPose[0], botPose[1]);
+        Rotation2d r2d = new Rotation2d(Units.degreesToRadians(botPose[5]));
+        return new Pose2d(tran2d, r2d);
+    }
+
+    public Pose3d getBotPose3D()
+    {
+        double[] botPose = m_botPos.getDoubleArray(new double[6]);
+        return new Pose3d(
+            new Translation3d(botPose[0], botPose[1], botPose[2]),
+            new Rotation3d(Units.degreesToRadians(botPose[3]), Units.degreesToRadians(botPose[4]),
+                    Units.degreesToRadians(botPose[5])));
     }
 
     public String getName() {
@@ -242,6 +289,34 @@ public class Limelight implements Reportable{
         }
     }
 
+    public double getXAngleFiltered(int standardDeviationsAway) {
+        double newTX = tx.getDouble(0);
+        if(initDoneTX) {
+            if(NerdyMath.withinStandardDeviation(tAList, standardDeviationsAway, newTX)) {
+                tXList[indexTX] = newTX;
+                indexTX ++;
+                if(indexTX >= tXList.length) {
+                    indexTX = 0;
+                }
+            }
+        }
+        else {
+            tXList[indexTX] = newTX;
+            indexTX ++;
+            if(indexTX >= tXList.length) {
+                indexTX = 0;
+                initDoneTX = true;
+            }
+        }
+
+        double TXSum = 0.0;
+        int length = initDoneTX ? tXList.length : indexTX;
+        for (int i = 0; i < length; i++) {
+            TXSum += tXList[i];
+        }
+        return TXSum / length;
+    }
+
     public double getXAngle()
     {
         return tx.getDouble(0);
@@ -265,7 +340,10 @@ public class Limelight implements Reportable{
     int indexTA = 0;
     boolean initDoneTA = false;
     public double getArea_avg() {
-
+        // double previousValue = -1;
+        // if(indexTA > 0 ) previousValue  = tAList[indexTA - 1];
+        // if(NerdyMath.deadband(tAList[indexTA], previousValue + 5, previousValue)) tAList[indexTA] = ta.getDouble(0);
+        // tAList[indexTA] = NerdyMath.deadband(ta.getDouble(0), previousValue, previousValue);
         tAList[indexTA] = ta.getDouble(0);
         indexTA ++;
         if(indexTA >= tAList.length) {
@@ -293,6 +371,34 @@ public class Limelight implements Reportable{
         }
     }
 
+    public double getAreaFiltered(int standardDeviationsAway) {
+        double newArea = ta.getDouble(0);
+        if(initDoneTA) {
+            if(NerdyMath.withinStandardDeviation(tAList, standardDeviationsAway, newArea)) {
+                tAList[indexTA] = newArea;
+                indexTA ++;
+                if(indexTA >= tAList.length) {
+                    indexTA = 0;
+                }
+            }
+        }
+        else {
+            tAList[indexTA] = newArea;
+            indexTA ++;
+            if(indexTA >= tAList.length) {
+                indexTA = 0;
+                initDoneTA = true;
+            }
+        }
+
+        double TASum = 0.0;
+        int length = initDoneTA ? tAList.length : indexTA;
+        for (int i = 0; i < length; i++) {
+            TASum += tAList[i];
+        }
+        return TASum / length;
+    }
+
     public double getArea(){
         return ta.getDouble(0);
     }
@@ -312,8 +418,12 @@ public class Limelight implements Reportable{
      * @return The pipeline’s latency contribution (ms) Add at least 11ms for image
      *         capture latency.
      */
-    public double getDeltaTime() {
+    public double getLatency_Pipeline() {
         return table.getEntry("tl").getDouble(0);
+    }
+
+    public double getLatency_Capture() {
+        return table.getEntry("cl").getDouble(0);
     }
 
     /**

@@ -19,6 +19,7 @@ import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight;
 import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelperUser;
+import frc.robot.util.NerdyMath;
 
 /**
  * Subsystem that uses Limelight for vision
@@ -34,9 +35,11 @@ public class EMPeach implements Reportable{
 
     // PID Controllers
     private static PIDController pidTA = new PIDController(0.3, 0, 0);
-    private static PIDController pidTX = new PIDController(0.1, 0, 0);
+    private static PIDController pidTX = new PIDController(0.05, 0, 0);
     private static PIDController pidTY = new PIDController(0.1, 0, 0);
-    private static PIDController pidSkew = new PIDController(0.02, 0, 0);
+    private static PIDController pidSkew = new PIDController(0.06, 0, 0);
+
+    double[] speeds = {0.0, 0.0, 0.0};
 
     private GenericEntry hasTarget;
     private GenericEntry pipeline;
@@ -156,18 +159,51 @@ public class EMPeach implements Reportable{
      * @param metersAwayFromTarget how many meters to stop from the target
      * @return double[] in the format {forwardPower, sidewaysPower, angledPower}
      */
-    public double[] getMovePowerToImp(double metersAwayFromTarget) {
+    public double[] getMovePowerToImp(double areaGoal) {
         double[] powers = {0.0, 0.0, 0.0};
 
-        double range = getDistanceFromImp();
+        // double range = getDistanceFromImp();
+        double area = limelight.getArea();
         double txOffset = 0 - limelight.getXAngle();
         double skewOffset = 0 - limelight.getSkew();
+        SmartDashboard.putNumber("AA", area);
+        SmartDashboard.putNumber("TXXXX", txOffset);
+        SmartDashboard.putNumber("SKEEW", skewOffset);
 
-        powers[0] = pidTA.calculate(range, metersAwayFromTarget);
-        powers[1] = pidTX.calculate(txOffset, 0);
-        powers[2] = pidSkew.calculate(skewOffset, 0);
+        speeds[0] = pidTA.calculate(area, areaGoal);
+        speeds[1] = pidTX.calculate(txOffset, 0);
+        speeds[2] = pidSkew.calculate(skewOffset, 0);
 
         return powers;
+    }
+
+
+    public void driveToImp(double targetTA, double targetTX, double targetskew) {
+        changeEMPType(0);
+
+        double taOffset = targetTA - limelight.getArea();
+        double txOffset = targetTX - limelight.getXAngle();
+        double skewOffset = targetskew - limelight.getSkew();
+    
+        SmartDashboard.putNumber("TA Offset: ", taOffset);
+        SmartDashboard.putNumber("TX Offset: ", txOffset);
+        SmartDashboard.putNumber("Skew Offset: ", skewOffset);
+
+        speeds[0] = -1 * pidTA.calculate(taOffset, 0);
+        speeds[1]= -1 * pidTX.calculate(txOffset, 0);
+        speeds[2] = 1 * pidSkew.calculate(skewOffset, 0);
+
+        SmartDashboard.putNumber("FS", speeds[0]);
+        SmartDashboard.putNumber("SS", speeds[1]);
+        SmartDashboard.putNumber("AS", speeds[2]);
+
+        speeds[0] = NerdyMath.deadband(speeds[0], -0.15, 0.15);
+        speeds[1] = NerdyMath.deadband(speeds[1], -0.75, 0.75);
+        // speeds[2] = NerdyMath.deadband(speeds[2], -1, 1);
+    }
+
+    public double[] getChargeSpeeds() {
+        return speeds;
     }
 
     /**
@@ -222,7 +258,7 @@ public class EMPeach implements Reportable{
                     .getEntry();
 
             case MINIMAL:   
-                // tab.addCamera(limelightName + ": Stream", limelightName, VisionConstants.kLimelightFrontIP + ":5800")
+                // tab.addCamera(limelightName + ": Stream", limelightName, limelightName + ".local:5802")
                 //     .withPosition(0, 0)
                 //     .withSize(6, 3);
 

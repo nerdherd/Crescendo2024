@@ -49,6 +49,7 @@ import frc.robot.subsystems.imu.PigeonV2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
+import frc.robot.subsystems.vision.NoteAssistance;
 import frc.robot.subsystems.vision.farfuture.DriverAssist;
 import frc.robot.subsystems.vision.farfuture.EMPeach;
 
@@ -88,8 +89,11 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
-  private EMPeach vision;
-  private DriverAssist driverAssist = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
+  // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
+  // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.3); //0.6 is threshold for consistent ATag detection
+
+  private NoteAssistance noteCamera; 
+  private DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   //private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -98,14 +102,17 @@ public class RobotContainer {
     try {
       // Pass in "sunflowers" in reverse order of priority (most important last)
       // swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontSunflower);
-      vision = new EMPeach(VisionConstants.kLimelightFrontName);
-      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, vision);
+
+      noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
+      apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
+      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, apriltagCamera);
+
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
 
     // driverAssist.changePipeline(4);
-    driverAssist.toggleLight(false);
+    apriltagCamera.toggleLight(false);
 
     initAutoChoosers();
     initShuffleboard();
@@ -166,8 +173,24 @@ public class RobotContainer {
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
-    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 10, 0, 6)));
-    commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
+    // swerveDrive.drive(vision.getMovePowerToImp(0.5)[0], vision.getMovePowerToImp(0.5)[1], vision.getMovePowerToImp(0.5)[2])));
+    // commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.calculateTag(1.8, 0, 0, 7)));
+    // commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
+    
+    
+    // Please Comment out one set of these two to run!!!
+    // commandDriverController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(4.1, 0, 0)))
+    //   .onFalse(Commands.run(() -> noteCamera.resetBuffer()));
+    // commandDriverController.L1().whileTrue(Commands.run(() -> noteCamera.driveToNote(swerveDrive, 4.5, 0, 0))); 
+    //  .onFalse(Commands.run(() -> noteCamera.reset()));
+      
+    
+    //commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing
+    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1, 0, 0, 7))); //1.8, 0, 0, 7
+    //   .onFalse(Commands.run(() -> swerveDrive.stopModules()));
+    
+    commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)));
+    //   .onFalse(Commands.run(() -> swerveDrive.stopModules()));
 
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
 
@@ -232,7 +255,9 @@ public class RobotContainer {
     // frontSunflower.initShuffleboard(loggingLevel);
     swerveDrive.initShuffleboard(loggingLevel);
     swerveDrive.initModuleShuffleboard(loggingLevel);
-    vision.initShuffleboard(loggingLevel);
+    apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+    noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
     tab.addNumber("Voltage", () -> Math.abs(pdp.getVoltage()));

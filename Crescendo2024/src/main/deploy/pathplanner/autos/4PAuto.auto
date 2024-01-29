@@ -1,0 +1,67 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.28126094090026,
+      "y": 6.323376971078266
+    },
+    "rotation": 23.838740183171684
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1stPickPath"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2ndPickPath"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3rdPickPath"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4thPickPath"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MidPickPath"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4thPickPath"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MidPickPath"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoSpeakerPath"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -1,11 +1,13 @@
 package frc.robot.subsystems.swerve;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -21,6 +23,7 @@ import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.imu.Gyro;
+import frc.robot.subsystems.vision.farfuture.DriverAssist;
 import frc.robot.subsystems.vision.farfuture.EMPeach;
 import frc.robot.subsystems.Reportable;
 
@@ -44,7 +47,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     // private final SwerveDriveOdometry odometer;
     private boolean isTest = false;
     private final SwerveDrivePoseEstimator poseEstimator;
-    private final EMPeach vision; 
+    private final DriverAssist vision; 
     private DRIVE_MODE driveMode = DRIVE_MODE.FIELD_ORIENTED;
     private int counter = 0;
     private int visionFrequency = 1;
@@ -65,7 +68,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     /**
      * Construct a new {@link SwerveDrivetrain}
      */
-    public SwerveDrivetrain(Gyro gyro, SwerveModuleType moduleType, EMPeach vision) throws IllegalArgumentException {
+    public SwerveDrivetrain(Gyro gyro, SwerveModuleType moduleType, DriverAssist vision) throws IllegalArgumentException {
         switch (moduleType) {
             case CANCODER:
                 frontLeft = new SwerveModule(
@@ -102,8 +105,22 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         }
 
         this.gyro = gyro;
-        this.poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d());
-        this.poseEstimator.setVisionMeasurementStdDevs(kBaseVisionPoseSTD);
+        /** @param stateStdDevs Standard deviations of the pose estimate (x position in meters, y position
+         *     in meters, and heading in radians). Increase these numbers to trust your state estimate
+         *     less.
+         * @param visionMeasurementStdDevs Standard deviations of the vision pose measurement (x position
+         *     in meters, y position in meters, and heading in radians). Increase these numbers to trust
+         *     the vision pose measurement less.
+        */
+        this.poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d(),
+          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // TODO
+          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); // TODO
+          //VecBuilder.fill(0.1, 0.1, 0.05), VecBuilder.fill(0.7, 0.7, 0.6)
+        //   kVisionSTDx,
+        //   kVisionSTDy,
+        //   kVisionSTDtheta
+        // this.poseEstimator.setVisionMeasurementStdDevs(kBaseVisionPoseSTD);
+
         this.vision = vision;
         // this.odometer = new SwerveDriveOdometry(
         //     kDriveKinematics, 
@@ -137,6 +154,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
 
     double previousVisionX = -1;
 
+    boolean initPoseByVisionDone = false;
     /**
      * Have modules move towards states and update odometry
      */
@@ -148,35 +166,41 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         // odometer.update(gyro.getRotation2d(), getModulePositions());
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
         counter = (counter + 1) % visionFrequency;
-        
-        if (counter == 0) {
-            Pose3d sunflowerPose3d = vision.getCurrentGrassTile();
-            if (sunflowerPose3d != null && vision.getEMPRadius() > VisionConstants.kMinimumTA) {
-                SmartDashboard.putNumber("Vision X Value", sunflowerPose3d.getX());
-                SmartDashboard.putNumber("Vision Y Value", sunflowerPose3d.getY());
-                if (previousVisionX != -1) {
-                    if ((Math.abs(previousVisionX - sunflowerPose3d.toPose2d().getX())) < (previousVisionX * 0.2) ) {
-                        poseEstimator.addVisionMeasurement(sunflowerPose3d.toPose2d(), Timer.getFPGATimestamp());
-                        SmartDashboard.putBoolean("Vision Used", true);
-                        previousVisionX = sunflowerPose3d.toPose2d().getX();
-                    }
-                    SmartDashboard.putBoolean("Filtered out", (Math.abs(previousVisionX - sunflowerPose3d.toPose2d().getX())) < (previousVisionX * 0.2));
-                    SmartDashboard.putNumber("Prev Vis X", previousVisionX);
-                } else {
-                    previousVisionX = sunflowerPose3d.toPose2d().getX();
-                }
-            } else {
-                SmartDashboard.putBoolean("Vision Used", false);
+
+        if(vision != null && vision.getAprilTagID() != -1)
+        {
+            //TODO: Commented this out
+            if(vision.getTA() > 0.5) { // distance limitation, to be calibrated. TODO
+                SmartDashboard.putBoolean("Vision Used", true);
+                poseEstimator.addVisionMeasurement(vision.getCurrentPose3DVision().toPose2d(), 
+                vision.getVisionFrameTimestamp());
             }
+            
         }
-        else {
+        else
+        {
             SmartDashboard.putBoolean("Vision Used", false);
         }
-        // field.setRobotPose(poseEstimator.getEstimatedPosition());
+        
+        field.setRobotPose(poseEstimator.getEstimatedPosition());
     }
     
     //****************************** RESETTERS ******************************/
 
+    public void resetInitPoseByVision()
+    {
+        if(vision != null && vision.getAprilTagID() != -1)
+        {
+            // 7 is blue side, 4 is red side, center of speaker
+            if(!initPoseByVisionDone && (vision.getAprilTagID() == 7 || vision.getAprilTagID() == 4))
+            {
+                initPoseByVisionDone = true;
+                Pose3d p = vision.getCurrentPose3DVision();
+                resetOdometry(p.toPose2d());
+                gyro.setOffset(p.getRotation().getZ());
+            }
+        }
+    }
 
     /**
      * Resets the odometry to given pose 
