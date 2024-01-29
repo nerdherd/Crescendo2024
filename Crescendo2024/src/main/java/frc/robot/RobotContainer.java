@@ -86,10 +86,8 @@ public class RobotContainer {
 
   private final LOG_LEVEL loggingLevel = LOG_LEVEL.MINIMAL;
 
-  private SendableChooser<Supplier<Command>> autoChooser = new SendableChooser<Supplier<Command>>();
+  private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
-  // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
-  // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.3); //0.6 is threshold for consistent ATag detection
   private EMPeach vision;
   private DriverAssist driverAssist = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   //private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
@@ -164,10 +162,9 @@ public class RobotContainer {
     // Note: whileTrue() does not restart the command if it ends while the button is
     // still being held
     commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
-    commandDriverController.options().onTrue(Commands.runOnce(swerveDrive::resetEncoders));
     commandDriverController.triangle()
-      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
-      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
+      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
+      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
     commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 10, 0, 6)));
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
@@ -211,11 +208,12 @@ public class RobotContainer {
     // autoChooser.addOption("GetBackWithVision", () -> PathPlannerAutos.pathplannerAuto("GetBackWithVision", swerveDrive));
 
 	List<String> paths = AutoBuilder.getAllAutoNames();
-    autoChooser.addOption("Do Nothing", Commands::none);
+    autoChooser.addOption("Do Nothing", Commands.none());
+    // autoChooser.addOption("Do Nothing", Commands.none());
 
     for (String path : paths) {
       if(path.equals("4PAuto"))
-        autoChooser.addOption(path, () -> new Auto4Notes(swerveDrive, path, superSystem));
+        autoChooser.addOption(path, new Auto4Notes(swerveDrive, path, superSystem));
       //else if ....
     }
 
@@ -254,7 +252,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    Command currentAuto = autoChooser.getSelected().get();
+    Command currentAuto = autoChooser.getSelected();
 
     swerveDrive.setDriveMode(DRIVE_MODE.AUTONOMOUS);
     return currentAuto;

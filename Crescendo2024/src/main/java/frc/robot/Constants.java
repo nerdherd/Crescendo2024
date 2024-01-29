@@ -77,9 +77,8 @@ public final class Constants {
     public static final PrefDouble kPDrive = new PrefDouble("kPDrive",0.13); // 0.6
     public static final PrefDouble kIDrive = new PrefDouble("kIDrive",0);
     public static final PrefDouble kDDrive = new PrefDouble("kDDrive",0); 
-    public static final PrefDouble kFDrive = new PrefDouble("kFDrive",0.0469); 
+    public static final PrefDouble kVDrive = new PrefDouble("kVDrive",0.0469); 
 
-    public static final PrefBool ktunePID = new PrefBool("TuneDrivePID", false);
     public static final String kCANivoreName = "CANivore1";
   } 
 
@@ -88,11 +87,11 @@ public final class Constants {
     public static final double kVisionSTDx = 0.7; //0.9
     public static final double kVisionSTDy = 0.7; //0.9
     public static final double kVisionSTDtheta = 1000; //Old: 69696969
-    public static final Matrix<N3, N1> kBaseVisionPoseSTD = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(
-      kVisionSTDx,
-      kVisionSTDy,
-      kVisionSTDtheta
-    );
+    public static final Matrix<N3, N1> kBaseVisionPoseSTD = MatBuilder.fill(
+                                                              Nat.N3(), Nat.N1(), 
+                                                              kVisionSTDx,
+                                                              kVisionSTDy,
+                                                              kVisionSTDtheta);
     // VecBuilder.fill(kVisionSTDx, kVisionSTDy, kVisionSTDtheta);
 
 
@@ -137,16 +136,6 @@ public final class Constants {
       public static final boolean kFLCANCoderReversed = false;      
       public static final boolean kBLCANCoderReversed = false;       
       public static final boolean kBRCANCoderReversed = false; 
-
-      // public static final double kFRCANCoderOffsetDegrees = 25.75;       
-      // public static final double kFLCANCoderOffsetDegrees = -53.174;         
-      // public static final double kBLCANCoderOffsetDegrees = 85;          
-      // public static final double kBRCANCoderOffsetDegrees = 46.85;
-
-      public static final PrefDouble kFROffsetDeg = new PrefDouble("kFROffsetDeg", 0); //-29
-      public static final PrefDouble kFLOffsetDeg = new PrefDouble("kFLOffsetDeg", 0); //51
-      public static final PrefDouble kBLOffsetDeg = new PrefDouble("kBLOffsetDeg", 0); //185
-      public static final PrefDouble kBROffsetDeg = new PrefDouble("kBROffsetDeg", 0); //316
     }
 
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;    
