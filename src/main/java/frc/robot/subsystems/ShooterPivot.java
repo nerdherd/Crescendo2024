@@ -23,11 +23,11 @@ public class ShooterPivot extends SubsystemBase{
     final TalonFX pivot;
     DutyCycleEncoder throughBore;
 
-    final VoltageOut m_pivotVoltageRequest = new VoltageOut(0);
+    final VoltageOut pivotVoltageRequest = new VoltageOut(0);
 
-    final MotionMagicVoltage m_pivotMotionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
+    final MotionMagicVoltage pivotMotionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
 
-    final NeutralOut m_brake = new NeutralOut();
+    final NeutralOut brake = new NeutralOut();
 
     private double TargetPosition = 0;
 
@@ -35,7 +35,6 @@ public class ShooterPivot extends SubsystemBase{
         pivot = new TalonFX(ShooterConstants.kPivotMotorID, SuperStructureConstants.kCANivoreBusName);
         throughBore = new DutyCycleEncoder(ShooterConstants.kThroughBorePort);
 
-        // rightShooter.setControl(new Follower(leftShooter.getDeviceID(), false));
         pivot.setInverted(false);
         throughBore.setDistancePerRotation(1);
         
@@ -82,8 +81,7 @@ public class ShooterPivot extends SubsystemBase{
 
     public Command setPosition(double position) {
         return Commands.runOnce(() -> {
-           // m_pivotMotionMagicRequest.Slot = 0;
-            pivot.setControl(m_pivotMotionMagicRequest.withPosition(position));
+            pivot.setControl(pivotMotionMagicRequest.withPosition(position));
 
         });
     }
@@ -122,7 +120,7 @@ public class ShooterPivot extends SubsystemBase{
 
     public Command setShooterPowerZeroCommand() {
         return Commands.runOnce(() -> {
-            pivot.setControl(m_brake);
+            pivot.setControl(brake);
             SmartDashboard.putBoolean("Pressed", false);
         });
     }
