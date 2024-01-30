@@ -25,36 +25,20 @@ import frc.robot.util.NerdyMath;
 import frc.robot.Constants.IntakeConstants;
 
 public class IntakePivot extends SubsystemBase{
-    
-    // final TalonFX rightIntake;
-    final TalonFX pivot;
-    final DutyCycleEncoder throughBore;
+    private final TalonFX pivot;
+    private final DutyCycleEncoder throughBore;
 
-    int velocityIntake = 0;
-    int targetTicks;
-
-    final VoltageOut m_intakeVoltageRequest = new VoltageOut(0);
-    // final VoltageOut m_rightVoltageRequest = new VoltageOut(0);
-    final VoltageOut m_pivotVoltageRequest = new VoltageOut(0);
-
-    final PositionVoltage m_pivotPositionRequest = new PositionVoltage(0, 0, true, 0,0, false, false, false);
-    final MotionMagicVoltage m_pivotMotionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
-
-    final NeutralOut m_brake = new NeutralOut();
+    private final MotionMagicVoltage m_pivotMotionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
+    private final NeutralOut m_brake = new NeutralOut();
 
     public BooleanSupplier atTargetPosition;
 
     public IntakePivot(){
-        // rightIntake = new TalonFX(IntakeConstants.kRightMotorID, ModuleConstants.kCANivoreName);
         pivot = new TalonFX(IntakeConstants.kPivotMotorID, SuperStructureConstants.kCANivoreBusName);
         throughBore = new DutyCycleEncoder(IntakeConstants.kThroughBorePort);
         
-
-        // rightIntake.setControl(new Follower(intake.getDeviceID(), false));
         pivot.setInverted(false);
         init();
-
-        atTargetPosition = () -> NerdyMath.inRange(pivot.getPosition().getValueAsDouble() * 2048, targetTicks - 40000, targetTicks + 40000);
     }
 
     public void configurePID() {
@@ -77,19 +61,11 @@ public class IntakePivot extends SubsystemBase{
         pivotMMConfigs.MotionMagicCruiseVelocity = IntakeConstants.kIntakeCruiseVelocity;
         pivotMMConfigs.MotionMagicAcceleration = IntakeConstants.kIntakeCruiseAcceleration;
 
-
-        // rightMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
-        // rightMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
-
         pivotMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         pivotMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
 
-        // StatusCode statusRight = rightIntake.getConfigurator().apply(rightMotorConfigs);
         StatusCode statusPivot = pivot.getConfigurator().apply(pivotMotorConfigs);
 
-        // if (!statusRight.isOK()){
-        //     DriverStation.reportError("Could not apply right configs, error code:"+ statusRight.toString(), null);
-        // }
         if (!statusPivot.isOK()){
             DriverStation.reportError("Could not apply pivot configs, error code:"+ statusPivot.toString(), null);
         }
@@ -98,6 +74,10 @@ public class IntakePivot extends SubsystemBase{
     public void init() {
         resetEncoder();
         configurePID();
+    }
+
+    public boolean atTargetPosition() {
+NerdyMath.inRange(pivot.getPosition().getValueAsDouble() * 2048, targetTicks - 40000, targetTicks + 40000);
     }
 
     public Command resetEncoder() {
@@ -109,7 +89,6 @@ public class IntakePivot extends SubsystemBase{
     public Command setIntakePowerZeroCommand() {
         return Commands.runOnce(() -> {
             pivot.setControl(m_brake);
-            // rightIntake.setControl(m_brake);
             resetEncoder();
             SmartDashboard.putBoolean("Pressed", false);
         });
@@ -118,29 +97,12 @@ public class IntakePivot extends SubsystemBase{
     public void setIntakePowerZero() {
         pivot.setControl(m_brake);
         resetEncoder();
-        // rightIntake.setControl(m_brake);
         SmartDashboard.putBoolean("Pressed", false);
 
     }
     
-    // public Command increaseRight() {
-    //     return Commands.runOnce(() -> {
-
-    //         if (velocityRight <= 21000) {
-    //             velocityRight += 1024;
-    //             tooHigh = false;
-    //         }
-    //         else {
-    //             tooHigh = true;
-    //         }
-    //         SmartDashboard.putBoolean("Too high", tooHigh);
-
-    //     });
-    // }
-
     public Command setPosition(double position) {
         return Commands.runOnce(() -> {
-            //m_pivotMotionMagicRequest.Slot = 0;
             pivot.setControl(m_pivotMotionMagicRequest.withPosition(position));
 
         });

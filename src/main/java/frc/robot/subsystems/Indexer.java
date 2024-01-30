@@ -15,15 +15,16 @@ import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.Constants.IndexerConstants;
 
-public class Indexer {
+public class Indexer extends SubsystemBase {
     
     private final TalonFX indexer;    
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
 
+    private boolean enabled = true;
+
     public Indexer(){
         indexer = new TalonFX(IndexerConstants.kIndexerMotorID, SuperStructureConstants.kCANivoreBusName);
-        // rightIntake = new TalonFX(IntakeConstants.kRightMotorID, ModuleConstants.kCANivoreName);
         configurePID();
     }
 
@@ -50,15 +51,36 @@ public class Indexer {
         }
     }
 
-   public Command setIndexerSpeed() {
-        return Commands.runOnce(() -> {
-            double newVelocity = velocityRequest.Velocity + increment;
-            if ((increment > 0 && newVelocity < IndexerConstants.kIndexerMaxVelocityRPS) ||
-                (increment < 0 && newVelocity > -IndexerConstants.kIndexerMaxVelocityRPS)
-                ) {
-                velocityRequest.Velocity = newVelocity;
-            }
-        });
+    @Override
+    public void run() {
+        if (enabled) {
+            indexer.setControl(brakeRequest);
+        } else {
+            indexer.setControl(velocityRequest);
+        }
+    }
+
+    public void stop() {
+        this.enabled = false;
+        velocityRequest.Velocity = 0;
+        indexer.setControl(brakeRequest);
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setVelocity(double velocity) {
+        velocityRequest.Velocity = velocity;
+    }
+
+    public Command incrementVelocity(double increment) {
+        double newVelocity = velocityRequest.Velocity + increment;
+        if ((increment > 0 && newVelocity < IndexerConstants.kIndexerMaxVelocityRPS) ||
+            (increment < 0 && newVelocity > -IndexerConstants.kIndexerMaxVelocityRPS)
+            ) {
+            velocityRequest.Velocity = newVelocity;
+        }
     }
 
     public void initShuffleboard() {
