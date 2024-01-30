@@ -321,7 +321,9 @@ public final class Constants {
     public static final PrefDouble kPivotDeadband = new PrefDouble("Pivot Deadband", 0);
   }
   public static final class IndexerConstants {
-    public static final int kIntakeMoterID = 0;
+    public static final int kIntakeMotorID = 0;
+    public static final double kIndexerMaxVelocityRPS = 100;
+    public static final PrefDouble kIndexerVelocityIncrement = new PrefDouble("Indexer Velocity Increment", 10);
     public static final PrefDouble kPIndexerMotor = new PrefDouble("kP Indexer Pivot Motor", 0);
     public static final PrefDouble kIIndexerMotor = new PrefDouble("kI Indexer Pivot Motor", 0);
     public static final PrefDouble kDIndexerMotor = new PrefDouble("kD Indexer Pivot Motor", 0);

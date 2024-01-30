@@ -25,7 +25,7 @@ public class SuperSystem {
 
         shooterRoller.setShooterPowerZero();
         intakeRoller.setIntakePowerZero();
-        indexer.setIndexerPowerZero();
+        indexer.stop();
     }
 
     public void IntakeStow() {
@@ -122,8 +122,6 @@ public class SuperSystem {
         }
 
     }
-    
-
 
     public void ShootHigh() {
         Commands.runOnce(() -> shooterRoller.ShootSpeaker(ShooterConstants.kOuttakeHigh));
@@ -142,7 +140,7 @@ public class SuperSystem {
 
         if (colorSensor.noteIntook()) {
             intakeRoller.setIntakePowerZero();
-            indexer.setIndexerPowerZero();
+            indexer.stop();
             SmartDashboard.putBoolean("Note Intook", true);
         }
         else {
@@ -156,7 +154,7 @@ public class SuperSystem {
     }
 
     public void Indexer() {
-        Commands.runOnce(() -> indexer.setIndexerSpeed());
+        Commands.runOnce(() -> indexer.setVelocity(0));
     }
 
     // TODO: Add Manual Arm Control with Joystick
