@@ -97,7 +97,6 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
 
     m_robotContainer.shooterPivot.init();
-    m_robotContainer.intakePivot.init();
     }
     
     // m_robotContainer.imu.setOffset(180);

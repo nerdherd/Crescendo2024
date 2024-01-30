@@ -22,10 +22,11 @@ public class Indexer extends SubsystemBase {
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
 
-    private boolean enabled = true;
+    private boolean enabled = false;
 
     public Indexer(){
         indexer = new TalonFX(IndexerConstants.kIndexerMotorID, SuperStructureConstants.kCANivoreBusName);
+        configureMotor();
         configurePID();
     }
 

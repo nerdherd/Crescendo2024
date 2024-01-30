@@ -27,7 +27,6 @@ public class IntakeRoller extends SubsystemBase{
     private boolean tooLow = false;
 
     int velocityIntake = 0;
-    int targetTicks = IntakeConstants.kStowPosition;
 
     final VoltageOut m_intakeVoltageRequest = new VoltageOut(0);
     // final VoltageOut m_rightVoltageRequest = new VoltageOut(0);
@@ -95,7 +94,7 @@ public class IntakeRoller extends SubsystemBase{
         // }
     }
 
-    public Command setIntakeSpeed(int velocity) {
+    public Command setIntakeSpeed(double velocity) {
         return Commands.runOnce(() -> {
 
             // Percent Output

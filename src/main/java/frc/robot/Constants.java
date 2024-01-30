@@ -291,16 +291,20 @@ public final class Constants {
     public static final int kPivotMotorID = 18;
     public static final int kThroughBorePort = 0;
 
-    public static final int kPickupPosition = 0;
-    public static final int kNeutralPosition = 0;
-    public static final int kStowPosition = 0;
+    public static final double kPickupPosition = 0;
+    public static final double kNeutralPosition = 0;
+    public static final double kStowPosition = 0;
 
-    public static final int kIntakeVelocity = 0;
+    // TODO: Set max and min pos
+    public static final double kIntakeMaxPos = 0.5;
+    public static final double kIntakeMinPos = -0.25;
 
-    public static final int kIntakeCruiseAcceleration = 0;
-    public static final int kIntakeCruiseVelocity = 0;
+    public static final double kIntakeVelocity = 0;
 
-    public static final int kGearRatio = 5;
+    public static final double kIntakeCruiseAcceleration = 0;
+    public static final double kIntakeCruiseVelocity = 0;
+
+    public static final double kGearRatio = 5;
 
     public static final PrefDouble kPIntakeMotor = new PrefDouble("kP Intake Motor", 0);
     public static final PrefDouble kIIntakeMotor = new PrefDouble("kI Intake Motor", 0);
