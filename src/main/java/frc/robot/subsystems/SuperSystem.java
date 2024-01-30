@@ -28,7 +28,7 @@ public class SuperSystem {
         indexer.setIndexerPowerZero();
     }
 
-    public void IntakeStow() {
+    public Command IntakeStow() {
 
         if (shooterPivot.reachNeutralPosition()) {
             Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kStowPosition));
@@ -41,8 +41,7 @@ public class SuperSystem {
     }
 
     
-    public void IntakeNeutral() {
-        Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition));
+    public Command IntakeNeutral() {
 
         if (shooterPivot.reachNeutralPosition()) {
             Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition));
@@ -54,7 +53,7 @@ public class SuperSystem {
         }
 
     }
-    public void IntakePickup() {
+    public Command IntakePickup() {
 
         if (shooterPivot.reachNeutralPosition()) {
             Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kPickupPosition));
@@ -68,7 +67,7 @@ public class SuperSystem {
 
     }
 
-    public void ShooterSpeaker() {
+    public Command ShooterSpeaker() {
         
         if (intakePivot.reachNeutralPosition()) {
             Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kSpeakerPosition));
@@ -80,7 +79,7 @@ public class SuperSystem {
             }
 
     }
-    public void ShooterNeutral() {
+    public Command ShooterNeutral() {
         
         if (intakePivot.reachNeutralPosition()) {
             Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition));
@@ -92,7 +91,7 @@ SmartDashboard.putBoolean("Within Tolerance", true);
             }
     }
 
-    public void ShooterAmp() {
+    public Command ShooterAmp() {
 
         if (intakePivot.reachNeutralPosition()) {
             Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kAmpPosition));
@@ -105,7 +104,7 @@ SmartDashboard.putBoolean("Within Tolerance", true);
     
     }
 
-    public void ShooterHandoff() {
+    public Command ShooterHandoff() {
 
         if (intakePivot.reachNeutralPosition()) {
             Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kHandoffPosition));
@@ -119,42 +118,44 @@ SmartDashboard.putBoolean("Within Tolerance", true);
 
     }
 
-    public void ShootSpeaker() {
+    public Command ShootSpeaker() {
         Commands.runOnce(() -> shooterRoller.ShootSpeaker(ShooterConstants.kOuttakeHigh));
     }
 
-    public void ShootAmp() {
+    public Command ShootAmp() {
         Commands.runOnce(() -> shooterRoller.ShootAmp(ShooterConstants.kOuttakeLow));
     }
 
-    public void IntakeSequence() {
+    public Command IntakeSequence() {
+        Commands.runOnce(() -> {
+            IntakePickup();
+            ShooterHandoff();
+            Indexer();
+            IntakeRollers();
 
-        IntakePickup();
-        ShooterHandoff();
-        Indexer();
-        IntakeRollers();
 
-
-        if (colorSensor.noteIntook()) {
-            intakeRoller.setIntakePowerZero();
-            indexer.setIndexerPowerZero();
-            SmartDashboard.putBoolean("Note Intook", true);
-        }
-        else {
-            SmartDashboard.putBoolean("Note Intook", false); 
-        }
+            if (colorSensor.noteIntook()) {
+                intakeRoller.setIntakePowerZero();
+                indexer.setIndexerPowerZero();
+                SmartDashboard.putBoolean("Note Intook", true);
+            }
+            else {
+                SmartDashboard.putBoolean("Note Intook", false); 
+            }   
+            
+        });
         
     }
 
-    public void IntakeRollers() {
+    public Command IntakeRollers() {
         Commands.runOnce(() -> intakeRoller.setIntakeSpeed(IntakeConstants.kIntakeVelocity));
     }
 
-    public void Indexer() {
+    public Command Indexer() {
         Commands.runOnce(() -> indexer.setIndexerSpeed());
     }
 
-    public void initShooterRollerShuffleboard() {
+    public Command initShooterRollerShuffleboard() {
         shooterRoller.initShuffleboard();
         shooterRoller.printShooterSpeeds();
     }
