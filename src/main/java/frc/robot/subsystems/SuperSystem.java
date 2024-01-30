@@ -5,10 +5,11 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 
-public class SuperSystem {
+public class SuperSystem implements Reportable {
     private IntakePivot intakePivot;
     private IntakeRoller intakeRoller;
     private ShooterPivot shooterPivot;
@@ -29,133 +30,114 @@ public class SuperSystem {
         indexer.stop();
     }
 
-    public void IntakeStow() {
-
-        if (shooterPivot.reachNeutralPosition()) {
-            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kStowPosition));
-            SmartDashboard.putBoolean("Within tolerance", true);
-        } 
-        else {
-            SmartDashboard.putBoolean("Within tolerance", false);
-            Commands.runOnce (() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition));
-        }
+    public Command IntakeStow() {
+        return Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(shooterPivot::reachNeutralPosition),            
+                Commands.run(() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition))
+            ),
+            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kStowPosition))
+        );
     }
 
-    
-    public void IntakeNeutral() {
-
-        if (shooterPivot.reachNeutralPosition()) {
-            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition));
-            SmartDashboard.putBoolean("Within tolerance", true);
-        }
-        else {
-            SmartDashboard.putBoolean("Within tolerance", false);
-            Commands.runOnce (() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition));
-        }
-
-    }
-    public void IntakePickup() {
-
-        if (shooterPivot.reachNeutralPosition()) {
-            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kPickupPosition));
-            SmartDashboard.putBoolean("Within tolerance", true);
-        }
-        else {
-            SmartDashboard.putBoolean("Within tolerance", false);
-            Commands.runOnce (() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition));
-        }
-
-
+    public Command IntakeNeutral() {
+        return Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(shooterPivot::reachNeutralPosition),            
+                Commands.run(() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition))
+            ),
+            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition))
+        );
     }
 
-    public void ShooterSpeaker() {
-        
-        if (intakePivot.reachNeutralPosition()) {
-            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kSpeakerPosition));
-            SmartDashboard.putBoolean("Within Tolerance", true);
-        }
-        else {
-            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition));
-            SmartDashboard.putBoolean("Within Tolerance", false);
-            }
-
-    }
-    public void ShooterNeutral() {
-        
-        if (intakePivot.reachNeutralPosition()) {
-            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition));
-SmartDashboard.putBoolean("Within Tolerance", true);
-        }
-        else {
-            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition));
-            SmartDashboard.putBoolean("Within Tolerance", false);
-            }
+    public Command IntakePickup() {
+        return Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(shooterPivot::reachNeutralPosition),            
+                Commands.run(() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition))
+            ),
+            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kPickupPosition))
+        );
     }
 
-    public void ShooterAmp() {
-
-        if (intakePivot.reachNeutralPosition()) {
-            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kAmpPosition));
-            SmartDashboard.putBoolean("Within Tolerance", true);
-        }
-        else {
-            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition));
-            SmartDashboard.putBoolean("Within Tolerance", false);
-            }
-    
+    public Command ShooterSpeaker() {
+        return Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(intakePivot::reachNeutralPosition),            
+                Commands.run(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition))
+            ),
+            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kSpeakerPosition))
+        );
     }
 
-    public void ShooterHandoff() {
-
-        if (intakePivot.reachNeutralPosition()) {
-            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kHandoffPosition));
-            SmartDashboard.putBoolean("Within Tolerance", true);
-        }
-        else {
-            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition));
-            SmartDashboard.putBoolean("Within Tolerance", false);
-
-        }
-
+    public Command ShooterNeutral() {
+        return Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(intakePivot::reachNeutralPosition),            
+                Commands.run(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition))
+            ),
+            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition))
+        );
     }
 
-    public void ShootHigh() {
-        Commands.runOnce(() -> shooterRoller.ShootSpeaker(ShooterConstants.kOuttakeHigh));
+    public Command ShooterAmp() {
+        return Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(intakePivot::reachNeutralPosition),            
+                Commands.run(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition))
+            ),
+            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kAmpPosition))
+        );
     }
 
-    public void ShootAmp() {
-        Commands.runOnce(() -> shooterRoller.ShootAmp(ShooterConstants.kOuttakeLow));
+    public Command ShooterHandoff() {
+        return Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(intakePivot::reachNeutralPosition),            
+                Commands.run(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition))
+            ),
+            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kHandoffPosition))
+        );
     }
 
-    public void IntakeSequence() {
-        Commands.runOnce(() -> {
-            IntakePickup();
-            ShooterHandoff();
-            Indexer();
-            IntakeRollers();
-
-
-        if (colorSensor.noteIntook()) {
-            intakeRoller.setIntakePowerZero();
-            indexer.stop();
-            SmartDashboard.putBoolean("Note Intook", true);
-        }
-        else {
-            SmartDashboard.putBoolean("Note Intook", false); 
-        }
-        });
+    public Command ShootHigh() {
+        return Commands.runOnce(() -> shooterRoller.ShootSpeaker(ShooterConstants.kOuttakeHigh));
     }
 
-    public void IntakeRollers() {
-        Commands.runOnce(() -> intakeRoller.setIntakeSpeed(IntakeConstants.kIntakeVelocity));
+    public Command ShootAmp() {
+        return Commands.runOnce(() -> shooterRoller.ShootAmp(ShooterConstants.kOuttakeLow));
     }
 
-    public void Indexer() {
-        Commands.runOnce(() -> indexer.setVelocity(0));
+    public Command IntakeSequence() {
+        return Commands.sequence(
+            IntakePickup(),
+            ShooterHandoff(),
+            startIndexer(),
+            startIntakeRollers(),
+            Commands.waitUntil(colorSensor::noteIntook),
+            Commands.runOnce(() -> intakeRoller.setIntakePowerZero()),
+            Commands.runOnce(() -> indexer.stop())
+        );
+    }
+
+    public Command startIntakeRollers() {
+        return Commands.runOnce(() -> intakeRoller.setIntakeSpeed(IntakeConstants.kIntakeVelocity));
+    }
+
+    public Command startIndexer() {
+        return Commands.runOnce(() -> indexer.setVelocity(IndexerConstants.kIndexerVelociyRPS.get()));
     }
 
     public void initShooterRollerShuffleboard() {
         shooterRoller.initShuffleboard();
         shooterRoller.printShooterSpeeds();
+    }
+
+    @Override
+    public void reportToSmartDashboard(LOG_LEVEL priority) { }
+
+    @Override
+    public void initShuffleboard(LOG_LEVEL priority) {
+        
     }
 }

@@ -324,6 +324,7 @@ public final class Constants {
   }
   public static final class IndexerConstants {
     public static final int kIndexerMotorID = 0;
+    public static final PrefDouble kIndexerVelociyRPS = new PrefDouble("Indexer Velocity", 50);
     public static final double kIndexerMaxVelocityRPS = 100;
     public static final PrefDouble kIndexerVelocityIncrement = new PrefDouble("Indexer Velocity Increment", 10);
     public static final PrefDouble kPIndexerMotor = new PrefDouble("kP Indexer Pivot Motor", 0);
