@@ -1,10 +1,17 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.hardware.CANcoder;
+
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -14,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.Constants.IndexerConstants;
+
 
 public class Indexer extends SubsystemBase {
     
@@ -26,6 +34,22 @@ public class Indexer extends SubsystemBase {
     public Indexer(){
         indexer = new TalonFX(IndexerConstants.kIndexerMotorID, SuperStructureConstants.kCANivoreBusName);
         configurePID();
+    }
+
+    public void configureMotor() {
+        TalonFXConfiguration indexerConfigs = new TalonFXConfiguration();
+        indexer.getConfigurator().refresh(indexerConfigs);
+        indexerConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        indexerConfigs.Voltage.PeakForwardVoltage = 11.5;
+        indexerConfigs.Voltage.PeakReverseVoltage = -11.5;
+        indexerConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        indexerConfigs.MotorOutput.DutyCycleNeutralDeadband = ModuleConstants.kDriveMotorDeadband;
+        indexerConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        indexerConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        indexerConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
+        indexerConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        indexerConfigs.Audio.AllowMusicDurDisable = true;
+        indexer.getConfigurator().apply(indexerConfigs);
     }
 
     public void configurePID() {
