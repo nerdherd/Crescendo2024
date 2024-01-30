@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.171904793952038,
+      "y": 4.209895599278378
+    },
+    "rotation": -45.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2 piece"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3rd piece"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4th piece"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5th Piece top"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
