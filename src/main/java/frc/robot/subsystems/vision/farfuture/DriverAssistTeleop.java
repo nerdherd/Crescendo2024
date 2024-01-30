@@ -1,8 +1,12 @@
 package frc.robot.subsystems.vision.farfuture;
 
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.util.NerdyMath;
 
 public class DriverAssistTeleop implements Reportable {
@@ -10,10 +14,12 @@ public class DriverAssistTeleop implements Reportable {
     private String limelightName;
 
     private PIDController pidAngleDistance = new PIDController(0.3, 0, 0);
-    private double calculatedAngledDistancePower;
 
     private GenericEntry currentAngleDistanceOffset;
     private GenericEntry angleDistanceVelocity;
+    private GenericEntry currentTagID;
+
+    ShuffleboardTab tab;
     
     public DriverAssistTeleop(String name) {
         limelightName = name;
@@ -21,8 +27,8 @@ public class DriverAssistTeleop implements Reportable {
 
         try {
             limelight = new Limelight(name);
-            toggleLight(false);
-            changePipeline(pipeline);
+            limelight.turnLightOff();
+            limelight.setPipeline(VisionConstants.kAprilTagPipeline);
 
             tab.add(name + " inited ", true);
         } catch (Exception e) {
@@ -35,10 +41,10 @@ public class DriverAssistTeleop implements Reportable {
 
         int foundId = -1;
 
-        foundId = getAprilTagID();
+        foundId = limelight.getAprilTagID();
 
-        if(targetId != null)
-            targetId.setInteger(foundId);
+        if(currentTagID != null)
+            currentTagID.setInteger(foundId);
 
         if(tagID != foundId) return;
 
@@ -46,11 +52,11 @@ public class DriverAssistTeleop implements Reportable {
 
         if(currentAngleDistanceOffset != null) currentAngleDistanceOffset.setDouble(angleDistanceOffset);
 
-        calculatedAngleDistancePower = pidAngleDistance.calculate(angleOffset, 0);
+        double calculatedAngleDistancePower = pidAngleDistance.calculate(angleDistanceOffset, 0);
 
-        if(angleDistanceVelocity != null) angleDistanceVelocity.setDouble(calculatedAngledDistancePower);
+        if(angleDistanceVelocity != null) angleDistanceVelocity.setDouble(calculatedAngleDistancePower);
         
-        calculatedAngledDistancePower = NerdyMath.deadband(calculatedAngledDistancePower, -0.2, 0.2);
+        calculatedAngleDistancePower = NerdyMath.deadband(calculatedAngleDistancePower, -0.2, 0.2);
     }
 
     @Override
@@ -61,7 +67,7 @@ public class DriverAssistTeleop implements Reportable {
 
     @Override
     public void initShuffleboard(LOG_LEVEL priority) {
-        ShuffleboardTab tab = Shuffleboard.getTab(name);
+        tab = Shuffleboard.getTab(limelightName);
 
         switch (priority) {
             case ALL:
@@ -75,6 +81,8 @@ public class DriverAssistTeleop implements Reportable {
                 currentAngleDistanceOffset = tab.add("Angle", 0).getEntry();
 
                 angleDistanceVelocity = tab.add("AngleDistance Velocity", 0 ).getEntry();
+
+                currentTagID = tab.add("Tag ID", 0).getEntry();
 
                 break;
         
