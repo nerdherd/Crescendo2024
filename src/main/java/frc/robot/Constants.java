@@ -7,12 +7,9 @@ package frc.robot;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.PIDConstants;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -24,7 +21,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.util.preferences.PrefBool;
 import frc.robot.util.preferences.PrefDouble;
 
 /**
@@ -326,6 +322,7 @@ public final class Constants {
   }
   public static final class IndexerConstants {
     public static final int kIndexerMotorID = 0;
+    public static final PrefDouble kIndexerVelociyRPS = new PrefDouble("Indexer Velocity", 50);
     public static final double kIndexerMaxVelocityRPS = 100;
     public static final PrefDouble kIndexerVelocityIncrement = new PrefDouble("Indexer Velocity Increment", 10);
     public static final PrefDouble kPIndexerMotor = new PrefDouble("kP Indexer Pivot Motor", 0);
