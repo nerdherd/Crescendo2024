@@ -6,7 +6,7 @@ import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 
-public class SuperSystem implements Reportable {
+public class SuperSystem{
     private IntakePivot intakePivot;
     private IntakeRoller intakeRoller;
     private ShooterPivot shooterPivot;
@@ -22,7 +22,7 @@ public class SuperSystem implements Reportable {
         indexer = new Indexer();
         colorSensor = new ColorSensor();
 
-        shooterRoller.setShooterPowerZero();
+        shooterRoller.stop();
         intakeRoller.setIntakePowerZero();
         indexer.stop();
     }
@@ -97,12 +97,12 @@ public class SuperSystem implements Reportable {
         );
     }
 
-    public Command ShootHigh() {
-        return Commands.runOnce(() -> shooterRoller.ShootSpeaker(ShooterConstants.kOuttakeHigh));
+    public void ShootHigh() {
+        Commands.runOnce(() -> shooterRoller.setVelocity(ShooterConstants.kOuttakeHigh));
     }
 
-    public Command ShootAmp() {
-        return Commands.runOnce(() -> shooterRoller.ShootAmp(ShooterConstants.kOuttakeLow));
+    public void ShootAmp() {
+        Commands.runOnce(() -> shooterRoller.setVelocity(ShooterConstants.kOuttakeLow));
     }
 
     public Command IntakeSequence() {
@@ -127,14 +127,5 @@ public class SuperSystem implements Reportable {
 
     public void initShooterRollerShuffleboard() {
         shooterRoller.initShuffleboard();
-        shooterRoller.printShooterSpeeds();
-    }
-
-    @Override
-    public void reportToSmartDashboard(LOG_LEVEL priority) { }
-
-    @Override
-    public void initShuffleboard(LOG_LEVEL priority) {
-        
     }
 }
