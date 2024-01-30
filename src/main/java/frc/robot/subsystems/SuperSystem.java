@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 
@@ -28,7 +29,7 @@ public class SuperSystem {
         indexer.stop();
     }
 
-    public Command IntakeStow() {
+    public void IntakeStow() {
 
         if (shooterPivot.reachNeutralPosition()) {
             Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kStowPosition));
@@ -41,7 +42,7 @@ public class SuperSystem {
     }
 
     
-    public Command IntakeNeutral() {
+    public void IntakeNeutral() {
 
         if (shooterPivot.reachNeutralPosition()) {
             Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition));
@@ -53,7 +54,7 @@ public class SuperSystem {
         }
 
     }
-    public Command IntakePickup() {
+    public void IntakePickup() {
 
         if (shooterPivot.reachNeutralPosition()) {
             Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kPickupPosition));
@@ -67,7 +68,7 @@ public class SuperSystem {
 
     }
 
-    public Command ShooterSpeaker() {
+    public void ShooterSpeaker() {
         
         if (intakePivot.reachNeutralPosition()) {
             Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kSpeakerPosition));
@@ -79,7 +80,7 @@ public class SuperSystem {
             }
 
     }
-    public Command ShooterNeutral() {
+    public void ShooterNeutral() {
         
         if (intakePivot.reachNeutralPosition()) {
             Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition));
@@ -91,7 +92,7 @@ SmartDashboard.putBoolean("Within Tolerance", true);
             }
     }
 
-    public Command ShooterAmp() {
+    public void ShooterAmp() {
 
         if (intakePivot.reachNeutralPosition()) {
             Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kAmpPosition));
@@ -104,7 +105,7 @@ SmartDashboard.putBoolean("Within Tolerance", true);
     
     }
 
-    public Command ShooterHandoff() {
+    public void ShooterHandoff() {
 
         if (intakePivot.reachNeutralPosition()) {
             Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kHandoffPosition));
@@ -122,11 +123,11 @@ SmartDashboard.putBoolean("Within Tolerance", true);
         Commands.runOnce(() -> shooterRoller.ShootSpeaker(ShooterConstants.kOuttakeHigh));
     }
 
-    public Command ShootAmp() {
+    public void ShootAmp() {
         Commands.runOnce(() -> shooterRoller.ShootAmp(ShooterConstants.kOuttakeLow));
     }
 
-    public Command IntakeSequence() {
+    public void IntakeSequence() {
         Commands.runOnce(() -> {
             IntakePickup();
             ShooterHandoff();
@@ -145,7 +146,7 @@ SmartDashboard.putBoolean("Within Tolerance", true);
         });
     }
 
-    public Command IntakeRollers() {
+    public void IntakeRollers() {
         Commands.runOnce(() -> intakeRoller.setIntakeSpeed(IntakeConstants.kIntakeVelocity));
     }
 
@@ -153,7 +154,7 @@ SmartDashboard.putBoolean("Within Tolerance", true);
         Commands.runOnce(() -> indexer.setVelocity(0));
     }
 
-    public Command initShooterRollerShuffleboard() {
+    public void initShooterRollerShuffleboard() {
         shooterRoller.initShuffleboard();
         shooterRoller.printShooterSpeeds();
     }

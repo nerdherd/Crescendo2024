@@ -77,7 +77,8 @@ public class IntakePivot extends SubsystemBase{
     }
 
     public boolean atTargetPosition() {
-NerdyMath.inRange(pivot.getPosition().getValueAsDouble() * 2048, targetTicks - 40000, targetTicks + 40000);
+        return true;
+// NerdyMath.inRange(pivot.getPosition().getValueAsDouble() * 2048, targetTicks - 40000, targetTicks + 40000);
     }
 
     public Command resetEncoder() {
@@ -104,7 +105,6 @@ NerdyMath.inRange(pivot.getPosition().getValueAsDouble() * 2048, targetTicks - 4
     public Command setPosition(double position) {
         return Commands.runOnce(() -> {
             pivot.setControl(m_pivotMotionMagicRequest.withPosition(position));
-
         });
     }
 

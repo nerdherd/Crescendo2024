@@ -35,27 +35,27 @@ public class Auto4Notes extends SequentialCommandGroup {
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.setPoseMeters(startingPose)),
 
-            Commands.runOnce(() -> superSystem.ShootSpeaker()),
-            Commands.runOnce(() -> superSystem.ShooterNeutral()),
-            Commands.runOnce(() -> superSystem.IntakeNeutral()),
+            // Commands.runOnce(() -> superSystem.ShootSpeaker()),
+            // Commands.runOnce(() -> superSystem.ShooterNeutral()),
+            // Commands.runOnce(() -> superSystem.IntakeNeutral()),
 
             AutoBuilder.followPath((pathGroup.get(0))),
-            Commands.runOnce(() -> superSystem.IntakeSequence()),
-            Commands.runOnce(() -> superSystem.ShootSpeaker()),
-            Commands.runOnce(() -> superSystem.ShooterNeutral()),
-            Commands.runOnce(() -> superSystem.IntakeNeutral()),
+            // Commands.runOnce(() -> superSystem.IntakeSequence()),
+            // Commands.runOnce(() -> superSystem.ShootSpeaker()),
+            // Commands.runOnce(() -> superSystem.ShooterNeutral()),
+            // Commands.runOnce(() -> superSystem.IntakeNeutral()),
 
             AutoBuilder.followPath((pathGroup.get(1))),
-            Commands.runOnce(() -> superSystem.IntakeSequence()),
-            Commands.runOnce(() -> superSystem.ShootSpeaker()),
-            Commands.runOnce(() -> superSystem.ShooterNeutral()),
-            Commands.runOnce(() -> superSystem.IntakeNeutral()),
+            // Commands.runOnce(() -> superSystem.IntakeSequence()),
+            // Commands.runOnce(() -> superSystem.ShootSpeaker()),
+            // Commands.runOnce(() -> superSystem.ShooterNeutral()),
+            // Commands.runOnce(() -> superSystem.IntakeNeutral()),
 
-            AutoBuilder.followPath((pathGroup.get(2))),
-            Commands.runOnce(() -> superSystem.IntakeSequence()),
-            Commands.runOnce(() -> superSystem.ShootSpeaker()),
-            Commands.runOnce(() -> superSystem.ShooterNeutral()),
-            Commands.runOnce(() -> superSystem.IntakeStow())
+            AutoBuilder.followPath((pathGroup.get(2)))
+            // Commands.runOnce(() -> superSystem.IntakeSequence()),
+            // Commands.runOnce(() -> superSystem.ShootSpeaker()),
+            // Commands.runOnce(() -> superSystem.ShooterNeutral()),
+            // Commands.runOnce(() -> superSystem.IntakeStow())
             
             );
     }

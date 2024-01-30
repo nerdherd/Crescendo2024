@@ -12,12 +12,12 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.hardware.CANcoder;
 
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.Constants.IndexerConstants;
@@ -75,7 +75,6 @@ public class Indexer extends SubsystemBase {
         }
     }
 
-    @Override
     public void run() {
         if (enabled) {
             indexer.setControl(brakeRequest);
@@ -98,7 +97,7 @@ public class Indexer extends SubsystemBase {
         velocityRequest.Velocity = velocity;
     }
 
-    public Command incrementVelocity(double increment) {
+    public void incrementVelocity(double increment) {
         double newVelocity = velocityRequest.Velocity + increment;
         if ((increment > 0 && newVelocity < IndexerConstants.kIndexerMaxVelocityRPS) ||
             (increment < 0 && newVelocity > -IndexerConstants.kIndexerMaxVelocityRPS)
