@@ -129,7 +129,7 @@ public class RobotContainer {
       new RunCommand(
         () -> {
           //TODO: FIND OUT IF THIS SHOULD BE NEG OR NOT (and for shooter too)
-          intakePivot.manualControlPosition(operatorController.getRightY() * 0.125); 
+          intakePivot.incrementPosition(operatorController.getRightY() / 20); // Max speed is 1 rev/second with this 
           // SmartDashboard.putNumber("Arm input", operatorController.getRightY());
         },
         intakePivot
