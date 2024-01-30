@@ -4,6 +4,7 @@ import javax.swing.text.Position;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.Slot2Configs;
@@ -16,6 +17,8 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -54,10 +57,34 @@ public class ShooterPivot extends SubsystemBase{
         init();
     }
 
+
+    public void configureMotor() {
+        TalonFXConfiguration pivotMotorConfigs = new TalonFXConfiguration();
+        pivot.getConfigurator().refresh(pivotMotorConfigs);
+
+        pivotMotorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        pivotMotorConfigs.Feedback.RotorToSensorRatio = ShooterConstants.kGearRatio;
+        pivotMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
+        pivotMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
+        pivotMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        pivotMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ModuleConstants.kDriveMotorDeadband;
+        pivotMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        pivotMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        pivotMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
+        pivotMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        pivotMotorConfigs.Audio.AllowMusicDurDisable = true;
+
+        MotionMagicConfigs pivotMMConfigs = pivotMotorConfigs.MotionMagic;
+        pivotMMConfigs.MotionMagicCruiseVelocity = ShooterConstants.kShooterCruiseVelocity;
+        pivotMMConfigs.MotionMagicAcceleration = ShooterConstants.kShooterCruiseAcceleration;
+        
+        
+        pivot.getConfigurator().apply(pivotMotorConfigs);
+    }
+
     public void configurePID() {
         TalonFXConfiguration pivotMotorConfigs = new TalonFXConfiguration();
 
-        pivot.getConfigurator().refresh(pivotMotorConfigs);
         ShooterConstants.kPPivotMotor.loadPreferences();
         ShooterConstants.kIPivotMotor.loadPreferences();
         ShooterConstants.kDPivotMotor.loadPreferences();
@@ -68,12 +95,6 @@ public class ShooterPivot extends SubsystemBase{
         pivotMotorConfigs.Slot0.kD = ShooterConstants.kDPivotMotor.get();
         pivotMotorConfigs.Slot0.kV = ShooterConstants.kVPivotMotor.get();
 
-        MotionMagicConfigs pivotMMConfigs = pivotMotorConfigs.MotionMagic;
-        pivotMMConfigs.MotionMagicCruiseVelocity = ShooterConstants.kShooterCruiseVelocity;
-        pivotMMConfigs.MotionMagicAcceleration = ShooterConstants.kShooterCruiseAcceleration;
-
-        pivotMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
-        pivotMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
         StatusCode statusPivot = pivot.getConfigurator().apply(pivotMotorConfigs);
 
         if (!statusPivot.isOK()){
@@ -83,60 +104,43 @@ public class ShooterPivot extends SubsystemBase{
 
     public void init() {
         configurePID();
+        configureMotor();
         resetEncoder();
     }
 
-    public Command resetEncoder() {
-        return Commands.runOnce(() -> {
-            pivot.setPosition(throughBore.getAbsolutePosition() * 2048 * ShooterConstants.kGearRatio);
-        });
+    public void resetEncoder() {
+        pivot.setPosition(throughBore.getAbsolutePosition());
     }
 
-    public Command setPosition(double position) {
-        return Commands.runOnce(() -> {
-           // m_pivotMotionMagicRequest.Slot = 0;
-            pivot.setControl(m_pivotMotionMagicRequest.withPosition(position));
-
-        });
+    public void setPosition(double position) {
+        // m_pivotMotionMagicRequest.Slot = 0;
+        pivot.setControl(m_pivotMotionMagicRequest.withPosition(position));
     }
 
-    public Command manualControlPosition(double tickChange) {
+    public void manualControlPosition(double tickChange) {
         double pos = (pivot.getPosition().getValueAsDouble() * 2048) + tickChange; // Increase by 200 ticks?
-        return Commands.runOnce(() -> {
-            pivot.setPosition(pos);
-        });
+        pivot.setPosition(pos);
     }
 
-    public Command stowShooter() {
-        return Commands.runOnce(() -> {
-            setPosition(ShooterConstants.kSpeakerPosition);
-        });
+    public void stowShooter() {
+        setPosition(ShooterConstants.kSpeakerPosition);
     }
 
-    public Command setAmpPosition() {
-        return Commands.runOnce(() -> {
-            setPosition(ShooterConstants.kAmpPosition);
-
-        });
+    public void setAmpPosition() {
+        setPosition(ShooterConstants.kAmpPosition);
     }
 
-    public Command setSpeakerPosition() {
-        return Commands.runOnce(() -> {
-            setPosition(ShooterConstants.kSpeakerPosition);
-        });
+    public void setSpeakerPosition() {
+        setPosition(ShooterConstants.kSpeakerPosition);
     }
 
-    public Command setHandoffPosition() {
-        return Commands.runOnce(() -> {
-            setPosition(ShooterConstants.kHandoffPosition);
-        });
+    public void setHandoffPosition() {
+        setPosition(ShooterConstants.kHandoffPosition);
     }
 
-    public Command setShooterPowerZeroCommand() {
-        return Commands.runOnce(() -> {
-            pivot.setControl(m_brake);
-            SmartDashboard.putBoolean("Pressed", false);
-        });
+    public void setShooterPowerZeroCommand() {
+        pivot.setControl(m_brake);
+        SmartDashboard.putBoolean("Pressed", false);
     }
 
     public boolean reachNeutralPosition(){

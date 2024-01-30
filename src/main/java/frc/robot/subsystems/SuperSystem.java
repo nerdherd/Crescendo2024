@@ -24,7 +24,7 @@ public class SuperSystem {
         indexer = new Indexer();
         colorSensor = new ColorSensor();
 
-        shooterRoller.setShooterPowerZero();
+        shooterRoller.stop();
         intakeRoller.setIntakePowerZero();
         indexer.stop();
     }
@@ -120,11 +120,11 @@ SmartDashboard.putBoolean("Within Tolerance", true);
     }
 
     public void ShootHigh() {
-        Commands.runOnce(() -> shooterRoller.ShootSpeaker(ShooterConstants.kOuttakeHigh));
+        Commands.runOnce(() -> shooterRoller.setVelocity(ShooterConstants.kOuttakeHigh));
     }
 
     public void ShootAmp() {
-        Commands.runOnce(() -> shooterRoller.ShootAmp(ShooterConstants.kOuttakeLow));
+        Commands.runOnce(() -> shooterRoller.setVelocity(ShooterConstants.kOuttakeLow));
     }
 
     public void IntakeSequence() {
@@ -156,6 +156,5 @@ SmartDashboard.putBoolean("Within Tolerance", true);
 
     public void initShooterRollerShuffleboard() {
         shooterRoller.initShuffleboard();
-        shooterRoller.printShooterSpeeds();
     }
 }

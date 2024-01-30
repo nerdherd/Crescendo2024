@@ -254,6 +254,8 @@ public final class Constants {
     public static final int kRightMotorID = 18;
     public static final int kPivotMotorID = 18;
 
+    public static final int kShooterMaxVelocityRPS = 0;
+
     public static final int kThroughBorePort = 0;
 
     public static final int kSpeakerPosition = 0;
