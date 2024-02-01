@@ -73,7 +73,7 @@ public class RobotContainer {
   public Gyro imu = new PigeonV2(1);
   // public Gyro imu = new NavX();
   public SwerveDrivetrain swerveDrive;
-  public PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
+  public PowerDistribution pdp = new PowerDistribution(0, ModuleType.kRev);
   public SuperSystem theSystem = new SuperSystem();
 
   private final CommandPS4Controller commandDriverController = new CommandPS4Controller(
