@@ -54,6 +54,8 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         
         intakeConfigs.Voltage.PeakForwardVoltage = 11.5;
         intakeConfigs.Voltage.PeakReverseVoltage = -11.5;
+
+        intakeConfigs.ClosedLoopGeneral.ContinuousWrap = false;
         
         intakeConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         intakeConfigs.MotorOutput.DutyCycleNeutralDeadband = IntakeConstants.kIntakeNeutralDeadband;
@@ -98,7 +100,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         throughBore.setPositionOffset(IntakeConstants.kPivotOffset.get());
 
         double position = throughBore.getAbsolutePosition() - throughBore.getPositionOffset();
-        position = position % 1;
+        position = mapRev(position);
 
         pivot.setPosition(position);
     }
@@ -125,6 +127,13 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         }
     }
 
+    /**
+     * Maps the value to the range [-0.25, 0.75]
+     */
+    public double mapRev(double rev) {
+        return NerdyMath.posMod(rev + 0.25, 1) - 0.25;
+    }
+
     //****************************** STATE METHODS ******************************/
 
     public double getTargetPosition() {
@@ -134,11 +143,11 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     // Checks whether the pivot is within the deadband for a position
     public boolean hasReachedPosition(double position) {
         return NerdyMath.inRange(
-            pivot.getPosition().getValueAsDouble() % 1.0, 
+            mapRev(pivot.getPosition().getValueAsDouble()), 
             position - IntakeConstants.kPivotDeadband.get(), 
             position + IntakeConstants.kPivotDeadband.get()
         ) && NerdyMath.inRange(
-            motionMagicRequest.Position % 1.0, 
+            motionMagicRequest.Position, 
             position - IntakeConstants.kPivotDeadband.get(), 
             position + IntakeConstants.kPivotDeadband.get()
         );
@@ -169,7 +178,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     public void setPosition(double position) {
         motionMagicRequest.Position = 
             NerdyMath.clamp(
-                position,
+                mapRev(position),
                 IntakeConstants.kPivotMinPos,
                 IntakeConstants.kPivotMaxPos);  
     }
