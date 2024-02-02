@@ -140,43 +140,27 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    // Note: whileTrue() does not restart the command if it ends while the button is
-    // still being held
+    // Driver bindings
     commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
-    // swerveDrive.drive(vision.getMovePowerToImp(0.5)[0], vision.getMovePowerToImp(0.5)[1], vision.getMovePowerToImp(0.5)[2])));
-    // commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.calculateTag(1.8, 0, 0, 7)));
-    // commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
-    
-    
-    // Please Comment out one set of these two to run!!!
-    // commandDriverController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(4.1, 0, 0)))
-    //   .onFalse(Commands.run(() -> noteCamera.resetBuffer()));
-    // commandDriverController.L1().whileTrue(Commands.run(() -> noteCamera.driveToNote(swerveDrive, 4.5, 0, 0))); 
-    //  .onFalse(Commands.run(() -> noteCamera.reset()));
-      
-    
-    //commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing
     commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1, 0, 0, 7))); //1.8, 0, 0, 7
-    //   .onFalse(Commands.run(() -> swerveDrive.stopModules()));
-    
     commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)));
-    //   .onFalse(Commands.run(() -> swerveDrive.stopModules()));
 
-    // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
+    // Operator bindings
+    commandOperatorController.triangle().whileTrue(superSystem.IntakeStow());
+    commandOperatorController.circle().whileTrue(superSystem.IntakeNeutral());
+    commandOperatorController.cross().whileTrue(superSystem.IntakePickup());
 
-    // Shooter Controls
+    commandOperatorController.povUp().whileTrue(superSystem.ShooterSpeaker());
+    commandOperatorController.povRight().whileTrue(superSystem.ShooterNeutral());
+    commandOperatorController.povDown().whileTrue(superSystem.ShooterAmp());
 
-    // TODO: BIND OPERATOR
-
-    // commandOperatorController.share().onTrue(Commands.runOnce(() -> shooterPivot.resetEncoder()));
-
-    // commandOperatorController.R2()
-    //   .onTrue(intakeRoller.setIntakeSpeed())
-    //   .onFalse(intakeRoller.setIntakePowerZeroCommand());
+    commandOperatorController.L2().whileTrue(superSystem.IntakeSequence());
+    commandOperatorController.R1().whileTrue(superSystem.ShooterRollerAmp()).onFalse(superSystem.StopShooterRoller());
+    commandOperatorController.R2().whileTrue(superSystem.ShooterRollerSpeaker()).onFalse(superSystem.StopShooterRoller());
   }
 
   private void initAutoChoosers() {

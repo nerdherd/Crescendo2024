@@ -280,7 +280,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         );
     }
 
-    public Command shootHigh() {
+    public Command shootSpeaker() {
         return setVelocityCommand(ShooterConstants.kOuttakeHigh.get());
     }
 

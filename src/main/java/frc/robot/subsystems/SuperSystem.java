@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.ShooterConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class SuperSystem{
@@ -92,10 +94,27 @@ public class SuperSystem{
         );
     }
 
+    public Command ShooterRollerAmp() {
+        return shooterRoller.shootAmp();
+    }
+
+    public Command ShooterRollerSpeaker() {
+        return shooterRoller.shootSpeaker();
+    }
+
+    public Command StopShooterRoller() {
+        return shooterRoller.stopCommand();
+    }
+
     public Command IntakeSequence() {
         return Commands.sequence(
-            IntakePickup(),
-            ShooterHandoff(),
+            Commands.deadline(
+                Commands.waitUntil(() -> 
+                    intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+                IntakePickup(),
+                ShooterHandoff()
+                ),
             indexer.indexCommand(),
             intakeRoller.intakeCommand(),
             Commands.waitUntil(colorSensor::noteIntook),
