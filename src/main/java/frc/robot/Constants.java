@@ -278,7 +278,7 @@ public final class Constants {
 
     // TODO: Set max and min pos
     public static final double kPivotMaxPos = 0.5;
-    public static final double kPivotMinPos = -0.25;
+    public static final double kPivotMinPos = -0.2;
 
     public static final PrefDouble kSpeakerPosition = new PrefDouble("Pivot Speaker Position", 0);
     public static final PrefDouble kNeutralPosition = new PrefDouble("Pivot Neutral Position", 0);
@@ -309,7 +309,7 @@ public final class Constants {
 
     // TODO: Set max and min pos
     public static final double kPivotMaxPos = 0.5;
-    public static final double kPivotMinPos = -0.25;
+    public static final double kPivotMinPos = -0.2;
 
     public static final PrefDouble kIntakeVelocity = new PrefDouble("Intake Velocity", 0);
     public static final double kIntakeMaxVelocity =  100;

@@ -11,6 +11,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -140,14 +142,18 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         return motionMagicRequest.Position;
     }
 
+    public double getPosition() {
+        return pivot.getPosition().getValueAsDouble();
+    }
+
     // Checks whether the pivot is within the deadband for a position
     public boolean hasReachedPosition(double position) {
         return NerdyMath.inRange(
-            mapRev(pivot.getPosition().getValueAsDouble()), 
+            getPosition(),
             position - IntakeConstants.kPivotDeadband.get(), 
             position + IntakeConstants.kPivotDeadband.get()
         ) && NerdyMath.inRange(
-            motionMagicRequest.Position, 
+            getTargetPosition(),
             position - IntakeConstants.kPivotDeadband.get(), 
             position + IntakeConstants.kPivotDeadband.get()
         );
@@ -165,6 +171,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     }
 
     public void stop() {
+        motionMagicRequest.Position = getPosition();
         enabled = false;
         pivot.setControl(brakeRequest);
     }
@@ -223,7 +230,23 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     public void reportToSmartDashboard(LOG_LEVEL priority) {}
 
     @Override
-    public void initShuffleboard(LOG_LEVEL priority) {
-        // TODO: Intake Pivot Logging
+    public void initShuffleboard(LOG_LEVEL level) {
+        ShuffleboardTab tab;
+        if (level == LOG_LEVEL.MINIMAL) {
+            tab = Shuffleboard.getTab("Main");
+        } else {
+            tab = Shuffleboard.getTab("Intake");
+        }
+
+        switch (level) {
+            case OFF:
+                break;
+            case ALL:
+            case MEDIUM:
+            case MINIMAL:
+                tab.addDouble("Intake Desired Position", this::getTargetPosition);
+                tab.addDouble("Intake Position", this::getPosition);
+                break;
+        }
     }
 }
