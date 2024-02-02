@@ -25,73 +25,101 @@ public class SuperSystem{
     }
 
     public Command IntakeStow() {
-        return Commands.sequence(
+        Command command = Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(shooterPivot::hasReachedNeutral),
                 shooterPivot.moveToNeutral()
             ),
             intakePivot.moveToStow()
         );
+
+        command.addRequirements(intakePivot);
+
+        return command;
     }
 
     public Command IntakeNeutral() {
-        return Commands.sequence(
+        Command command = Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(shooterPivot::hasReachedNeutral),            
                 shooterPivot.moveToNeutral()
             ),
             intakePivot.moveToNeutral()
         );
+
+        command.addRequirements(intakePivot);
+
+        return command;
     }
 
     public Command IntakePickup() {
-        return Commands.sequence(
+        Command command = Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(shooterPivot::hasReachedNeutral), 
                 shooterPivot.moveToNeutral()           
             ),
             intakePivot.moveToIntake()
         );
+
+        command.addRequirements(intakePivot);
+
+        return command;
     }
 
     public Command ShooterSpeaker() {
-        return Commands.sequence(
+        Command command = Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(intakePivot::hasReachedNeutral),
                 intakePivot.moveToNeutral()         
             ),
             shooterPivot.moveToSpeaker()
         );
+
+        command.addRequirements(shooterPivot);
+
+        return command;
     }
 
     public Command ShooterNeutral() {
-        return Commands.sequence(
+        Command command = Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(intakePivot::hasReachedNeutral),
                 intakePivot.moveToNeutral()         
             ),
             shooterPivot.moveToNeutral()
         );
+
+        command.addRequirements(shooterPivot);
+
+        return command;
     }
 
     public Command ShooterAmp() {
-        return Commands.sequence(
+        Command command = Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(intakePivot::hasReachedNeutral),
                 intakePivot.moveToNeutral()
             ),
             shooterPivot.moveToAmp()
         );
+
+        command.addRequirements(shooterPivot);
+
+        return command;
     }
 
     public Command ShooterHandoff() {
-        return Commands.sequence(
+        Command command = Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(intakePivot::hasReachedNeutral),  
                 intakePivot.moveToNeutral() 
             ),
             shooterPivot.moveToHandoff()
         );
+
+        command.addRequirements(shooterPivot);
+
+        return command;
     }
 
     public Command ShooterRollerAmp() {
