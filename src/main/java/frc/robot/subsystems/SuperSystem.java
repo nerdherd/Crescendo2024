@@ -2,9 +2,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.IndexerConstants;
-import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.ShooterConstants;
 
 public class SuperSystem{
     private IntakePivot intakePivot;
@@ -14,118 +11,96 @@ public class SuperSystem{
     private Indexer indexer;
     private ColorSensor colorSensor;
 
-    public SuperSystem() {
-        intakePivot = new IntakePivot();
-        intakeRoller = new IntakeRoller();
-        shooterPivot = new ShooterPivot();
-        shooterRoller = new ShooterRoller();
-        indexer = new Indexer();
-        colorSensor = new ColorSensor();
-
-        shooterRoller.stop();
-        intakeRoller.setIntakePowerZero();
-        indexer.stop();
+    public SuperSystem(IntakePivot intakePivot, IntakeRoller intakeRoller, 
+                        ShooterPivot shooterPivot, ShooterRoller shooterRoller,
+                        Indexer indexer) {
+        this.intakePivot = intakePivot;
+        this.intakeRoller = intakeRoller;
+        this.shooterPivot = shooterPivot;
+        this.shooterRoller = shooterRoller;
+        this.indexer = indexer;
+        this.colorSensor = new ColorSensor();
     }
 
     public Command IntakeStow() {
         return Commands.sequence(
             Commands.deadline(
-                Commands.waitUntil(shooterPivot::reachNeutralPosition),            
-                Commands.run(() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition))
+                Commands.waitUntil(shooterPivot::hasReachedNeutral),
+                shooterPivot.moveToNeutral()
             ),
-            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kStowPosition))
+            intakePivot.moveToStow()
         );
     }
 
     public Command IntakeNeutral() {
         return Commands.sequence(
             Commands.deadline(
-                Commands.waitUntil(shooterPivot::reachNeutralPosition),            
-                Commands.run(() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition))
+                Commands.waitUntil(shooterPivot::hasReachedNeutral),            
+                shooterPivot.moveToNeutral()
             ),
-            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition))
+            intakePivot.moveToNeutral()
         );
     }
 
     public Command IntakePickup() {
         return Commands.sequence(
             Commands.deadline(
-                Commands.waitUntil(shooterPivot::reachNeutralPosition),            
-                Commands.run(() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition))
+                Commands.waitUntil(shooterPivot::hasReachedNeutral), 
+                shooterPivot.moveToNeutral()           
             ),
-            Commands.runOnce(() -> intakePivot.setPosition(IntakeConstants.kPickupPosition))
+            intakePivot.moveToIntake()
         );
     }
 
     public Command ShooterSpeaker() {
         return Commands.sequence(
             Commands.deadline(
-                Commands.waitUntil(intakePivot::reachNeutralPosition),            
-                Commands.run(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition))
+                Commands.waitUntil(intakePivot::hasReachedNeutral),
+                intakePivot.moveToNeutral()         
             ),
-            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kSpeakerPosition))
+            shooterPivot.moveToSpeaker()
         );
     }
 
     public Command ShooterNeutral() {
         return Commands.sequence(
             Commands.deadline(
-                Commands.waitUntil(intakePivot::reachNeutralPosition),            
-                Commands.run(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition))
+                Commands.waitUntil(intakePivot::hasReachedNeutral),
+                intakePivot.moveToNeutral()         
             ),
-            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kNeutralPosition))
+            shooterPivot.moveToNeutral()
         );
     }
 
     public Command ShooterAmp() {
         return Commands.sequence(
             Commands.deadline(
-                Commands.waitUntil(intakePivot::reachNeutralPosition),            
-                Commands.run(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition))
+                Commands.waitUntil(intakePivot::hasReachedNeutral),
+                intakePivot.moveToNeutral()
             ),
-            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kAmpPosition))
+            shooterPivot.moveToAmp()
         );
     }
 
     public Command ShooterHandoff() {
         return Commands.sequence(
             Commands.deadline(
-                Commands.waitUntil(intakePivot::reachNeutralPosition),            
-                Commands.run(() -> intakePivot.setPosition(IntakeConstants.kNeutralPosition))
+                Commands.waitUntil(intakePivot::hasReachedNeutral),  
+                intakePivot.moveToNeutral() 
             ),
-            Commands.runOnce(() -> shooterPivot.setPosition(ShooterConstants.kHandoffPosition))
+            shooterPivot.moveToHandoff()
         );
-    }
-
-    public void ShootHigh() {
-        Commands.runOnce(() -> shooterRoller.setVelocity(ShooterConstants.kOuttakeHigh));
-    }
-
-    public void ShootAmp() {
-        Commands.runOnce(() -> shooterRoller.setVelocity(ShooterConstants.kOuttakeLow));
     }
 
     public Command IntakeSequence() {
         return Commands.sequence(
             IntakePickup(),
             ShooterHandoff(),
-            startIndexer(),
-            startIntakeRollers(),
+            indexer.indexCommand(),
+            intakeRoller.intakeCommand(),
             Commands.waitUntil(colorSensor::noteIntook),
-            Commands.runOnce(() -> intakeRoller.setIntakePowerZero()),
-            Commands.runOnce(() -> indexer.stop())
+            intakeRoller.stopCommand(),
+            indexer.stopCommand()
         );
-    }
-
-    public Command startIntakeRollers() {
-        return Commands.runOnce(() -> intakeRoller.setIntakeSpeed(IntakeConstants.kIntakeVelocity));
-    }
-
-    public Command startIndexer() {
-        return Commands.runOnce(() -> indexer.setVelocity(IndexerConstants.kIndexerVelociyRPS.get()));
-    }
-
-    public void initShooterRollerShuffleboard() {
-        shooterRoller.initShuffleboard();
     }
 }

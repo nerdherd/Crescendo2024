@@ -1,154 +1,219 @@
 package frc.robot.subsystems;
 
-import javax.swing.text.Position;
-
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.Slot1Configs;
-import com.ctre.phoenix6.configs.Slot2Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ModuleConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.util.NerdyMath;
+import frc.robot.Constants.ShooterConstants;
 
-public class ShooterPivot extends SubsystemBase{
-    
-    final TalonFX pivot;
-    DutyCycleEncoder throughBore;
+public class ShooterPivot extends SubsystemBase implements Reportable {
+    private final TalonFX pivot;
+    private final TalonFXConfigurator pivotConfigurator;
+    private final DutyCycleEncoder throughBore;
 
-    final VoltageOut m_pivotVoltageRequest = new VoltageOut(0);
+    // Whether the pivot is running
+    private boolean enabled = false;
 
-    final MotionMagicVoltage m_pivotMotionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
+    private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
+    private final NeutralOut brakeRequest = new NeutralOut();
 
-    final NeutralOut m_brake = new NeutralOut();
-
-    private double TargetPosition = 0;
-
-    public ShooterPivot(){
+    public ShooterPivot() {
         pivot = new TalonFX(ShooterConstants.kPivotMotorID, SuperStructureConstants.kCANivoreBusName);
         throughBore = new DutyCycleEncoder(ShooterConstants.kThroughBorePort);
-
-        // rightShooter.setControl(new Follower(leftShooter.getDeviceID(), false));
+        pivotConfigurator = pivot.getConfigurator();
         pivot.setInverted(false);
-        throughBore.setDistancePerRotation(1);
-        
-        init();
-    }
 
+        CommandScheduler.getInstance().registerSubsystem(this);
+
+        configureMotor();
+        configurePID();
+        resetEncoder();
+    }
+    
+    //****************************** SETUP METHODS ******************************/
 
     public void configureMotor() {
-        TalonFXConfiguration pivotMotorConfigs = new TalonFXConfiguration();
-        pivot.getConfigurator().refresh(pivotMotorConfigs);
-
-        pivotMotorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        pivotMotorConfigs.Feedback.RotorToSensorRatio = ShooterConstants.kGearRatio;
-        pivotMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
-        pivotMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
-        pivotMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        pivotMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ModuleConstants.kDriveMotorDeadband;
-        pivotMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
-        pivotMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
-        pivotMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
-        pivotMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
-        pivotMotorConfigs.Audio.AllowMusicDurDisable = true;
-
-        MotionMagicConfigs pivotMMConfigs = pivotMotorConfigs.MotionMagic;
-        pivotMMConfigs.MotionMagicCruiseVelocity = ShooterConstants.kShooterCruiseVelocity;
-        pivotMMConfigs.MotionMagicAcceleration = ShooterConstants.kShooterCruiseAcceleration;
+        TalonFXConfiguration pivotConfigs = new TalonFXConfiguration();
+        pivotConfigurator.refresh(pivotConfigs);
+        pivotConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        pivotConfigs.Feedback.RotorToSensorRatio = 1;
+        pivotConfigs.Feedback.SensorToMechanismRatio = ShooterConstants.kPivotGearRatio;
         
+        pivotConfigs.Voltage.PeakForwardVoltage = 11.5;
+        pivotConfigs.Voltage.PeakReverseVoltage = -11.5;
         
-        pivot.getConfigurator().apply(pivotMotorConfigs);
+        pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        pivotConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
+
+        pivotConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        pivotConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        pivotConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
+        pivotConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        pivotConfigs.Audio.AllowMusicDurDisable = true;
+
+        pivotConfigurator.apply(pivotConfigs);
+
+        StatusCode statusPivot = pivotConfigurator.apply(pivotConfigs);
+        if (!statusPivot.isOK()){
+            DriverStation.reportError("Could not apply pivot configs, error code:"+ statusPivot.toString(), new Error().getStackTrace());
+        }
     }
 
     public void configurePID() {
-        TalonFXConfiguration pivotMotorConfigs = new TalonFXConfiguration();
-
+        TalonFXConfiguration pivotConfigs = new TalonFXConfiguration();
+        pivotConfigurator.refresh(pivotConfigs);
         ShooterConstants.kPPivotMotor.loadPreferences();
         ShooterConstants.kIPivotMotor.loadPreferences();
         ShooterConstants.kDPivotMotor.loadPreferences();
         ShooterConstants.kVPivotMotor.loadPreferences();
+        ShooterConstants.kCruiseVelocity.loadPreferences();
+        ShooterConstants.kCruiseAcceleration.loadPreferences();
+        pivotConfigs.Slot0.kP = ShooterConstants.kPPivotMotor.get();
+        pivotConfigs.Slot0.kI = ShooterConstants.kIPivotMotor.get();
+        pivotConfigs.Slot0.kD = ShooterConstants.kDPivotMotor.get();
+        pivotConfigs.Slot0.kV = ShooterConstants.kVPivotMotor.get();
+        pivotConfigs.MotionMagic.MotionMagicCruiseVelocity = ShooterConstants.kCruiseVelocity.get();
+        pivotConfigs.MotionMagic.MotionMagicAcceleration   = ShooterConstants.kCruiseAcceleration.get();
 
-        pivotMotorConfigs.Slot0.kP = ShooterConstants.kPPivotMotor.get();
-        pivotMotorConfigs.Slot0.kI = ShooterConstants.kIPivotMotor.get();
-        pivotMotorConfigs.Slot0.kD = ShooterConstants.kDPivotMotor.get();
-        pivotMotorConfigs.Slot0.kV = ShooterConstants.kVPivotMotor.get();
-
-        StatusCode statusPivot = pivot.getConfigurator().apply(pivotMotorConfigs);
-
+        StatusCode statusPivot = pivotConfigurator.apply(pivotConfigs);
         if (!statusPivot.isOK()){
-            DriverStation.reportError("Could not apply pivot configs, error code:"+ statusPivot.toString(), null);
+            DriverStation.reportError("Could not apply pivot configs, error code:"+ statusPivot.toString(), new Error().getStackTrace());
         }
-    }
-
-    public void init() {
-        configurePID();
-        configureMotor();
-        resetEncoder();
     }
 
     public void resetEncoder() {
-        pivot.setPosition(throughBore.getAbsolutePosition());
+        // Save a consistent position offset
+        ShooterConstants.kPivotOffset.loadPreferences();
+        throughBore.setPositionOffset(ShooterConstants.kPivotOffset.get());
+
+        double position = throughBore.getAbsolutePosition() - throughBore.getPositionOffset();
+        position = position % 1;
+
+        pivot.setPosition(position);
     }
+
+    /**
+     * Zero the through bore encoder and update the internal encoder
+     * ONLY RUN FOR DEBUGGING
+     */
+    public void zeroAbsoluteEncoder() {
+        throughBore.reset();
+        ShooterConstants.kPivotOffset.set(throughBore.getPositionOffset());
+
+        // Save new offset to Preferences
+        ShooterConstants.kPivotOffset.uploadPreferences();
+        resetEncoder();
+    }
+
+    @Override
+    public void periodic() {
+        if (enabled) {
+            pivot.setControl(motionMagicRequest);
+        } else {
+            pivot.setControl(brakeRequest);
+        }
+    }
+
+    //****************************** STATE METHODS ******************************/
+
+    // Checks whether the pivot is within the deadband for a position
+    public boolean hasReachedPosition(double position) {
+        return NerdyMath.inRange(
+            pivot.getPosition().getValueAsDouble() % 1.0, 
+            position - ShooterConstants.kPivotDeadband.get(), 
+            position + ShooterConstants.kPivotDeadband.get()
+        );
+    }
+
+    // Check if the shooter is in a safe position for the intake to move
+    public boolean hasReachedNeutral() {
+        return hasReachedPosition(ShooterConstants.kNeutralPosition.get());
+    }
+
+    // Checks if the pivot is within deadband of the target pos
+    public boolean atTargetPosition() {
+        return hasReachedPosition(motionMagicRequest.Position);
+    }
+
+    public void stop() {
+        motionMagicRequest.Position = pivot.getPosition().getValueAsDouble();
+        enabled = false;
+        pivot.setControl(brakeRequest);
+    }
+
+    public Command stopCommand() {
+        return Commands.runOnce(() -> stop());
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Command setEnabledCommand(boolean enabled) {
+        return Commands.runOnce(() -> setEnabled(enabled));
+    }
+    
+    //****************************** POSITION METHODS ******************************//
 
     public void setPosition(double position) {
-        // m_pivotMotionMagicRequest.Slot = 0;
-        pivot.setControl(m_pivotMotionMagicRequest.withPosition(position));
+        motionMagicRequest.Position = 
+            NerdyMath.clamp(
+                position,
+                ShooterConstants.kPivotMinPos,
+                ShooterConstants.kPivotMaxPos);  
     }
 
-    public void manualControlPosition(double tickChange) {
-        double pos = (pivot.getPosition().getValueAsDouble() * 2048) + tickChange; // Increase by 200 ticks?
-        pivot.setPosition(pos);
+    public Command setPositionCommand(double position) {
+        return Commands.runOnce(() -> setPosition(position));
     }
 
-    public void stowShooter() {
-        setPosition(ShooterConstants.kSpeakerPosition);
+    public void incrementPosition(double increment) {
+        setPosition(motionMagicRequest.Position + increment);   
     }
 
-    public void setAmpPosition() {
-        setPosition(ShooterConstants.kAmpPosition);
+    public Command incrementPositionCommand(double increment) {
+        return Commands.runOnce(() -> incrementPosition(increment));
     }
 
-    public void setSpeakerPosition() {
-        setPosition(ShooterConstants.kSpeakerPosition);
+    //****************************** POSITION COMMANDS *****************************//
+
+    public Command moveToNeutral() {
+        return Commands.runOnce(() -> setPosition(ShooterConstants.kNeutralPosition.get()));
     }
 
-    public void setHandoffPosition() {
-        setPosition(ShooterConstants.kHandoffPosition);
+    public Command moveToAmp() {
+        return Commands.runOnce(() -> setPosition(ShooterConstants.kAmpPosition.get()));
     }
 
-    public void setShooterPowerZeroCommand() {
-        pivot.setControl(m_brake);
-        SmartDashboard.putBoolean("Pressed", false);
+    public Command moveToSpeaker() {
+        return Commands.runOnce(() -> setPosition(ShooterConstants.kSpeakerPosition.get()));
     }
 
-    public boolean reachNeutralPosition(){
-        if (NerdyMath.inRange(pivot.getPosition().getValue(), ShooterConstants.kNeutralPosition - ShooterConstants.kPivotDeadband.get(), ShooterConstants.kNeutralPosition + ShooterConstants.kPivotDeadband.get())){
-            return true;   
-        } else {
-            return false;
-        }
+    public Command moveToHandoff() {
+        return Commands.runOnce(() -> setPosition(ShooterConstants.kHandoffPosition.get()));
+    }
+
+    //****************************** LOGGING METHODS ******************************//
+
+    @Override
+    public void reportToSmartDashboard(LOG_LEVEL priority) {}
+
+    @Override
+    public void initShuffleboard(LOG_LEVEL priority) {
+        // TODO: Shooter Pivot Logging
     }
 
 }  
