@@ -127,10 +127,18 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
     //****************************** STATE METHODS ******************************/
 
+    public double getTargetPosition() {
+        return motionMagicRequest.Position;
+    }
+
     // Checks whether the pivot is within the deadband for a position
     public boolean hasReachedPosition(double position) {
         return NerdyMath.inRange(
             pivot.getPosition().getValueAsDouble() % 1.0, 
+            position - IntakeConstants.kPivotDeadband.get(), 
+            position + IntakeConstants.kPivotDeadband.get()
+        ) && NerdyMath.inRange(
+            motionMagicRequest.Position % 1.0, 
             position - IntakeConstants.kPivotDeadband.get(), 
             position + IntakeConstants.kPivotDeadband.get()
         );

@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.util.NerdyMath;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterPivot extends SubsystemBase implements Reportable {
@@ -129,12 +130,20 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     //****************************** STATE METHODS ******************************/
 
+    public double getTargetPosition() {
+        return motionMagicRequest.Position;
+    }
+
     // Checks whether the pivot is within the deadband for a position
     public boolean hasReachedPosition(double position) {
         return NerdyMath.inRange(
             pivot.getPosition().getValueAsDouble() % 1.0, 
-            position - ShooterConstants.kPivotDeadband.get(), 
-            position + ShooterConstants.kPivotDeadband.get()
+            position - IntakeConstants.kPivotDeadband.get(), 
+            position + IntakeConstants.kPivotDeadband.get()
+        ) && NerdyMath.inRange(
+            motionMagicRequest.Position % 1.0, 
+            position - IntakeConstants.kPivotDeadband.get(), 
+            position + IntakeConstants.kPivotDeadband.get()
         );
     }
 
