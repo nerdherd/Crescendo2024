@@ -66,7 +66,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         pivotConfigs.Voltage.PeakForwardVoltage = 11.5;
         pivotConfigs.Voltage.PeakReverseVoltage = -11.5;
         
-        pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         pivotConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
 
         pivotConfigs.CurrentLimits.SupplyCurrentLimit = 40;
