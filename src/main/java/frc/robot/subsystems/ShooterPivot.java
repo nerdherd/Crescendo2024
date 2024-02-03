@@ -43,7 +43,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         throughBore = new DutyCycleEncoder(ShooterConstants.kThroughBorePort);
         leftPivotConfigurator = leftPivot.getConfigurator();
         rightPivotConfigurator = rightPivot.getConfigurator();
-        leftPivot.setInverted(false);
+        leftPivot.setInverted(true);
         rightPivot.setControl(new Follower(53, true));
 
         CommandScheduler.getInstance().registerSubsystem(this);

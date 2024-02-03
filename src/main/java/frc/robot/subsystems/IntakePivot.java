@@ -36,7 +36,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         pivot = new TalonFX(IntakeConstants.kPivotMotorID, SuperStructureConstants.kCANivoreBusName);
         throughBore = new DutyCycleEncoder(IntakeConstants.kThroughBorePort);
         pivotConfigurator = pivot.getConfigurator();
-        pivot.setInverted(false);
+        pivot.setInverted(IntakeConstants.kPivotInverted);
 
         CommandScheduler.getInstance().registerSubsystem(this);
 
@@ -110,7 +110,8 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         double position = throughBore.getAbsolutePosition() - throughBore.getPositionOffset();
         position = mapRev(position);
 
-        pivot.setPosition(position);
+        // pivot.setPosition(position);
+        pivot.setPosition(IntakeConstants.kPickupPosition.get());
     }
 
     /**

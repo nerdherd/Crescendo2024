@@ -252,7 +252,7 @@ public final class Constants {
     public static final int kRightPivotMotorID = 54;
     public static final int kThroughBorePort = 0;
 
-    public static final double kShooterNeutralDeadband = 0.05;
+    public static final double kShooterNeutralDeadband = 0.01;
 
     // ************************************** SHOOTER CONSTANTS *************************************** //
 
@@ -276,6 +276,7 @@ public final class Constants {
     // ************************************** PIVOT CONSTANTS *************************************** //
 
     public static final double kPivotGearRatio = 225;
+    public static final boolean kPivotInverted = true;
 
     // TODO: Set max and min pos
     public static final double kPivotMaxPos = 0.5;
@@ -306,8 +307,9 @@ public final class Constants {
     public static final int kPivotMotorID = 57;
     public static final int kThroughBorePort = 2;
 
-    public static final double kIntakeNeutralDeadband = 0.02;
-    public static final double kIntakePivotNeutralDeadband = 0.02;
+    public static final double kIntakeNeutralDeadband = 0.01;
+    public static final double kIntakePivotNeutralDeadband = 0.01;
+    public static final boolean kPivotInverted = true;
 
     // ************************************** SHOOTER CONSTANTS *************************************** //
 
@@ -334,8 +336,8 @@ public final class Constants {
 
     public static final PrefDouble kPivotOffset = new PrefDouble("Intake Pivot Offset", 0);
 
-    public static final PrefDouble kIntakeCruiseAcceleration = new PrefDouble("Intake Pivot Cruise Acceleration", 0);
-    public static final PrefDouble kIntakeCruiseVelocity = new PrefDouble("Intake Pivot Cruise Velocity", 0);
+    public static final PrefDouble kIntakeCruiseAcceleration = new PrefDouble("Intake Pivot Cruise Acceleration", 3);
+    public static final PrefDouble kIntakeCruiseVelocity = new PrefDouble("Intake Pivot Cruise Velocity", 3);
     public static final PrefDouble kPivotDeadband = new PrefDouble("Pivot Deadband", 0);
 
     public static final PrefDouble kPPivotMotor = new PrefDouble("kP Intake Pivot", 0);
