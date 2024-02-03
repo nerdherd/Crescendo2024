@@ -81,12 +81,18 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         IntakeConstants.kIPivotMotor.loadPreferences();
         IntakeConstants.kDPivotMotor.loadPreferences();
         IntakeConstants.kVPivotMotor.loadPreferences();
+        IntakeConstants.kSPivotMotor.loadPreferences();
+        IntakeConstants.kAPivotMotor.loadPreferences();
+        IntakeConstants.kGPivotMotor.loadPreferences();
         IntakeConstants.kIntakeCruiseVelocity.loadPreferences();
         IntakeConstants.kIntakeCruiseAcceleration.loadPreferences();
         pivotConfigs.Slot0.kP = IntakeConstants.kPPivotMotor.get();
         pivotConfigs.Slot0.kI = IntakeConstants.kIPivotMotor.get();
         pivotConfigs.Slot0.kD = IntakeConstants.kDPivotMotor.get();
         pivotConfigs.Slot0.kV = IntakeConstants.kVPivotMotor.get();
+        pivotConfigs.Slot0.kS = IntakeConstants.kSPivotMotor.get();
+        pivotConfigs.Slot0.kA = IntakeConstants.kAPivotMotor.get();
+        pivotConfigs.Slot0.kG = IntakeConstants.kGPivotMotor.get();
         pivotConfigs.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.kIntakeCruiseVelocity.get();
         pivotConfigs.MotionMagic.MotionMagicAcceleration = IntakeConstants.kIntakeCruiseAcceleration.get();
 

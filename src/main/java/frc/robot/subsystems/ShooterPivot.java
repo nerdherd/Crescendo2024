@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -23,21 +25,26 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterPivot extends SubsystemBase implements Reportable {
-    private final TalonFX pivot;
-    private final TalonFXConfigurator pivotConfigurator;
+    private final TalonFX leftPivot;
+    private final TalonFX rightPivot;
+    private final TalonFXConfigurator leftPivotConfigurator;
+    private final TalonFXConfigurator rightPivotConfigurator;
     private final DutyCycleEncoder throughBore;
 
     // Whether the pivot is running
-    private boolean enabled = false;
+    private boolean enabled = true;
 
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
 
     public ShooterPivot() {
-        pivot = new TalonFX(ShooterConstants.kPivotMotorID, SuperStructureConstants.kCANivoreBusName);
+        leftPivot = new TalonFX(ShooterConstants.kLeftPivotMotorID, SuperStructureConstants.kCANivoreBusName);
+        rightPivot = new TalonFX(ShooterConstants.kRightPivotMotorID, SuperStructureConstants.kCANivoreBusName);
         throughBore = new DutyCycleEncoder(ShooterConstants.kThroughBorePort);
-        pivotConfigurator = pivot.getConfigurator();
-        pivot.setInverted(false);
+        leftPivotConfigurator = leftPivot.getConfigurator();
+        rightPivotConfigurator = rightPivot.getConfigurator();
+        leftPivot.setInverted(false);
+        rightPivot.setControl(new Follower(ShooterConstants.kLeftPivotMotorID, true));
 
         CommandScheduler.getInstance().registerSubsystem(this);
 
@@ -50,7 +57,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     public void configureMotor() {
         TalonFXConfiguration pivotConfigs = new TalonFXConfiguration();
-        pivotConfigurator.refresh(pivotConfigs);
+        leftPivotConfigurator.refresh(pivotConfigs);
         pivotConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         pivotConfigs.Feedback.RotorToSensorRatio = 1;
         pivotConfigs.Feedback.SensorToMechanismRatio = ShooterConstants.kPivotGearRatio;
@@ -67,9 +74,34 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         pivotConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
         pivotConfigs.Audio.AllowMusicDurDisable = true;
 
-        pivotConfigurator.apply(pivotConfigs);
+        leftPivotConfigurator.apply(pivotConfigs);
 
-        StatusCode statusPivot = pivotConfigurator.apply(pivotConfigs);
+        StatusCode statusPivot = leftPivotConfigurator.apply(pivotConfigs);
+        if (!statusPivot.isOK()){
+            DriverStation.reportError("Could not apply pivot configs, error code:"+ statusPivot.toString(), new Error().getStackTrace());
+        }
+
+        pivotConfigs = new TalonFXConfiguration();
+        rightPivotConfigurator.refresh(pivotConfigs);
+        pivotConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        pivotConfigs.Feedback.RotorToSensorRatio = 1;
+        pivotConfigs.Feedback.SensorToMechanismRatio = ShooterConstants.kPivotGearRatio;
+        
+        pivotConfigs.Voltage.PeakForwardVoltage = 11.5;
+        pivotConfigs.Voltage.PeakReverseVoltage = -11.5;
+        
+        pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        pivotConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
+
+        pivotConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        pivotConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        pivotConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
+        pivotConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        pivotConfigs.Audio.AllowMusicDurDisable = true;
+
+        rightPivotConfigurator.apply(pivotConfigs);
+
+        statusPivot = rightPivotConfigurator.apply(pivotConfigs);
         if (!statusPivot.isOK()){
             DriverStation.reportError("Could not apply pivot configs, error code:"+ statusPivot.toString(), new Error().getStackTrace());
         }
@@ -77,21 +109,53 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     public void configurePID() {
         TalonFXConfiguration pivotConfigs = new TalonFXConfiguration();
-        pivotConfigurator.refresh(pivotConfigs);
+        leftPivotConfigurator.refresh(pivotConfigs);
         ShooterConstants.kPPivotMotor.loadPreferences();
         ShooterConstants.kIPivotMotor.loadPreferences();
         ShooterConstants.kDPivotMotor.loadPreferences();
         ShooterConstants.kVPivotMotor.loadPreferences();
+        ShooterConstants.kSPivotMotor.loadPreferences();
+        ShooterConstants.kAPivotMotor.loadPreferences();
+        ShooterConstants.kGPivotMotor.loadPreferences();
         ShooterConstants.kCruiseVelocity.loadPreferences();
         ShooterConstants.kCruiseAcceleration.loadPreferences();
         pivotConfigs.Slot0.kP = ShooterConstants.kPPivotMotor.get();
         pivotConfigs.Slot0.kI = ShooterConstants.kIPivotMotor.get();
         pivotConfigs.Slot0.kD = ShooterConstants.kDPivotMotor.get();
         pivotConfigs.Slot0.kV = ShooterConstants.kVPivotMotor.get();
+        pivotConfigs.Slot0.kS = ShooterConstants.kSPivotMotor.get();
+        pivotConfigs.Slot0.kA = ShooterConstants.kAPivotMotor.get();
+        pivotConfigs.Slot0.kG = ShooterConstants.kGPivotMotor.get();
         pivotConfigs.MotionMagic.MotionMagicCruiseVelocity = ShooterConstants.kCruiseVelocity.get();
         pivotConfigs.MotionMagic.MotionMagicAcceleration   = ShooterConstants.kCruiseAcceleration.get();
 
-        StatusCode statusPivot = pivotConfigurator.apply(pivotConfigs);
+        StatusCode statusPivot = leftPivotConfigurator.apply(pivotConfigs);
+        if (!statusPivot.isOK()){
+            DriverStation.reportError("Could not apply pivot configs, error code:"+ statusPivot.toString(), new Error().getStackTrace());
+        }
+
+        pivotConfigs = new TalonFXConfiguration();
+        rightPivotConfigurator.refresh(pivotConfigs);
+        ShooterConstants.kPPivotMotor.loadPreferences();
+        ShooterConstants.kIPivotMotor.loadPreferences();
+        ShooterConstants.kDPivotMotor.loadPreferences();
+        ShooterConstants.kVPivotMotor.loadPreferences();
+        ShooterConstants.kSPivotMotor.loadPreferences();
+        ShooterConstants.kAPivotMotor.loadPreferences();
+        ShooterConstants.kGPivotMotor.loadPreferences();
+        ShooterConstants.kCruiseVelocity.loadPreferences();
+        ShooterConstants.kCruiseAcceleration.loadPreferences();
+        pivotConfigs.Slot0.kP = ShooterConstants.kPPivotMotor.get();
+        pivotConfigs.Slot0.kI = ShooterConstants.kIPivotMotor.get();
+        pivotConfigs.Slot0.kD = ShooterConstants.kDPivotMotor.get();
+        pivotConfigs.Slot0.kV = ShooterConstants.kVPivotMotor.get();
+        pivotConfigs.Slot0.kS = ShooterConstants.kSPivotMotor.get();
+        pivotConfigs.Slot0.kA = ShooterConstants.kAPivotMotor.get();
+        pivotConfigs.Slot0.kG = ShooterConstants.kGPivotMotor.get();
+        pivotConfigs.MotionMagic.MotionMagicCruiseVelocity = ShooterConstants.kCruiseVelocity.get();
+        pivotConfigs.MotionMagic.MotionMagicAcceleration   = ShooterConstants.kCruiseAcceleration.get();
+
+        statusPivot = rightPivotConfigurator.apply(pivotConfigs);
         if (!statusPivot.isOK()){
             DriverStation.reportError("Could not apply pivot configs, error code:"+ statusPivot.toString(), new Error().getStackTrace());
         }
@@ -105,7 +169,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         double position = throughBore.getAbsolutePosition() - throughBore.getPositionOffset();
         position = mapRev(position);
 
-        pivot.setPosition(position);
+        leftPivot.setPosition(position);
     }
 
     /**
@@ -124,9 +188,9 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     @Override
     public void periodic() {
         if (enabled) {
-            pivot.setControl(motionMagicRequest);
+            leftPivot.setControl(motionMagicRequest);
         } else {
-            pivot.setControl(brakeRequest);
+            leftPivot.setControl(brakeRequest);
         }
     }
 
@@ -144,7 +208,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     }
 
     public double getPosition() {
-        return pivot.getPosition().getValueAsDouble();
+        return leftPivot.getPosition().getValueAsDouble();
     }
 
     // Checks whether the pivot is within the deadband for a position
@@ -173,7 +237,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     public void stop() {
         motionMagicRequest.Position = getPosition();
         enabled = false;
-        pivot.setControl(brakeRequest);
+        leftPivot.setControl(brakeRequest);
     }
 
     public Command stopCommand() {
@@ -246,10 +310,12 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
             case OFF:
                 break;
             case ALL:
+                tab.addString("Current Command", () -> this.getCurrentCommand() == null ? "None" : this.getCurrentCommand().getName());
             case MEDIUM:
             case MINIMAL:
                 tab.addDouble("Shooter Desired Position", this::getTargetPosition);
                 tab.addDouble("Shooter Position", this::getPosition);
+                tab.addDouble("Shooter Pivot Velocity", () -> leftPivot.getVelocity().getValueAsDouble());
                 break;
         }
     }

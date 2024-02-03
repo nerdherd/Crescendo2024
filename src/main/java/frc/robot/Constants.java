@@ -248,8 +248,9 @@ public final class Constants {
   public static final class ShooterConstants {
     public static final int kLeftMotorID = 51;
     public static final int kRightMotorID = 52;
-    public static final int kPivotMotorID = 53;
-    public static final int kThroughBorePort = 1;
+    public static final int kLeftPivotMotorID = 53;
+    public static final int kRightPivotMotorID = 54;
+    public static final int kThroughBorePort = 0;
 
     public static final double kShooterNeutralDeadband = 0.05;
 
@@ -274,7 +275,7 @@ public final class Constants {
 
     // ************************************** PIVOT CONSTANTS *************************************** //
 
-    public static final double kPivotGearRatio = 240;
+    public static final double kPivotGearRatio = 225;
 
     // TODO: Set max and min pos
     public static final double kPivotMaxPos = 0.5;
@@ -289,6 +290,9 @@ public final class Constants {
     public static final PrefDouble kIPivotMotor = new PrefDouble("kI Shooter Pivot", 0);
     public static final PrefDouble kDPivotMotor = new PrefDouble("kD Shooter Pivot", 0);
     public static final PrefDouble kVPivotMotor = new PrefDouble("kV Shooter Pivot", 0);
+    public static final PrefDouble kSPivotMotor = new PrefDouble("kS Shooter Pivot", 0);
+    public static final PrefDouble kAPivotMotor = new PrefDouble("kA Shooter Pivot", 0);
+    public static final PrefDouble kGPivotMotor = new PrefDouble("kG Shooter Pivot", 0);
   
     public static final PrefDouble kCruiseAcceleration = new PrefDouble("Shooter Pivot Cruise Acceleration", 0);
     public static final PrefDouble kCruiseVelocity = new PrefDouble("Shooter Pivot Cruise Velocity", 0);
@@ -298,8 +302,8 @@ public final class Constants {
   }
   
   public static final class IntakeConstants {
-    public static final int kIntakeMotorID = 55;
-    public static final int kPivotMotorID = 56;
+    public static final int kIntakeMotorID = 56;
+    public static final int kPivotMotorID = 57;
     public static final int kThroughBorePort = 2;
 
     public static final double kIntakeNeutralDeadband = 0.02;
@@ -322,7 +326,7 @@ public final class Constants {
 
     // ************************************** PIVOT CONSTANTS *************************************** //
 
-    public static final double kPivotGearRatio = 5;
+    public static final double kPivotGearRatio = 36;
 
     public static final PrefDouble kPickupPosition  = new PrefDouble("Intake Pickup Position", 0);
     public static final PrefDouble kNeutralPosition = new PrefDouble("Intake Neutral Position", 0);
@@ -338,10 +342,13 @@ public final class Constants {
     public static final PrefDouble kIPivotMotor = new PrefDouble("kI Intake Pivot", 0);
     public static final PrefDouble kDPivotMotor = new PrefDouble("kD Intake Pivot", 0);
     public static final PrefDouble kVPivotMotor = new PrefDouble("kV Intake Pivot", 0);
+    public static final PrefDouble kSPivotMotor = new PrefDouble("kS Intake Pivot", 0);
+    public static final PrefDouble kAPivotMotor = new PrefDouble("kA Intake Pivot", 0);
+    public static final PrefDouble kGPivotMotor = new PrefDouble("kG Intake Pivot", 0);
   }
   
   public static final class IndexerConstants {
-    public static final int kIndexerMotorID = 54;
+    public static final int kIndexerMotorID = 55;
     public static final double kIndexerNeutralDeadband = 0.05;
 
     public static final PrefDouble kIndexerVelociyRPS = new PrefDouble("Indexer Velocity", 50);
