@@ -41,7 +41,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         leftShooterConfigurator = leftShooter.getConfigurator();
         rightShooterConfigurator = rightShooter.getConfigurator();
 
-        leftShooter.setInverted(false);
+        leftShooter.setInverted(true);
         rightShooter.setInverted(false);
 
         CommandScheduler.getInstance().registerSubsystem(this);
