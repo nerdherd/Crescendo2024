@@ -194,6 +194,7 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     public void initShuffleboard(LOG_LEVEL priority) {
         ShuffleboardTab tab = Shuffleboard.getTab("Intake");
         tab.addNumber("Velocity", ()-> intake.getVelocity().getValueAsDouble());
+        tab.addNumber("Target Velocity", ()-> velocityRequest.Velocity);
     }
 
 }
