@@ -283,6 +283,8 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
                 tab.addDouble("Left Shooter Pivot Velocity", () -> leftPivot.getVelocity().getValueAsDouble());
                 tab.addDouble("Right Shooter Position", () -> rightPivot.getPosition().getValueAsDouble());
                 tab.addDouble("Right Shooter Pivot Velocity", () -> rightPivot.getVelocity().getValueAsDouble());
+                tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));
+        
                 break;
         }
     }

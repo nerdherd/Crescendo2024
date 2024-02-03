@@ -252,6 +252,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
             case MINIMAL:
                 tab.addDouble("Intake Desired Position", this::getTargetPosition);
                 tab.addDouble("Intake Position", this::getPosition);
+                tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));
                 break;
         }
     }
