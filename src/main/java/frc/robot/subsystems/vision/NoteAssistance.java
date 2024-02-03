@@ -1,16 +1,16 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.util.NerdyMath;
 
 public class NoteAssistance implements Reportable{
@@ -19,30 +19,25 @@ public class NoteAssistance implements Reportable{
 
     private PIDController areaController;
     private PIDController txController;
-    private PIDController skewController;
 
     private GenericEntry targetFound;
     private GenericEntry currentArea;
     private GenericEntry currentTX;
-    private GenericEntry currentSkew;
+    private GenericEntry currentTY;
+
     private GenericEntry forwardSpeed;
     private GenericEntry sidewaysSpeed;
-    private GenericEntry angularSpeed;
 
-    double[] speeds = {0.0, 0.0, 0.0};
-
-    //ComplexWidget v;
+    double[] speeds = {0.0, 0.0};
 
     public NoteAssistance(String name) {
         this.name = name;
         ShuffleboardTab tab = Shuffleboard.getTab(name);
 
-        //TODO set pid constants to preferences for easy tuning
-        areaController = new PIDController(0.34, 0, 0);
-        txController = new PIDController(0.08, 0, 0.006);
-        skewController = new PIDController(0.05, 0, 0);
+        areaController = new PIDController(0.34, 0, 0);// todo, tuning pls!!!
+        txController = new PIDController(0.072, 0, 0.006);// todo, tuning pls!!!
 
-        try {
+        try { // TODO , we don't need to try-catch
             limelight = new Limelight(name);
             tab.add(name + " inited", true);
             limelight.setPipeline(VisionConstants.kNotePipeline);
@@ -51,93 +46,151 @@ public class NoteAssistance implements Reportable{
             limelight = null;
             tab.add(name + " inited", false);
         }
-        //initShuffleboard(LOG_LEVEL.ALL);
     }
 
-    public void pidTuning_test() {
+    private void pidTuning_test() {
         VisionConstants.kPNoteForward.loadPreferences();
         VisionConstants.kINoteForward.loadPreferences();
         VisionConstants.kDNoteForward.loadPreferences();
         VisionConstants.kPNoteSide.loadPreferences();
         VisionConstants.kINoteSide.loadPreferences();
         VisionConstants.kDNoteSide.loadPreferences();
-        VisionConstants.kPNoteAngle.loadPreferences();
-        VisionConstants.kINoteAngle.loadPreferences();
-        VisionConstants.kDNoteAngle.loadPreferences();
         
         areaController = new PIDController(VisionConstants.kPNoteForward.get(), VisionConstants.kINoteForward.get(), VisionConstants.kDNoteForward.get());
         txController = new PIDController(VisionConstants.kPNoteSide.get(), VisionConstants.kINoteSide.get(), VisionConstants.kDNoteSide.get());
-        skewController = new PIDController(VisionConstants.kPNoteAngle.get(), VisionConstants.kINoteAngle.get(), VisionConstants.kDNoteAngle.get());
     }
 
+    int dataSampleCount = 0;
     public void reset() {
         limelight.resetLists();
+        dataSampleCount = 0;
     }
 
-    public void speedToNote(double targetArea, double targetTX, double targetSkew) {
-        if(limelight == null) return;
-
-        // Need to add a max TA for over-image ....
-
+    private void speedToNote(double targetArea, double targetTX, double targetTY) {
+        if(limelight == null) return; // todo, never happens
         
         boolean hasTarget = limelight.hasValidTarget();
         if(targetFound != null)
             targetFound.setBoolean(hasTarget);
-        if(!hasTarget) return;
+        if(hasTarget) 
+        {
+            double area = limelight.getArea_avg();
+            if(currentArea != null)
+                currentArea.setDouble(area);
+                
+            double tx = limelight.getXAngle_avg();
+            if(currentTX != null)
+                currentTX.setDouble(tx);
+                
+            double ty = limelight.getYAngle_avg();
+            if(currentTY != null)
+                currentTY.setDouble(ty);
 
-        // pidTuning_test();
+            if( area < 0.5 || area > 5.5 ) // todo, tuning pls!!!
+            {
+                speeds[0] = speeds[1] = 0; // something is wrong! or filter it out by camera dashboard
+            } 
+            else if( tx < 9 && tx > -9 && area > 3.7 ) // todo, tuning pls!!!
+            {
+                speeds[0] = speeds[1] = 0; // arrived! good ranges to get the note. cut off here is faster than the pid
+            } 
+            else if( ty < targetTY ) // need a lot of testing here
+            {
+                speeds[0] = speeds[1] = 0; // stop it otherwise too close to the note
+            } 
+            else
+            {
+                speeds[0] = 1 * areaController.calculate(area, targetArea);
+                speeds[1]= 1 * txController.calculate(tx, targetTX);
 
-        // double area = limelight.getAreaFiltered(10);
-        double area = limelight.getArea_avg();
-        if(currentArea != null)
-            currentArea.setDouble(area);
-        // SmartDashboard.putNumber("area", area);
-        // double tx = limelight.getXAngleFiltered(3);
-        double tx = limelight.getXAngle_avg();
-        if(currentTX != null)
-            currentTX.setDouble(tx);
-        // SmartDashboard.putNumber("tx", tx);
-        double skew = limelight.getSkew();
-        if(currentSkew != null)
-            currentSkew.setDouble(skew);
-        // SmartDashboard.putNumber("skew", skew);
+                speeds[0] = NerdyMath.deadband(speeds[0], -0.2, 0.2); // todo, tuning pls!!!
+                speeds[1] = NerdyMath.deadband(speeds[1], -0.35, 0.35);// todo, tuning pls!!!
+            }
+        }
+        else
+        {
+            // todo, move the robot a bit and retry?
+            speeds[0] = speeds[1] = 0;
+        }
+    }
 
-        speeds[0] = 1 * areaController.calculate(area, targetArea);
-        speeds[1]= 1 * txController.calculate(tx, targetTX);
-        speeds[2] = 1 * skewController.calculate(skew, targetSkew);
+    // no time limit if MaxSamples is less than 0
+    // robot can move to any location 
+    // for Teleop, PID tuning...
+    public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY, int maxSamples) {
+        // must reset counts before or after call this function!!!
+        dataSampleCount++;
+        
+        if(maxSamples > 0 && dataSampleCount > maxSamples)
+            speeds[0] = speeds[1] = 0;
+        else
+            speedToNote(targetArea, targetTX, targetTY);
 
         if(forwardSpeed != null)
             forwardSpeed.setDouble(speeds[0]);
         if(sidewaysSpeed != null)
             sidewaysSpeed.setDouble(speeds[1]);
-        if(angularSpeed != null)
-            angularSpeed.setDouble(speeds[2]);
-        // SmartDashboard.putNumber("fs", speeds[0]);
-        // SmartDashboard.putNumber("ss", speeds[1]);
-        // SmartDashboard.putNumber("as", speeds[2]);
-
-        speeds[0] = NerdyMath.deadband(speeds[0], -0.2, 0.2);
-        speeds[1] = NerdyMath.deadband(speeds[1], -0.35, 0.35);
-        speeds[2] = NerdyMath.deadband(speeds[2], -0.5, 0.5);
-    }
-
-    public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetSkew) {
-        speedToNote(targetArea, targetTX, targetSkew);
         drivetrain.drive(getForwardSpeed(), getSidewaysSpeed(), 0);
     }
 
-    public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea) {
+    // no time limit if MaxSamples is less than 0
+    // robot runs in limited zone
+    // for Auto
+    public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY, int maxSamples, Pose2d defaultPose) {
+        // must reset counts before or after call this function!!!
+        dataSampleCount++;
+
+        Pose2d currentPose = drivetrain.getPose();
+        double currentX = currentPose.getX();
+        double currentY = currentPose.getY();
+        double currentR = currentPose.getRotation().getDegrees();
+
+        double defaultX = defaultPose.getX();
+        double defaultY = defaultPose.getY();
+        double defaultR = defaultPose.getRotation().getDegrees();
+
+        // todo, need to convert angle to continues value!!! bug
+        if(currentX < defaultX-1 || currentX > defaultX+1 ||  // todo, tuning pls
+           currentY < defaultY-1 || currentY > defaultY+1 ||
+           currentR < defaultR-30 || currentR > defaultR+30 )
+        {
+            speeds[0] = speeds[1] = 0; // stop because moved too far
+        }
+        else if(maxSamples > 0 && dataSampleCount > maxSamples)
+        {
+            speeds[0] = speeds[1] = 0; // stop because running time too long
+        }
+        else 
+        {
+            speedToNote(targetArea, targetTX, targetTY);
+        }
+
+        if(forwardSpeed != null)
+            forwardSpeed.setDouble(speeds[0]);
+        if(sidewaysSpeed != null)
+            sidewaysSpeed.setDouble(speeds[1]);
+        drivetrain.drive(getForwardSpeed(), getSidewaysSpeed(), 0);
+    }
+
+    // for the auto 
+    // a min running time is required by minSamples 
+    public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea, int minSamples, int maxSamples, Pose2d defaultPose) {
         return Commands.sequence(
-            Commands.runOnce(() -> limelight.resetLists()),
-            Commands.run(
-                () -> driveToNote(drivetrain, targetArea, 0, 0)
-            ).until(() -> Math.abs(getForwardSpeed()) <= 0.1 && Math.abs(getSidewaysSpeed()) <= 0.1)
+            Commands.runOnce(() -> reset()),
+            Commands.run( () -> driveToNote(drivetrain, targetArea, 0, 0.1, maxSamples, defaultPose))// todo, tuning pls!!!
+                .until(() -> (dataSampleCount >= minSamples && 
+                    Math.abs(getForwardSpeed()) <= 0.1 && 
+                    Math.abs(getSidewaysSpeed()) <= 0.1) )// todo, tuning pls!!!
         );
     }
 
-    public double getForwardSpeed() { return speeds[0]; }
-    public double getSidewaysSpeed() { return speeds[1]; }
-    public double getAngularSpeed() { return speeds[2]; }
+    private double getForwardSpeed() { return speeds[0]; }
+    private double getSidewaysSpeed() { return speeds[1]; }
+
+    public void setLight(boolean lightModeOn) {
+        if(lightModeOn) limelight.setLightState(LightMode.ON);
+        else limelight.setLightState(LightMode.OFF);
+    }
 
     @Override
     public void reportToSmartDashboard(LOG_LEVEL priority) {
@@ -164,12 +217,12 @@ public class NoteAssistance implements Reportable{
                 .withSize(2, 1)
                 .getEntry();
                 
-                currentTX = tab.add("TX", 0)
+                currentTX = tab.add("Tx", 0)
                 .withPosition(2, 1)
                 .withSize(2, 1)
                 .getEntry();
 
-                currentSkew = tab.add("Angle", 0)
+                currentTY = tab.add("Ty", 0)
                 .withPosition(2, 2)
                 .withSize(2, 1)
                 .getEntry();
@@ -182,11 +235,6 @@ public class NoteAssistance implements Reportable{
                 
                 sidewaysSpeed = tab.add("Sideways Speed", 0)
                 .withPosition(0, 1)
-                .withSize(2, 1)
-                .getEntry();
-
-                angularSpeed = tab.add("Angular Speed", 0)
-                .withPosition(0, 2)
                 .withSize(2, 1)
                 .getEntry();
                 
