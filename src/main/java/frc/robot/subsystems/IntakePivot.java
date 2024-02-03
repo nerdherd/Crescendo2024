@@ -59,7 +59,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
         intakeConfigs.ClosedLoopGeneral.ContinuousWrap = false;
         
-        intakeConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        intakeConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         intakeConfigs.MotorOutput.DutyCycleNeutralDeadband = IntakeConstants.kIntakeNeutralDeadband;
 
         intakeConfigs.CurrentLimits.SupplyCurrentLimit = 40;
