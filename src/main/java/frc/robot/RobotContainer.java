@@ -94,6 +94,15 @@ public class RobotContainer {
     DriverStation.reportWarning("Initalization complete", false);
   }
 
+  public static boolean IsRedSide()
+  {
+      var alliance = DriverStation.getAlliance();
+      if (alliance.isPresent()) {
+          return alliance.get() == DriverStation.Alliance.Red;
+      }
+      return false;
+  }
+
   public void initDefaultCommands() {
 
     intakePivot.setDefaultCommand(

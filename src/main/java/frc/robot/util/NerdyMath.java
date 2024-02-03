@@ -93,4 +93,16 @@ public class NerdyMath {
         return false;
     }
 
+    public static double continueAngle(double angle, double angleToAdd) {
+        double offset = angle + angleToAdd;
+        if(offset > 180) {
+            offset -= 180;
+            return -180 + offset;
+        }
+        else if(offset < -180) {
+            offset += 180;
+            return 180 + offset;
+        }
+        return angle;
+    }
 }
