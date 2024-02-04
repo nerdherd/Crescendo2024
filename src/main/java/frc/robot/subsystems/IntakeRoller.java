@@ -71,6 +71,7 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
 
     public void configurePID() {
         TalonFXConfiguration intakeMotorConfigs = new TalonFXConfiguration();
+        IntakeConstants.kIntakeVelocity.loadPreferences();
         
         intake.getConfigurator().refresh(intakeMotorConfigs);
         IntakeConstants.kPIntakeMotor.loadPreferences();
@@ -92,9 +93,9 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     @Override
     public void periodic() {
         if (enabled) {
-            intake.setControl(brakeRequest);
-        } else {
             intake.setControl(velocityRequest);
+        } else {
+            intake.setControl(brakeRequest);
         }
     }
 
@@ -183,6 +184,10 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
 
     public Command intakeCommand() {
         return setVelocityCommand(IntakeConstants.kIntakeVelocity.get());
+    }
+
+    public Command outtakeCommand() {
+        return setVelocityCommand(-IntakeConstants.kIntakeVelocity.get());
     }
 
     //****************************** LOGGING METHODS ******************************//

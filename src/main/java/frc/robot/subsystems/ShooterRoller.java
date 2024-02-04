@@ -14,6 +14,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -89,6 +90,8 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
     }
 
     public void configurePID() {
+        ShooterConstants.kOuttakeHigh.loadPreferences();
+        ShooterConstants.kOuttakeLow.loadPreferences();
         TalonFXConfiguration leftMotorConfigs = new TalonFXConfiguration();
         
         leftShooterConfigurator.refresh(leftMotorConfigs);
@@ -127,13 +130,14 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
     @Override
     public void periodic() {
         if (enabled) {
-            leftShooter.setControl(brakeRequest);
-            rightShooter.setControl(brakeRequest);
-        } else {
             leftShooter.setControl(leftVelocityRequest);
             rightShooter.setControl(rightVelocityRequest);
+        } else {
+            leftShooter.setControl(brakeRequest);
+            rightShooter.setControl(brakeRequest);
         }
     }
+    // pull back half second, change shooter to 80 percent, shoot, bind to right trigger
 
     //****************************** STATE METHODS ******************************//
 
@@ -295,7 +299,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
 
     @Override
     public void initShuffleboard(LOG_LEVEL priority) {
-        ShuffleboardTab tab = Shuffleboard.getTab("Indexer");
+        ShuffleboardTab tab = Shuffleboard.getTab("Shooter");
         tab.addNumber("Left Velocity", ()-> leftShooter.getVelocity().getValueAsDouble());
         tab.addNumber("Right Velocity", ()-> rightShooter.getVelocity().getValueAsDouble());
         tab.addNumber("Left Target Velocity", ()-> leftVelocityRequest.Velocity);

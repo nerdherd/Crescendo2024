@@ -276,7 +276,8 @@ public final class Constants {
     // ************************************** PIVOT CONSTANTS *************************************** //
 
     public static final double kPivotGearRatio = 225;
-    public static final boolean kPivotInverted = true;
+    public static final boolean kPivotAbsoluteEncoderInverted = true;
+
 
     // TODO: Set max and min pos
     public static final double kPivotMaxPos = 0.5;
@@ -353,7 +354,8 @@ public final class Constants {
     public static final int kIndexerMotorID = 55;
     public static final double kIndexerNeutralDeadband = 0.05;
 
-    public static final PrefDouble kIndexerVelociyRPS = new PrefDouble("Indexer Velocity", 50);
+    public static final PrefDouble kIndexerVelocityRPS = new PrefDouble("Indexer Velocity", 50);
+    public static final PrefDouble kIndexerReverseRPS = new PrefDouble("Indexer Reverse Velocity", -10);
     public static final double kIndexerMinVelocityRPS = -100;
     public static final double kIndexerMaxVelocityRPS = 100;
     public static final PrefDouble kIndexerVelocityIncrement = new PrefDouble("Indexer Velocity Increment", 10);
@@ -368,7 +370,7 @@ public final class Constants {
   }
 
   public static final class SuperStructureConstants {
-    public static final String kCANivoreBusName = "";
+    public static final String kCANivoreBusName = "rio";
   }
 
 }

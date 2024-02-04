@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.ShooterConstants;
 
 public class Robot extends TimedRobot {
   private Command autoCommand;
@@ -56,6 +57,7 @@ public class Robot extends TimedRobot {
     if (autoCommand != null) {
       autoCommand.cancel();
     }
+    ShooterConstants.kPivotDeadband.loadPreferences();
     robotContainer.intakePivot.configurePID();
     robotContainer.shooterPivot.configurePID();
     robotContainer.initDefaultCommands();

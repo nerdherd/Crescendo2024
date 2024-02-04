@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -86,6 +87,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         IntakeConstants.kGPivotMotor.loadPreferences();
         IntakeConstants.kIntakeCruiseVelocity.loadPreferences();
         IntakeConstants.kIntakeCruiseAcceleration.loadPreferences();
+        pivotConfigs.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         pivotConfigs.Slot0.kP = IntakeConstants.kPPivotMotor.get();
         pivotConfigs.Slot0.kI = IntakeConstants.kIPivotMotor.get();
         pivotConfigs.Slot0.kD = IntakeConstants.kDPivotMotor.get();

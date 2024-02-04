@@ -50,7 +50,7 @@ public class Indexer extends SubsystemBase implements Reportable {
         indexerConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         indexerConfigs.Voltage.PeakForwardVoltage = 11.5;
         indexerConfigs.Voltage.PeakReverseVoltage = -11.5;
-        indexerConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        indexerConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         indexerConfigs.MotorOutput.DutyCycleNeutralDeadband = IndexerConstants.kIndexerNeutralDeadband;
         indexerConfigs.CurrentLimits.SupplyCurrentLimit = 40;
         indexerConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -88,9 +88,9 @@ public class Indexer extends SubsystemBase implements Reportable {
     @Override
     public void periodic() {
         if (enabled) {
-            indexer.setControl(brakeRequest);
-        } else {
             indexer.setControl(velocityRequest);
+        } else {
+            indexer.setControl(brakeRequest);
         }
     }
 
@@ -166,7 +166,11 @@ public class Indexer extends SubsystemBase implements Reportable {
     }
 
     public Command indexCommand() {
-        return rampVelocity(0, IndexerConstants.kIndexerVelociyRPS.get(), 1);
+        return setVelocityCommand(IndexerConstants.kIndexerVelocityRPS.get());
+    }
+
+    public Command reverseIndexCommand() {
+        return setVelocityCommand(IndexerConstants.kIndexerReverseRPS.get());
     }
 
     //****************************** LOGGING METHODS ******************************//

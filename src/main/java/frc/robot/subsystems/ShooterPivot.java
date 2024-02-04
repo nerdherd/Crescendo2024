@@ -8,6 +8,8 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -43,7 +45,6 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         throughBore = new DutyCycleEncoder(ShooterConstants.kThroughBorePort);
         leftPivotConfigurator = leftPivot.getConfigurator();
         rightPivotConfigurator = rightPivot.getConfigurator();
-        leftPivot.setInverted(true);
         rightPivot.setControl(new Follower(53, true));
 
         CommandScheduler.getInstance().registerSubsystem(this);
@@ -58,10 +59,10 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     public void configureMotor() {
         TalonFXConfiguration pivotConfigs = new TalonFXConfiguration();
         leftPivotConfigurator.refresh(pivotConfigs);
-        rightPivotConfigurator.refresh(pivotConfigs);
         pivotConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         pivotConfigs.Feedback.RotorToSensorRatio = 1;
         pivotConfigs.Feedback.SensorToMechanismRatio = ShooterConstants.kPivotGearRatio;
+        pivotConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         
         pivotConfigs.Voltage.PeakForwardVoltage = 11.5;
         pivotConfigs.Voltage.PeakReverseVoltage = -11.5;
@@ -75,13 +76,13 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         pivotConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
         pivotConfigs.Audio.AllowMusicDurDisable = true;
 
-        leftPivotConfigurator.apply(pivotConfigs);
-        rightPivotConfigurator.apply(pivotConfigs);
-
         StatusCode leftStatusPivot = leftPivotConfigurator.apply(pivotConfigs);
         if (!leftStatusPivot.isOK()){
             DriverStation.reportError("Could not apply pivot configs, error code:"+ leftStatusPivot.toString(), new Error().getStackTrace());
         }
+
+        pivotConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
         StatusCode rightStatusPivot = rightPivotConfigurator.apply(pivotConfigs);
         if (!rightStatusPivot.isOK()){
             DriverStation.reportError("Could not apply pivot configs, error code:"+ rightStatusPivot.toString(), new Error().getStackTrace());
@@ -91,7 +92,6 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     public void configurePID() {
         TalonFXConfiguration pivotConfigs = new TalonFXConfiguration();
         leftPivotConfigurator.refresh(pivotConfigs);
-        rightPivotConfigurator.refresh(pivotConfigs);
         ShooterConstants.kPPivotMotor.loadPreferences();
         ShooterConstants.kIPivotMotor.loadPreferences();
         ShooterConstants.kDPivotMotor.loadPreferences();
@@ -101,6 +101,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         ShooterConstants.kGPivotMotor.loadPreferences();
         ShooterConstants.kCruiseVelocity.loadPreferences();
         ShooterConstants.kCruiseAcceleration.loadPreferences();
+        pivotConfigs.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         pivotConfigs.Slot0.kP = ShooterConstants.kPPivotMotor.get();
         pivotConfigs.Slot0.kI = ShooterConstants.kIPivotMotor.get();
         pivotConfigs.Slot0.kD = ShooterConstants.kDPivotMotor.get();
@@ -115,6 +116,29 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         if (!leftStatusPivot.isOK()){
             DriverStation.reportError("Could not apply pivot configs, error code:"+ leftStatusPivot.toString(), new Error().getStackTrace());
         }
+
+        rightPivotConfigurator.refresh(pivotConfigs);
+
+        ShooterConstants.kPPivotMotor.loadPreferences();
+        ShooterConstants.kIPivotMotor.loadPreferences();
+        ShooterConstants.kDPivotMotor.loadPreferences();
+        ShooterConstants.kVPivotMotor.loadPreferences();
+        ShooterConstants.kSPivotMotor.loadPreferences();
+        ShooterConstants.kAPivotMotor.loadPreferences();
+        ShooterConstants.kGPivotMotor.loadPreferences();
+        ShooterConstants.kCruiseVelocity.loadPreferences();
+        ShooterConstants.kCruiseAcceleration.loadPreferences();
+        pivotConfigs.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+        pivotConfigs.Slot0.kP = ShooterConstants.kPPivotMotor.get();
+        pivotConfigs.Slot0.kI = ShooterConstants.kIPivotMotor.get();
+        pivotConfigs.Slot0.kD = ShooterConstants.kDPivotMotor.get();
+        pivotConfigs.Slot0.kV = ShooterConstants.kVPivotMotor.get();
+        pivotConfigs.Slot0.kS = ShooterConstants.kSPivotMotor.get();
+        pivotConfigs.Slot0.kA = ShooterConstants.kAPivotMotor.get();
+        pivotConfigs.Slot0.kG = ShooterConstants.kGPivotMotor.get();
+        pivotConfigs.MotionMagic.MotionMagicCruiseVelocity = ShooterConstants.kCruiseVelocity.get();
+        pivotConfigs.MotionMagic.MotionMagicAcceleration   = ShooterConstants.kCruiseAcceleration.get();
+
         StatusCode rightStatusPivot = rightPivotConfigurator.apply(pivotConfigs);
         if (!rightStatusPivot.isOK()){
             DriverStation.reportError("Could not apply pivot configs, error code:"+ rightStatusPivot.toString(), new Error().getStackTrace());
@@ -126,7 +150,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         ShooterConstants.kPivotOffset.loadPreferences();
         throughBore.setPositionOffset(ShooterConstants.kPivotOffset.get());
 
-        double position = throughBore.getAbsolutePosition() - throughBore.getPositionOffset();
+        double position = getAbsolutePosition();
         position = mapRev(position);
 
         leftPivot.setPosition(position);
@@ -174,6 +198,13 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     public double getPosition() {
         return leftPivot.getPosition().getValueAsDouble();
+    }
+
+    public double getAbsolutePosition() {
+        if (ShooterConstants.kPivotAbsoluteEncoderInverted) {
+            return throughBore.getPositionOffset() - throughBore.getAbsolutePosition();
+        }
+        return throughBore.getAbsolutePosition() - throughBore.getPositionOffset();
     }
 
     // Checks whether the pivot is within the deadband for a position
@@ -284,7 +315,8 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
                 tab.addDouble("Right Shooter Position", () -> rightPivot.getPosition().getValueAsDouble());
                 tab.addDouble("Right Shooter Pivot Velocity", () -> rightPivot.getVelocity().getValueAsDouble());
                 tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));
-        
+                tab.add("Sync Encoder", Commands.runOnce(this::resetEncoder));
+                tab.addDouble("Absolute Encoder Position", this::getAbsolutePosition);
                 break;
         }
     }

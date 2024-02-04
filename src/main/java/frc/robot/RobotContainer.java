@@ -160,17 +160,21 @@ public class RobotContainer {
     commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)));
 
     // Operator bindings
-    commandOperatorController.triangle().whileTrue(superSystem.IntakeStow());
-    commandOperatorController.circle().whileTrue(superSystem.IntakeNeutral());
-    commandOperatorController.cross().whileTrue(superSystem.IntakePickup());
+    // commandOperatorController.triangle().whileTrue(superSystem.intakeStow());
+    // commandOperatorController.circle().whileTrue(superSystem.intakeNeutral());
+    // commandOperatorController.cross().whileTrue(superSystem.intakePickup());
+    // commandOperatorController.povDown().whileTrue(shooterPivot.moveToHandoff());
+    // commandOperatorController.povUp().whileTrue(superSystem.shooterSpeaker());
+    // commandOperatorController.povRight().whileTrue(superSystem.shooterNeutral());
+    // commandOperatorController.povDown().whileTrue(superSystem.ShooterAmp());
 
-    commandOperatorController.povUp().whileTrue(superSystem.ShooterSpeaker());
-    commandOperatorController.povRight().whileTrue(superSystem.ShooterNeutral());
-    commandOperatorController.povDown().whileTrue(superSystem.ShooterAmp());
+    // commandOperatorController.triangle().whileTrue(intakeRoller.intakeCommand()).onFalse(intakeRoller.stopCommand());
 
-    commandOperatorController.L2().whileTrue(superSystem.IntakeSequence());
-    commandOperatorController.R1().whileTrue(superSystem.ShooterRollerAmp()).onFalse(superSystem.StopShooterRoller());
-    commandOperatorController.R2().whileTrue(superSystem.ShooterRollerSpeaker()).onFalse(superSystem.StopShooterRoller());
+    commandOperatorController.L2().whileTrue(superSystem.intakeSequenceBasic());
+    // commandOperatorController.R2().whileTrue(superSystem.outtakeSequenceBasic());
+    commandOperatorController.R2().whileTrue(superSystem.shootSequenceBasic());
+    // commandOperatorController.R1().whileTrue(superSystem.ShooterRollerAmp()).onFalse(superSystem.StopShooterRoller());
+    // commandOperatorController.R2().whileTrue(superSystem.ShooterRollerSpeaker()).onFalse(superSystem.StopShooterRoller());
   }
 
   private void initAutoChoosers() {
