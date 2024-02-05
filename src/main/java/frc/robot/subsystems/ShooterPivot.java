@@ -67,7 +67,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         pivotConfigs.Voltage.PeakForwardVoltage = 11.5;
         pivotConfigs.Voltage.PeakReverseVoltage = -11.5;
         
-        pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         pivotConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
 
         pivotConfigs.CurrentLimits.SupplyCurrentLimit = 40;
@@ -90,6 +90,12 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     }
 
     public void configurePID() {
+        ShooterConstants.kSpeakerPosition.loadPreferences();
+        ShooterConstants.kSpeakerPosition2.loadPreferences();
+        ShooterConstants.kAmpPosition.loadPreferences();
+        ShooterConstants.kHandoffPosition.loadPreferences();
+        ShooterConstants.kNeutralPosition.loadPreferences();
+
         TalonFXConfiguration pivotConfigs = new TalonFXConfiguration();
         leftPivotConfigurator.refresh(pivotConfigs);
         ShooterConstants.kPPivotMotor.loadPreferences();
@@ -282,6 +288,10 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     public Command moveToSpeaker() {
         return Commands.runOnce(() -> setPosition(ShooterConstants.kSpeakerPosition.get()));
+    }
+
+    public Command moveToSpeakerFar() {
+        return Commands.runOnce(() -> setPosition(ShooterConstants.kSpeakerPosition2.get()));
     }
 
     public Command moveToHandoff() {

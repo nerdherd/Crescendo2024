@@ -57,7 +57,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         leftMotorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         leftMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         leftMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
-        leftMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        leftMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         leftMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
         leftMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
         leftMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -70,7 +70,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         rightMotorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         rightMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         rightMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
-        rightMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        rightMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         rightMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
         rightMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
         rightMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -92,6 +92,8 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
     public void configurePID() {
         ShooterConstants.kOuttakeHigh.loadPreferences();
         ShooterConstants.kOuttakeLow.loadPreferences();
+        ShooterConstants.kOuttakeAmp.loadPreferences();
+        ShooterConstants.kIntake.loadPreferences();
         TalonFXConfiguration leftMotorConfigs = new TalonFXConfiguration();
         
         leftShooterConfigurator.refresh(leftMotorConfigs);
@@ -288,8 +290,12 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         return setVelocityCommand(ShooterConstants.kOuttakeHigh.get());
     }
 
-    public Command shootAmp() {
+    public Command shootSpeakerSlow() {
         return setVelocityCommand(ShooterConstants.kOuttakeLow.get());
+    }
+
+    public Command shootAmp() {
+        return setVelocityCommand(ShooterConstants.kOuttakeAmp.get());
     }
 
     //****************************** LOGGING METHODS ******************************//

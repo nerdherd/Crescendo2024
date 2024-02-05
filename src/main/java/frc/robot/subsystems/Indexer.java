@@ -66,6 +66,8 @@ public class Indexer extends SubsystemBase implements Reportable {
     }
 
     public void configurePID() {
+        IndexerConstants.kIndexerVelocityRPS.loadPreferences();
+        IndexerConstants.kIndexerReverseRPS.loadPreferences();
         TalonFXConfiguration indexerMotorConfigs = new TalonFXConfiguration();
         
         indexerConfigurator.refresh(indexerMotorConfigs);

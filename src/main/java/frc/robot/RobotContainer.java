@@ -160,21 +160,14 @@ public class RobotContainer {
     commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)));
 
     // Operator bindings
-    // commandOperatorController.triangle().whileTrue(superSystem.intakeStow());
-    // commandOperatorController.circle().whileTrue(superSystem.intakeNeutral());
-    // commandOperatorController.cross().whileTrue(superSystem.intakePickup());
-    // commandOperatorController.povDown().whileTrue(shooterPivot.moveToHandoff());
-    // commandOperatorController.povUp().whileTrue(superSystem.shooterSpeaker());
-    // commandOperatorController.povRight().whileTrue(superSystem.shooterNeutral());
-    // commandOperatorController.povDown().whileTrue(superSystem.ShooterAmp());
+    commandOperatorController.triangle().whileTrue(superSystem.eject());
+    commandOperatorController.square().whileTrue(superSystem.ampSequence());
 
-    // commandOperatorController.triangle().whileTrue(intakeRoller.intakeCommand()).onFalse(intakeRoller.stopCommand());
-
-    commandOperatorController.L2().whileTrue(superSystem.intakeSequenceBasic());
-    // commandOperatorController.R2().whileTrue(superSystem.outtakeSequenceBasic());
-    commandOperatorController.R2().whileTrue(superSystem.shootSequenceBasic());
-    // commandOperatorController.R1().whileTrue(superSystem.ShooterRollerAmp()).onFalse(superSystem.StopShooterRoller());
-    // commandOperatorController.R2().whileTrue(superSystem.ShooterRollerSpeaker()).onFalse(superSystem.StopShooterRoller());
+    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
+    commandOperatorController.L2().whileTrue(superSystem.intakeBasic())
+                                  .onFalse(superSystem.backupIndexer());
+    commandOperatorController.R2().whileTrue(superSystem.shootSequence2());
+    commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far());
   }
 
   private void initAutoChoosers() {

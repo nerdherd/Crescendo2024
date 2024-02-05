@@ -60,6 +60,9 @@ public class Robot extends TimedRobot {
     ShooterConstants.kPivotDeadband.loadPreferences();
     robotContainer.intakePivot.configurePID();
     robotContainer.shooterPivot.configurePID();
+    robotContainer.intakeRoller.configurePID();
+    robotContainer.shooterRoller.configurePID();
+    robotContainer.indexer.configurePID();
     robotContainer.initDefaultCommands();
   }
 

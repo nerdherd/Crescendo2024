@@ -70,8 +70,8 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     }
 
     public void configurePID() {
-        TalonFXConfiguration intakeMotorConfigs = new TalonFXConfiguration();
         IntakeConstants.kIntakeVelocity.loadPreferences();
+        TalonFXConfiguration intakeMotorConfigs = new TalonFXConfiguration();
         
         intake.getConfigurator().refresh(intakeMotorConfigs);
         IntakeConstants.kPIntakeMotor.loadPreferences();

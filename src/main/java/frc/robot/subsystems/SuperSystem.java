@@ -123,19 +123,25 @@ public class SuperSystem {
         return command;
     }
 
-    public Command shooterRollerAmp() {
-        return shooterRoller.shootAmp();
+    public Command backupIndexer() {
+        return Commands.sequence(
+            shooterPivot.moveToSpeaker(),
+            indexer.setEnabledCommand(true),
+            indexer.reverseIndexCommand(),
+            Commands.waitSeconds(0.5),
+            indexer.stopCommand()
+        ).finallyDo(indexer::stop);
     }
 
-    public Command shooterRollerSpeaker() {
-        return shooterRoller.shootSpeaker();
+    public Command backupIndexerManual() {
+        return Commands.sequence(
+            shooterPivot.moveToSpeaker(),
+            indexer.setEnabledCommand(true),
+            indexer.reverseIndexCommand()
+        ).finallyDo(indexer::stop);
     }
 
-    public Command stopShooterRoller() {
-        return shooterRoller.stopCommand();
-    }
-
-    public Command intakeSequence() {
+    public Command intakeFinal() {
         return Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(() -> 
@@ -152,7 +158,7 @@ public class SuperSystem {
         );
     }
 
-    public Command intakeSequenceBasic() {
+    public Command intakeBasic() {
         return Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(() -> 
@@ -172,12 +178,11 @@ public class SuperSystem {
                 SmartDashboard.putBoolean("Intaking", false);
                 intakeRoller.stop();
                 indexer.stop();
-                // shooterRoller.stop();
             }
         );
     }
 
-    public Command outtakeSequenceBasic() {
+    public Command eject() {
         return Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(() -> 
@@ -189,6 +194,8 @@ public class SuperSystem {
             Commands.runOnce(() -> SmartDashboard.putBoolean("Outtaking", true)),
             indexer.reverseIndexCommand(),
             intakeRoller.outtakeCommand(),
+            intakeRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
             Commands.waitUntil(() -> false)
         ).finallyDo(
             () -> {
@@ -199,20 +206,15 @@ public class SuperSystem {
         );
     }
 
-
-    public Command shootSequenceBasic() {
+    public Command shootSequence2() {
         return Commands.sequence(
+            // Prepare to shoot
             shooterSpeaker(),
-
-            indexer.setEnabledCommand(true),
-            indexer.reverseIndexCommand(),
-            Commands.waitSeconds(1),
-            indexer.stopCommand(),
-            
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
             Commands.waitSeconds(1),
             
+            // Shoot
             indexer.setEnabledCommand(true),
             indexer.indexCommand(),
             Commands.waitUntil(() -> false)
@@ -220,5 +222,42 @@ public class SuperSystem {
             indexer.stop();
             shooterRoller.stop();
         });
+    }
+
+    public Command shootSequence2Far() {
+        return Commands.sequence(
+            // Prepare to shoot
+            shooterPivot.moveToSpeakerFar(),
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker(),
+            Commands.waitSeconds(1),
+            
+            // Shoot
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            Commands.waitUntil(() -> false)
+        ).finallyDo(interrupted -> {
+            indexer.stop();
+            shooterRoller.stop();
+        });
+    }
+
+    public Command ampSequence() {
+        return Commands.sequence( 
+            shooterAmp(),
+            indexer.setEnabledCommand(false),
+            Commands.waitUntil(shooterPivot::atTargetPosition),
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootAmp(),
+            Commands.waitSeconds(0.5),
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            Commands.waitUntil(() -> false)
+        ).finallyDo(
+            () -> {
+                shooterRoller.stop();
+                indexer.stop();
+            }
+        );
     }
 }

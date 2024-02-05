@@ -76,6 +76,10 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     }
 
     public void configurePID() {
+        IntakeConstants.kStowPosition.loadPreferences();
+        IntakeConstants.kPickupPosition.loadPreferences();
+        IntakeConstants.kNeutralPosition.loadPreferences();
+
         TalonFXConfiguration pivotConfigs = new TalonFXConfiguration();
         pivotConfigurator.refresh(pivotConfigs);
         IntakeConstants.kPPivotMotor.loadPreferences();
