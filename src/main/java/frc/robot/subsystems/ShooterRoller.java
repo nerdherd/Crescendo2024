@@ -93,6 +93,8 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         ShooterConstants.kOuttakeHigh.loadPreferences();
         ShooterConstants.kOuttakeLow.loadPreferences();
         ShooterConstants.kOuttakeAmp.loadPreferences();
+        ShooterConstants.kOuttakeAuto1.loadPreferences();
+        ShooterConstants.kOuttakeAuto2.loadPreferences();
         ShooterConstants.kIntake.loadPreferences();
         TalonFXConfiguration leftMotorConfigs = new TalonFXConfiguration();
         
@@ -292,6 +294,10 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
 
     public Command shootSpeakerSlow() {
         return setVelocityCommand(ShooterConstants.kOuttakeLow.get());
+    }
+
+    public Command shootSpeakerAuto1() {
+        return setVelocityCommand(ShooterConstants.kOuttakeAuto1.get());
     }
 
     public Command shootAmp() {

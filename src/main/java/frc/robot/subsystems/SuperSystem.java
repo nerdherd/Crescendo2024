@@ -196,7 +196,7 @@ public class SuperSystem {
             indexer.setEnabledCommand(true),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
             indexer.indexCommand(),
-            shooterRoller.shootSpeaker(),
+            shooterRoller.shootSpeakerAuto1(),
             intakeRoller.intakeCommand(),
             Commands.waitUntil(() -> false)
         ).finallyDo(

@@ -259,10 +259,12 @@ public final class Constants {
     public static final double kShooterMaxVelocityRPS =  100;
     public static final double kShooterMinVelocityRPS = -100;
 
-    public static final PrefDouble kOuttakeHigh = new PrefDouble("Shooter Outtake High", 50);
-    public static final PrefDouble kOuttakeLow  = new PrefDouble("Shooter Outtake Low", 20);
-    public static final PrefDouble kOuttakeAmp  = new PrefDouble("Shooter Outtake Amp", 20);
-    public static final PrefDouble kIntake      = new PrefDouble("Shooter Intake", -10);
+    public static final PrefDouble kOuttakeHigh  = new PrefDouble("Shooter Outtake High", 50);
+    public static final PrefDouble kOuttakeLow   = new PrefDouble("Shooter Outtake Low", 20);
+    public static final PrefDouble kOuttakeAuto1 = new PrefDouble("Shooter Outtake Auto 1", 80);
+    public static final PrefDouble kOuttakeAuto2 = new PrefDouble("Shooter Outtake Auto 2", 90);
+    public static final PrefDouble kOuttakeAmp   = new PrefDouble("Shooter Outtake Amp", 20);
+    public static final PrefDouble kIntake       = new PrefDouble("Shooter Intake", -10);
 
     public static final PrefDouble kPLeftMotor = new PrefDouble("kP Left Shooter", 0);
     public static final PrefDouble kILeftMotor = new PrefDouble("kI Left Shooter", 0);
@@ -288,7 +290,8 @@ public final class Constants {
     public static final PrefDouble kSpeakerPosition2 = new PrefDouble("Pivot Speaker Position 2", -0.03);
     public static final PrefDouble kNeutralPosition  = new PrefDouble("Pivot Neutral Position", 0);
     public static final PrefDouble kAmpPosition      = new PrefDouble("Pivot Amp Position"    , 0);
-    public static final PrefDouble kHandoffPosition  = new PrefDouble("Pivot Handoff Position", 0);   
+    public static final PrefDouble kHandoffPosition  = new PrefDouble("Pivot Handoff Position", 0);
+    public static final PrefDouble kHandoffPosition2 = new PrefDouble("Pivot Handoff Position2", -0.02);   
     
     public static final PrefDouble kFullStowPosition = new PrefDouble("Pivot Full Stow Position", -0.1);
 

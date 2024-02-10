@@ -22,6 +22,9 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.autos.Auto4Notes;
+import frc.robot.commands.autos.Auto4NotesDirect;
+import frc.robot.commands.autos.Basic2Piece;
+import frc.robot.commands.autos.Basic3Piece;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.IntakeRoller;
@@ -179,6 +182,13 @@ public class RobotContainer {
     
     if (paths.contains("4PAuto")) {
       autoChooser.addOption("4PAuto", new Auto4Notes(swerveDrive, "4PAuto", superSystem));
+      autoChooser.addOption("4PAuto Direct", new Auto4NotesDirect(swerveDrive, "4PAuto", superSystem));
+    }
+    if (paths.contains("Basic2Piece")) {
+      autoChooser.addOption("Basic2Piece", new Basic2Piece(swerveDrive, "Basic2Piece", superSystem));
+    }
+    if (paths.contains("Basic3Piece")) {
+      autoChooser.addOption("Basic3Piece", new Basic3Piece(swerveDrive, "Basic3Piece", superSystem));
     }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
