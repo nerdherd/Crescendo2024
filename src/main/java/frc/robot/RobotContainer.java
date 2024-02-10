@@ -216,6 +216,9 @@ public class RobotContainer {
     if (paths.contains("Test1MBack")) {
       autoChooser.addOption("Test1MBack", new Test1MBack(swerveDrive));
     }
+    if (paths.contains("Basic6PieceSeparated")) {
+      autoChooser.addOption("Basic6PieceSeparated", new Basic6PieceSeparated(swerveDrive));
+    }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
