@@ -200,8 +200,12 @@ public class RobotContainer {
     }
 
     if (paths.contains("Basic4Piece")) {
-      autoChooser.addOption("Basic4Piece", new Basic4Piece(swerveDrive, "Basic4Piece", superSystem));
+      autoChooser.setDefaultOption("Basic4Piece", new Basic4Piece(swerveDrive, "Basic4Piece", superSystem));
     }
+
+    // if (paths.contains("Basic5Piece")) {
+    //   autoChooser.addOption("Basic5Piece", new Basic5Piece(swerveDrive, "Basic5Piece", superSystem));
+    // }
 
     if (paths.contains("Basic3PiecePos2")) {
       autoChooser.addOption("Basic3PiecePos2", new Basic3Piece(swerveDrive, "Basic3PiecePos2", superSystem));
