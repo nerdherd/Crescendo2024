@@ -22,6 +22,7 @@ public class Robot extends TimedRobot {
     DataLogManager.start("/media/sda1/logs");
     DataLogManager.logNetworkTables(true);
     enableLiveWindowInTest(false);
+    robotContainer.swerveDrive.refreshModulePID();
   }
 
   @Override
@@ -40,6 +41,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    robotContainer.swerveDrive.refreshModulePID();
     robotContainer.imu.zeroHeading();
     robotContainer.imu.zeroAll();
     autoCommand = robotContainer.getAutonomousCommand();
@@ -57,6 +59,7 @@ public class Robot extends TimedRobot {
     if (autoCommand != null) {
       autoCommand.cancel();
     }
+    robotContainer.swerveDrive.refreshModulePID();
     ShooterConstants.kPivotDeadband.loadPreferences();
     robotContainer.intakePivot.configurePID();
     robotContainer.shooterPivot.configurePID();
