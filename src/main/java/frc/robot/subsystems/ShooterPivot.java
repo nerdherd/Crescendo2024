@@ -188,6 +188,11 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     @Override
     public void periodic() {
+        if (ShooterConstants.fullDisableShooter.get()) {
+            leftPivot.setControl(brakeRequest);
+            return;
+        }
+
         if (enabled) {
             leftPivot.setControl(motionMagicRequest);
             // rightPivot.setControl(motionMagicRequest);

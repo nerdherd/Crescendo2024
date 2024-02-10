@@ -25,6 +25,7 @@ import frc.robot.commands.autos.Auto4Notes;
 import frc.robot.commands.autos.Auto4NotesDirect;
 import frc.robot.commands.autos.Basic2Piece;
 import frc.robot.commands.autos.Basic3Piece;
+import frc.robot.commands.autos.Basic4Piece;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.IntakeRoller;
@@ -189,6 +190,10 @@ public class RobotContainer {
     }
     if (paths.contains("Basic3Piece")) {
       autoChooser.addOption("Basic3Piece", new Basic3Piece(swerveDrive, "Basic3Piece", superSystem));
+    }
+
+    if (paths.contains("Basic4Piece")) {
+      autoChooser.addOption("Basic4Piece", new Basic4Piece(swerveDrive, "Basic4Piece", superSystem));
     }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");

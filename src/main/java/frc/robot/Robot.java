@@ -40,6 +40,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    ShooterConstants.fullDisableShooter.loadPreferences();
+    IntakeConstants.fullDisableIntake.loadPreferences();
     robotContainer.imu.zeroHeading();
     robotContainer.imu.zeroAll();
     autoCommand = robotContainer.getAutonomousCommand();
@@ -58,6 +60,9 @@ public class Robot extends TimedRobot {
       autoCommand.cancel();
     }
     ShooterConstants.kPivotDeadband.loadPreferences();
+    ShooterConstants.fullDisableShooter.loadPreferences();
+    IntakeConstants.fullDisableIntake.loadPreferences();
+    
     robotContainer.intakePivot.configurePID();
     robotContainer.shooterPivot.configurePID();
     robotContainer.intakeRoller.configurePID();

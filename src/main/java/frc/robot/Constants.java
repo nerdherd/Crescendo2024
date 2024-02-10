@@ -21,6 +21,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.util.preferences.PrefBool;
 import frc.robot.util.preferences.PrefDouble;
 
 /**
@@ -281,6 +282,7 @@ public final class Constants {
     public static final double kPivotGearRatio = 225;
     public static final boolean kPivotAbsoluteEncoderInverted = true;
 
+    public static final PrefBool fullDisableShooter = new PrefBool("Full Disable Shooter Pivot", false);
 
     // TODO: Set max and min pos
     public static final double kPivotMaxPos = 0.5;
@@ -321,10 +323,6 @@ public final class Constants {
 
     // ************************************** SHOOTER CONSTANTS *************************************** //
 
-    // TODO: Set max and min pos
-    public static final double kPivotMaxPos = 0.5;
-    public static final double kPivotMinPos = -0.2;
-
     public static final PrefDouble kIntakeVelocity = new PrefDouble("Intake Velocity", 0);
     public static final double kIntakeMaxVelocity =  100;
     public static final double kIntakeMinVelocity = -100;
@@ -335,6 +333,12 @@ public final class Constants {
     public static final PrefDouble kVIntakeMotor = new PrefDouble("kV Intake Roller", 0);
 
     // ************************************** PIVOT CONSTANTS *************************************** //
+
+    // TODO: Set max and min pos
+    public static final double kPivotMaxPos = 0.5;
+    public static final double kPivotMinPos = -0.2;
+
+    public static final PrefBool fullDisableIntake = new PrefBool("Full Disable Intake Pivot", false);
 
     public static final double kPivotGearRatio = 36;
 

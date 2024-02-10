@@ -135,6 +135,11 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
     @Override
     public void periodic() {
+        if (IntakeConstants.fullDisableIntake.get()) {
+            pivot.setControl(brakeRequest);
+            return;
+        }
+
         if (enabled) {
             pivot.setControl(motionMagicRequest);
         } else {
