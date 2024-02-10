@@ -239,7 +239,7 @@ public class SuperSystem {
             shooterSpeaker(),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
-            Commands.waitSeconds(1),
+            Commands.waitSeconds(0.8),
             
             // Shoot
             indexer.setEnabledCommand(true),
@@ -257,7 +257,7 @@ public class SuperSystem {
             shooterPivot.moveToSpeakerFar(),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
-            Commands.waitSeconds(1),
+            Commands.waitSeconds(0.8),
             
             // Shoot
             indexer.setEnabledCommand(true),
