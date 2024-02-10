@@ -14,7 +14,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import java.util.Arrays;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,6 +35,7 @@ public class Limelight implements Reportable{
 
     private double tXList[] = new double[10];
     private double tAList[] = new double[10];
+    private double tYList[] = new double[10];
 
     public enum LightMode {
         DEFAULT(0), OFF(1), BLINK(2), ON(3);
@@ -152,7 +152,7 @@ public class Limelight implements Reportable{
         ta = table.getEntry("ta");
 
         // same as Pathfinder's Coordinate System
-        if(!DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red))
+        if(RobotContainer.IsRedSide())
         {
             m_botPos = table.getEntry("botpose_wpired");
         }
@@ -167,11 +167,15 @@ public class Limelight implements Reportable{
     }
 
     public void resetLists() {
-        tAList = new double[10]; // do not need it?
+        //tAList = new double[10]; // do not need it?
         initDoneTA = false;
-        tXList = new double[10]; // do not need it?
+        //tXList = new double[10]; // do not need it?
         initDoneTX = false;
+        //tYList = new double[10]; // do not need it?
+        initDoneTY = false;
+        
         indexTX = 0;
+        indexTY = 0;
         indexTA = 0;
     }
 
@@ -224,12 +228,14 @@ public class Limelight implements Reportable{
         return this.name;
     }
 
-    public void reinitBuffer()
+    public void reinitBuffer() // todo: duplct
     {
         indexTX = 0;
         initDoneTX = false;
         indexTA = 0;
         initDoneTA = false;
+        indexTY = 0;
+        initDoneTY = false;
     }
     
     /**
@@ -330,6 +336,37 @@ public class Limelight implements Reportable{
      */
     public double getYAngle() {
         return ty.getDouble(0);
+    }
+
+    int indexTY = 0;
+    boolean initDoneTY = false;
+    public double getYAngle_avg() {
+        tYList[indexTY] = ty.getDouble(0);
+        indexTY ++;
+        if(indexTY >= tYList.length) {
+            indexTY = 0;
+            initDoneTY = true;
+        }
+
+        //SmartDashboard.putNumberArray("txFiltered", tXList);
+
+        double TYSum = 0;
+        if(initDoneTY) {
+            for(int i = 0; i < tYList.length; i++) {
+                TYSum += tYList[i];
+            }
+            
+            //SmartDashboard.putNumber("TXAverage", TXSum / tXList.length);
+
+            return TYSum / tYList.length;
+        }
+        else {
+            for(int i = 0; i < indexTY; i++) {
+                TYSum += tYList[i];
+            }
+
+            return TYSum / indexTY;
+        }
     }
 
     /**

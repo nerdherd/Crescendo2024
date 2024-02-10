@@ -21,8 +21,8 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
-public class Auto4Notes extends SequentialCommandGroup {
-    public Auto4Notes(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem) {     
+public class Auto4NotesDirect extends SequentialCommandGroup {
+    public Auto4NotesDirect(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem) {     
         
         // Use the PathPlannerAuto class to get a path group from an auto
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
@@ -35,12 +35,20 @@ public class Auto4Notes extends SequentialCommandGroup {
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.setPoseMeters(startingPose)),
 
-            AutoBuilder.followPath((pathGroup.get(0))),
+            Commands.deadline(
+                AutoBuilder.followPath((pathGroup.get(0))),
+                superSystem.intakeDirectShoot()
+            ),
 
-            AutoBuilder.followPath((pathGroup.get(1))),
+            Commands.deadline(
+                AutoBuilder.followPath((pathGroup.get(1))),
+                superSystem.intakeDirectShoot()
+            ),
 
-            AutoBuilder.followPath((pathGroup.get(2)))
-            
+            Commands.deadline(
+                AutoBuilder.followPath((pathGroup.get(2))),
+                superSystem.intakeDirectShoot()
+            )
             );
     }
 }

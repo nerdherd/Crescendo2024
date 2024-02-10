@@ -1,61 +1,76 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.hardware.CANcoder;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.SuperStructureConstants;
+import frc.robot.util.NerdyMath;
 import frc.robot.Constants.IndexerConstants;
+import frc.robot.Constants.ShooterConstants;
 
 
-public class Indexer extends SubsystemBase {
+public class Indexer extends SubsystemBase implements Reportable {
     
-    private final TalonFX indexer;    
+    private final TalonFX indexer;  
+    private final TalonFXConfigurator indexerConfigurator;  
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
 
-    private boolean enabled = true;
+    private boolean enabled = false;
 
-    public Indexer(){
+    public Indexer() {
         indexer = new TalonFX(IndexerConstants.kIndexerMotorID, SuperStructureConstants.kCANivoreBusName);
+        indexerConfigurator = indexer.getConfigurator();
+        
+        CommandScheduler.getInstance().registerSubsystem(this);
+        
+        configureMotor();
         configurePID();
     }
 
+    //****************************** SETUP METHODS ******************************/
+
     public void configureMotor() {
         TalonFXConfiguration indexerConfigs = new TalonFXConfiguration();
-        indexer.getConfigurator().refresh(indexerConfigs);
+        indexerConfigurator.refresh(indexerConfigs);
         indexerConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         indexerConfigs.Voltage.PeakForwardVoltage = 11.5;
         indexerConfigs.Voltage.PeakReverseVoltage = -11.5;
-        indexerConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        indexerConfigs.MotorOutput.DutyCycleNeutralDeadband = ModuleConstants.kDriveMotorDeadband;
+        indexerConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        indexerConfigs.MotorOutput.DutyCycleNeutralDeadband = IndexerConstants.kIndexerNeutralDeadband;
         indexerConfigs.CurrentLimits.SupplyCurrentLimit = 40;
         indexerConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
         indexerConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         indexerConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
         indexerConfigs.Audio.AllowMusicDurDisable = true;
-        indexer.getConfigurator().apply(indexerConfigs);
+
+        StatusCode result = indexerConfigurator.apply(indexerConfigs);
+
+        if (!result.isOK()){
+            DriverStation.reportError("Could not apply indexer configs, error code:"+ result.toString(), new Error().getStackTrace());
+        }
     }
 
     public void configurePID() {
+        IndexerConstants.kIndexerVelocityRPS.loadPreferences();
+        IndexerConstants.kIndexerReverseRPS.loadPreferences();
         TalonFXConfiguration indexerMotorConfigs = new TalonFXConfiguration();
         
-        indexer.getConfigurator().refresh(indexerMotorConfigs);
+        indexerConfigurator.refresh(indexerMotorConfigs);
         IndexerConstants.kPIndexerMotor.loadPreferences();
         IndexerConstants.kIIndexerMotor.loadPreferences();
         IndexerConstants.kDIndexerMotor.loadPreferences();
@@ -65,23 +80,23 @@ public class Indexer extends SubsystemBase {
         indexerMotorConfigs.Slot0.kD = IndexerConstants.kDIndexerMotor.get();
         indexerMotorConfigs.Slot0.kV = IndexerConstants.kVIndexerMotor.get();
 
-        indexerMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
-        indexerMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
+        StatusCode result = indexerConfigurator.apply(indexerMotorConfigs);
 
-        StatusCode statusIndexer = indexer.getConfigurator().apply(indexerMotorConfigs);
-
-        if (!statusIndexer.isOK()){
-            DriverStation.reportError("Could not apply indexer configs, error code:"+ statusIndexer.toString(), null);
+        if (!result.isOK()){
+            DriverStation.reportError("Could not apply indexer configs, error code:"+ result.toString(), new Error().getStackTrace());
         }
     }
 
-    public void run() {
+    @Override
+    public void periodic() {
         if (enabled) {
-            indexer.setControl(brakeRequest);
-        } else {
             indexer.setControl(velocityRequest);
+        } else {
+            indexer.setControl(brakeRequest);
         }
     }
+
+    //****************************** STATE METHODS ******************************//
 
     public void stop() {
         this.enabled = false;
@@ -93,23 +108,82 @@ public class Indexer extends SubsystemBase {
         this.enabled = enabled;
     }
 
+    //****************************** VELOCITY METHODS ******************************//
+
     public void setVelocity(double velocity) {
-        velocityRequest.Velocity = velocity;
+        velocityRequest.Velocity = 
+            NerdyMath.clamp(
+                velocity, 
+                IndexerConstants.kIndexerMinVelocityRPS, 
+                IndexerConstants.kIndexerMaxVelocityRPS);
     }
 
     public void incrementVelocity(double increment) {
-        double newVelocity = velocityRequest.Velocity + increment;
-        if ((increment > 0 && newVelocity < IndexerConstants.kIndexerMaxVelocityRPS) ||
-            (increment < 0 && newVelocity > -IndexerConstants.kIndexerMaxVelocityRPS)
-            ) {
-            velocityRequest.Velocity = newVelocity;
-        }
+        setVelocity(velocityRequest.Velocity + increment);
     }
 
-    public void initShuffleboard() {
+    //****************************** VELOCITY COMMANDS ******************************//
+
+    public Command stopCommand() {
+        return Commands.runOnce(() -> stop());
+    }
+
+    public Command setEnabledCommand(boolean enabled) {
+        return Commands.runOnce(() -> setEnabled(enabled));
+    }
+
+    public Command setVelocityCommand(double velocity) {
+        return Commands.runOnce(() -> setVelocity(velocity));
+    }
+
+    public Command incrementVelocityCommand(double increment) {
+        return Commands.runOnce(() -> incrementVelocity(increment));
+    }
+
+    public Command rampVelocity(double initialVelocity, double finalVelocity, double rampTimeSeconds) {
+        final double initialVel = NerdyMath.clamp(initialVelocity, ShooterConstants.kShooterMinVelocityRPS, ShooterConstants.kShooterMaxVelocityRPS);
+        final double finalVel = NerdyMath.clamp(finalVelocity, ShooterConstants.kShooterMinVelocityRPS, ShooterConstants.kShooterMaxVelocityRPS);
+        
+        // Change in Velocity / Command Scheduler Loops (assumes 20 hz)
+        final double increment = (finalVel - initialVel) / (rampTimeSeconds * 20);
+
+        // Check whether the current velocity is over/under final velocity
+        BooleanSupplier rampFinished = 
+            finalVel > initialVel ? 
+                () -> velocityRequest.Velocity >= finalVel : 
+                () -> velocityRequest.Velocity <= finalVel;
+
+        if (initialVel == finalVel) {
+            return setVelocityCommand(finalVel);
+        } 
+
+        return 
+            Commands.sequence(
+                setVelocityCommand(initialVel),
+                Commands.deadline(
+                    Commands.waitUntil(rampFinished),
+                    incrementVelocityCommand(increment)
+                )
+            );
+    }
+
+    public Command indexCommand() {
+        return setVelocityCommand(IndexerConstants.kIndexerVelocityRPS.get());
+    }
+
+    public Command reverseIndexCommand() {
+        return setVelocityCommand(IndexerConstants.kIndexerReverseRPS.get());
+    }
+
+    //****************************** LOGGING METHODS ******************************//
+
+    @Override
+    public void reportToSmartDashboard(LOG_LEVEL priority) {}
+
+    @Override
+    public void initShuffleboard(LOG_LEVEL priority) {
         ShuffleboardTab tab = Shuffleboard.getTab("Indexer");
-        tab.addNumber("Top Velocity", ()-> indexer.getVelocity().getValueAsDouble());
+        tab.addNumber("Top Velocity", () -> indexer.getVelocity().getValueAsDouble());
     }
-
 }
 

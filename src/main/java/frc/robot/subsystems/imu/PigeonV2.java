@@ -16,7 +16,7 @@ public class PigeonV2 extends SubsystemBase implements Gyro {
 
     public PigeonV2(int id) {
         try {
-            this.pigeon = new Pigeon2(id);
+            this.pigeon = new Pigeon2(id, "CANivore1");
         } catch (RuntimeException ex) {
             DriverStation.reportError("Error instantiating Pigeon 2 over CAN: " + ex.getMessage(), true);
         }
@@ -78,7 +78,7 @@ public class PigeonV2 extends SubsystemBase implements Gyro {
     }
 
     public double getHeading() {
-        return pigeon.getAngle() - offset;
+        return -(pigeon.getAngle() - offset);
 
     }
 

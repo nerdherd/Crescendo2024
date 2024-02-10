@@ -1,19 +1,6 @@
 package frc.robot.util;
 
 public class NerdyMath {
-    public static double ticksToAngle(double ticks, double ticksPerRotation) {
-        return ticks * 360 / ticksPerRotation;
-    }
-
-    /**
-     * Default value (2048) for Falcon500 built-in encoder and (4096) for CTRE SRX Mag Encoder
-     * @param ticks
-     * @return
-     */
-    public static double ticksToAngle(double ticks) {
-        return ticks * 360 / 2048;
-    }
-
     /**
      * Re-maps a number from one range to another.
      * 
@@ -38,6 +25,13 @@ public class NerdyMath {
         return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
     }
 
+    /**
+     * Maps x to the range [0, mod]
+     */
+    public static double posMod(double x, double mod) {
+        return ((x % 1) + 1) % 1;
+    }
+
     public static double degreesToRadians(double deg) {
         return deg * Math.PI/180;
     }
@@ -46,36 +40,22 @@ public class NerdyMath {
         return rad * 180 / Math.PI;
     }
 
-    public static double angleToTicks(double angle, double ticksPerRotation) {
-        return angle * ticksPerRotation / 360;
-    }
-
     public static double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
     }
     
-    public static boolean inRange(double myValue, double min, double max)
-    {
-        if(myValue >= min && myValue <= max)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+    /**
+     * Checks if the value is within the range (inclusive)
+     */
+    public static boolean inRange(double myValue, double min, double max) {
+        return (myValue >= min) && (myValue <= max);
     }
     
-    public static boolean inRangeLess(double myValue, double min, double max)
-    {
-        if(myValue > min && myValue < max)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+    /**
+     * Checks if the value is within the range (noninclusive)
+     */
+    public static boolean inRangeOpen(double myValue, double min, double max) {
+        return (myValue > min) && (myValue < max);
     }
 
     public static double deadband(double value, double min, double max) {
@@ -113,4 +93,16 @@ public class NerdyMath {
         return false;
     }
 
+    public static double continueAngle(double angle, double angleToAdd) {
+        double offset = angle + angleToAdd;
+        if(offset > 180) {
+            offset -= 180;
+            return -180 + offset;
+        }
+        else if(offset < -180) {
+            offset += 180;
+            return 180 + offset;
+        }
+        return angle;
+    }
 }
