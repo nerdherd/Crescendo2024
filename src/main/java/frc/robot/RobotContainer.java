@@ -26,6 +26,8 @@ import frc.robot.commands.autos.Auto4NotesDirect;
 import frc.robot.commands.autos.Basic2Piece;
 import frc.robot.commands.autos.Basic3Piece;
 import frc.robot.commands.autos.Basic4Piece;
+import frc.robot.commands.autos.Test1M;
+import frc.robot.commands.autos.Test1MBack;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.IntakeRoller;
@@ -188,12 +190,31 @@ public class RobotContainer {
     if (paths.contains("Basic2Piece")) {
       autoChooser.addOption("Basic2Piece", new Basic2Piece(swerveDrive, "Basic2Piece", superSystem));
     }
+
+    if (paths.contains("Basic2PiecePos2")) {
+      autoChooser.addOption("Basic2PiecePos2", new Basic2Piece(swerveDrive, "Basic2PiecePos2", superSystem));
+    }
+
     if (paths.contains("Basic3Piece")) {
       autoChooser.addOption("Basic3Piece", new Basic3Piece(swerveDrive, "Basic3Piece", superSystem));
     }
 
     if (paths.contains("Basic4Piece")) {
       autoChooser.addOption("Basic4Piece", new Basic4Piece(swerveDrive, "Basic4Piece", superSystem));
+    }
+
+    if (paths.contains("Basic3PiecePos2")) {
+      autoChooser.addOption("Basic3PiecePos2", new Basic3Piece(swerveDrive, "Basic3PiecePos2", superSystem));
+    }
+
+    if (paths.contains("Basic3PieceV2")) {
+      autoChooser.addOption("Basic3PieceV2", new Basic3Piece(swerveDrive, "Basic3PieceV2", superSystem));
+    }
+    if (paths.contains("Test1M")) {
+      autoChooser.addOption("Test1M", new Test1M(swerveDrive));
+    }
+    if (paths.contains("Test1MBack")) {
+      autoChooser.addOption("Test1MBack", new Test1MBack(swerveDrive));
     }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");

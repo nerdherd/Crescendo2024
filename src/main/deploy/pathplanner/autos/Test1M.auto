@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.5110352727827958,
-      "y": 4.841379939170135
+      "x": 2.0,
+      "y": 5.601499977928731
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Basic3Piece"
+            "pathName": "Test1M"
           }
         }
       ]
