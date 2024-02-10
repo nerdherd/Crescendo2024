@@ -67,7 +67,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         pivotConfigs.Voltage.PeakForwardVoltage = 11.5;
         pivotConfigs.Voltage.PeakReverseVoltage = -11.5;
         
-        pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         pivotConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
 
         pivotConfigs.CurrentLimits.SupplyCurrentLimit = 40;
@@ -173,6 +173,16 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
         // Save new offset to Preferences
         ShooterConstants.kPivotOffset.uploadPreferences();
+        resetEncoder();
+    }
+
+    public void zeroAbsoluteEncoderFullStow() {
+        throughBore.reset();
+        ShooterConstants.kFullStowPosition.loadPreferences();
+        throughBore.setPositionOffset((throughBore.getPositionOffset() + ShooterConstants.kFullStowPosition.get()) % 1);
+        ShooterConstants.kPivotOffset.set(throughBore.getPositionOffset());
+        ShooterConstants.kPivotOffset.uploadPreferences();
+
         resetEncoder();
     }
 
@@ -325,6 +335,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
                 tab.addDouble("Right Shooter Position", () -> rightPivot.getPosition().getValueAsDouble());
                 tab.addDouble("Right Shooter Pivot Velocity", () -> rightPivot.getVelocity().getValueAsDouble());
                 tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));
+                tab.add("Full Stow Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoderFullStow));
                 tab.add("Sync Encoder", Commands.runOnce(this::resetEncoder));
                 tab.addDouble("Absolute Encoder Position", this::getAbsolutePosition);
                 break;
