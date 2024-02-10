@@ -44,6 +44,7 @@ public class Robot extends TimedRobot {
     robotContainer.swerveDrive.refreshModulePID();
     robotContainer.imu.zeroHeading();
     robotContainer.imu.zeroAll();
+    // robotContainer.swerveDrive.setVelocityControl(false);
     autoCommand = robotContainer.getAutonomousCommand();
 
     if (autoCommand != null) {
@@ -59,6 +60,7 @@ public class Robot extends TimedRobot {
     if (autoCommand != null) {
       autoCommand.cancel();
     }
+    // robotContainer.swerveDrive.setVelocityControl(true);
     robotContainer.swerveDrive.refreshModulePID();
     ShooterConstants.kPivotDeadband.loadPreferences();
     robotContainer.intakePivot.configurePID();
