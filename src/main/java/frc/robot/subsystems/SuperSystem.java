@@ -7,12 +7,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class SuperSystem {
-    private IntakePivot intakePivot;
-    private IntakeRoller intakeRoller;
-    private ShooterPivot shooterPivot;
-    private ShooterRoller shooterRoller;
-    private Indexer indexer;
-    private ColorSensor colorSensor;
+    public IntakePivot intakePivot;
+    public IntakeRoller intakeRoller;
+    public ShooterPivot shooterPivot;
+    public ShooterRoller shooterRoller;
+    public Indexer indexer;
+    public ColorSensor colorSensor;
 
     public SuperSystem(IntakePivot intakePivot, IntakeRoller intakeRoller, 
                         ShooterPivot shooterPivot, ShooterRoller shooterRoller,

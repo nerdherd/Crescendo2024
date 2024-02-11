@@ -34,23 +34,27 @@ public class Basic6PieceSeparated extends SequentialCommandGroup {
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.setPoseMeters(startingPose)),
             Commands.sequence(
-                Commands.parallel(
+                Commands.deadline(
                     AutoBuilder.followPath((pathGroup.get(0))),
                     superSystem.intakeDirectShoot()
                 ),               
                 AutoBuilder.followPath(pathGroup.get(1)),
-                Commands.parallel(
-                    AutoBuilder.followPath(pathGroup.get(2)),
-                    Commands.run(() -> superSystem.intakePickup())
-                )
+                Commands.deadline(
+                    Commands.sequence(
+                        AutoBuilder.followPath(pathGroup.get(2)),
+                        Commands.waitSeconds(1)
+                    ),
+                    superSystem.intakePickup(),
+                    superSystem.intakeBasic()
+                ),
                 AutoBuilder.followPath(pathGroup.get(3)),
                 Commands.parallel(
                     AutoBuilder.followPath(pathGroup.get(4)),
-                    shooterRoller.setEnabledCommand(true),
-                    shooterRoller.shootSpeaker()   
+                    superSystem.shooterRoller.setEnabledCommand(true),
+                    superSystem.shooterRoller.shootSpeaker()   
                 ),
-                indexer.setEnabledCommand(true),
-                indexer.indexCommand()
+                superSystem.indexer.setEnabledCommand(true),
+                superSystem.indexer.indexCommand()
                 // Commands.parallel(
                 //     Commands.sequence(
                 //         Commands.waitSeconds(0.5);

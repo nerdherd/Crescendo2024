@@ -26,6 +26,7 @@ import frc.robot.commands.autos.Auto4NotesDirect;
 import frc.robot.commands.autos.Basic2Piece;
 import frc.robot.commands.autos.Basic3Piece;
 import frc.robot.commands.autos.Basic4Piece;
+import frc.robot.commands.autos.Basic6PieceSeparated;
 import frc.robot.commands.autos.Test1M;
 import frc.robot.commands.autos.Test1MBack;
 import frc.robot.subsystems.Indexer;
@@ -221,7 +222,7 @@ public class RobotContainer {
       autoChooser.addOption("Test1MBack", new Test1MBack(swerveDrive));
     }
     if (paths.contains("Basic6PieceSeparated")) {
-      autoChooser.addOption("Basic6PieceSeparated", new Basic6PieceSeparated(swerveDrive));
+      autoChooser.addOption("Basic6PieceSeparated", new Basic6PieceSeparated(swerveDrive, "Basic6PieceSeparated", superSystem));
     }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
