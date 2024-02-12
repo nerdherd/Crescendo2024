@@ -202,7 +202,7 @@ public class RobotContainer {
     commandOperatorController.R2().whileTrue(superSystem.shootSequence2());
     commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far());
 
-    commandOperatorController.share().whileTrue(superSystem.retract());
+    commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
   }
 
   private void initAutoChoosers() {

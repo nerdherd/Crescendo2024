@@ -288,8 +288,4 @@ public class SuperSystem {
             }
         );
     }
-
-    public Command retract() {
-        Commands.runOnce (() -> linearActuator.retract());
-    }
 }
