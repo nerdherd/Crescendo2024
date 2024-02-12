@@ -105,7 +105,7 @@ public class RobotContainer {
       return false;
   }
 
-  public void initDefaultCommands() {
+  public void initDefaultCommands_teleop() {
 
     intakePivot.setDefaultCommand(
       new RunCommand(
@@ -130,15 +130,54 @@ public class RobotContainer {
         shooterPivot
       ));
 
+      swerveDrive.setDefaultCommand(
+        new SwerveJoystickCommand(
+          swerveDrive,
+          () -> -commandDriverController.getLeftY(), // Horizontal translation
+          commandDriverController::getLeftX, // Vertical Translation
+          
+          () -> {
+            if(driverController.getR1Button() && driverController.getL2Button()){
+              return 0.0;
+            }
+            if(driverController.getR1Button()){
+              return -4.5;
+            }
+            if(driverController.getL2Button()){
+              return 4.5;
+            }
+            return 0.0;
+          },
+          () -> false, // Field oriented
+          driverController::getCrossButton, // Towing
+          () -> driverController.getR2Button(), // Precision mode (disabled)
+          () -> true, // Turn to angle
+          () -> { // Turn To angle Direction
+            double xValue = commandDriverController.getRightX();
+            double yValue = commandDriverController.getRightY();
+            double magnitude = (xValue*xValue) + (yValue*yValue);
+            if (magnitude > 0.49) {
+              double angle = (90 + NerdyMath.radiansToDegrees(Math.atan2(commandDriverController.getRightY(), commandDriverController.getRightX())));
+              angle = (((-1 * angle) % 360) + 360) % 360;
+              SmartDashboard.putNumber("desired angle", angle);
+              return angle;
+            }
+            return 1000.0;
+          }
+        ));
+  }
+
+  public void initDefaultCommands_autonomousAndTest() {
     swerveDrive.setDefaultCommand(
       new SwerveJoystickCommand(
         swerveDrive,
         () -> -commandDriverController.getLeftY(), // Horizontal translation
         commandDriverController::getLeftX, // Vertical Translation
         // () -> 0.0, // debug
-        commandDriverController::getRightX, // Rotation
+        commandDriverController::getRightX, // Rotationaq
 
-        () -> false, // Robot oriented
+        // driverController::getSquareButton, // Field oriented
+        () -> true, // should be robot oriented now on true
 
         driverController::getCrossButton, // Towing
         // driverController::getR2Button, // Precision/"Sniper Button"
@@ -173,6 +212,8 @@ public class RobotContainer {
     commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
     commandOperatorController.R2().whileTrue(superSystem.shootSequence2());
     commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far());
+
+    commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
   }
 
   private void initAutoChoosers() {

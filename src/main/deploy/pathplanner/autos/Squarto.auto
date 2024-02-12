@@ -14,12 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Squared"
+            "pathName": "3M Square"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Test Autos",
   "choreoAuto": false
 }

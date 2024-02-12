@@ -13,6 +13,7 @@ public class SuperSystem {
     public ShooterRoller shooterRoller;
     public Indexer indexer;
     public ColorSensor colorSensor;
+    public LinearActuator linearActuator;
 
     public SuperSystem(IntakePivot intakePivot, IntakeRoller intakeRoller, 
                         ShooterPivot shooterPivot, ShooterRoller shooterRoller,
@@ -22,6 +23,7 @@ public class SuperSystem {
         this.shooterPivot = shooterPivot;
         this.shooterRoller = shooterRoller;
         this.indexer = indexer;
+        this.linearActuator = new LinearActuator();
         this.colorSensor = new ColorSensor();
     }
 
@@ -189,15 +191,15 @@ public class SuperSystem {
                     // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
                     shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
                 // intakePickup(),
-                shooterHandoff()
+                shooterPivot.moveToAutoHandoff()
                 ),
             shooterRoller.setEnabledCommand(true),
             intakeRoller.setEnabledCommand(true),
             indexer.setEnabledCommand(true),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
             indexer.indexCommand(),
+            intakeRoller.autoIntakeCommand(),
             shooterRoller.shootSpeakerAuto1(),
-            intakeRoller.intakeCommand(),
             Commands.waitUntil(() -> false)
         ).finallyDo(
             () -> {

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.9146333962183594,
-      "y": 4.163118981508619
+      "x": 1.3041949160821413,
+      "y": 5.55
     },
-    "rotation": -57.805296965411614
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
@@ -14,19 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "2 piece"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "3rd piece"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "4th piece"
+            "pathName": "Basic4Piece"
           }
         },
         {
@@ -38,6 +26,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "Comp Autos",
   "choreoAuto": false
 }

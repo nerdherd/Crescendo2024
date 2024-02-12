@@ -3,51 +3,34 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.7,
-        "y": 5.55
+        "x": 2.0,
+        "y": 5.601499977928731
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.753665631459995,
-        "y": 5.523167184270003
+        "x": 2.06,
+        "y": 5.601499977928731
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.5,
-        "y": 5.55
+        "x": 4.0,
+        "y": 5.601499977928731
       },
       "prevControl": {
-        "x": 2.4400000000000004,
-        "y": 5.55
+        "x": 3.9399999999999995,
+        "y": 5.601499977928731
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.55,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "shoot",
-      "waypointRelativePos": 1.0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": []
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -60,7 +43,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
-  "previewStartingState": null,
-  "useDefaultConstraints": false
+  "folder": "Test Paths",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
 }

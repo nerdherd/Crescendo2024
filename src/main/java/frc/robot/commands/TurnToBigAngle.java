@@ -26,9 +26,9 @@ public class TurnToBigAngle extends Command {
         this.swerveDrive = swerveDrive;
 
         this.pidController = new PIDController(
-            SwerveAutoConstants.kPTurnToAngle, 
-            SwerveAutoConstants.kITurnToAngle, 
-            SwerveAutoConstants.kDTurnToAngle, 
+            SwerveAutoConstants.kPTurnToAngle.get(), 
+            SwerveAutoConstants.kITurnToAngle.get(), 
+            SwerveAutoConstants.kDTurnToAngle.get(), 
             period);
         
         this.pidController.setTolerance(

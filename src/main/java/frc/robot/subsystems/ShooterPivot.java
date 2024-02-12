@@ -313,6 +313,10 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         return Commands.runOnce(() -> setPosition(ShooterConstants.kHandoffPosition.get()));
     }
 
+    public Command moveToAutoHandoff() {
+        return Commands.runOnce(() -> setPosition(ShooterConstants.kHandoffPosition2.get()));
+    }
+
     //****************************** LOGGING METHODS ******************************//
 
     @Override

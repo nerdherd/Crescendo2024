@@ -186,6 +186,10 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
         return setVelocityCommand(IntakeConstants.kIntakeVelocity.get());
     }
 
+    public Command autoIntakeCommand() {
+        return setVelocityCommand(IntakeConstants.kAutoIntakeVelocity.get());
+    }
+
     public Command outtakeCommand() {
         return setVelocityCommand(-IntakeConstants.kIntakeVelocity.get());
     }
@@ -200,6 +204,7 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
         ShuffleboardTab tab = Shuffleboard.getTab("Intake");
         tab.addNumber("Velocity", ()-> intake.getVelocity().getValueAsDouble());
         tab.addNumber("Target Velocity", ()-> velocityRequest.Velocity);
+        tab.addNumber("Roller Current", () -> intake.getSupplyCurrent().getValueAsDouble());
     }
 
 }

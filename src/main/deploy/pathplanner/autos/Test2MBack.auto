@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.9146333962183594,
-      "y": 4.163118981508619
+      "x": 2.0,
+      "y": 5.601499977928731
     },
-    "rotation": -55.007979801441394
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,24 +14,24 @@
         {
           "type": "path",
           "data": {
-            "pathName": "2 piece"
+            "pathName": "Test2M"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "3rd piece"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "4th piece"
+            "pathName": "Test2MBack"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Test Autos",
   "choreoAuto": false
 }

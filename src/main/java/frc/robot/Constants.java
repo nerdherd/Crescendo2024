@@ -90,7 +90,9 @@ public final class Constants {
                                                               kVisionSTDy,
                                                               kVisionSTDtheta);
     // VecBuilder.fill(kVisionSTDx, kVisionSTDy, kVisionSTDtheta);
-
+    public static final PrefDouble kPThetaTeleop = new PrefDouble("kP Theta Teleop", 0);
+    public static final PrefDouble kIThetaTeleop = new PrefDouble("kI Theta Teleop", 0);
+    public static final PrefDouble kDThetaTeleop = new PrefDouble("kD Theta Teleop", 0);
 
     // Distance between right and left wheels
     public static final double kTrackWidth = Units.inchesToMeters(21);
@@ -169,9 +171,9 @@ public final class Constants {
   }
 
   public static final class SwerveAutoConstants {
-    public static final double kPTurnToAngle = SmartDashboard.getNumber("kP Theta Teleop", 6);
-    public static final double kITurnToAngle = SmartDashboard.getNumber("kI Theta Teleop", 0);
-    public static final double kDTurnToAngle = SmartDashboard.getNumber("kD Theta Teleop", 0.2);
+    public static final PrefDouble kPTurnToAngle = new PrefDouble("kP Theta Teleop", 8);
+    public static final PrefDouble kITurnToAngle = new PrefDouble("kI Theta Teleop", 0);
+    public static final PrefDouble kDTurnToAngle = new PrefDouble("kD Theta Teleop", 0.45);
     public static final double kTurnToAnglePositionToleranceAngle = 5;
     public static final double kTurnToAngleVelocityToleranceAnglesPerSec = 2;
 
@@ -324,6 +326,7 @@ public final class Constants {
     // ************************************** SHOOTER CONSTANTS *************************************** //
 
     public static final PrefDouble kIntakeVelocity = new PrefDouble("Intake Velocity", 0);
+    public static final PrefDouble kAutoIntakeVelocity = new PrefDouble("Intake Velocity Auto", 90);
     public static final double kIntakeMaxVelocity =  100;
     public static final double kIntakeMinVelocity = -100;
 
