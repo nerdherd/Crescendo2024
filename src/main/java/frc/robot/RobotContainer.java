@@ -135,25 +135,41 @@ public class RobotContainer {
         shooterPivot
       ));
 
-    swerveDrive.setDefaultCommand(
-      new SwerveJoystickCommand(
-        swerveDrive,
-        () -> -commandDriverController.getLeftY(), // Horizontal translation
-        commandDriverController::getLeftX, // Vertical Translation
-        // () -> 0.0, // debug
-        commandDriverController::getRightX, // Rotation
-
-        () -> false, // Robot oriented
-
-        driverController::getCrossButton, // Towing
-        // driverController::getR2Button, // Precision/"Sniper Button"
-        () -> driverController.getR2Button(), // Precision mode (disabled)
-        () -> driverController.getCircleButton(), // Turn to angle
-        // () -> false, // Turn to angle (disabled)
-        () -> { // Turn To angle Direction
-          return 0.0;
-        }
-      ));
+      swerveDrive.setDefaultCommand(
+        new SwerveJoystickCommand(
+          swerveDrive,
+          () -> -commandDriverController.getLeftY(), // Horizontal translation
+          commandDriverController::getLeftX, // Vertical Translation
+          
+          () -> {
+            if(driverController.getR1Button() && driverController.getL2Button()){
+              return 0.0;
+            }
+            if(driverController.getR1Button()){
+              return -4.5;
+            }
+            if(driverController.getL2Button()){
+              return 4.5;
+            }
+            return 0.0;
+          },
+          () -> false, // Field oriented
+          driverController::getCrossButton, // Towing
+          () -> driverController.getR2Button(), // Precision mode (disabled)
+          () -> true, // Turn to angle
+          () -> { // Turn To angle Direction
+            double xValue = commandDriverController.getRightX();
+            double yValue = commandDriverController.getRightY();
+            double magnitude = (xValue*xValue) + (yValue*yValue);
+            if (magnitude > 0.49) {
+              double angle = (90 + NerdyMath.radiansToDegrees(Math.atan2(commandDriverController.getRightY(), commandDriverController.getRightX())));
+              angle = (((-1 * angle) % 360) + 360) % 360;
+              SmartDashboard.putNumber("desired angle", angle);
+              return angle;
+            }
+            return 1000.0;
+          }
+        ));
   }
 
   public void initDefaultCommands_autonomousAndTest() {
