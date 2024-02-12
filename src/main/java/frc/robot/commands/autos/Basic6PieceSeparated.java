@@ -32,7 +32,7 @@ public class Basic6PieceSeparated extends SequentialCommandGroup {
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
-            Commands.runOnce(()->swerve.setPoseMeters(startingPose)),
+            Commands.runOnce(()->swerve.resetOdometry(startingPose)),
             Commands.sequence(
                 Commands.deadline(
                     AutoBuilder.followPath((pathGroup.get(0))),

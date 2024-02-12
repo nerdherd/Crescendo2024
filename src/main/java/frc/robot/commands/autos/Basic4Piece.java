@@ -32,7 +32,7 @@ public class Basic4Piece extends SequentialCommandGroup {
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
-            Commands.runOnce(()->swerve.setPoseMetersWithAlliance(startingPose)),
+            Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
             Commands.deadline(
                 // Commands.deadline(
                 //     Commands.waitSeconds(1.5),

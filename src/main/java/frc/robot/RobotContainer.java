@@ -40,7 +40,6 @@ import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.imu.PigeonV2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
-import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
 import frc.robot.subsystems.vision.NoteAssistance;
 import frc.robot.subsystems.vision.farfuture.DriverAssist;
 import frc.robot.util.NerdyMath;
@@ -78,18 +77,14 @@ public class RobotContainer {
    */
   public RobotContainer() {
     try {
-      // Pass in "sunflowers" in reverse order of priority (most important last)
-      // swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontSunflower);
-
       noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
       apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
-      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, apriltagCamera);
+      swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
 
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
 
-    // driverAssist.changePipeline(4);
     apriltagCamera.toggleLight(false);
 
     initAutoChoosers();

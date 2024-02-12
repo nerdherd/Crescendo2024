@@ -21,7 +21,7 @@ public class ExamplePath extends SequentialCommandGroup {
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.getImu().setOffset(0)),
-            Commands.runOnce(() -> swerve.setPoseMeters(startingPose)),
+            Commands.runOnce(() -> swerve.resetOdometry(startingPose)),
             AutoBuilder.followPath(pathGroup.get(0)),
             AutoBuilder.followPath(pathGroup.get(1))
         );

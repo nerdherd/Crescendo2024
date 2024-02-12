@@ -54,11 +54,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
 
     private Field2d field;
 
-    public enum SwerveModuleType {
-        MAG_ENCODER,
-        CANCODER
-    }
-
     public enum DRIVE_MODE {
         FIELD_ORIENTED,
         ROBOT_ORIENTED,
@@ -68,43 +63,38 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     /**
      * Construct a new {@link SwerveDrivetrain}
      */
-    public SwerveDrivetrain(Gyro gyro, SwerveModuleType moduleType, DriverAssist vision) throws IllegalArgumentException {
-        switch (moduleType) {
-            case CANCODER:
-                frontLeft = new SwerveModule(
-                    kFLDriveID,
-                    kFLTurningID,
-                    kFLDriveReversed,
-                    kFLTurningReversed,
-                    CANCoderConstants.kFLCANCoderID,
-                    CANCoderConstants.kFLCANCoderReversed);
-                frontRight = new SwerveModule(
-                    kFRDriveID,
-                    kFRTurningID,
-                    kFRDriveReversed,
-                    kFRTurningReversed,
-                    CANCoderConstants.kFRCANCoderID,
-                    CANCoderConstants.kFRCANCoderReversed);
-                backLeft = new SwerveModule(
-                    kBLDriveID,
-                    kBLTurningID,
-                    kBLDriveReversed,
-                    kBLTurningReversed,
-                    CANCoderConstants.kBLCANCoderID,
-                    CANCoderConstants.kBLCANCoderReversed);
-                backRight = new SwerveModule(
-                    kBRDriveID,
-                    kBRTurningID,
-                    kBRDriveReversed,
-                    kBRTurningReversed,
-                    CANCoderConstants.kBRCANCoderID,
-                    CANCoderConstants.kBRCANCoderReversed);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid Swerve Module Type provided.");
-        }
+    public SwerveDrivetrain(Gyro gyro, DriverAssist vision) throws IllegalArgumentException {
+        frontLeft = new SwerveModule(
+            kFLDriveID,
+            kFLTurningID,
+            kFLDriveReversed,
+            kFLTurningReversed,
+            CANCoderConstants.kFLCANCoderID,
+            CANCoderConstants.kFLCANCoderReversed);
+        frontRight = new SwerveModule(
+            kFRDriveID,
+            kFRTurningID,
+            kFRDriveReversed,
+            kFRTurningReversed,
+            CANCoderConstants.kFRCANCoderID,
+            CANCoderConstants.kFRCANCoderReversed);
+        backLeft = new SwerveModule(
+            kBLDriveID,
+            kBLTurningID,
+            kBLDriveReversed,
+            kBLTurningReversed,
+            CANCoderConstants.kBLCANCoderID,
+            CANCoderConstants.kBLCANCoderReversed);
+        backRight = new SwerveModule(
+            kBRDriveID,
+            kBRTurningID,
+            kBRDriveReversed,
+            kBRTurningReversed,
+            CANCoderConstants.kBRCANCoderID,
+            CANCoderConstants.kBRCANCoderReversed);
 
         this.gyro = gyro;
+
         /** @param stateStdDevs Standard deviations of the pose estimate (x position in meters, y position
          *     in meters, and heading in radians). Increase these numbers to trust your state estimate
          *     less.
@@ -115,20 +105,10 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         this.poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d(),
           VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // TODO
           VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); // TODO
-          //VecBuilder.fill(0.1, 0.1, 0.05), VecBuilder.fill(0.7, 0.7, 0.6)
-        //   kVisionSTDx,
-        //   kVisionSTDy,
-        //   kVisionSTDtheta
-        // this.poseEstimator.setVisionMeasurementStdDevs(kBaseVisionPoseSTD);
 
         this.vision = vision;
-        // this.odometer = new SwerveDriveOdometry(
-        //     kDriveKinematics, 
-        //     new Rotation2d(0), 
-        //     getModulePositions()); 
         
         field = new Field2d();
-        // field.setRobotPose(odometer.getPoseMeters());
         field.setRobotPose(poseEstimator.getEstimatedPosition());
 
         AutoBuilder.configureHolonomic(
@@ -152,9 +132,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             this);
     }
 
-    double previousVisionX = -1;
-
     boolean initPoseByVisionDone = false;
+
     /**
      * Have modules move towards states and update odometry
      */
@@ -163,7 +142,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         if (!isTest) {
             runModules();
         }
-        // odometer.update(gyro.getRotation2d(), getModulePositions());
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
         counter = (counter + 1) % visionFrequency;
 
@@ -207,8 +185,16 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
      * @param pose  A Pose2D representing the pose of the robot
      */
     public void resetOdometry(Pose2d pose) {
-        // odometer.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
         poseEstimator.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
+    }
+
+    public void resetOdometryWithAlliance(Pose2d pose){
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent() && alliance.get().equals(Alliance.Red)) {
+            resetOdometry(GeometryUtil.flipFieldPose(pose));
+        } else {
+            resetOdometry(pose);
+        }
     }
 
     public void refreshModulePID() {
@@ -357,24 +343,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         frontRight.setDesiredState(towModuleStates[1], false);
         backLeft.setDesiredState(towModuleStates[2], false);
         backRight.setDesiredState(towModuleStates[3], false);
-    }
-
-    /**
-     * Reset the odometry to the specified position.
-     * @param pose
-     */
-    public void setPoseMeters(Pose2d pose) {
-        // odometer.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
-        poseEstimator.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
-    }
-
-    public void setPoseMetersWithAlliance(Pose2d pose){
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent() && alliance.get().equals(Alliance.Red)) {
-            setPoseMeters(GeometryUtil.flipFieldPose(pose));
-        } else {
-            setPoseMeters(pose);
-        }
     }
 
     public void initShuffleboard(LOG_LEVEL level) {

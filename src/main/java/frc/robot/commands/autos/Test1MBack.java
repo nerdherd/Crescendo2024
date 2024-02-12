@@ -21,7 +21,7 @@ public class Test1MBack extends SequentialCommandGroup {
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.getImu().setOffset(0)),
-            Commands.runOnce(() -> swerve.setPoseMetersWithAlliance(startingPose)),
+            Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
             AutoBuilder.followPath(pathGroup.get(0)),
             Commands.waitSeconds(1),
             AutoBuilder.followPath(pathGroup.get(1)),

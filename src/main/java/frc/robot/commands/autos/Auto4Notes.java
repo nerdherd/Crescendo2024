@@ -33,7 +33,7 @@ public class Auto4Notes extends SequentialCommandGroup {
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
-            Commands.runOnce(()->swerve.setPoseMeters(startingPose)),
+            Commands.runOnce(()->swerve.resetOdometry(startingPose)),
 
             AutoBuilder.followPath((pathGroup.get(0))),
 
