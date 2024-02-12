@@ -14,24 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Test1M"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Test1MBack"
+            "pathName": "Test2M"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Test Autos",
   "choreoAuto": false
 }
