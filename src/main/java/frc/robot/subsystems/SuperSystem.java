@@ -13,6 +13,7 @@ public class SuperSystem {
     public ShooterRoller shooterRoller;
     public Indexer indexer;
     public ColorSensor colorSensor;
+    public LinearActuator linearActuator;
 
     public SuperSystem(IntakePivot intakePivot, IntakeRoller intakeRoller, 
                         ShooterPivot shooterPivot, ShooterRoller shooterRoller,
@@ -286,5 +287,9 @@ public class SuperSystem {
                 indexer.stop();
             }
         );
+    }
+
+    public Command retract() {
+        Commands.runOnce (() -> linearActuator.retract());
     }
 }
