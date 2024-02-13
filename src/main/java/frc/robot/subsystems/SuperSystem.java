@@ -152,9 +152,13 @@ public class SuperSystem {
                 intakePickup(),
                 shooterHandoff()
                 ),
+            intakeRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
             indexer.indexCommand(),
             intakeRoller.intakeCommand(),
             Commands.waitUntil(colorSensor::noteIntook),
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", false)),
             intakeRoller.stopCommand(),
             indexer.stopCommand()
         );
