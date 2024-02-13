@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.util.NerdyMath;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.ShooterConstants;
 
 public class IntakePivot extends SubsystemBase implements Reportable {
     private final TalonFX pivot;
@@ -113,7 +114,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         IntakeConstants.kPivotOffset.loadPreferences();
         throughBore.setPositionOffset(IntakeConstants.kPivotOffset.get());
 
-        double position = throughBore.getAbsolutePosition() - throughBore.getPositionOffset();
+        double position = getAbsolutePosition();
         position = mapRev(position);
 
         // pivot.setPosition(position);
@@ -132,6 +133,16 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         IntakeConstants.kPivotOffset.uploadPreferences();
         resetEncoder();
     }
+
+    // public void zeroAbsoluteEncoderFullStow() {
+    //     throughBore.reset();
+    //     IntakeConstants.kFullStowPosition.loadPreferences();
+    //     throughBore.setPositionOffset((throughBore.getPositionOffset() + IntakeConstants.kFullStowPosition.get()) % 1);
+    //     IntakeConstants.kPivotOffset.set(throughBore.getPositionOffset());
+    //     IntakeConstants.kPivotOffset.uploadPreferences();
+
+    //     resetEncoder();
+    // }
 
     @Override
     public void periodic() {
@@ -162,6 +173,13 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
     public double getPosition() {
         return pivot.getPosition().getValueAsDouble();
+    }
+
+    public double getAbsolutePosition() {
+        if (IntakeConstants.kPivotAbsoluteEncoderInverted) {
+            return throughBore.getPositionOffset() - throughBore.getAbsolutePosition();
+        }
+        return throughBore.getAbsolutePosition() - throughBore.getPositionOffset();
     }
 
     // Checks whether the pivot is within the deadband for a position

@@ -344,6 +344,7 @@ public final class Constants {
     public static final PrefBool fullDisableIntake = new PrefBool("Full Disable Intake Pivot", false);
 
     public static final double kPivotGearRatio = 36;
+    public static final boolean kPivotAbsoluteEncoderInverted = false;
 
     public static final PrefDouble kPickupPosition  = new PrefDouble("Intake Pickup Position", 0);
     public static final PrefDouble kNeutralPosition = new PrefDouble("Intake Neutral Position", 0);
