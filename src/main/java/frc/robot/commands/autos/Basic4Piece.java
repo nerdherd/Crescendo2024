@@ -25,10 +25,10 @@ public class Basic4Piece extends SequentialCommandGroup {
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
             Commands.deadline(
-                // Commands.deadline(
-                //     Commands.waitSeconds(1.5),
-                //     superSystem.shootSequence2()
-                // ),
+                Commands.deadline(
+                    Commands.waitSeconds(1.5),
+                    superSystem.shootSequence2()
+                ),
                 Commands.sequence(
                     Commands.waitSeconds(2),
                     AutoBuilder.followPath((pathGroup.get(0))),
