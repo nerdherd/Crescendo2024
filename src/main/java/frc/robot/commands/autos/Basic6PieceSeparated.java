@@ -24,51 +24,49 @@ public class Basic6PieceSeparated extends SequentialCommandGroup {
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
-            Commands.deadline(
+            Commands.sequence(
                 Commands.deadline(
                     Commands.waitSeconds(1.5), // possibly change this time based on testing time
                     superSystem.shootSequence2()
                 ),
-                Commands.sequence(
-                    Commands.deadline(
-                        AutoBuilder.followPath((pathGroup.get(0))),
-                        superSystem.intakeDirectShoot()
-                    ),               
-                    AutoBuilder.followPath(pathGroup.get(1)),
-                    Commands.deadline(
-                        Commands.sequence(
-                            AutoBuilder.followPath(pathGroup.get(2)),
-                            Commands.waitSeconds(1)
-                        ),
-                        superSystem.intakePickup(),
-                        superSystem.intakeBasic()
+                Commands.deadline(
+                    AutoBuilder.followPath((pathGroup.get(0))),
+                    superSystem.intakeDirectShoot()
+                ),               
+                AutoBuilder.followPath(pathGroup.get(1)),
+                Commands.deadline(
+                    Commands.sequence(
+                        AutoBuilder.followPath(pathGroup.get(2)),
+                        Commands.waitSeconds(1)
                     ),
-                    AutoBuilder.followPath(pathGroup.get(3)),
-                    Commands.parallel(
-                        AutoBuilder.followPath(pathGroup.get(4)),
-                        superSystem.shooterRoller.setEnabledCommand(true),
-                        superSystem.shooterRoller.shootSpeaker()   
+                    superSystem.intakePickup(),
+                    superSystem.intakeBasic()
+                ),
+                AutoBuilder.followPath(pathGroup.get(3)),
+                Commands.parallel(
+                    AutoBuilder.followPath(pathGroup.get(4)),
+                    superSystem.shooterRoller.setEnabledCommand(true),
+                    superSystem.shooterRoller.shootSpeaker()   
+                ),
+                superSystem.indexer.setEnabledCommand(true),
+                superSystem.indexer.indexCommand(),
+                AutoBuilder.followPath(pathGroup.get(5)),
+                Commands.deadline(
+                    Commands.sequence(
+                        AutoBuilder.followPath(pathGroup.get(6)),
+                        Commands.waitSeconds(1)
                     ),
-                    superSystem.indexer.setEnabledCommand(true),
-                    superSystem.indexer.indexCommand(),
-                    AutoBuilder.followPath(pathGroup.get(5)),
-                    Commands.deadline(
-                        Commands.sequence(
-                            AutoBuilder.followPath(pathGroup.get(6)),
-                            Commands.waitSeconds(1)
-                        ),
-                        superSystem.intakePickup(),
-                        superSystem.intakeBasic()
-                    ),
-                    AutoBuilder.followPath(pathGroup.get(7)),
-                    Commands.parallel(
-                        AutoBuilder.followPath(pathGroup.get(8)),
-                        superSystem.shooterRoller.setEnabledCommand(true),
-                        superSystem.shooterRoller.shootSpeaker()
-                    ),
-                    superSystem.indexer.setEnabledCommand(true),
-                    superSystem.indexer.indexCommand()
-                    )
+                    superSystem.intakePickup(),
+                    superSystem.intakeBasic()
+                ),
+                AutoBuilder.followPath(pathGroup.get(7)),
+                Commands.parallel(
+                    AutoBuilder.followPath(pathGroup.get(8)),
+                    superSystem.shooterRoller.setEnabledCommand(true),
+                    superSystem.shooterRoller.shootSpeaker()
+                ),
+                superSystem.indexer.setEnabledCommand(true),
+                superSystem.indexer.indexCommand()
                 )
             );
     }

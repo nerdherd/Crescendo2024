@@ -26,6 +26,7 @@ import frc.robot.commands.autos.Auto4NotesDirect;
 import frc.robot.commands.autos.Basic2Piece;
 import frc.robot.commands.autos.Basic3Piece;
 import frc.robot.commands.autos.Basic4Piece;
+import frc.robot.commands.autos.Basic4PieceSeparated;
 import frc.robot.commands.autos.Basic6PieceSeparated;
 import frc.robot.commands.autos.Test1M;
 import frc.robot.commands.autos.Test1MBack;
@@ -238,6 +239,10 @@ public class RobotContainer {
 
     if (paths.contains("Basic4Piece")) {
       autoChooser.setDefaultOption("Basic4Piece", new Basic4Piece(swerveDrive, "Basic4Piece", superSystem));
+    }
+
+    if (paths.contains("Basic4PieceSeparated")) {
+      autoChooser.setDefaultOption("Basic4PieceSeparated", new Basic4PieceSeparated(swerveDrive, "Basic4PieceSeparated", superSystem));
     }
 
     // if (paths.contains("Basic5Piece")) {
