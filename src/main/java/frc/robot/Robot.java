@@ -48,6 +48,7 @@ public class Robot extends TimedRobot {
     robotContainer.imu.zeroAll();
     // robotContainer.swerveDrive.setVelocityControl(false);
     autoCommand = robotContainer.getAutonomousCommand();
+    robotContainer.initDefaultCommands_autonomousAndTest();
 
     if (autoCommand != null) {
       autoCommand.schedule();
@@ -73,7 +74,7 @@ public class Robot extends TimedRobot {
     robotContainer.intakeRoller.configurePID();
     robotContainer.shooterRoller.configurePID();
     robotContainer.indexer.configurePID();
-    robotContainer.initDefaultCommands();
+    robotContainer.initDefaultCommands_teleop();
   }
 
   @Override
@@ -82,6 +83,7 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
+    robotContainer.initDefaultCommands_autonomousAndTest();
   }
 
   @Override

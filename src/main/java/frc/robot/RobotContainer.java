@@ -110,7 +110,7 @@ public class RobotContainer {
       return false;
   }
 
-  public void initDefaultCommands() {
+  public void initDefaultCommands_teleop() {
 
     intakePivot.setDefaultCommand(
       new RunCommand(
@@ -144,6 +144,29 @@ public class RobotContainer {
         commandDriverController::getRightX, // Rotation
 
         () -> false, // Robot oriented
+
+        driverController::getCrossButton, // Towing
+        // driverController::getR2Button, // Precision/"Sniper Button"
+        () -> driverController.getR2Button(), // Precision mode (disabled)
+        () -> driverController.getCircleButton(), // Turn to angle
+        // () -> false, // Turn to angle (disabled)
+        () -> { // Turn To angle Direction
+          return 0.0;
+        }
+      ));
+  }
+
+  public void initDefaultCommands_autonomousAndTest() {
+    swerveDrive.setDefaultCommand(
+      new SwerveJoystickCommand(
+        swerveDrive,
+        () -> -commandDriverController.getLeftY(), // Horizontal translation
+        commandDriverController::getLeftX, // Vertical Translation
+        // () -> 0.0, // debug
+        commandDriverController::getRightX, // Rotationaq
+
+        // driverController::getSquareButton, // Field oriented
+        () -> true, // should be robot oriented now on true
 
         driverController::getCrossButton, // Towing
         // driverController::getR2Button, // Precision/"Sniper Button"
