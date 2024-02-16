@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+//import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,6 +15,11 @@ import frc.robot.Constants.ShooterConstants;
 public class Robot extends TimedRobot {
   private Command autoCommand;
   private RobotContainer robotContainer;
+
+  /*  //One Peak Music 1
+  TalonFx talonFX;
+  Orchestra orchestra;
+   */
   
   @Override
   public void robotInit() {
@@ -23,6 +29,11 @@ public class Robot extends TimedRobot {
     DataLogManager.logNetworkTables(true);
     enableLiveWindowInTest(false);
     robotContainer.swerveDrive.refreshModulePID();
+/*    //One Peak Music 2
+    Orchestra obj = new Orchestra();
+    Orchestra.addInstrument(TalonFX);
+ */
+    }
   }
 
   @Override
@@ -62,6 +73,11 @@ public class Robot extends TimedRobot {
     if (autoCommand != null) {
       autoCommand.schedule();
     }
+    /*    //One Peak Music 3
+    orchestra.loadMusic(); //have to get chirp file
+    orchestra.play();
+     */
+
   }
 
   @Override
