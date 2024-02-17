@@ -68,6 +68,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         intakeConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
         intakeConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         intakeConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        
         intakeConfigs.Audio.AllowMusicDurDisable = true;
 
         StatusCode response = pivotConfigurator.apply(intakeConfigs);
@@ -148,14 +149,16 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     public void periodic() {
         if (IntakeConstants.fullDisableIntake.get()) {
             pivot.setControl(brakeRequest);
+            enabled = false;
             return;
         }
+        
+        pivot.setControl(brakeRequest);
 
-        if (enabled) {
-            pivot.setControl(motionMagicRequest);
-        } else {
-            pivot.setControl(brakeRequest);
-        }
+        // if (enabled) {
+        //     pivot.setControl(motionMagicRequest);
+        // } else {
+        // }
     }
 
     /**

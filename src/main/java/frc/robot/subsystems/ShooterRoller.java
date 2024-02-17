@@ -7,10 +7,12 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -30,18 +32,26 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
 
     private final VelocityVoltage leftVelocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
     private final VelocityVoltage rightVelocityRequest = new VelocityVoltage(0, 0, true, 0,0, false, false, false);
+    
+    private final VoltageOut leftVoltageRequest = new VoltageOut(0);
+    private final VoltageOut rightVoltageRequest = new VoltageOut(0);
+
     private final NeutralOut brakeRequest = new NeutralOut();
     
     private boolean enabled = true;
+
 
     public ShooterRoller() {
         leftShooter = new TalonFX(ShooterConstants.kLeftMotorID, SuperStructureConstants.kCANivoreBusName);
         rightShooter = new TalonFX(ShooterConstants.kRightMotorID, SuperStructureConstants.kCANivoreBusName);
 
+        leftVoltageRequest.EnableFOC = true;
+        rightVoltageRequest.EnableFOC = true;
+
         leftShooterConfigurator = leftShooter.getConfigurator();
         rightShooterConfigurator = rightShooter.getConfigurator();
 
-        leftShooter.setInverted(true);
+        leftShooter.setInverted(false);
         rightShooter.setInverted(false);
 
         CommandScheduler.getInstance().registerSubsystem(this);
@@ -56,7 +66,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         leftMotorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         leftMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         leftMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
-        leftMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        leftMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         leftMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
         leftMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
         leftMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -69,7 +79,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         rightMotorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         rightMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
         rightMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
-        rightMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        rightMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         rightMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
         rightMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
         rightMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -89,12 +99,19 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
     }
 
     public void configurePID() {
-        ShooterConstants.kOuttakeHigh.loadPreferences();
-        ShooterConstants.kOuttakeLow.loadPreferences();
-        ShooterConstants.kOuttakeAmp.loadPreferences();
-        ShooterConstants.kOuttakeAuto1.loadPreferences();
-        ShooterConstants.kOuttakeAuto2.loadPreferences();
-        ShooterConstants.kIntake.loadPreferences();
+        ShooterConstants.kTopOuttakeHigh.loadPreferences();
+        ShooterConstants.kTopOuttakeLow.loadPreferences();
+        ShooterConstants.kTopOuttakeAmp.loadPreferences();
+        ShooterConstants.kTopOuttakeAuto1.loadPreferences();
+        ShooterConstants.kTopOuttakeAuto2.loadPreferences();
+        ShooterConstants.kTopIntake.loadPreferences();
+
+        ShooterConstants.kBottomOuttakeHigh.loadPreferences();
+        ShooterConstants.kBottomOuttakeLow.loadPreferences();
+        ShooterConstants.kBottomOuttakeAmp.loadPreferences();
+        ShooterConstants.kBottomOuttakeAuto1.loadPreferences();
+        ShooterConstants.kBottomOuttakeAuto2.loadPreferences();
+        ShooterConstants.kBottomIntake.loadPreferences();
         TalonFXConfiguration leftMotorConfigs = new TalonFXConfiguration();
         
         leftShooterConfigurator.refresh(leftMotorConfigs);
@@ -133,8 +150,13 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
     @Override
     public void periodic() {
         if (enabled) {
-            leftShooter.setControl(leftVelocityRequest);
-            rightShooter.setControl(rightVelocityRequest);
+            leftVoltageRequest.Output = leftVelocityRequest.Velocity * 12 / 100.0;
+            rightVoltageRequest.Output = rightVelocityRequest.Velocity * 12 / 100.0;
+            leftShooter.setControl(leftVoltageRequest);
+            rightShooter.setControl(rightVoltageRequest);
+
+            // leftShooter.setControl(leftVelocityRequest);
+            // rightShooter.setControl(rightVelocityRequest);
         } else {
             leftShooter.setControl(brakeRequest);
             rightShooter.setControl(brakeRequest);
@@ -214,6 +236,10 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         return Commands.runOnce(() -> setVelocity(velocity, velocity));
     }
 
+    public Command setVelocityCommand(double topVelocity, double bottomVelocity) {
+        return Commands.runOnce(() -> setVelocity(topVelocity, bottomVelocity));
+    }
+
     public Command incrementLeftVelocityCommand(double increment) {
         return Commands.runOnce(() -> incrementLeftVelocity(increment));
     }
@@ -288,19 +314,19 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
     }
 
     public Command shootSpeaker() {
-        return setVelocityCommand(ShooterConstants.kOuttakeHigh.get());
+        return setVelocityCommand(ShooterConstants.kTopOuttakeHigh.get());
     }
 
     public Command shootSpeakerSlow() {
-        return setVelocityCommand(ShooterConstants.kOuttakeLow.get());
+        return setVelocityCommand(ShooterConstants.kTopOuttakeLow.get());
     }
 
     public Command shootSpeakerAuto1() {
-        return setVelocityCommand(ShooterConstants.kOuttakeAuto1.get());
+        return setVelocityCommand(ShooterConstants.kTopOuttakeAuto1.get(), ShooterConstants.kBottomOuttakeAuto1.get());
     }
 
     public Command shootAmp() {
-        return setVelocityCommand(ShooterConstants.kOuttakeAmp.get());
+        return setVelocityCommand(ShooterConstants.kTopOuttakeAmp.get());
     }
 
     //****************************** LOGGING METHODS ******************************//
@@ -315,6 +341,11 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         tab.addNumber("Right Velocity", ()-> rightShooter.getVelocity().getValueAsDouble());
         tab.addNumber("Left Target Velocity", ()-> leftVelocityRequest.Velocity);
         tab.addNumber("Right Target Velocity", ()-> rightVelocityRequest.Velocity);
+        tab.addNumber("Left Supply Current", () -> leftShooter.getSupplyCurrent().getValueAsDouble());
+        tab.addNumber("Left Stator Current", () -> leftShooter.getStatorCurrent().getValueAsDouble());
+        tab.addNumber("Right Supply Current", () -> rightShooter.getSupplyCurrent().getValueAsDouble());
+        tab.addNumber("Right Stator Current", () -> rightShooter.getStatorCurrent().getValueAsDouble());
+
     }
 }
 

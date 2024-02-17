@@ -59,6 +59,8 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
         intakeConfigs.MotorOutput.DutyCycleNeutralDeadband = IntakeConstants.kIntakeNeutralDeadband;
         intakeConfigs.CurrentLimits.SupplyCurrentLimit = 40;
         intakeConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        // intakeConfigs.CurrentLimits.StatorCurrentLimit = 50;
+        // intakeConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         intakeConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         intakeConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
         intakeConfigs.Audio.AllowMusicDurDisable = true;
