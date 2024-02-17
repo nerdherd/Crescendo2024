@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.util.NerdyMath;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.ShooterConstants;
 
 public class IntakePivot extends SubsystemBase implements Reportable {
     private final TalonFX pivot;

@@ -1,33 +1,19 @@
 package frc.robot.subsystems.vision;
 
-import java.util.Optional;
-
-import com.ctre.phoenix6.signals.Licensing_IsSeasonPassedValue;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Reportable;
-import frc.robot.subsystems.vision.Limelight;
 import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.util.NerdyMath;
-import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import edu.wpi.first.wpilibj.Timer;
 
