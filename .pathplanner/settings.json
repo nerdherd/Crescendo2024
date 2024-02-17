@@ -3,11 +3,7 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "3 Piece",
-    "6 Piece",
-    "Basic4Piece",
-    "Basic4PiecePaths",
-    "Test Paths"
+    "Mid4Notes"
   ],
   "autoFolders": [
     "Comp Autos",
