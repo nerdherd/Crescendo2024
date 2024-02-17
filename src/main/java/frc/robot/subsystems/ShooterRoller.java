@@ -348,7 +348,9 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         tab.addNumber("Left Stator Current", () -> leftShooter.getStatorCurrent().getValueAsDouble());
         tab.addNumber("Right Supply Current", () -> rightShooter.getSupplyCurrent().getValueAsDouble());
         tab.addNumber("Right Stator Current", () -> rightShooter.getStatorCurrent().getValueAsDouble());
-
+        tab.addDouble("Right Shooter Applied Voltage", () -> rightShooter.getMotorVoltage().getValueAsDouble());
+        tab.addDouble("Left Shooter Applied Voltage", () -> leftShooter.getMotorVoltage().getValueAsDouble());
+        
     }
 }
 

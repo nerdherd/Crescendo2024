@@ -377,6 +377,8 @@ public final class Constants {
     public static final double kIndexerNeutralDeadband = 0.05;
 
     public static final PrefDouble kIndexerVelocityRPS = new PrefDouble("Indexer Velocity", 50);
+    public static final PrefDouble kTrapVelocityRPS = new PrefDouble("Trap Velocity", 50);
+
     public static final PrefDouble kIndexerReverseRPS = new PrefDouble("Indexer Reverse Velocity", -10);
     public static final double kIndexerMinVelocityRPS = -100;
     public static final double kIndexerMaxVelocityRPS = 100;

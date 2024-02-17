@@ -47,7 +47,7 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
         trapConfigurator = trap.getConfigurator();
 
 
-        trap.setControl(new Follower(IndexerConstants.kIndexerMotorID, false));
+        // trap.setControl(new Follower(IndexerConstants.kIndexerMotorID, false));
 
         CommandScheduler.getInstance().registerSubsystem(this);
         
@@ -102,6 +102,8 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
 
     public void configurePID() {
         IndexerConstants.kIndexerVelocityRPS.loadPreferences();
+        IndexerConstants.kTrapVelocityRPS.loadPreferences();
+
         IndexerConstants.kIndexerReverseRPS.loadPreferences();
 
         TalonFXConfiguration indexerMotorConfigs = new TalonFXConfiguration();
@@ -143,8 +145,11 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
     public void periodic() {
         if (enabled) {
             indexer.setControl(indexerVelocityRequest);
+            trap.setControl(trapVelocityRequest);
         } else {
             indexer.setControl(brakeRequest);
+            trap.setControl(brakeRequest);
+
         }
     }
 
@@ -153,7 +158,9 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
     public void stop() {
         this.enabled = false;
         indexerVelocityRequest.Velocity = 0;
+        trapVelocityRequest.Velocity = 0;
         indexer.setControl(brakeRequest);
+        trap.setControl(brakeRequest);
     }
 
     public void setEnabled(boolean enabled) {
@@ -169,6 +176,21 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
                 IndexerConstants.kIndexerMinVelocityRPS, 
                 IndexerConstants.kIndexerMaxVelocityRPS);
     }
+
+    public void setVelocity(double indexerVelocity, double trapVelocity) {
+        indexerVelocityRequest.Velocity = 
+            NerdyMath.clamp(
+                indexerVelocity, 
+                IndexerConstants.kIndexerMinVelocityRPS, 
+                IndexerConstants.kIndexerMaxVelocityRPS);
+        trapVelocityRequest.Velocity = 
+            NerdyMath.clamp(
+                trapVelocity, 
+                IndexerConstants.kIndexerMinVelocityRPS, 
+                IndexerConstants.kIndexerMaxVelocityRPS);
+    }
+
+    
 
     public void incrementVelocity(double increment) {
         setVelocity(indexerVelocityRequest.Velocity + increment);
@@ -186,6 +208,10 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
 
     public Command setVelocityCommand(double velocity) {
         return Commands.runOnce(() -> setVelocity(velocity));
+    }
+
+    public Command setVelocityCommand(double indexerVelocity, double trapVelocity) {
+        return Commands.runOnce(() -> setVelocity(indexerVelocity, trapVelocity));
     }
 
     public Command incrementVelocityCommand(double increment) {
@@ -220,7 +246,7 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
     }
 
     public Command indexCommand() {
-        return setVelocityCommand(IndexerConstants.kIndexerVelocityRPS.get());
+        return setVelocityCommand(IndexerConstants.kIndexerVelocityRPS.get(), IndexerConstants.kTrapVelocityRPS.get());
     }
 
     public Command reverseIndexCommand() {

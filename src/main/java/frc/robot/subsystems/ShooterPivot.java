@@ -346,6 +346,8 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
                 tab.add("Full Stow Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoderFullStow));
                 tab.add("Sync Encoder", Commands.runOnce(this::resetEncoder));
                 tab.addDouble("Absolute Encoder Position", this::getAbsolutePosition);
+                tab.addDouble("Left Pivot Applied Voltage", () -> leftPivot.getMotorVoltage().getValueAsDouble());
+                tab.addDouble("Right Pivot Applied Voltage", () -> rightPivot.getMotorVoltage().getValueAsDouble());
                 break;
         }
     }
