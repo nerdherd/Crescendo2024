@@ -29,11 +29,10 @@ public class Robot extends TimedRobot {
     DataLogManager.logNetworkTables(true);
     enableLiveWindowInTest(false);
     robotContainer.swerveDrive.refreshModulePID();
-/*    //One Peak Music 2
-    Orchestra obj = new Orchestra();
-    Orchestra.addInstrument(TalonFX);
- */
-    }
+    // One Peak Music 2
+    // Orchestra obj = new Orchestra();
+    // Orchestra.addInstrument(TalonFX);
+    // 
   }
 
   @Override
