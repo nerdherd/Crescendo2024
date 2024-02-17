@@ -282,10 +282,11 @@ public class IntakePivot extends SubsystemBase implements Reportable {
             case ALL:
             case MEDIUM:
             case MINIMAL:
-                tab.addDouble("Intake Desired Position", this::getTargetPosition);
-                tab.addDouble("Intake Position", this::getPosition);
+                tab.addDouble("Intake Pivot Desired Position", this::getTargetPosition);
+                tab.addDouble("Intake Pivot Position", this::getPosition);
                 tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));
                 tab.add("Zero Full Stow Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoderFullStow));
+                tab.addNumber("Intake Pivot Applied Voltage", () -> pivot.getMotorVoltage().getValueAsDouble());
                 break;
         }
     }
