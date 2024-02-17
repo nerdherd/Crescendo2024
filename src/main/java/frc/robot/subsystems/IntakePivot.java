@@ -135,15 +135,15 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         resetEncoder();
     }
 
-    // public void zeroAbsoluteEncoderFullStow() {
-    //     throughBore.reset();
-    //     IntakeConstants.kFullStowPosition.loadPreferences();
-    //     throughBore.setPositionOffset((throughBore.getPositionOffset() + IntakeConstants.kFullStowPosition.get()) % 1);
-    //     IntakeConstants.kPivotOffset.set(throughBore.getPositionOffset());
-    //     IntakeConstants.kPivotOffset.uploadPreferences();
+    public void zeroAbsoluteEncoderFullStow() {
+        throughBore.reset();
+        IntakeConstants.kPickupPosition.loadPreferences();
+        throughBore.setPositionOffset((throughBore.getPositionOffset() + IntakeConstants.kPickupPosition.get()) % 1);
+        IntakeConstants.kPivotOffset.set(throughBore.getPositionOffset());
+        IntakeConstants.kPivotOffset.uploadPreferences();
 
-    //     resetEncoder();
-    // }
+        resetEncoder();
+    }
 
     @Override
     public void periodic() {
@@ -286,6 +286,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
                 tab.addDouble("Intake Desired Position", this::getTargetPosition);
                 tab.addDouble("Intake Position", this::getPosition);
                 tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));
+                tab.add("Zero Full Stow Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoderFullStow));
                 break;
         }
     }
