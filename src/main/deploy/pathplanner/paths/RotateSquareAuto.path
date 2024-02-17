@@ -80,22 +80,22 @@
     {
       "waypointRelativePos": 1,
       "rotationDegrees": 90.0,
-      "rotateFast": false
+      "rotateFast": true
     },
     {
       "waypointRelativePos": 2,
       "rotationDegrees": 180.0,
-      "rotateFast": false
+      "rotateFast": true
     },
     {
       "waypointRelativePos": 3,
       "rotationDegrees": -90.0,
-      "rotateFast": false
+      "rotateFast": true
     },
     {
       "waypointRelativePos": 4,
       "rotationDegrees": 0.0,
-      "rotateFast": false
+      "rotateFast": true
     }
   ],
   "constraintZones": [],

@@ -272,6 +272,18 @@ public class RobotContainer {
     if (paths.contains("Basic6PieceSeparated")) {
       autoChooser.addOption("Basic6PieceSeparated", new Basic6PieceSeparated(swerveDrive, "Basic6PieceSeparated", superSystem));
     }
+    if (paths.contains("OneMeterSquareAuto")) {
+      autoChooser.addOption("OneMeterSquareAuto", new OneMeterSquareAuto(swerveDrive, "OneMeterSquareAuto"));
+    }
+    if (paths.contains("TwoMeterSquareAuto")) {
+      autoChooser.addOption("TwoMeterSquareAuto", new TwoMeterSquareAuto(swerveDrive, "TwoMeterSquareAuto"));
+    }
+    if (paths.contains("ThreeMeterSquareAuto")) {
+      autoChooser.addOption("ThreeMeterSquareAuto", new ThreeMeterSquareAuto(swerveDrive, "ThreeMeterSquareAuto"));
+    }
+    if (paths.contains("RotateSquareAuto")) {
+      autoChooser.addOption("RotateSquareAuto", new RotateSquareAuto(swerveDrive, "RotateSquareAuto"));
+    }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
