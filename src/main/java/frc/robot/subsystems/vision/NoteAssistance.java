@@ -307,7 +307,7 @@ public class NoteAssistance implements Reportable{
             return;
         }
 
-        speeds[2] = 1 * rotationController.calculate(currentTX, targetTX);
+        speeds[2] = 1 * rotationController.calculate(currentTX, targetTX); // change to negative 1 if opposite
 
         if(rotationSpeed != null)
             rotationSpeed.setDouble(speeds[2]);
@@ -339,6 +339,8 @@ public class NoteAssistance implements Reportable{
     private double getForwardSpeed() { return speeds[0]; }
     private double getSidewaysSpeed() { return speeds[1]; }
     public double getRotationSpeed() { return speeds[2]; }
+
+    public boolean hasTarget() { return limelight.hasValidTarget(); }
 
     public void setLight(boolean lightModeOn) {
         if(lightModeOn) limelight.setLightState(LightMode.ON);
