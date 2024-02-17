@@ -138,6 +138,10 @@ public class RobotContainer {
           commandDriverController::getLeftX, // Vertical Translation
           
           () -> {
+            if (driverController.getCircleButton()) {
+              noteCamera.calculateRotationSpeed(0, 0); // Values from SwerveDrive2024/isMeToKitBot
+              return (noteCamera.getRotationSpeed() * 180 / Math.PI) / 20; // Convert radians to degrees and divide by 20 for how often it's run
+            }
             if(driverController.getR1Button() && driverController.getL2Button()){
               return 0.0;
             }

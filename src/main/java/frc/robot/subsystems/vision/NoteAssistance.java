@@ -338,7 +338,7 @@ public class NoteAssistance implements Reportable{
 
     private double getForwardSpeed() { return speeds[0]; }
     private double getSidewaysSpeed() { return speeds[1]; }
-    private double getRotationSpeed() { return speeds[2]; }
+    public double getRotationSpeed() { return speeds[2]; }
 
     public void setLight(boolean lightModeOn) {
         if(lightModeOn) limelight.setLightState(LightMode.ON);
