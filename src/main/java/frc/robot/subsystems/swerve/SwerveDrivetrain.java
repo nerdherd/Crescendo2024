@@ -11,7 +11,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -21,10 +20,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.vision.DriverAssist;
-import frc.robot.subsystems.vision.farfuture.EMPeach;
 import frc.robot.subsystems.Reportable;
 
 import static frc.robot.Constants.PathPlannerConstants.kPPMaxVelocity;
@@ -103,8 +100,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
          *     the vision pose measurement less.
         */
         this.poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d(),
-          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // TODO
-          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); // TODO
+          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // TODO: Set pose estimator weights
+          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); 
 
         this.vision = vision;
         
@@ -147,8 +144,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
 
         if(vision != null && vision.getAprilTagID() != -1)
         {
-            //TODO: Commented this out
-            if(vision.getTA() > 0.5) { // distance limitation, to be calibrated. TODO
+            if(vision.getTA() > 0.5) { // TODO: vision distance limitation, to be calibrated.
                 SmartDashboard.putBoolean("Vision Used", true);
                 poseEstimator.addVisionMeasurement(vision.getCurrentPose3DVision().toPose2d(), 
                 vision.getVisionFrameTimestamp());

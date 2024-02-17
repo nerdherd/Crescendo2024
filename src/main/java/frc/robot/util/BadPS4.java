@@ -286,8 +286,6 @@ public class BadPS4 extends GenericHID {
         return getR2Button(0.5);
     }
 
-    //TODO: implement getL2ButtonPressed(), getL2ButtonReleased(), getR2ButtonPressed(), and getR2ButtonReleased()
-
     /**
      * Constructs an event instance around the axis value of the right trigger. The returned trigger
      * will be true when the axis value is greater than {@code threshold}.

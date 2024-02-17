@@ -235,8 +235,11 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
     @Override
     public void initShuffleboard(LOG_LEVEL priority) {
         ShuffleboardTab tab = Shuffleboard.getTab("Indexer");
+        tab.addNumber("Indexer Desired Velocity", () -> indexerVelocityRequest.Velocity);
         tab.addNumber("Indexer Velocity", () -> indexer.getVelocity().getValueAsDouble());
-        tab.addNumber("Trap Velocity", () -> indexer.getVelocity().getValueAsDouble());
+        tab.addNumber("Trap Velocity", () -> trap.getVelocity().getValueAsDouble());
+        tab.addNumber("Indexer Applied Voltage", () -> indexer.getMotorVoltage().getValueAsDouble());
+        tab.addNumber("Trap Applied Voltage", () -> trap.getMotorVoltage().getValueAsDouble());
     }
 }
 
