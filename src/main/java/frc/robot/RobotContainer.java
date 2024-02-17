@@ -199,7 +199,7 @@ public class RobotContainer {
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
     commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1, 0, 0, 7))); //1.8, 0, 0, 7
-    commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)));
+    // commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)));
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
@@ -207,6 +207,7 @@ public class RobotContainer {
 
     commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     // commandOperatorController.L2().whileTrue(superSystem.intakeBasic());
+    
     commandOperatorController.L2().whileTrue(superSystem.intakeBasic())
                                   .onFalse(superSystem.backupIndexer());
 

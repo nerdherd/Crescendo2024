@@ -367,17 +367,26 @@ public final class Constants {
   
   public static final class IndexerConstants {
     public static final int kIndexerMotorID = 55;
+    public static final int kTrapMotorID = 0;
+    
     public static final double kIndexerNeutralDeadband = 0.05;
 
     public static final PrefDouble kIndexerVelocityRPS = new PrefDouble("Indexer Velocity", 50);
     public static final PrefDouble kIndexerReverseRPS = new PrefDouble("Indexer Reverse Velocity", -10);
     public static final double kIndexerMinVelocityRPS = -100;
     public static final double kIndexerMaxVelocityRPS = 100;
+
     public static final PrefDouble kIndexerVelocityIncrement = new PrefDouble("Indexer Velocity Increment", 10);
+
     public static final PrefDouble kPIndexerMotor = new PrefDouble("kP Indexer Pivot Motor", 0);
     public static final PrefDouble kIIndexerMotor = new PrefDouble("kI Indexer Pivot Motor", 0);
     public static final PrefDouble kDIndexerMotor = new PrefDouble("kD Indexer Pivot Motor", 0);
     public static final PrefDouble kVIndexerMotor = new PrefDouble("kV Indexer Pivot Motor", 0);
+
+    public static final PrefDouble kPTrapMotor = new PrefDouble("kP Indexer Pivot Motor", 0);
+    public static final PrefDouble kITrapMotor = new PrefDouble("kI Indexer Pivot Motor", 0);
+    public static final PrefDouble kDTrapMotor = new PrefDouble("kD Indexer Pivot Motor", 0);
+    public static final PrefDouble kVTrapMotor = new PrefDouble("kV Indexer Pivot Motor", 0);
   }
     
   public static final class ColorSensorConstants {
