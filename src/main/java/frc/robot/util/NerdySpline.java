@@ -73,7 +73,7 @@ public class NerdySpline {
     }
 
     public double getOutput(double input) {
-        if(input < inputs[0] || input > inputs[inputs.length]) return -1;
+        if(input < inputs[0] || input > inputs[inputs.length - 1]) return -1;
 
         // Find the index of the last point with smaller X
         int i = 0;

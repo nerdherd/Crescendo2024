@@ -48,8 +48,9 @@ public class ShooterVisionAdjustment implements Reportable{
 
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
-        double[] distances = {0, 1, 2, 3};
-        double[] angles = {0, 1, 4, 9};
+        //TODO: Get actual input and output data
+        double[] distances = {0, 1, 2, 3}; // meters
+        double[] angles = {0, 0.841, 0.909, 0.141}; // degrees
 
         angleEquation = new NerdySpline(distances, angles);
         angleEquation.create();
@@ -58,9 +59,6 @@ public class ShooterVisionAdjustment implements Reportable{
     }
 
     public Pose3d getRobotPose() {
-        if(limelight == null) return null;
-        if(limelightHelperUser == null) return null;
-
         limelight.setPipeline(VisionConstants.kAprilTagPipeline);
         if(!limelight.hasValidTarget()) return null;
         if(targetFound != null)
@@ -80,6 +78,17 @@ public class ShooterVisionAdjustment implements Reportable{
         return tagPose.get();
     }
 
+    public void getShooterAngle_test(int numberOfTests, double step) {
+        double[] inputs = new double[numberOfTests];
+        double[] outputs = new double[numberOfTests];
+        for(int i = 0; i < outputs.length; i++) {
+            inputs[i] = i * step;
+            outputs[i] = angleEquation.getOutput(inputs[i]);
+        }
+        SmartDashboard.putNumberArray("Spline Test Inputs", inputs);
+        SmartDashboard.putNumberArray("Spline Test Outputs", outputs);
+    }
+ 
     public double getShooterAngle() {
         Pose3d currentPose = getRobotPose();
         if(currentPose == null) return -1;

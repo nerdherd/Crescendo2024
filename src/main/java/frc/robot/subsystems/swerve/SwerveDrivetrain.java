@@ -23,7 +23,7 @@ import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.imu.Gyro;
-import frc.robot.subsystems.vision.farfuture.DriverAssist;
+import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.farfuture.EMPeach;
 import frc.robot.subsystems.Reportable;
 

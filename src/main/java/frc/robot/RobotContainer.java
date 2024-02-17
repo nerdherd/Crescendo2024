@@ -43,7 +43,7 @@ import frc.robot.subsystems.imu.PigeonV2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.vision.NoteAssistance;
-import frc.robot.subsystems.vision.farfuture.DriverAssist;
+import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.util.NerdyMath;
 
 public class RobotContainer {
@@ -203,6 +203,7 @@ public class RobotContainer {
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
+    //TODO: Make sure April Tag ID is matching 7
     commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1, 0, 0, 7))); //1.8, 0, 0, 7
     // commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)));
 
