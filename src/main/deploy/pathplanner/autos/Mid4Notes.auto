@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7284778050297884,
+      "y": 4.356431195030721
+    },
+    "rotation": -59.30027744918561
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ToMid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ToSpeaker"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note1to2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note1to3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note1to4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note4to1"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
