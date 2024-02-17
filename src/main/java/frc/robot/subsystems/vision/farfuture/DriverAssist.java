@@ -7,6 +7,7 @@ import com.ctre.phoenix6.signals.Licensing_IsSeasonPassedValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -73,9 +74,10 @@ public class DriverAssist implements Reportable{
         
     }
 
-    public void resetBuffer()
+    public void reset()
     {
         limelight.reinitBuffer();
+        dataSampleCount = 0;
     }
 
     public void TagDriving(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetSkew, int tagID) {
@@ -91,69 +93,125 @@ public class DriverAssist implements Reportable{
         );
     }
 
-    
-    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, double targetTA, double targetTX, double targetSkew, int tagID) {
+    private void setRobotPoseByApriltag(SwerveDrivetrain drivetrain, int tagID, boolean resetToCurrentPose)
+    {
+        if(resetToCurrentPose)
+        {
+            dataSampleCount++;
+            if(limelight.getAprilTagID() == tagID)
+            {
+                Pose3d p = getCurrentPose3DVision();
+                drivetrain.resetOdometry(p.toPose2d());
+                drivetrain.getImu().setOffset(p.getRotation().getZ());
+                return;
+            }
+        }
+        else
+        {
+            dataSampleCount = 10000; // make it very big to exit
+        }
+    }
+
+    int dataSampleCount = 0;
+    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples, Pose2d plannedPose, boolean resetToCurrentPose) {
         return Commands.sequence(
+            Commands.runOnce(() -> reset()),
             Commands.run(
-                () -> TagAimingRotation(drivetrain, targetTA, targetTX, targetSkew, tagID)
-            ).until(() -> Math.abs(calculatedAngledPower) <= 0.1)
+                () -> TagAimingRotation(drivetrain, tagID, maxSamples)
+            ).until(() -> dataSampleCount >= minSamples && Math.abs(calculatedAngledPower) <= 0.1),
+
+            Commands.runOnce(() -> reset()),
+            Commands.run(
+                () -> setRobotPoseByApriltag(drivetrain, tagID, resetToCurrentPose)
+            ).until(() -> dataSampleCount >= minSamples )
         );
     }
 
-    PIDController pidTxRotation = new PIDController(0.3, 0, 0); 
-    public void TagAimingRotation(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetAngle, int tagID) {
+
+
+    final double MaxTA = 5;
+    final double MinTA = 1;
+    final double MaxTxIn = 10;
+    final double MinTxIn = 2;
+    private double TxTargetOffsetForCurrentTa(double currentTa )
+    {
+        // make sure to return positive value
+        return ((MaxTxIn-MinTxIn)/(MaxTA-MinTA))*(currentTa-MinTA) + MinTxIn;
+    }
+    PIDController pidTxRotation = new PIDController(0.1, 0, 0); // todo, tuning pls.
+    public void TagAimingRotation(SwerveDrivetrain swerveDrive, int tagID, int maxSamples) {
+        // make sure to reset before or after calling this function
+        // make sure the cross is at the center!!! for tx
+        // tagID == 0 means: don't care of tag's id, be careful for multi-tags location
         double taOffset;
         double txOffset;
-        double skewOffset;
 
-        // Have to consider the Ta for all coeffs!!! Todo
-
-        int foundId = getAprilTagID();
-        if(targetId != null)
-            targetId.setInteger(foundId);
-
-        if(tagID == foundId) {
-            
-            taOffset = getTA();
-            txOffset = getTX();
-            skewOffset = getSkew();
-                 
-            if(currentTaOffset != null)
-                currentTaOffset.setDouble(taOffset);
-            if(currentTxOffset != null)
-                currentTxOffset.setDouble(txOffset);
-            if(currentAngleOffset != null)
-                currentAngleOffset.setDouble(skewOffset);
-
-            calculatedAngledPower = pidTxRotation.calculate(skewOffset, 0);
-            calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.25, 0.25);
-    
-            calculatedForwardPower = 0;//0.1*calculatedAngledPower;
-
-            calculatedSidewaysPower = 0;
-    
-            if(forwardSpeed != null)
-                forwardSpeed.setDouble(calculatedForwardPower);
-            if(sidewaysSpeed != null)
-                sidewaysSpeed.setDouble(calculatedSidewaysPower);
-            if(angularSpeed != null)
-                angularSpeed.setDouble(calculatedAngledPower);
-
-            swerveDrive.drive(calculatedForwardPower, calculatedSidewaysPower, calculatedAngledPower);
-            // if(txOffset > -4*taOffset && txOffset < 4*taOffset) // use math fucntion log? todo
-            // {
-            //     limelight.setLightState(LightMode.BLINK);
-            // }
-            // else{
-            //     limelight.setLightState(LightMode.ON);
-            // }
+        dataSampleCount++;
+        if(maxSamples > 0 && dataSampleCount >= maxSamples)
+        {
+            calculatedAngledPower = 0;
         }
-        else {
-            limelight.setLightState(LightMode.OFF);
+        else
+        {
+            int foundId = getAprilTagID();
+            if(targetId != null)
+                targetId.setInteger(foundId);
+
+            if(tagID == foundId || (tagID == 0 && foundId != -1)) {
+                
+                taOffset = limelight.getArea_avg();
+                txOffset = limelight.getXAngle_avg();
+                    
+                if(currentTaOffset != null)
+                    currentTaOffset.setDouble(taOffset);
+                if(currentTxOffset != null)
+                    currentTxOffset.setDouble(txOffset);
+                if(currentAngleOffset != null)
+                    currentAngleOffset.setDouble(0);
+
+                double txInRangeValue = Math.abs(TxTargetOffsetForCurrentTa(taOffset));
+                if( txOffset < txInRangeValue && txOffset > -1*txInRangeValue ) // todo, tuning pls!!!
+                {
+                    calculatedAngledPower = 0; // in good tx ranges. faster than the pid
+                } 
+                // else if(){} // out of range cases. todo 
+                else
+                {
+                    // pid based on tx, and adding ta/distance as the factor
+                    calculatedAngledPower = pidTxRotation.calculate(txOffset, 0)  * Math.sqrt(taOffset);
+                    calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.3, 0.3); // todo, tuning pls. Have to consider the Ta for all coeffs!!! Todo
+                }
+
+                if(forwardSpeed != null)
+                    forwardSpeed.setDouble(0);
+                if(sidewaysSpeed != null)
+                    sidewaysSpeed.setDouble(0);
+                if(angularSpeed != null)
+                    angularSpeed.setDouble(calculatedAngledPower);
+            }
+            else {
+                calculatedAngledPower = 0;
+            }
         }
+
+        swerveDrive.drive(0, 0, calculatedAngledPower);
     }
 
-    
+    // be careful to use this function!!! todo, not finished yet.....
+    public void rotationSeekApriltag(SwerveDrivetrain swerveDrive)
+    {
+        Pose2d currentPose = swerveDrive.getPose();
+
+        if(!limelight.hasValidTarget())
+        {
+            swerveDrive.drive(0, 0, 0.08);
+            reset();
+        }
+        else
+        {
+            TagAimingRotation(swerveDrive, 0, 100);
+        }
+    }
 
 
     public double getTA() {
@@ -226,9 +284,30 @@ public class DriverAssist implements Reportable{
                 angularSpeed.setDouble(calculatedAngledPower);
         }
         else {
+            calculatedForwardPower = calculatedAngledPower = calculatedSidewaysPower = 0;
             //SmartDashboard.putBoolean("Found Right Tag ID: ", false);
             
         }
+    }
+
+    boolean initPoseByVisionDone = false;
+    public void resetInitPoseByVision(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId)
+    {
+        if(limelight != null && limelight.getAprilTagID() != -1)
+        {
+            // 7 is blue side, 4 is red side, center of speaker
+            if(!initPoseByVisionDone && (limelight.getAprilTagID() == apriltagId))
+            {
+                initPoseByVisionDone = true;
+                Pose3d p = getCurrentPose3DVision();
+                swerveDrive.resetOdometry(p.toPose2d());
+                swerveDrive.getImu().setOffset(p.getRotation().getZ());
+                return;
+            }
+        }
+        
+        swerveDrive.resetOdometry(defaultPose);
+        swerveDrive.getImu().setOffset(defaultPose.getRotation().getRadians());
     }
 
     // Add any tag ID (align to closest tag) functionality same method different signature
@@ -293,6 +372,7 @@ public class DriverAssist implements Reportable{
     public int getAprilTagID() {
         if (limelight != null) {
             if (limelight.hasValidTarget()) {
+                // todo, add ta size checking!!
                 return limelight.getAprilTagID();
             }
         }

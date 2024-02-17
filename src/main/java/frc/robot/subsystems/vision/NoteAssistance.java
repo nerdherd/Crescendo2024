@@ -19,6 +19,7 @@ public class NoteAssistance implements Reportable{
 
     private PIDController areaController;
     private PIDController txController;
+    private PIDController rotationController;
 
     private GenericEntry targetFound;
     private GenericEntry currentArea;
@@ -27,15 +28,17 @@ public class NoteAssistance implements Reportable{
 
     private GenericEntry forwardSpeed;
     private GenericEntry sidewaysSpeed;
+    private GenericEntry rotationSpeed;
 
-    double[] speeds = {0.0, 0.0};
+    double[] speeds = {0.0, 0.0, 0.0};
 
     public NoteAssistance(String name) {
         this.name = name;
         ShuffleboardTab tab = Shuffleboard.getTab(name);
 
-        areaController = new PIDController(0.34, 0, 0);// todo, tuning pls!!!
-        txController = new PIDController(0.072, 0, 0.006);// todo, tuning pls!!!
+        areaController = new PIDController(0.12, 0, 0.001);// todo, tuning pls!!!
+        txController = new PIDController(0.025, 0, 0.001);// todo, tuning pls!!!
+        rotationController = new PIDController(0.08, 0, 0.006); // d = 0.008
 
         try { // TODO , we don't need to try-catch
             limelight = new Limelight(name);
@@ -86,25 +89,25 @@ public class NoteAssistance implements Reportable{
             if(currentTY != null)
                 currentTY.setDouble(ty);
 
-            if( area < 0.5 || area > 5.5 ) // todo, tuning pls!!!
-            {
-                speeds[0] = speeds[1] = 0; // something is wrong! or filter it out by camera dashboard
-            } 
-            else if( tx < 9 && tx > -9 && area > 3.7 ) // todo, tuning pls!!!
-            {
-                speeds[0] = speeds[1] = 0; // arrived! good ranges to get the note. cut off here is faster than the pid
-            } 
-            else if( ty < targetTY ) // need a lot of testing here
-            {
-                speeds[0] = speeds[1] = 0; // stop it otherwise too close to the note
-            } 
-            else
+            // if( area < 0.5 || area > targetArea*1.1 ) // todo, tuning pls!!!
+            // {
+            //     speeds[0] = speeds[1] = 0; // something is wrong! or filter it out by camera dashboard
+            // } 
+            // else if( tx < targetTX && tx > -1*targetTX && area > targetArea*0.8 ) // todo, tuning pls!!!
+            // {
+            //     speeds[0] = speeds[1] = 0; // arrived! good ranges to get the note. cut off here is faster than the pid
+            // } 
+            // else if( ty < targetTY ) // need a lot of testing here
+            // {
+            //     speeds[0] = speeds[1] = 0; // stop it otherwise too close to the note
+            // } 
+            // else
             {
                 speeds[0] = 1 * areaController.calculate(area, targetArea);
-                speeds[1]= 1 * txController.calculate(tx, targetTX);
+                speeds[1]= 1 * txController.calculate(tx, 0);
 
                 speeds[0] = NerdyMath.deadband(speeds[0], -0.2, 0.2); // todo, tuning pls!!!
-                speeds[1] = NerdyMath.deadband(speeds[1], -0.35, 0.35);// todo, tuning pls!!!
+                speeds[1] = NerdyMath.deadband(speeds[1], -0.2, 0.2);// todo, tuning pls!!!
             }
         }
         else
@@ -117,6 +120,9 @@ public class NoteAssistance implements Reportable{
     // no time limit if MaxSamples is less than 0
     // robot can move to any location 
     // for Teleop, PID tuning...
+    // double targetArea: the ta to pickup
+    // double targetTX: max left tx value to pickup, min right tx value(-1*)
+    // double targetTY: the bottom cutoff value
     public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY, int maxSamples) {
         // must reset counts before or after call this function!!!
         dataSampleCount++;
@@ -152,7 +158,7 @@ public class NoteAssistance implements Reportable{
         // todo, need to convert angle to continues value!!! bug
         if(currentX < defaultX-1 || currentX > defaultX+1 ||  // todo, tuning pls
            currentY < defaultY-1 || currentY > defaultY+1 ||
-           currentR < defaultR-30 || currentR > defaultR+30 )
+           currentR < NerdyMath.continueAngle(defaultR, defaultR - 30) || currentR > NerdyMath.continueAngle(defaultR, defaultR + 30))
         {
             speeds[0] = speeds[1] = 0; // stop because moved too far
         }
@@ -174,18 +180,165 @@ public class NoteAssistance implements Reportable{
 
     // for the auto 
     // a min running time is required by minSamples 
-    public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea, int minSamples, int maxSamples, Pose2d defaultPose) {
+    // double targetArea: the ta to pickup
+    // double targetTX: max left tx value to pickup, min right tx value(-1*)
+    // double targetTY: the bottom cutoff value
+    public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY, int minSamples, int maxSamples, Pose2d defaultPose) {
         return Commands.sequence(
             Commands.runOnce(() -> reset()),
-            Commands.run( () -> driveToNote(drivetrain, targetArea, 0, 0.1, maxSamples, defaultPose))// todo, tuning pls!!!
+            Commands.run( () -> driveToNote(drivetrain, targetArea, targetTX, targetTY, maxSamples, defaultPose))// todo, tuning pls!!!
                 .until(() -> (dataSampleCount >= minSamples && 
                     Math.abs(getForwardSpeed()) <= 0.1 && 
                     Math.abs(getSidewaysSpeed()) <= 0.1) )// todo, tuning pls!!!
         );
     }
 
+    boolean foundNote = false;
+    public void seekForFarNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY, int maxSamples, Pose2d defaultPose) {
+        // must reset counts before or after call this function!!!
+        dataSampleCount++;
+
+        Pose2d currentPose = drivetrain.getPose();
+        double currentX = currentPose.getX();
+        double currentY = currentPose.getY();
+        double currentR = currentPose.getRotation().getDegrees();
+
+        double defaultX = defaultPose.getX();
+        double defaultY = defaultPose.getY();
+        double defaultR = defaultPose.getRotation().getDegrees();
+
+        // todo, need to convert angle to continues value!!! bug
+        if(currentX < defaultX-1 || currentX > defaultX+1 ||  // todo, tuning pls
+           currentY < defaultY-1 || currentY > defaultY+1 ||
+           currentR < defaultR-30 || currentR > defaultR+30 )
+        {
+            speeds[0] = speeds[1] = 0; // stop because moved too far
+            foundNote = false;
+        }
+        else if(maxSamples > 0 && dataSampleCount > maxSamples)
+        {
+            speeds[0] = speeds[1] = 0; // stop because running time too long
+            foundNote = false;
+        }
+        else 
+        {
+            speedToNote(targetArea, targetTX, targetTY);
+            foundNote = true;
+        }
+
+        if(forwardSpeed != null)
+            forwardSpeed.setDouble(speeds[0]);
+        if(sidewaysSpeed != null)
+            sidewaysSpeed.setDouble(speeds[1]);
+        drivetrain.drive(getForwardSpeed(), getSidewaysSpeed(), 0);
+    }
+    
+    // for the auto 
+    // a min running time is required by minSamples 
+    public Command seekForFarNoteCommand(SwerveDrivetrain drivetrain, double targetArea, int minSamples, int maxSamples, Pose2d defaultPose) {
+        return Commands.sequence(
+            Commands.runOnce(() -> reset()),
+            Commands.run( () -> seekForFarNote(drivetrain, targetArea, 0, 0.1, maxSamples, defaultPose))// todo, tuning pls!!!
+                .until(() -> ((foundNote == true || dataSampleCount >= minSamples) && 
+                    Math.abs(getForwardSpeed()) <= 0.1 && 
+                    Math.abs(getSidewaysSpeed()) <= 0.1 
+                    ) )// todo, tuning pls!!!
+        );
+    }
+
+    public void calculateTranslationSpeeds(double targetTA, double targetTX, double targetTY, int maxSamples) {
+        dataSampleCount++;
+        if(dataSampleCount > maxSamples && maxSamples > 0) {
+            speeds[0] = 0;
+            speeds[1] = 0;
+            return;
+        }
+
+        boolean hasTarget = limelight.hasValidTarget();
+        if(targetFound != null)
+            targetFound.setBoolean(hasTarget);
+
+        if(!hasTarget) {
+            speeds[0] = 0;
+            speeds[1] = 0;
+            return;
+        }
+
+        double currentTA = limelight.getArea_avg();
+        double currentTX = limelight.getXAngle_avg();
+        double currentTY = limelight.getYAngle_avg();
+
+        if(NerdyMath.inRange(currentTA, targetTA - 0.2, targetTA * 1.1)) 
+            speeds[0] = 0;
+        else if(NerdyMath.inRange(currentTY, targetTY - 0.1, targetTY + 0.1))
+            speeds[0] = 0;
+        if(NerdyMath.inRange(currentTX, targetTX - 0.1, targetTX + 0.1))
+            speeds[1] = 0;
+
+        speeds[0] = 1 * areaController.calculate(currentTA, targetTA);
+        speeds[1] = 1 * txController.calculate(currentTX, targetTX);
+
+        if(forwardSpeed != null)
+            forwardSpeed.setDouble(speeds[0]);
+        if(sidewaysSpeed != null)
+            sidewaysSpeed.setDouble(speeds[1]);
+    }
+
+    public void calculateRotationSpeed(double targetTX, int maxSamples) {
+        dataSampleCount++;
+        if(dataSampleCount > maxSamples && maxSamples > 0) {
+            speeds[2] = 0;
+            return;
+        }
+        
+        boolean hasTarget = limelight.hasValidTarget();
+        if(targetFound != null)
+            targetFound.setBoolean(hasTarget);
+
+        if(!hasTarget) {
+            speeds[2] = 0;
+            return;
+        }
+
+        double currentTX = limelight.getXAngle_avg();
+        
+        if(NerdyMath.inRange(currentTX, targetTX - 0.1, targetTX + 0.1)) {
+            speeds[2] = 0;
+            return;
+        }
+
+        speeds[2] = 1 * rotationController.calculate(currentTX, targetTX);
+
+        if(rotationSpeed != null)
+            rotationSpeed.setDouble(speeds[2]);
+    }
+
+    /**
+     * runs until reaches targetTX or reaches maximumSamples
+     * @param drivetrain
+     * @param targetTX
+     * @param minSamples minimum samples to have before command stops
+     * @param maxSamples maximum samples before command stops, 0 if just want to run reach targetTX
+     * @return
+     */
+    public Command turnToNoteCommand(SwerveDrivetrain drivetrain, double targetTX, int minSamples, int maxSamples) {
+        return Commands.sequence(
+            Commands.runOnce(() -> reset()),
+            Commands.run(
+                () -> {
+                    calculateRotationSpeed(targetTX, maxSamples);
+                    drivetrain.drive(0, 0, getRotationSpeed());
+                }  
+            ).until(() ->
+                    Math.abs(speeds[2]) == 0 &&
+                    dataSampleCount >= minSamples
+                )
+        );
+    }
+
     private double getForwardSpeed() { return speeds[0]; }
     private double getSidewaysSpeed() { return speeds[1]; }
+    private double getRotationSpeed() { return speeds[2]; }
 
     public void setLight(boolean lightModeOn) {
         if(lightModeOn) limelight.setLightState(LightMode.ON);
@@ -235,6 +388,11 @@ public class NoteAssistance implements Reportable{
                 
                 sidewaysSpeed = tab.add("Sideways Speed", 0)
                 .withPosition(0, 1)
+                .withSize(2, 1)
+                .getEntry();
+
+                rotationSpeed = tab.add("Rotation Speed", 0)
+                .withPosition(0, 2)
                 .withSize(2, 1)
                 .getEntry();
                 

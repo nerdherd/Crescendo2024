@@ -180,27 +180,27 @@ public class Limelight implements Reportable{
     }
 
     public double getCamPoseSkew() {
-        //double[] botPose = m_botPos.getDoubleArray(new double[6]);
+        double[] botPose = m_botPos.getDoubleArray(new double[6]);
         double[] camPose = m_camPos.getDoubleArray(new double[6]);
 
-        // if(botPose.length != 0) {
-        //     SmartDashboard.putNumber("x bot pose: ", botPose[0]);
-        //     SmartDashboard.putNumber("y bot pose: ", botPose[1]);
-        //     SmartDashboard.putNumber("z bot pose: ", botPose[2]);
+        if(botPose.length != 0) {
+            SmartDashboard.putNumber("x bot pose: ", botPose[0]);
+            SmartDashboard.putNumber("y bot pose: ", botPose[1]);
+            SmartDashboard.putNumber("z bot pose: ", botPose[2]);
 
-        //     SmartDashboard.putNumber("BOT POSE 4: ", botPose[3]);
-        //     SmartDashboard.putNumber("BOT POSE 5: ", botPose[4]);
-        //     SmartDashboard.putNumber("BOT POSE 6: ", botPose[5]);
-        // }
+            SmartDashboard.putNumber("BOT POSE 4: ", botPose[3]);
+            SmartDashboard.putNumber("BOT POSE 5: ", botPose[4]);
+            SmartDashboard.putNumber("BOT POSE 6: ", botPose[5]);
+        }
 
         if(camPose.length != 0) {
-            // SmartDashboard.putNumber("x tag pose: ", camPose[0]);
-            // SmartDashboard.putNumber("y tag pose: ", camPose[1]);
-            // SmartDashboard.putNumber("z tag pose: ", camPose[2]);
+            SmartDashboard.putNumber("x tag pose: ", camPose[0]);
+            SmartDashboard.putNumber("y tag pose: ", camPose[1]);
+            SmartDashboard.putNumber("z tag pose: ", camPose[2]);
 
-            // SmartDashboard.putNumber("TAG POSE 4: ", camPose[3]);
+            SmartDashboard.putNumber("TAG POSE 4: ", camPose[3]);
             SmartDashboard.putNumber("TAG POSE 5: ", camPose[4]);
-            // SmartDashboard.putNumber("TAG POSE 6: ", camPose[5]);
+            SmartDashboard.putNumber("TAG POSE 6: ", camPose[5]);
         }
 
         return camPose[4];
