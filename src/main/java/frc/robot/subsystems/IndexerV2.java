@@ -34,7 +34,7 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
 
     private final VelocityVoltage indexerVelocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
     private final VelocityVoltage trapVelocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
-    
+
     private final NeutralOut brakeRequest = new NeutralOut();
 
     private boolean enabled = false;
@@ -46,7 +46,8 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
         indexerConfigurator = indexer.getConfigurator();
         trapConfigurator = trap.getConfigurator();
 
-        trap.setControl(new Follower(IndexerConstants.kIndexerMotorID, true)); // TODO: Check inversion
+
+        trap.setControl(new Follower(IndexerConstants.kIndexerMotorID, false));
 
         CommandScheduler.getInstance().registerSubsystem(this);
         
@@ -64,6 +65,8 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
         indexerConfigs.Voltage.PeakReverseVoltage = -11.5;
         indexerConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         indexerConfigs.MotorOutput.DutyCycleNeutralDeadband = IndexerConstants.kIndexerNeutralDeadband;
+        // indexerConfigs.CurrentLimits.StatorCurrentLimit = 30;
+        // indexerConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         indexerConfigs.CurrentLimits.SupplyCurrentLimit = 40;
         indexerConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
         indexerConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
@@ -79,7 +82,9 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
         trapConfigs.MotorOutput.DutyCycleNeutralDeadband = IndexerConstants.kIndexerNeutralDeadband;
         trapConfigs.CurrentLimits.SupplyCurrentLimit = 40;
         trapConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
-        trapConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
+        // indexerConfigs.CurrentLimits.StatorCurrentLimit = 50;
+        // indexerConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
+        trapConfigs.CurrentLimits.SupplyCurrentThreshold = 50;
         trapConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
         trapConfigs.Audio.AllowMusicDurDisable = true;
         
@@ -148,10 +153,7 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
     public void stop() {
         this.enabled = false;
         indexerVelocityRequest.Velocity = 0;
-        trapVelocityRequest.Velocity = 0;
-
         indexer.setControl(brakeRequest);
-        trap.setControl(brakeRequest);
     }
 
     public void setEnabled(boolean enabled) {

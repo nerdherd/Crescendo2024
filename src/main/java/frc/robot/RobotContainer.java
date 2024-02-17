@@ -31,6 +31,7 @@ import frc.robot.commands.autos.Basic6PieceSeparated;
 import frc.robot.commands.autos.Test1M;
 import frc.robot.commands.autos.Test1MBack;
 import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.IndexerV2;
 import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.IntakeRoller;
 import frc.robot.subsystems.ShooterPivot;
@@ -42,7 +43,7 @@ import frc.robot.subsystems.imu.PigeonV2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.vision.NoteAssistance;
-import frc.robot.subsystems.vision.farfuture.DriverAssist;
+import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.util.NerdyMath;
 
 public class RobotContainer {
@@ -50,7 +51,7 @@ public class RobotContainer {
   public ShooterPivot shooterPivot = new ShooterPivot();
   public IntakeRoller intakeRoller = new IntakeRoller();
   public IntakePivot intakePivot = new IntakePivot();
-  public Indexer indexer = new Indexer();
+  public IndexerV2 indexer = new IndexerV2();
 
   public SuperSystem superSystem = new SuperSystem(intakePivot, intakeRoller, shooterPivot, shooterRoller, indexer);
   

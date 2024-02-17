@@ -51,7 +51,7 @@ public final class Constants {
 
   public static final class ModuleConstants {
     public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
-    public static final double kDriveMotorGearRatio = 1 / 6.75;
+    public static final double kDriveMotorGearRatio = 1 / 6.12;
     public static final double kTurningMotorGearRatio = 1 / 21.428; // 150 : 7 : 1 MK4i
     // public static final double kDriveDistanceLoss = 0.95; // from measuring IRL
     public static final double kDriveDistanceLoss = 1; // from measuring IRL
@@ -262,12 +262,19 @@ public final class Constants {
     public static final double kShooterMaxVelocityRPS =  100;
     public static final double kShooterMinVelocityRPS = -100;
 
-    public static final PrefDouble kOuttakeHigh  = new PrefDouble("Shooter Outtake High", 50);
-    public static final PrefDouble kOuttakeLow   = new PrefDouble("Shooter Outtake Low", 20);
-    public static final PrefDouble kOuttakeAuto1 = new PrefDouble("Shooter Outtake Auto 1", 80);
-    public static final PrefDouble kOuttakeAuto2 = new PrefDouble("Shooter Outtake Auto 2", 90);
-    public static final PrefDouble kOuttakeAmp   = new PrefDouble("Shooter Outtake Amp", 20);
-    public static final PrefDouble kIntake       = new PrefDouble("Shooter Intake", -10);
+    public static final PrefDouble kTopOuttakeHigh  = new PrefDouble("Top Shooter Outtake High", 50);
+    public static final PrefDouble kTopOuttakeLow   = new PrefDouble("Top Shooter Outtake Low", 20);
+    public static final PrefDouble kTopOuttakeAuto1 = new PrefDouble("Top Shooter Outtake Auto 1", 80);
+    public static final PrefDouble kTopOuttakeAuto2 = new PrefDouble("Top Shooter Outtake Auto 2", 90);
+    public static final PrefDouble kTopOuttakeAmp   = new PrefDouble("Top Shooter Outtake Amp", 20);
+    public static final PrefDouble kTopIntake       = new PrefDouble("Top Shooter Intake", -10);
+
+    public static final PrefDouble kBottomOuttakeHigh  = new PrefDouble("Bottom Shooter Outtake High", 50);
+    public static final PrefDouble kBottomOuttakeLow   = new PrefDouble("Bottom Shooter Outtake Low", 20);
+    public static final PrefDouble kBottomOuttakeAuto1 = new PrefDouble("Bottom Shooter Outtake Auto 1", 80);
+    public static final PrefDouble kBottomOuttakeAuto2 = new PrefDouble("Bottom Shooter Outtake Auto 2", 90);
+    public static final PrefDouble kBottomOuttakeAmp   = new PrefDouble("Bottom Shooter Outtake Amp", 20);
+    public static final PrefDouble kBottomIntake       = new PrefDouble("Bottom Shooter Intake", -10);
 
     public static final PrefDouble kPLeftMotor = new PrefDouble("kP Left Shooter", 0);
     public static final PrefDouble kILeftMotor = new PrefDouble("kI Left Shooter", 0);
@@ -367,8 +374,8 @@ public final class Constants {
   
   public static final class IndexerConstants {
     public static final int kIndexerMotorID = 55;
-    public static final int kTrapMotorID = 0;
-    
+    public static final int kTrapMotorID = 59;
+
     public static final double kIndexerNeutralDeadband = 0.05;
 
     public static final PrefDouble kIndexerVelocityRPS = new PrefDouble("Indexer Velocity", 50);
