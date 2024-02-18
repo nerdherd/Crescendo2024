@@ -11,13 +11,13 @@ public class SuperSystem {
     public IntakeRoller intakeRoller;
     public ShooterPivot shooterPivot;
     public ShooterRoller shooterRoller;
-    public Indexer indexer;
+    public IndexerV2 indexer;
     public ColorSensor colorSensor;
     public LinearActuator linearActuator;
 
     public SuperSystem(IntakePivot intakePivot, IntakeRoller intakeRoller, 
                         ShooterPivot shooterPivot, ShooterRoller shooterRoller,
-                        Indexer indexer) {
+                        IndexerV2 indexer) {
         this.intakePivot = intakePivot;
         this.intakeRoller = intakeRoller;
         this.shooterPivot = shooterPivot;

@@ -28,7 +28,7 @@ public class AutoMid3Notes extends SequentialCommandGroup {
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
 
             //first path to note
-            AutoBuilder.followPath((pathGroup.get(0))),
+            AutoBuilder.followPath(null), //place holder path
             //note 1
             new ConditionalCommand(
                     //if target, go to actual logic
