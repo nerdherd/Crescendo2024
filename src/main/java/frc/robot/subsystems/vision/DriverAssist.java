@@ -83,7 +83,7 @@ public class DriverAssist implements Reportable{
     public void TagDriving(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetSkew, int tagID) {
         calculateTag(targetTA, targetTX, targetSkew, tagID);
 
-        swerveDrive.drive(getForwardPower(), 0, 0); //TODO: //getSidewaysPower(), getAngledPower());
+        swerveDrive.drive(getForwardPower(), getSidewaysPower(), getAngledPower()); //TODO: //getSidewaysPower(), getAngledPower());
     }
     public Command driveToApriltagCommand(SwerveDrivetrain drivetrain, double targetTA, double targetTX, double targetSkew, int tagID) {
         return Commands.sequence(
@@ -92,6 +92,19 @@ public class DriverAssist implements Reportable{
             ).until(() -> Math.abs(getForwardPower()) <= 0.1 && Math.abs(getSidewaysPower()) <= 0.1 && Math.abs(getAngledPower()) <= 0.1)
         );
     }
+
+    public void TurnToTag(SwerveDrivetrain swerveDrive, double targetSkew, int tagID) {
+        calculateTagSkew(targetSkew, tagID); // TODO: WHY IS THIS CAUSING A BUILD FAIL?
+
+        swerveDrive.drive(0, 0, getAngledPower()); //TODO: //getSidewaysPower(), getAngledPower());
+    }
+    // public Command TurnToTagCommand(SwerveDrivetrain drivetrain, double targetSkew, int tagID) {
+    //     return Commands.sequence(
+    //         Commands.run(
+    //             () -> TurnToTag(drivetrain, targetSkew, tagID)
+    //         ).until(() -> Math.abs(Math.abs(getAngledPower())) <= 0.1)
+    //     );
+    // }
 
     private void setRobotPoseByApriltag(SwerveDrivetrain drivetrain, int tagID, boolean resetToCurrentPose)
     {
@@ -289,6 +302,82 @@ public class DriverAssist implements Reportable{
             
         }
     }
+
+    public void calculateTagSkew(double targetskew, int tagID) {
+        double skewOffset;
+        int foundId = -1;
+
+        //SmartDashboard.putNumber("TAG ID: ", getAprilTagID());
+        foundId = getAprilTagID();
+        if(targetId != null)
+            targetId.setInteger(foundId);
+        if(tagID == foundId) {
+            //SmartDashboard.putBoolean("Found Right Tag ID: ", true);
+            
+            skewOffset = targetskew - getSkew();
+
+            if(currentAngleOffset != null)
+                currentAngleOffset.setDouble(skewOffset);
+
+            calculatedAngledPower = pidSkew.calculate(skewOffset, 0);
+            calculatedAngledPower = calculatedAngledPower * -1;
+    
+            //SmartDashboard.putNumber("Calculated Angled Power: ", calculatedAngledPower);
+            if(angularSpeed != null)
+                angularSpeed.setDouble(calculatedAngledPower);
+        }
+        else {
+            calculatedAngledPower = 0;
+            
+        }
+    }
+
+    // public void calculateTag(double targetTA, double targetTX, double targetskew) {
+    //     double taOffset;
+    //     double txOffset;
+    //     double skewOffset;
+
+    //     // Same method, different signature: no tag ID needed
+            
+    //         taOffset = targetTA - getTA();
+    //         txOffset = targetTX - getTX();
+    //         skewOffset = targetskew - getSkew();
+     
+    //         //SmartDashboard.putNumber("TA Offset: ", taOffset);
+    //         if(currentTaOffset != null)
+    //             currentTaOffset.setDouble(taOffset);
+    //         //SmartDashboard.putNumber("TX Offset: ", txOffset);
+    //         if(currentTxOffset != null)
+    //             currentTxOffset.setDouble(txOffset);
+    //         //SmartDashboard.putNumber("Skew Offset: ", skewOffset);
+    //         if(currentAngleOffset != null)
+    //             currentAngleOffset.setDouble(skewOffset);
+    
+    //         calculatedForwardPower = pidTA.calculate(taOffset, 0);
+    //         // calculatedForwardPower = calculatedForwardPower * -1;
+
+    //         calculatedSidewaysPower = pidTX.calculate(txOffset, 0);
+    //         // calculatedSidewaysPower = calculatedSidewaysPower * -1;
+
+    //         calculatedAngledPower = pidSkew.calculate(skewOffset, 0);
+    //         calculatedAngledPower = calculatedAngledPower * -1;
+    
+    //         //SmartDashboard.putNumber("Calculated Forward Power: ", calculatedForwardPower);
+    //         if(forwardSpeed != null)
+    //             forwardSpeed.setDouble(calculatedForwardPower);
+    //         //SmartDashboard.putNumber("Calculated Sideways Power: ", calculatedSidewaysPower);
+    //         if(sidewaysSpeed != null)
+    //             sidewaysSpeed.setDouble(calculatedSidewaysPower);
+    //         //SmartDashboard.putNumber("Calculated Angled Power: ", calculatedAngledPower);
+    //         if(angularSpeed != null)
+    //             angularSpeed.setDouble(calculatedAngledPower);
+    //     }
+    //     else {
+    //         calculatedForwardPower = calculatedAngledPower = calculatedSidewaysPower = 0;
+    //         //SmartDashboard.putBoolean("Found Right Tag ID: ", false);
+            
+    //     }
+    // }
 
     boolean initPoseByVisionDone = false;
     public void resetInitPoseByVision(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId)
