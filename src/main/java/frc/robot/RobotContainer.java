@@ -23,6 +23,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.autos.Auto4Notes;
 import frc.robot.commands.autos.Auto4NotesDirect;
+import frc.robot.commands.autos.AutoMidNotes;
 import frc.robot.commands.autos.Basic2Piece;
 import frc.robot.commands.autos.Basic3Piece;
 import frc.robot.commands.autos.Basic4Piece;
@@ -287,6 +288,9 @@ public class RobotContainer {
     }
     if (paths.contains("RotateSquareAuto")) {
       autoChooser.addOption("RotateSquareAuto", new RotateSquareAuto(swerveDrive, "RotateSquareAuto"));
+    }
+    if (paths.contains("Mid4Notes")) {
+      autoChooser.addOption("Mid4Notes with Vision", new AutoMidNotes(swerveDrive, "Mid4Notes", superSystem, noteCamera));
     }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
