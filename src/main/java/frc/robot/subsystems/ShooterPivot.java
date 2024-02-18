@@ -192,13 +192,14 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
             enabled = false;
             return;
         }
+        
+        rightPivot.setControl(brakeRequest);
 
         if (enabled) {
-            leftPivot.setControl(motionMagicRequest);
-            rightPivot.setControl(motionMagicRequest);
-
+            // leftPivot.setControl(motionMagicRequest);
+            // rightPivot.setControl(motionMagicRequest);
+            
         } else {
-            rightPivot.setControl(brakeRequest);
 
         }
     }

@@ -79,10 +79,10 @@ public class DriverAssist implements Reportable{
         );
     }
 
-    public void TurnToTag(SwerveDrivetrain swerveDrive, double targetSkew, int tagID) {
-        calculateTagSkew(targetSkew, tagID); // TODO: WHY IS THIS CAUSING A BUILD FAIL?
+    public void TurnToTag(SwerveDrivetrain swerveDrive, double targetTX, int tagID) {
+        calculateTagTurning(targetTX, tagID);
 
-        swerveDrive.drive(0, 0, getAngledPower()); //TODO: //getSidewaysPower(), getAngledPower());
+        swerveDrive.drive(0, 0, getAngledPower()); //TODO: What should Sideways and Angled Speed be based on? Pose? TX?
     }
     // public Command TurnToTagCommand(SwerveDrivetrain drivetrain, double targetSkew, int tagID) {
     //     return Commands.sequence(
@@ -225,13 +225,14 @@ public class DriverAssist implements Reportable{
         return limelight.getCamPoseSkew();//filter?
     }
 
-    PIDController pidTA = new PIDController(1.8, 0, 0); // P 1.2
-    PIDController pidTX = new PIDController(0.06, 0, 0.006); // P 0.08
-    PIDController pidSkew = new PIDController(0.05, 0, 0); // P 0.02
-
     double calculatedForwardPower;
     double calculatedSidewaysPower;
     double calculatedAngledPower;
+
+    // Use this PID for Drive to Tag
+    PIDController pidTADrive = new PIDController(1.8, 0, 0); // P 1.2
+    PIDController pidSkewDrive = new PIDController(0.05, 0, 0); // P 0.02
+    PIDController pidTXDrive = new PIDController(0.06, 0, 0.006); // P 0.08
 
     Pose3d currentPose;
 
@@ -250,26 +251,26 @@ public class DriverAssist implements Reportable{
             //SmartDashboard.putBoolean("Found Right Tag ID: ", true);
             
             taOffset = targetTA - getTA();
-            txOffset = targetTX - getTX();
             skewOffset = targetskew - getSkew();
+            txOffset = targetTX - getTX();
      
             //SmartDashboard.putNumber("TA Offset: ", taOffset);
             if(currentTaOffset != null)
                 currentTaOffset.setDouble(taOffset);
-            //SmartDashboard.putNumber("TX Offset: ", txOffset);
-            if(currentTxOffset != null)
-                currentTxOffset.setDouble(txOffset);
             //SmartDashboard.putNumber("Skew Offset: ", skewOffset);
             if(currentAngleOffset != null)
                 currentAngleOffset.setDouble(skewOffset);
+            //SmartDashboard.putNumber("TX Offset: ", txOffset);
+            if(currentTxOffset != null)
+                currentTxOffset.setDouble(txOffset);
     
-            calculatedForwardPower = pidTA.calculate(taOffset, 0);
+            calculatedForwardPower = pidTADrive.calculate(taOffset, 0);
             // calculatedForwardPower = calculatedForwardPower * -1;
 
-            calculatedSidewaysPower = pidTX.calculate(txOffset, 0);
+            calculatedSidewaysPower = pidSkewDrive.calculate(skewOffset, 0);
             // calculatedSidewaysPower = calculatedSidewaysPower * -1;
 
-            calculatedAngledPower = pidSkew.calculate(skewOffset, 0);
+            calculatedAngledPower = pidTXDrive.calculate(txOffset, 0);
             calculatedAngledPower = calculatedAngledPower * -1;
     
             //SmartDashboard.putNumber("Calculated Forward Power: ", calculatedForwardPower);
@@ -289,26 +290,28 @@ public class DriverAssist implements Reportable{
         }
     }
 
-    public void calculateTagSkew(double targetskew, int tagID) {
-        double skewOffset;
+    // Use this PID for Turn to Tag
+    // PIDController pidTA = new PIDController(1.8, 0, 0);
+    // PIDController pidSkew = new PIDController(0.1, 0, 0);
+    PIDController pidTX = new PIDController(0.05, 0, 0); // Probably gonna use TX for this
+
+    public void calculateTagTurning(double targetTX, int tagID) {
+        double TXOffset;
         int foundId = -1;
 
-        //SmartDashboard.putNumber("TAG ID: ", getAprilTagID());
         foundId = getAprilTagID();
         if(targetId != null)
             targetId.setInteger(foundId);
         if(tagID == foundId) {
-            //SmartDashboard.putBoolean("Found Right Tag ID: ", true);
             
-            skewOffset = targetskew - getSkew();
+            TXOffset = targetTX - getTX();
 
             if(currentAngleOffset != null)
-                currentAngleOffset.setDouble(skewOffset);
+                currentAngleOffset.setDouble(TXOffset);
 
-            calculatedAngledPower = pidSkew.calculate(skewOffset, 0);
+            calculatedAngledPower = pidTX.calculate(TXOffset, 0);
             calculatedAngledPower = calculatedAngledPower * -1;
     
-            //SmartDashboard.putNumber("Calculated Angled Power: ", calculatedAngledPower);
             if(angularSpeed != null)
                 angularSpeed.setDouble(calculatedAngledPower);
         }
@@ -317,53 +320,6 @@ public class DriverAssist implements Reportable{
             
         }
     }
-
-    // public void calculateTag(double targetTA, double targetTX, double targetskew) {
-    //     double taOffset;
-    //     double txOffset;
-    //     double skewOffset;
-
-    //     // Same method, different signature: no tag ID needed
-            
-    //         taOffset = targetTA - getTA();
-    //         txOffset = targetTX - getTX();
-    //         skewOffset = targetskew - getSkew();
-     
-    //         //SmartDashboard.putNumber("TA Offset: ", taOffset);
-    //         if(currentTaOffset != null)
-    //             currentTaOffset.setDouble(taOffset);
-    //         //SmartDashboard.putNumber("TX Offset: ", txOffset);
-    //         if(currentTxOffset != null)
-    //             currentTxOffset.setDouble(txOffset);
-    //         //SmartDashboard.putNumber("Skew Offset: ", skewOffset);
-    //         if(currentAngleOffset != null)
-    //             currentAngleOffset.setDouble(skewOffset);
-    
-    //         calculatedForwardPower = pidTA.calculate(taOffset, 0);
-    //         // calculatedForwardPower = calculatedForwardPower * -1;
-
-    //         calculatedSidewaysPower = pidTX.calculate(txOffset, 0);
-    //         // calculatedSidewaysPower = calculatedSidewaysPower * -1;
-
-    //         calculatedAngledPower = pidSkew.calculate(skewOffset, 0);
-    //         calculatedAngledPower = calculatedAngledPower * -1;
-    
-    //         //SmartDashboard.putNumber("Calculated Forward Power: ", calculatedForwardPower);
-    //         if(forwardSpeed != null)
-    //             forwardSpeed.setDouble(calculatedForwardPower);
-    //         //SmartDashboard.putNumber("Calculated Sideways Power: ", calculatedSidewaysPower);
-    //         if(sidewaysSpeed != null)
-    //             sidewaysSpeed.setDouble(calculatedSidewaysPower);
-    //         //SmartDashboard.putNumber("Calculated Angled Power: ", calculatedAngledPower);
-    //         if(angularSpeed != null)
-    //             angularSpeed.setDouble(calculatedAngledPower);
-    //     }
-    //     else {
-    //         calculatedForwardPower = calculatedAngledPower = calculatedSidewaysPower = 0;
-    //         //SmartDashboard.putBoolean("Found Right Tag ID: ", false);
-            
-    //     }
-    // }
 
     boolean initPoseByVisionDone = false;
     public void resetInitPoseByVision(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId)
@@ -418,29 +374,15 @@ public class DriverAssist implements Reportable{
     // }
 
     public double getForwardPower() {
-        // if(calculatedForwardPower < 0.25 && calculatedForwardPower > -0.25) {
-        //     calculatedForwardPower = 0;
-        //     //SmartDashboard.putBoolean("Forward Condition Met? ", true);
-        // }
         
         return NerdyMath.deadband(calculatedForwardPower, -0.25, 0.25);
     }
 
     public double getSidewaysPower() {
-        // if(calculatedSidewaysPower < 0.25 && calculatedSidewaysPower > -0.25) {
-        //     calculatedSidewaysPower = 0;
-        //     //SmartDashboard.putBoolean("Sideways Condition Met? ", true);
-        // }
-        
         return NerdyMath.deadband(calculatedSidewaysPower, -0.25, 0.25);
     }
 
     public double getAngledPower() {
-        // if(calculatedAngledPower < 0.25 && calculatedAngledPower > -0.25) {
-        //     calculatedAngledPower = 0;
-        //     //SmartDashboard.putBoolean("Angled Condition Met? ", true);
-        // }
-        
         return NerdyMath.deadband(calculatedAngledPower, -0.25, 0.25);
     }
 
