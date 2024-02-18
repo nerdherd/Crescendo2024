@@ -24,8 +24,8 @@ public class ThreeMeterSquareAuto extends SequentialCommandGroup {
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
             Commands.sequence(
-                Commands.waitSeconds(1);
-                AutoBuilder.followPath((pathGroup.get(0)));
+                Commands.waitSeconds(1),
+                AutoBuilder.followPath((pathGroup.get(0)))
             )
             );
     }

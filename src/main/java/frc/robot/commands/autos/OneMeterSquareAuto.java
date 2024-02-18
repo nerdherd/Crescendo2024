@@ -12,7 +12,7 @@ import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
 public class OneMeterSquareAuto extends SequentialCommandGroup {
-    public OneMeterSquareAuto(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem) {     
+    public OneMeterSquareAuto(SwerveDrivetrain swerve, String autoPath) {     
         
         // Use the PathPlannerAuto class to get a path group from an auto
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
@@ -25,8 +25,8 @@ public class OneMeterSquareAuto extends SequentialCommandGroup {
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
             Commands.sequence(
-                Commands.waitSeconds(1);
-                AutoBuilder.followPath((pathGroup.get(0)));
+                Commands.waitSeconds(1),
+                AutoBuilder.followPath((pathGroup.get(0)))
             )
             );
     }
