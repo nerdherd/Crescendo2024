@@ -114,9 +114,11 @@ public class SwerveModule implements Reportable {
         driveMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         driveMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ModuleConstants.kDriveMotorDeadband;
         driveMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
-        driveMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        driveMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
         driveMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         driveMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        driveMotorConfigs.CurrentLimits.StatorCurrentLimit = 70;
+        driveMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         driveMotorConfigs.Audio.AllowMusicDurDisable = true;
         driveConfigurator.apply(driveMotorConfigs);
 
@@ -345,12 +347,13 @@ public class SwerveModule implements Reportable {
             case MINIMAL:
                 tab.addNumber("Turn angle", this::getTurningPositionDegrees);
                 tab.addNumber("Desired Angle", () -> desiredAngle);
-                tab.addNumber("Drive Motor Current", () -> driveMotor.getSupplyCurrent().getValue());
+                tab.addNumber("Drive Supply Current", () -> driveMotor.getSupplyCurrent().getValue());
                 // tab.addNumber("Module Velocity", this::getDriveVelocity);
                 tab.addNumber("Module Velocity RPS", this::getDriveVelocityRPS);
                 tab.addNumber("Desired Velocity", () -> this.desiredVelocity);
                 tab.addBoolean("Velocity Control", () -> this.velocityControl);
                 tab.addString("Error Status", () -> driveMotor.getFaultField().getName());
+                tab.addNumber("Drive Stator Current", () -> driveMotor.getStatorCurrent().getValue());
                 break;
             }
             
