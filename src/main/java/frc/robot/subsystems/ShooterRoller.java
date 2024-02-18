@@ -12,7 +12,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -39,7 +38,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
     private final NeutralOut brakeRequest = new NeutralOut();
     
     private boolean enabled = true;
-
+    public boolean velocityControl = true;
 
     public ShooterRoller() {
         leftShooter = new TalonFX(ShooterConstants.kLeftMotorID, SuperStructureConstants.kCANivoreBusName);
@@ -149,20 +148,24 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
 
     @Override
     public void periodic() {
-        if (enabled) {
-            leftVoltageRequest.Output = leftVelocityRequest.Velocity * 12 / 100.0;
-            rightVoltageRequest.Output = rightVelocityRequest.Velocity * 12 / 100.0;
-            leftShooter.setControl(leftVoltageRequest);
-            rightShooter.setControl(rightVoltageRequest);
-
-            // leftShooter.setControl(leftVelocityRequest);
-            // rightShooter.setControl(rightVelocityRequest);
-        } else {
+        if (!enabled) {
             leftShooter.setControl(brakeRequest);
             rightShooter.setControl(brakeRequest);
+            return;
         }
+
+
+        if (velocityControl) {
+            leftShooter.setControl(leftVelocityRequest);
+            rightShooter.setControl(rightVelocityRequest);
+            return;
+        } 
+
+        leftVoltageRequest.Output = leftVelocityRequest.Velocity * 12 / 100.0;
+        rightVoltageRequest.Output = rightVelocityRequest.Velocity * 12 / 100.0;
+        leftShooter.setControl(leftVoltageRequest);
+        rightShooter.setControl(rightVoltageRequest);
     }
-    // pull back half second, change shooter to 80 percent, shoot, bind to right trigger
 
     //****************************** STATE METHODS ******************************//
 
@@ -345,7 +348,9 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         tab.addNumber("Left Stator Current", () -> leftShooter.getStatorCurrent().getValueAsDouble());
         tab.addNumber("Right Supply Current", () -> rightShooter.getSupplyCurrent().getValueAsDouble());
         tab.addNumber("Right Stator Current", () -> rightShooter.getStatorCurrent().getValueAsDouble());
-
+        tab.addDouble("Right Shooter Applied Voltage", () -> rightShooter.getMotorVoltage().getValueAsDouble());
+        tab.addDouble("Left Shooter Applied Voltage", () -> leftShooter.getMotorVoltage().getValueAsDouble());
+        
     }
 }
 

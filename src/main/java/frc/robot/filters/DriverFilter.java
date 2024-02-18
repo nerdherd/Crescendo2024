@@ -1,7 +1,5 @@
 package frc.robot.filters;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.util.filters.ClampFilter;
 import frc.robot.util.filters.DeadbandFilter;
 import frc.robot.util.filters.FilterSeries;

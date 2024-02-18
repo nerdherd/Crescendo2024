@@ -60,10 +60,7 @@ public class DriverAssistTeleop implements Reportable {
     }
 
     @Override
-    public void reportToSmartDashboard(LOG_LEVEL priority) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void reportToSmartDashboard(LOG_LEVEL priority) { }
 
     @Override
     public void initShuffleboard(LOG_LEVEL priority) {

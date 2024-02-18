@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -27,9 +28,11 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     private final TalonFX intake;
     private final TalonFXConfigurator intakeConfigurator;
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
+    private final VoltageOut voltageRequest = new VoltageOut(0, true, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
     
     private boolean enabled = false;
+    public boolean velocityControl = true;
 
     public IntakeRoller() {
         intake = new TalonFX(IntakeConstants.kIntakeMotorID, SuperStructureConstants.kCANivoreBusName);
@@ -94,11 +97,18 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
 
     @Override
     public void periodic() {
-        if (enabled) {
-            intake.setControl(velocityRequest);
-        } else {
+        if (!enabled) {
             intake.setControl(brakeRequest);
+            return;
         }
+
+        if (velocityControl) {
+            intake.setControl(velocityRequest);
+            return;
+        }
+        
+        voltageRequest.Output = velocityRequest.Velocity * 12 / 100;
+        intake.setControl(voltageRequest);
     }
 
     //****************************** VELOCITY METHODS ******************************//
@@ -204,9 +214,10 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     @Override
     public void initShuffleboard(LOG_LEVEL priority) {
         ShuffleboardTab tab = Shuffleboard.getTab("Intake");
-        tab.addNumber("Velocity", ()-> intake.getVelocity().getValueAsDouble());
-        tab.addNumber("Target Velocity", ()-> velocityRequest.Velocity);
-        tab.addNumber("Roller Current", () -> intake.getSupplyCurrent().getValueAsDouble());
+        tab.addNumber("Intake Velocity", ()-> intake.getVelocity().getValueAsDouble());
+        tab.addNumber("Intake Target Velocity", ()-> velocityRequest.Velocity);
+        tab.addNumber("Intake Roller Current", () -> intake.getSupplyCurrent().getValueAsDouble());
+        tab.addNumber("Intake Applied Voltage", () -> intake.getMotorVoltage().getValueAsDouble());
     }
 
 }
