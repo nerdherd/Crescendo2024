@@ -31,8 +31,8 @@ import frc.robot.commands.autos.Basic4PieceSeparated;
 import frc.robot.commands.autos.Basic6PieceSeparated;
 import frc.robot.commands.autos.OneMeterSquareAuto;
 import frc.robot.commands.autos.RotateSquareAuto;
-import frc.robot.commands.autos.Test1M;
-import frc.robot.commands.autos.Test1MBack;
+import frc.robot.commands.autos.Test2M;
+import frc.robot.commands.autos.Test2MBack;
 import frc.robot.commands.autos.ThreeMeterSquareAuto;
 import frc.robot.commands.autos.TwoMeterSquareAuto;
 import frc.robot.subsystems.Indexer;
@@ -250,7 +250,7 @@ public class RobotContainer {
     }
 
     if (paths.contains("Basic4Piece")) {
-      autoChooser.setDefaultOption("Basic4Piece", new Basic4Piece(swerveDrive, "Basic4Piece", superSystem));
+      autoChooser.addOption("Basic4Piece", new Basic4Piece(swerveDrive, "Basic4Piece", superSystem));
     }
 
     if (paths.contains("Basic4PieceSeparated")) {
@@ -268,11 +268,11 @@ public class RobotContainer {
     if (paths.contains("Basic3PieceV2")) {
       autoChooser.addOption("Basic3PieceV2", new Basic3Piece(swerveDrive, "Basic3PieceV2", superSystem));
     }
-    if (paths.contains("Test1M")) {
-      autoChooser.addOption("Test1M", new Test1M(swerveDrive));
+    if (paths.contains("Test2M")) {
+      autoChooser.addOption("Test2M", new Test2M(swerveDrive));
     }
-    if (paths.contains("Test1MBack")) {
-      autoChooser.addOption("Test1MBack", new Test1MBack(swerveDrive));
+    if (paths.contains("Test2MBack")) {
+      autoChooser.addOption("Test2MBack", new Test2MBack(swerveDrive));
     }
     if (paths.contains("Basic6PieceSeparated")) {
       autoChooser.addOption("Basic6PieceSeparated", new Basic6PieceSeparated(swerveDrive, "Basic6PieceSeparated", superSystem));

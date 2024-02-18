@@ -40,10 +40,10 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": 0,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
-  "folder": "Basic4PiecePaths",
+  "folder": null,
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

@@ -29,25 +29,28 @@ public class Basic4PieceSeparated extends SequentialCommandGroup {
                     Commands.waitSeconds(1.5),
                     superSystem.shootSequence2()
                 ),
-                Commands.parallel(
-                    superSystem.intakeDirectShoot(),
-                    AutoBuilder.followPath((pathGroup.get(0)))
+                Commands.deadline(
+                    AutoBuilder.followPath((pathGroup.get(0))),
+                    superSystem.intakeDirectShoot()
                 ),
-                Commands.parallel(
-                    superSystem.intakeDirectShoot(),
-                    AutoBuilder.followPath(pathGroup.get(1))
+                Commands.deadline(
+                    AutoBuilder.followPath(pathGroup.get(1)),
+                    superSystem.intakeDirectShoot()
                 ),
-                Commands.parallel(
-                    superSystem.intakeDirectShoot(),
-                    AutoBuilder.followPath((pathGroup.get(2)))
+                Commands.deadline(
+                    AutoBuilder.followPath((pathGroup.get(2))),
+                    superSystem.intakeDirectShoot()
                 ),
-                Commands.parallel(
-                    superSystem.intakeDirectShoot(),
-                    AutoBuilder.followPath((pathGroup.get(3)))
+                Commands.deadline(
+                    AutoBuilder.followPath((pathGroup.get(3))),
+                    superSystem.intakeDirectShoot()
                 ),
-                Commands.parallel(
-                    superSystem.intakeDirectShoot(),
-                    AutoBuilder.followPath((pathGroup.get(4)))
+                Commands.deadline(
+                    Commands.sequence(
+                        AutoBuilder.followPath((pathGroup.get(4))),
+                        Commands.waitSeconds(2)
+                    ),
+                    superSystem.intakeDirectShoot()
                 )
             )
             );
