@@ -39,8 +39,8 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -44.999999999999964,
-    "rotateFast": false
+    "rotation": -45.0,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "Mid4Notes",
