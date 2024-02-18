@@ -42,7 +42,7 @@ import frc.robot.subsystems.imu.PigeonV2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.vision.NoteAssistance;
-import frc.robot.subsystems.vision.farfuture.DriverAssist;
+import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.util.NerdyMath;
 
 public class RobotContainer {
