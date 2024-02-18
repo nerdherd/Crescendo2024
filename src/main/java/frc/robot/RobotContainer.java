@@ -118,10 +118,13 @@ public class RobotContainer {
       new RunCommand(
         () -> 
           intakePivot.incrementPosition(
-            NerdyMath.deadband(
-              operatorController.getRightY(), //0.5 rev/second 
+            Math.signum(
+              NerdyMath.deadband(
+              operatorController.getRightY(), 
               -ControllerConstants.kDeadband, 
-              ControllerConstants.kDeadband) / 160),
+              ControllerConstants.kDeadband)
+            ) / 4000), // (20 / x) revolutions per second
+                       // 0.005 rev/seconds @ x = 4000
         intakePivot
       ));
     
@@ -129,10 +132,13 @@ public class RobotContainer {
       new RunCommand(
         () -> {
           shooterPivot.incrementPosition(
-            NerdyMath.deadband(
-              operatorController.getLeftY(), //0.5 rev/second 
-              -ControllerConstants.kDeadband, 
-              ControllerConstants.kDeadband) / 160);
+            Math.signum(
+              NerdyMath.deadband(
+                operatorController.getLeftY(), //0.5 rev/second 
+                -ControllerConstants.kDeadband, 
+                ControllerConstants.kDeadband)
+            ) / 4000); // (20 / x) revolutions per second
+                       // 0.005 rev/seconds @ x = 4000
         },
         shooterPivot
       ));
