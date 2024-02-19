@@ -89,9 +89,9 @@ public final class Constants {
                                                               kVisionSTDy,
                                                               kVisionSTDtheta);
     // VecBuilder.fill(kVisionSTDx, kVisionSTDy, kVisionSTDtheta);
-    public static final PrefDouble kPThetaTeleop = new PrefDouble("kP Theta Teleop", 0);
+    public static final PrefDouble kPThetaTeleop = new PrefDouble("kP Theta Teleop", 4);
     public static final PrefDouble kIThetaTeleop = new PrefDouble("kI Theta Teleop", 0);
-    public static final PrefDouble kDThetaTeleop = new PrefDouble("kD Theta Teleop", 0);
+    public static final PrefDouble kDThetaTeleop = new PrefDouble("kD Theta Teleop", 0.1);
 
     // Distance between right and left wheels
     public static final double kTrackWidth = Units.inchesToMeters(21);
@@ -276,7 +276,7 @@ public final class Constants {
     public static final PrefDouble kDLeftMotor = new PrefDouble("kD Left Shooter", 0);
     public static final PrefDouble kVLeftMotor = new PrefDouble("kV Left Shooter", 0.15);
 
-    public static final PrefDouble kPRightMotor = new PrefDouble("kP Right Shooter", 0.8);
+    public static final PrefDouble kPRightMotor = new PrefDouble("kP Right Shooter", 0.4);
     public static final PrefDouble kIRightMotor = new PrefDouble("kI Right Shooter", 0.0004);
     public static final PrefDouble kDRightMotor = new PrefDouble("kD Right Shooter", 0);
     public static final PrefDouble kVRightMotor = new PrefDouble("kV Right Shooter", 0.15);
@@ -296,7 +296,7 @@ public final class Constants {
     public static final PrefDouble kSpeakerPosition2 = new PrefDouble("Pivot Speaker Position 2", -0.02);
     public static final PrefDouble kNeutralPosition  = new PrefDouble("Pivot Neutral Position", 0.035);
     public static final PrefDouble kAmpPosition      = new PrefDouble("Pivot Amp Position"    , 0.173);
-    public static final PrefDouble kHandoffPosition  = new PrefDouble("Pivot Handoff Position", 0);
+    public static final PrefDouble kHandoffPosition  = new PrefDouble("Pivot Handoff Position", -0.02);
     public static final PrefDouble kHandoffPosition2 = new PrefDouble("Pivot Handoff Position2", -0.03);   
     
     public static final PrefDouble kFullStowPosition = new PrefDouble("Pivot Full Stow Position", -0.1135);
@@ -311,7 +311,7 @@ public final class Constants {
   
     public static final PrefDouble kCruiseAcceleration = new PrefDouble("Shooter Pivot Cruise Acceleration", 0.85);
     public static final PrefDouble kCruiseVelocity = new PrefDouble("Shooter Pivot Cruise Velocity", 0.425);
-    public static final PrefDouble kPivotDeadband = new PrefDouble ("Pivot Deadband", 0.04); 
+    public static final PrefDouble kPivotDeadband = new PrefDouble ("Pivot Deadband", 0); 
 
     public static final PrefDouble kPivotOffset = new PrefDouble("Intake Pivot Offset", 0);
   }
@@ -385,12 +385,12 @@ public final class Constants {
     public static final PrefDouble kPIndexerMotor = new PrefDouble("kP Indexer Pivot Motor", 0.9);
     public static final PrefDouble kIIndexerMotor = new PrefDouble("kI Indexer Pivot Motor", 0);
     public static final PrefDouble kDIndexerMotor = new PrefDouble("kD Indexer Pivot Motor", 0);
-    public static final PrefDouble kVIndexerMotor = new PrefDouble("kV Indexer Pivot Motor", 0);
+    public static final PrefDouble kVIndexerMotor = new PrefDouble("kV Indexer Pivot Motor", 0.12);
 
-    public static final PrefDouble kPTrapMotor = new PrefDouble("kP Indexer Trap Motor", 0);
+    public static final PrefDouble kPTrapMotor = new PrefDouble("kP Indexer Trap Motor", 0.9);
     public static final PrefDouble kITrapMotor = new PrefDouble("kI Indexer Trap Motor", 0);
     public static final PrefDouble kDTrapMotor = new PrefDouble("kD Indexer Trap Motor", 0);
-    public static final PrefDouble kVTrapMotor = new PrefDouble("kV Indexer Trap Motor", 0);
+    public static final PrefDouble kVTrapMotor = new PrefDouble("kV Indexer Trap Motor", 0.12);
   }
     
   public static final class ColorSensorConstants {
