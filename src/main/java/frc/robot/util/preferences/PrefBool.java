@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Preferences;
 
 public class PrefBool implements Preference {
     private boolean value;
+    private final boolean defaultValue;
     private String key;
 
     /**
@@ -20,6 +21,7 @@ public class PrefBool implements Preference {
     public PrefBool(String key, boolean value) {
         this.key = key;
         this.value = value;
+        this.defaultValue = value;
         PreferenceManager.getInstance().addPreference(this);
     }
 
@@ -27,7 +29,12 @@ public class PrefBool implements Preference {
      * Load preference from robot memory
      */
     public void loadPreferences() {
-        if (PreferenceManager.getInstance().isInitialized()) {
+        if (PreferenceManager.usingDefaults()) {
+            this.value = defaultValue;
+            return;
+        }
+
+        if (PreferenceManager.isInitialized()) {
             Preferences.initBoolean(key, value);
             value = Preferences.getBoolean(key, value);
         } else {
@@ -39,7 +46,7 @@ public class PrefBool implements Preference {
      * Upload the current value of the preference in code to the robot memory
      */
     public void uploadPreferences() {
-        if (PreferenceManager.getInstance().isInitialized()) {
+        if (PreferenceManager.isInitialized()) {
             Preferences.setBoolean(key, value);
         } else {
             DriverStation.reportError("Preferences not initialized!", true);
@@ -51,6 +58,10 @@ public class PrefBool implements Preference {
      * @return value
      */
     public boolean get() {
+        if (PreferenceManager.usingDefaults()) {
+            return defaultValue;
+        }
+
         return this.value;
     }
 
@@ -59,8 +70,12 @@ public class PrefBool implements Preference {
      * @param value
      */
     public void set(boolean value) {
+        if (PreferenceManager.usingDefaults()) {
+            return;
+        }
+
         this.value = value;
-        if (PreferenceManager.getInstance().isInitialized()) {
+        if (PreferenceManager.isInitialized()) {
             uploadPreferences();
         } else {
             DriverStation.reportError("Preferences not initialized!", true);

@@ -7,11 +7,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
 
 public class PreferenceManager {
-    public static PreferenceManager inst;
+    private static PreferenceManager inst;
 
+    private static final String HARDCODE_MODE_KEY = "USE_DEFAULT_PREFERENCES";
     private static final String CHECK_KEY = "INITIALIZED";
     private static final String CHECK_VALUE = "TRUE";
     private static boolean initialized = false;
+    private static boolean useDefaults = false;
     private static Set<Preference> preferences = new HashSet<Preference>();
 
     public static PreferenceManager getInstance() {
@@ -50,6 +52,13 @@ public class PreferenceManager {
             }
         }
 
+        useDefaults = Preferences.getBoolean(HARDCODE_MODE_KEY, false);
+
+        // Don't load anything from networktables if we're using defaults
+        if (useDefaults) {
+            return;
+        }
+
         if (initialized || force) {
             for (Preference pref : preferences) {
                 pref.loadPreferences();
@@ -61,7 +70,11 @@ public class PreferenceManager {
         initialize(false);
     }
 
-    public boolean isInitialized() {
+    public static boolean isInitialized() {
         return initialized;
-    }    
+    }
+
+    public static boolean usingDefaults() {
+        return useDefaults;
+    }
 }

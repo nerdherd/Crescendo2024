@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Preferences;
 
 public class PrefInt implements Preference {
     private int value;
+    private final int defaultValue;
     private String key;
 
     /**
@@ -20,6 +21,7 @@ public class PrefInt implements Preference {
     public PrefInt(String key, int value) {
         this.key = key;
         this.value = value;
+        this.defaultValue = value;
         PreferenceManager.getInstance().addPreference(this);
     }
 
@@ -27,8 +29,12 @@ public class PrefInt implements Preference {
      * Load preference from robot memory
      */
     public void loadPreferences() {
-        if (PreferenceManager.getInstance().isInitialized()) {
-            Preferences.initInt(key, value);
+        if (PreferenceManager.usingDefaults()) {
+            this.value = defaultValue;
+            return;
+        }
+
+        if (PreferenceManager.isInitialized()) {            Preferences.initInt(key, value);
             value = Preferences.getInt(key, value);
         } else {
             DriverStation.reportError("Preferences not initialized!", true);
@@ -39,7 +45,7 @@ public class PrefInt implements Preference {
      * Upload the current value of the preference in code to the robot memory
      */
     public void uploadPreferences() {
-        if (PreferenceManager.getInstance().isInitialized()) {
+        if (PreferenceManager.isInitialized()) {
             Preferences.setInt(key, value);
         } else {
             DriverStation.reportError("Preferences not initialized!", true);
@@ -51,6 +57,10 @@ public class PrefInt implements Preference {
      * @return value
      */
     public int get() {
+        if (PreferenceManager.usingDefaults()) {
+            return defaultValue;
+        }
+
         return this.value;
     }
 
@@ -59,8 +69,12 @@ public class PrefInt implements Preference {
      * @param value
      */
     public void set(int value) {
+        if (PreferenceManager.usingDefaults()) {
+            return;
+        }
+
         this.value = value;
-        if (PreferenceManager.getInstance().isInitialized()) {
+        if (PreferenceManager.isInitialized()) {
             uploadPreferences();
         } else {
             DriverStation.reportError("Preferences not initialized!", true);
