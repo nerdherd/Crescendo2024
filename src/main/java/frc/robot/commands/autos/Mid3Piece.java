@@ -29,41 +29,32 @@ public class Mid3Piece extends SequentialCommandGroup {
 
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
-            Commands.runOnce(()->tagCam.resetInitPoseByVision(swerve, startingPose, 4) ),
+            Commands.runOnce(()-> tagCam.resetInitPoseByVision(swerve, startingPose, 4) ),
             Commands.waitSeconds(2), // debug time
 
-            // Commands.runOnce(swerve.getImu()::zeroAll),
-            // Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
-            // Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
-            // Commands.sequence(
-            Commands.deadline(
-                Commands.waitSeconds(1.5)
-                    // superSystem.shootSequence2(),
-                    // superSystem.intakeBasic1()
-                )
-                // Commands.deadline(
-                //     AutoBuilder.followPath((pathGroup.get(0)))
-                    // Commands.waitSeconds(2),
-                    // superSystem.intakeBasic2()
+            Commands.runOnce(swerve.getImu()::zeroAll),
+            Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
+            Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
 
-                // ),
-                // Commands.deadline(
-                //     AutoBuilder.followPath(pathGroup.get(1))
-                //     // superSystem.shootSequence2(),
-                //     // superSystem.intakeBasic1()
+            Commands.sequence(
+            Commands.deadline(
+                Commands.waitSeconds(1.5),
+                superSystem.shootSequence2()
+                ),
+                Commands.deadline(
+                    AutoBuilder.followPath(pathGroup.get(0))
+                ),
+                Commands.deadline(
+                    AutoBuilder.followPath(pathGroup.get(1))
                     
-                // ),
-                // Commands.deadline(
-                //     AutoBuilder.followPath((pathGroup.get(2)))
-                //     // Commands.waitSeconds(2),
-                //     // superSystem.intakeBasic2()
-                // ),
-                // Commands.deadline(
-                //     AutoBuilder.followPath((pathGroup.get(3)))
-                //     // superSystem.shootSequence2(),
-                //     // superSystem.intakeBasic1()
-                // )
-            // )
+                ),
+                Commands.deadline(
+                    AutoBuilder.followPath(pathGroup.get(2))
+                ),
+                Commands.deadline(
+                    AutoBuilder.followPath(pathGroup.get(3))
+                )
+            )
         );
     }
 }
