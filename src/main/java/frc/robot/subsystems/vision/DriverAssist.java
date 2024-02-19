@@ -230,9 +230,9 @@ public class DriverAssist implements Reportable{
     double calculatedAngledPower;
 
     // Use this PID for Drive to Tag
-    PIDController pidTADrive = new PIDController(1.8, 0, 0); // P 1.2
-    PIDController pidSkewDrive = new PIDController(0.05, 0, 0); // P 0.02
-    PIDController pidTXDrive = new PIDController(0.06, 0, 0.006); // P 0.08
+    PIDController pidTADrive = new PIDController(3.6, 0, 0); // P 1.2
+    PIDController pidSkewDrive = new PIDController(0.1, 0, 0); // P 0.02
+    PIDController pidTXDrive = new PIDController(0.1, 0, 0.006); // P 0.08
 
     Pose3d currentPose;
 
@@ -267,10 +267,10 @@ public class DriverAssist implements Reportable{
             calculatedForwardPower = pidTADrive.calculate(taOffset, 0);
             // calculatedForwardPower = calculatedForwardPower * -1;
 
-            calculatedSidewaysPower = pidSkewDrive.calculate(skewOffset, 0);
+            calculatedSidewaysPower = pidTXDrive.calculate(txOffset, 0);
             // calculatedSidewaysPower = calculatedSidewaysPower * -1;
 
-            calculatedAngledPower = pidTXDrive.calculate(txOffset, 0);
+            calculatedAngledPower = pidSkewDrive.calculate(skewOffset, 0);
             calculatedAngledPower = calculatedAngledPower * -1;
     
             //SmartDashboard.putNumber("Calculated Forward Power: ", calculatedForwardPower);
