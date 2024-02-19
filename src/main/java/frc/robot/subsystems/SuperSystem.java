@@ -188,6 +188,34 @@ public class SuperSystem {
         );
     }
 
+    public Command intakeBasic1() {
+        return Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(() -> 
+                    // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+                // intakePickup(),
+                shooterHandoff()
+                ),
+            intakeRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
+            indexer.indexCommand(),
+            intakeRoller.intakeCommand(),
+            Commands.waitUntil(() -> false)
+        );
+    }
+
+    public Command intakeBasic2() {
+        return Commands.sequence(
+            Commands.runOnce(() -> {
+            SmartDashboard.putBoolean("Intaking", false);
+            intakeRoller.stop();
+            indexer.stop();
+            })
+        );
+    }
+
     public Command intakeDirectShoot() {
         return Commands.sequence(
             Commands.deadline(

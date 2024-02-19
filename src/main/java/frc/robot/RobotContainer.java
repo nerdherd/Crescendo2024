@@ -29,6 +29,7 @@ import frc.robot.commands.autos.Basic3Piece;
 import frc.robot.commands.autos.Basic4Piece;
 import frc.robot.commands.autos.Basic4PieceSeparated;
 import frc.robot.commands.autos.Basic6PieceSeparated;
+import frc.robot.commands.autos.Mid3Piece;
 import frc.robot.commands.autos.OneMeterSquareAuto;
 import frc.robot.commands.autos.RotateSquareAuto;
 import frc.robot.commands.autos.Test2M;
@@ -260,7 +261,7 @@ public class RobotContainer {
     }
 
     if (paths.contains("Basic4PieceSeparated")) {
-      autoChooser.setDefaultOption("Basic4PieceSeparated", new Basic4PieceSeparated(swerveDrive, "Basic4PieceSeparated", superSystem));
+      autoChooser.addOption("Basic4PieceSeparated", new Basic4PieceSeparated(swerveDrive, "Basic4PieceSeparated", superSystem));
     }
 
     // if (paths.contains("Basic5Piece")) {
@@ -295,9 +296,14 @@ public class RobotContainer {
     if (paths.contains("RotateSquareAuto")) {
       autoChooser.addOption("RotateSquareAuto", new RotateSquareAuto(swerveDrive, "RotateSquareAuto"));
     }
+    
     if (paths.contains("Mid4Notes")) {
       autoChooser.addOption("Mid4Notes with Vision", new AutoMidNotes(swerveDrive, "Mid4Notes", superSystem, noteCamera));
     }
+
+    // if (paths.contains("Mid3Piece")) {
+    //   autoChooser.setDefaultOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem));
+    // }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
