@@ -1,5 +1,6 @@
 package frc.robot.util.preferences;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
 
 public class PrefFloat implements Preference {
@@ -26,15 +27,23 @@ public class PrefFloat implements Preference {
      * Load preference from robot memory
      */
     public void loadPreferences() {
-        Preferences.initFloat(key, value);
-        value = Preferences.getFloat(key, value);
+        if (PreferenceManager.getInstance().isInitialized()) {
+            Preferences.initFloat(key, value);
+            value = Preferences.getFloat(key, value);
+        } else {
+            DriverStation.reportError("Preferences not initialized!", true);
+        }
     }
 
     /**
      * Upload the current value of the preference in code to the robot memory
      */
     public void uploadPreferences() {
-        Preferences.setFloat(key, value);
+        if (PreferenceManager.getInstance().isInitialized()) {
+            Preferences.setFloat(key, value);
+        } else {
+            DriverStation.reportError("Preferences not initialized!", true);
+        }
     }
 
     /**
@@ -51,7 +60,11 @@ public class PrefFloat implements Preference {
      */
     public void set(float value) {
         this.value = value;
-        uploadPreferences();
+        if (PreferenceManager.getInstance().isInitialized()) {
+            uploadPreferences();
+        } else {
+            DriverStation.reportError("Preferences not initialized!", true);
+        }
     }
 
 }

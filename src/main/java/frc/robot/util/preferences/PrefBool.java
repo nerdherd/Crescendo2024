@@ -1,5 +1,6 @@
 package frc.robot.util.preferences;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
 
 public class PrefBool implements Preference {
@@ -26,15 +27,23 @@ public class PrefBool implements Preference {
      * Load preference from robot memory
      */
     public void loadPreferences() {
-        Preferences.initBoolean(key, value);
-        value = Preferences.getBoolean(key, value);
+        if (PreferenceManager.getInstance().isInitialized()) {
+            Preferences.initBoolean(key, value);
+            value = Preferences.getBoolean(key, value);
+        } else {
+            DriverStation.reportError("Preferences not initialized!", true);
+        }
     }
 
     /**
      * Upload the current value of the preference in code to the robot memory
      */
     public void uploadPreferences() {
-        Preferences.setBoolean(key, value);
+        if (PreferenceManager.getInstance().isInitialized()) {
+            Preferences.setBoolean(key, value);
+        } else {
+            DriverStation.reportError("Preferences not initialized!", true);
+        }
     }
 
     /**
@@ -51,7 +60,11 @@ public class PrefBool implements Preference {
      */
     public void set(boolean value) {
         this.value = value;
-        uploadPreferences();
+        if (PreferenceManager.getInstance().isInitialized()) {
+            uploadPreferences();
+        } else {
+            DriverStation.reportError("Preferences not initialized!", true);
+        }
     }
 
 }

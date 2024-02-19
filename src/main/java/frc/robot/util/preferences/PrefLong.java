@@ -1,5 +1,6 @@
 package frc.robot.util.preferences;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
 
 public class PrefLong implements Preference {
@@ -26,15 +27,23 @@ public class PrefLong implements Preference {
      * Load preference from robot memory
      */
     public void loadPreferences() {
-        Preferences.initLong(key, value);
-        value = Preferences.getLong(key, value);
+        if (PreferenceManager.getInstance().isInitialized()) {
+            Preferences.initLong(key, value);
+            value = Preferences.getLong(key, value);
+        } else {
+            DriverStation.reportError("Preferences not initialized!", true);
+        }
     }
 
     /**
      * Upload the current value of the preference in code to the robot memory
      */
     public void uploadPreferences() {
-        Preferences.setLong(key, value);
+        if (PreferenceManager.getInstance().isInitialized()) {
+            Preferences.setLong(key, value);
+        } else {
+            DriverStation.reportError("Preferences not initialized!", true);
+        }
     }
 
     /**
@@ -51,7 +60,11 @@ public class PrefLong implements Preference {
      */
     public void set(long value) {
         this.value = value;
-        uploadPreferences();
+        if (PreferenceManager.getInstance().isInitialized()) {
+            uploadPreferences();
+        } else {
+            DriverStation.reportError("Preferences not initialized!", true);
+        }
     }
 
 }

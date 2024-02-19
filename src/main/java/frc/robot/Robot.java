@@ -23,7 +23,7 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotInit() {
-    PreferenceManager.getInstance().initialize();
+    PreferenceManager.getInstance().initialize(false);
 
     robotContainer = new RobotContainer();
 	
