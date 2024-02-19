@@ -81,5 +81,8 @@ public class PrefInt implements Preference {
         }
     }
 
+    public String getKey() {
+        return this.key;
+    }
 }
 

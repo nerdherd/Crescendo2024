@@ -78,5 +78,8 @@ public class PrefFloat implements Preference {
         }
     }
 
+    public String getKey() {
+        return this.key;
+    }
 }
 

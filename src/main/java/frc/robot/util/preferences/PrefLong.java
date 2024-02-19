@@ -82,5 +82,8 @@ public class PrefLong implements Preference {
         }
     }
 
+    public String getKey() {
+        return this.key;
+    }
 }
 

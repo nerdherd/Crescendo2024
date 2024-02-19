@@ -1,10 +1,13 @@
 package frc.robot.util.preferences;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PreferenceManager {
     private static PreferenceManager inst;
@@ -41,8 +44,8 @@ public class PreferenceManager {
             int numTries = 0;
 
             // Wait until initialized
-            while (!initialized && numTries < 60000) {
-                DriverStation.reportWarning("Preferences Initializing... " + numTries + " seconds elapsed ", true);
+            while (!initialized && numTries < 60) {
+                DriverStation.reportWarning("Preferences Initializing... " + numTries + " seconds elapsed ", false);
                 // Check if initialized
                 initialized = Preferences.getString(CHECK_KEY, "").equals(CHECK_VALUE);
 
@@ -53,7 +56,10 @@ public class PreferenceManager {
                 numTries++;
             }
 
+            SmartDashboard.putBoolean("Preferences Initialized", initialized);
+
             if (!initialized) {
+                Preferences.initString(CHECK_KEY, CHECK_VALUE);
                 DriverStation.reportError("Preferences not initialized - timeout after 1 minute", true);
             }
         }
@@ -61,6 +67,8 @@ public class PreferenceManager {
         // Check if default mode is on
         Preferences.initBoolean(DEFAULT_MODE_KEY, false);
         useDefaults = Preferences.getBoolean(DEFAULT_MODE_KEY, false);
+
+        SmartDashboard.putBoolean("Default Preferences Override", useDefaults);
 
         // Don't load anything from networktables if we're using defaults
         if (useDefaults) {
@@ -71,6 +79,20 @@ public class PreferenceManager {
         if (initialized || forceLoad) {
             for (Preference pref : preferences) {
                 pref.loadPreferences();
+            }
+        }
+    }
+
+    public static void wipeUnusedPreferences() {
+        Collection<String> keys = Preferences.getKeys();
+        List<String> prefKeys = preferences.stream().map(pref -> pref.getKey()).toList();
+
+        keys.remove(DEFAULT_MODE_KEY);
+        keys.remove(CHECK_KEY);
+
+        for (String key : keys) {
+            if (!prefKeys.contains(key)) {
+                Preferences.remove(key);
             }
         }
     }

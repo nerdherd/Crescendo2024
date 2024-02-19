@@ -82,5 +82,8 @@ public class PrefString implements Preference {
         }
     }
 
+    public String getKey() {
+        return this.key;
+    }
 }
 

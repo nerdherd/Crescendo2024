@@ -82,5 +82,9 @@ public class PrefBool implements Preference {
         }
     }
 
+    public String getKey() {
+        return this.key;
+    }
+
 }
 

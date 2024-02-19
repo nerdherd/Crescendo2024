@@ -81,5 +81,9 @@ public class PrefDouble implements Preference {
             DriverStation.reportError("Preferences not initialized!", true);
         }
     }
+    
+    public String getKey() {
+        return this.key;
+    }
 }
 
