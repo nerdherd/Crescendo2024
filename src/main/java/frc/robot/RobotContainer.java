@@ -101,7 +101,7 @@ public class RobotContainer {
     initShuffleboard();
 
     // Configure the trigger bindings
-    configureBindings();
+    // Moved to teleop init
 
     DriverStation.reportWarning("Initalization complete", false);
 
@@ -192,7 +192,7 @@ public class RobotContainer {
         ));
   }
 
-  public void initDefaultCommands_autonomousAndTest() {
+  public void initDefaultCommands_test() {
     swerveDrive.setDefaultCommand(
       new SwerveJoystickCommand(
         swerveDrive,
@@ -215,16 +215,42 @@ public class RobotContainer {
       ));
   }
 
-  private void configureBindings() {
+  public void configureBindings_teleop() {
     // Driver bindings
     commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
-    //TODO: Make sure April Tag ID is matching 7
-    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1, 0, 0, 7))); //1.8, 0, 0, 7
-    // commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)));
+
+    // Operator bindings
+    commandOperatorController.triangle().whileTrue(superSystem.eject());
+    commandOperatorController.square().whileTrue(superSystem.ampSequence());
+
+    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
+    // commandOperatorController.L2().whileTrue(superSystem.intakeBasic());
+    
+    commandOperatorController.L2().whileTrue(superSystem.intakeBasic())
+                                  .onFalse(superSystem.backupIndexer());
+
+    commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
+    commandOperatorController.R2().whileTrue(superSystem.shootSequence2());
+    commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far());
+
+    commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
+  }
+
+  public void configureBindings_test() {
+    // Driver bindings
+    commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
+    commandDriverController.triangle()
+      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
+      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
+
+    //TODO: Make sure April Tag ID is matching
+    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 0.8, 0, 0, 4))); //1.8, 0, 0, 7
+    commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TurnToTag(swerveDrive, 0, 4)));
+
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());

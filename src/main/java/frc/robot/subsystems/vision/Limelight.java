@@ -192,7 +192,7 @@ public class Limelight implements Reportable{
             SmartDashboard.putNumber("BOT POSE 6: ", botPose[5]);
         }
 
-        if(camPose.length != 0) {
+        if(camPose.length >= 6) {
             SmartDashboard.putNumber("x tag pose: ", camPose[0]);
             SmartDashboard.putNumber("y tag pose: ", camPose[1]);
             SmartDashboard.putNumber("z tag pose: ", camPose[2]);
@@ -200,9 +200,14 @@ public class Limelight implements Reportable{
             SmartDashboard.putNumber("TAG POSE 4: ", camPose[3]);
             SmartDashboard.putNumber("TAG POSE 5: ", camPose[4]);
             SmartDashboard.putNumber("TAG POSE 6: ", camPose[5]);
+
+            return camPose[4];
+
+        }
+        else {
+            return 0;
         }
 
-        return camPose[4];
     }
 
     public Pose2d getBotPose2D()
