@@ -36,12 +36,17 @@ public class PreferenceManager {
      * 
      * If the check fails after 1 minute, exit.
      */
-    public void initialize(boolean force) {
-        if (!force) {
+    public void initialize(boolean forceLoad) {
+        if (!forceLoad) {
             int numTries = 0;
-            while (initialized == false && numTries < 60000) {
+
+            // Wait until initialized
+            while (!initialized && numTries < 60000) {
                 DriverStation.reportWarning("Preferences Initializing... " + numTries + " seconds elapsed ", true);
+                // Check if initialized
                 initialized = Preferences.getString(CHECK_KEY, "").equals(CHECK_VALUE);
+
+                // Sleep for 1 second
                 try {
                     Thread.sleep(1000);
                 } catch (Exception e) {}
@@ -52,7 +57,8 @@ public class PreferenceManager {
                 DriverStation.reportError("Preferences not initialized - timeout after 1 minute", true);
             }
         }
-
+        
+        // Check if default mode is on
         Preferences.initBoolean(DEFAULT_MODE_KEY, false);
         useDefaults = Preferences.getBoolean(DEFAULT_MODE_KEY, false);
 
@@ -61,7 +67,8 @@ public class PreferenceManager {
             return;
         }
 
-        if (initialized || force) {
+        // Load every preference
+        if (initialized || forceLoad) {
             for (Preference pref : preferences) {
                 pref.loadPreferences();
             }
