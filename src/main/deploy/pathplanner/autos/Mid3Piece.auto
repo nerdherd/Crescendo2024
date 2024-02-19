@@ -14,25 +14,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "M4_Piece1Pick"
+            "pathName": "M3_Piece1Pick"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "M4_Piece1Shoot"
+            "pathName": "M3_Piece1Shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "M4_Piece2Pick"
+            "pathName": "M3_Piece2Pick"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "M4_Piece2Shoot"
+            "pathName": "M3_Piece2Shoot"
           }
         }
       ]
