@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.ArmTuningProcedure;
+import frc.robot.commands.IntakePivotTuningProcedure;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.autos.Auto4Notes;
 import frc.robot.commands.autos.Auto4NotesDirect;
@@ -209,6 +211,12 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+
+    if (DriverStation.isTest()) {
+      commandOperatorController.L2().whileTrue(new ArmTuningProcedure(shooterPivot));
+      commandOperatorController.R2().whileTrue(new IntakePivotTuningProcedure(intakePivot));
+    }
+
     // Driver bindings
     commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()

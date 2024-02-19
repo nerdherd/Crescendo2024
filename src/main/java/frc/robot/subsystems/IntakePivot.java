@@ -5,6 +5,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.util.NerdyMath;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.ShooterConstants;
 
 public class IntakePivot extends SubsystemBase implements Reportable {
     private final TalonFX pivot;
@@ -31,6 +33,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     private boolean enabled = false;
 
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
+    private final VoltageOut voltageOutRequest = new VoltageOut(0, true, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
 
     public IntakePivot() {
@@ -146,18 +149,22 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
     @Override
     public void periodic() {
-        if (IntakeConstants.fullDisableIntake.get()) {
-            pivot.setControl(brakeRequest);
-            enabled = false;
-            return;
-        }
-        
-        pivot.setControl(brakeRequest);
+        if (DriverStation.isTest()) {
+            pivot.setControl(voltageOutRequest);
+        } else {
+            if (IntakeConstants.fullDisableIntake.get()) {
+                pivot.setControl(brakeRequest);
+                enabled = false;
+                return;
+            }
+        } 
 
         // if (enabled) {
         //     pivot.setControl(motionMagicRequest);
         // } else {
+        //     pivot.setControl(brakeRequest);
         // }
+
     }
 
     /**
@@ -217,6 +224,12 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    //****************************** TESTING METHODS ******************************//
+    public Command setVoltage(double voltage) {
+        return Commands.runOnce(() -> voltageOutRequest.Output = voltage);
+    }
+
     
     //****************************** POSITION METHODS ******************************//
 

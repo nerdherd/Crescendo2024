@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -36,6 +37,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     private boolean enabled = true;
 
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
+    private final VoltageOut voltageOutRequest = new VoltageOut(0, true, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
 
     public ShooterPivot() {
@@ -187,20 +189,26 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     @Override
     public void periodic() {
-        if (ShooterConstants.fullDisableShooter.get()) {
-            leftPivot.setControl(brakeRequest);
-            enabled = false;
-            return;
-        }
-
-        if (enabled) {
-            leftPivot.setControl(motionMagicRequest);
-            rightPivot.setControl(motionMagicRequest);
+        if (DriverStation.isTest()) {
+            leftPivot.setControl(voltageOutRequest);
+            rightPivot.setControl(voltageOutRequest);
 
         } else {
-            rightPivot.setControl(brakeRequest);
+            if (ShooterConstants.fullDisableShooter.get()) {
+                leftPivot.setControl(brakeRequest);
+                enabled = false;
+                return;
+            }
 
-        }
+            if (enabled) {
+                leftPivot.setControl(motionMagicRequest);
+                rightPivot.setControl(motionMagicRequest);
+
+            } else {
+                rightPivot.setControl(brakeRequest);
+
+            }
+        };
     }
 
     /**
@@ -268,6 +276,12 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         return Commands.runOnce(() -> setEnabled(enabled));
     }
     
+    //****************************** TESTING METHODS ******************************//
+
+    public Command setVoltage(double voltage) {
+        return Commands.runOnce(() -> voltageOutRequest.Output = voltage);
+    }
+
     //****************************** POSITION METHODS ******************************//
 
     public void setPosition(double position) {
