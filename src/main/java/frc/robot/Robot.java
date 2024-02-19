@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.util.preferences.PreferenceManager;
 
 public class Robot extends TimedRobot {
   private Command autoCommand;
@@ -22,6 +23,8 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotInit() {
+    PreferenceManager.getInstance().initialize();
+
     robotContainer = new RobotContainer();
 	
     DataLogManager.start("/media/sda1/logs");

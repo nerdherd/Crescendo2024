@@ -2,7 +2,7 @@ package frc.robot.util.preferences;
 
 import edu.wpi.first.wpilibj.Preferences;
 
-public class PrefString {
+public class PrefString implements Preference {
     private String value;
     private String key;
 
@@ -19,7 +19,7 @@ public class PrefString {
     public PrefString(String key, String value) {
         this.key = key;
         this.value = value;
-        loadPreferences();
+        PreferenceManager.getInstance().addPreference(this);
     }
 
     /**

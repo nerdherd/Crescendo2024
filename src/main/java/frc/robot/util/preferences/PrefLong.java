@@ -2,7 +2,7 @@ package frc.robot.util.preferences;
 
 import edu.wpi.first.wpilibj.Preferences;
 
-public class PrefLong {
+public class PrefLong implements Preference {
     private long value;
     private String key;
 
@@ -19,7 +19,7 @@ public class PrefLong {
     public PrefLong(String key, long value) {
         this.key = key;
         this.value = value;
-        loadPreferences();
+        PreferenceManager.getInstance().addPreference(this);
     }
 
     /**

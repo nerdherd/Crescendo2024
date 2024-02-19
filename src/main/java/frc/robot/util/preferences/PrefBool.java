@@ -2,7 +2,7 @@ package frc.robot.util.preferences;
 
 import edu.wpi.first.wpilibj.Preferences;
 
-public class PrefBool {
+public class PrefBool implements Preference {
     private boolean value;
     private String key;
 
@@ -19,7 +19,7 @@ public class PrefBool {
     public PrefBool(String key, boolean value) {
         this.key = key;
         this.value = value;
-        loadPreferences();
+        PreferenceManager.getInstance().addPreference(this);
     }
 
     /**
