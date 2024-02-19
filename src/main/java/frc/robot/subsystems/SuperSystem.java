@@ -216,14 +216,41 @@ public class SuperSystem {
         );
     }
 
-    public Command intakeDirectShoot() {
+    public Command intakeDirectShoot(double shooterPosition, double topShooterVelocity, double bottomShooterVelocity) {
         return Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(() -> 
                     // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
-                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+                    shooterPivot.hasReachedPosition(shooterPosition),
                 // intakePickup(),
-                shooterPivot.moveToAutoHandoff()
+                shooterPivot.setPositionCommand(shooterPosition);
+                ),
+            shooterRoller.setEnabledCommand(true),
+            intakeRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
+            indexer.indexCommand(),
+            intakeRoller.autoIntakeCommand(),
+            shooterRoller.setVelocityCommand(topShooterVelocity, bottomShooterVelocity),
+            Commands.waitUntil(() -> false)
+        ).finallyDo(
+            () -> {
+                SmartDashboard.putBoolean("Intaking", false);
+                intakeRoller.stop();
+                indexer.stop();
+                shooterRoller.stop();
+            }
+        );
+    }
+
+    public Command intakeDirectShoot(double shooterPosition, double shooterVelocity) {
+        return Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(() -> 
+                    // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+                    shooterPivot.hasReachedPosition(shooterPosition),
+                // intakePickup(),
+                shooterPivot.setP();
                 ),
             shooterRoller.setEnabledCommand(true),
             intakeRoller.setEnabledCommand(true),
