@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -102,6 +104,11 @@ public class RobotContainer {
     configureBindings();
 
     DriverStation.reportWarning("Initalization complete", false);
+
+      NamedCommands.registerCommand("intakeBasic1", superSystem.intakeBasic1());
+      NamedCommands.registerCommand("intakeBasic2", superSystem.intakeBasic2());
+      NamedCommands.registerCommand("shootSequence2", superSystem.shootSequence2());
+
   }
 
   public static boolean IsRedSide()
