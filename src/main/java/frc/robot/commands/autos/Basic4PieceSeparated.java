@@ -31,26 +31,26 @@ public class Basic4PieceSeparated extends SequentialCommandGroup {
                 ),
                 Commands.deadline(
                     AutoBuilder.followPath((pathGroup.get(0))),
-                    superSystem.intakeDirectShoot(ShooterConstants.k4PieceHandoffPosition.get(), ShooterConstants.kTopOuttakeAuto1.get(), ShooterConstants.kBottomOuttakeAuto1.get())
+                    superSystem.intakeDirectShoot()
                 ),
                 Commands.deadline(
                     AutoBuilder.followPath(pathGroup.get(1)),
-                    superSystem.intakeDirectShoot(ShooterConstants.k4PieceHandoffPosition.get(), ShooterConstants.kTopOuttakeAuto1.get(), ShooterConstants.kBottomOuttakeAuto1.get())
+                    superSystem.intakeDirectShoot()
                 ),
                 Commands.deadline(
                     AutoBuilder.followPath((pathGroup.get(2))),
-                    superSystem.intakeDirectShoot(ShooterConstants.k4PieceHandoffPosition.get(), ShooterConstants.kTopOuttakeAuto1.get(), ShooterConstants.kBottomOuttakeAuto1.get())
+                    superSystem.intakeDirectShoot()
                 ),
                 Commands.deadline(
                     AutoBuilder.followPath((pathGroup.get(3))),
-                    superSystem.intakeDirectShoot(ShooterConstants.k4PieceHandoffPosition.get(), ShooterConstants.kTopOuttakeAuto1.get(), ShooterConstants.kBottomOuttakeAuto1.get())
+                    superSystem.intakeDirectShoot()
                 ),
                 Commands.deadline(
                     Commands.sequence(
                         AutoBuilder.followPath((pathGroup.get(4))),
                         Commands.waitSeconds(2)
                     ),
-                    superSystem.intakeDirectShoot(ShooterConstants.k4PieceHandoffPosition.get(), ShooterConstants.kTopOuttakeAuto1.get(), ShooterConstants.kBottomOuttakeAuto1.get())
+                    superSystem.intakeDirectShoot()
                 )
             )
             );

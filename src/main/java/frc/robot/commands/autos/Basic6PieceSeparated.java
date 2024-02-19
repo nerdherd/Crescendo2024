@@ -31,8 +31,7 @@ public class Basic6PieceSeparated extends SequentialCommandGroup {
                 ),
                 Commands.deadline(
                     AutoBuilder.followPath((pathGroup.get(0))),
-                    superSystem.intakeDirectShoot(ShooterConstants.k6PieceHandoffPosition.get(), ShooterConstants.kTopOuttakeAuto1.get(), ShooterConstants.kBottomOuttakeAuto1.get())
-                    )
+                    superSystem.intakeDirectShoot()
                 ),               
                 AutoBuilder.followPath(pathGroup.get(1)),
                 Commands.deadline(
