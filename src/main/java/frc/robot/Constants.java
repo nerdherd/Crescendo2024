@@ -299,6 +299,9 @@ public final class Constants {
     public static final PrefDouble kHandoffPosition  = new PrefDouble("Pivot Handoff Position", 0);
     public static final PrefDouble kHandoffPosition2 = new PrefDouble("Pivot Handoff Position2", -0.03);   
     
+    public static final PrefDouble k4PieceHandoffPosition = new PrefDouble("4 Piece Handoff Position", -0.03);   
+    public static final PrefDouble k6PieceHandoffPosition = new PrefDouble("6 Piece Handoff Position", -0.03); 
+
     public static final PrefDouble kFullStowPosition = new PrefDouble("Pivot Full Stow Position", -0.1135);
 
     public static final PrefDouble kPPivotMotor = new PrefDouble("kP Shooter Pivot", 64);
