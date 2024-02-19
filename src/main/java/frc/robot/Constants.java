@@ -311,7 +311,7 @@ public final class Constants {
   
     public static final PrefDouble kCruiseAcceleration = new PrefDouble("Shooter Pivot Cruise Acceleration", 0.85);
     public static final PrefDouble kCruiseVelocity = new PrefDouble("Shooter Pivot Cruise Velocity", 0.425);
-    public static final PrefDouble kPivotDeadband = new PrefDouble ("Pivot Deadband", 0); 
+    public static final PrefDouble kPivotDeadband = new PrefDouble ("Pivot Deadband", 0.04); 
 
     public static final PrefDouble kPivotOffset = new PrefDouble("Intake Pivot Offset", 0);
   }
