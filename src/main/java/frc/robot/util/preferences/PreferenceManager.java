@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.Preferences;
 public class PreferenceManager {
     private static PreferenceManager inst;
 
-    private static final String HARDCODE_MODE_KEY = "USE_DEFAULT_PREFERENCES";
+    private static final String DEFAULT_MODE_KEY = "USE_DEFAULT_PREFERENCES";
     private static final String CHECK_KEY = "INITIALIZED";
     private static final String CHECK_VALUE = "TRUE";
     private static boolean initialized = false;
@@ -34,12 +34,13 @@ public class PreferenceManager {
      * 
      * Checks if preferences has initialized, and then waits one second.
      * 
-     * If the check fails after 5 minutes, exit.
+     * If the check fails after 1 minute, exit.
      */
     public void initialize(boolean force) {
         if (!force) {
             int numTries = 0;
-            while (initialized == false && numTries < 300000) {
+            while (initialized == false && numTries < 60000) {
+                DriverStation.reportWarning("Preferences Initializing... " + numTries + " seconds elapsed ", true);
                 initialized = Preferences.getString(CHECK_KEY, "").equals(CHECK_VALUE);
                 try {
                     Thread.sleep(1000);
@@ -48,11 +49,12 @@ public class PreferenceManager {
             }
 
             if (!initialized) {
-                DriverStation.reportError("Preferences not initialized - timeout after 5 minutes", true);
+                DriverStation.reportError("Preferences not initialized - timeout after 1 minute", true);
             }
         }
 
-        useDefaults = Preferences.getBoolean(HARDCODE_MODE_KEY, false);
+        Preferences.initBoolean(DEFAULT_MODE_KEY, false);
+        useDefaults = Preferences.getBoolean(DEFAULT_MODE_KEY, false);
 
         // Don't load anything from networktables if we're using defaults
         if (useDefaults) {
