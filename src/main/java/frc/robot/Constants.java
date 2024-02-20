@@ -248,7 +248,7 @@ public final class Constants {
     public static final int kRightMotorID = 52;
     public static final int kLeftPivotMotorID = 53;
     public static final int kRightPivotMotorID = 54;
-    public static final int kThroughBorePort = 0;
+    public static final int kThroughBorePort = 1;
 
     public static final double kShooterNeutralDeadband = 0.01;
 
@@ -319,7 +319,7 @@ public final class Constants {
   public static final class IntakeConstants {
     public static final int kIntakeMotorID = 56;
     public static final int kPivotMotorID = 57;
-    public static final int kThroughBorePort = 2;
+    public static final int kThroughBorePort = 0;
 
     public static final double kIntakeNeutralDeadband = 0.01;
     public static final double kIntakePivotNeutralDeadband = 0.01;
