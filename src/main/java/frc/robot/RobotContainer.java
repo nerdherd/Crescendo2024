@@ -248,8 +248,9 @@ public class RobotContainer {
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
     //TODO: Make sure April Tag ID is matching
-    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 0.8, 0, 0, 4))); //1.8, 0, 0, 7
-    commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TurnToTag(swerveDrive, 0, 4)));
+    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 0.8, 0, 0, 7, 100)))
+      .onFalse(Commands.run(() -> apriltagCamera.reset())); //1.8, 0, 0, 7
+    commandDriverController.L2().onTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100));
 
 
     // Operator bindings

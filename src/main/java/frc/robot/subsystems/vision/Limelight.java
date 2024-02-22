@@ -35,6 +35,7 @@ public class Limelight implements Reportable{
     private double tXList[] = new double[10];
     private double tAList[] = new double[10];
     private double tYList[] = new double[10];
+    private double tSKList[] = new double[10];
 
     public enum LightMode {
         DEFAULT(0), OFF(1), BLINK(2), ON(3);
@@ -172,10 +173,12 @@ public class Limelight implements Reportable{
         initDoneTX = false;
         //tYList = new double[10]; // do not need it?
         initDoneTY = false;
+        initDoneSK = false;
         
         indexTX = 0;
         indexTY = 0;
         indexTA = 0;
+        indexSK = 0;
     }
 
     public double getCamPoseSkew() {
@@ -209,6 +212,38 @@ public class Limelight implements Reportable{
         }
 
     }
+
+    int indexSK = 0;
+    boolean initDoneSK = false;
+    public double getSkew_avg() {
+        tSKList[indexSK] = getCamPoseSkew();
+        indexSK ++;
+        if(indexSK >= tSKList.length) {
+            indexSK = 0;
+            initDoneSK = true;
+        }
+
+        //SmartDashboard.putNumberArray("txFiltered", tXList);
+
+        double SKSum = 0;
+        if(initDoneSK) {
+            for(int i = 0; i < tSKList.length; i++) {
+                SKSum += tSKList[i];
+            }
+            
+            //SmartDashboard.putNumber("TXAverage", TXSum / tXList.length);
+
+            return SKSum / tSKList.length;
+        }
+        else {
+            for(int i = 0; i < indexSK; i++) {
+                SKSum += tSKList[i];
+            }
+
+            return SKSum / indexSK;
+        }
+    }
+
 
     public Pose2d getBotPose2D()
     {
