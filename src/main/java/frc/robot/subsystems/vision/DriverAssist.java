@@ -67,7 +67,7 @@ public class DriverAssist implements Reportable{
     }
 
     public void TagDriving(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetSkew, int tagID, int maxSamples) {
-        calculateTag(targetTA, targetTX, targetSkew, tagID, maxSamples);
+        calculateTagDriving(targetTA, targetTX, targetSkew, tagID, maxSamples);
 
         swerveDrive.drive(getForwardPower(), getSidewaysPower(), getAngledPower()); //TODO: //getSidewaysPower(), getAngledPower());
     }
@@ -113,17 +113,17 @@ public class DriverAssist implements Reportable{
     }
 
     int dataSampleCount = 0;
-    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples) {
+    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples, Boolean setOdo) {
         return Commands.sequence(
             Commands.runOnce(() -> reset()),
             Commands.run(
-                () -> TagAimingRotation(drivetrain, tagID, maxSamples)
-            ).until(() -> dataSampleCount >= minSamples && Math.abs(calculatedAngledPower) <= 0.1)
+                () -> TagAimingRotation(drivetrain, tagID, maxSamples, setOdo)
+            ).until(() -> dataSampleCount >= minSamples && Math.abs(calculatedAngledPower) <= 0.1),
 
-            // Commands.runOnce(() -> reset()),
-            // Commands.run(
-            //     () -> setRobotPoseByApriltag(drivetrain, tagID, resetToCurrentPose)
-            // ).until(() -> dataSampleCount >= minSamples )
+            Commands.runOnce(() -> reset()),
+            Commands.run(
+                () -> setRobotPoseByApriltag(drivetrain, tagID, setOdo)
+            ).until(() -> dataSampleCount >= minSamples )
         );
     }
 
@@ -139,7 +139,7 @@ public class DriverAssist implements Reportable{
         return ((MaxTxIn-MinTxIn)/(MaxTA-MinTA))*(currentTa-MinTA) + MinTxIn;
     }
     PIDController pidTxRotation = new PIDController(0.1, 0, 0); // todo, tuning pls.
-    public void TagAimingRotation(SwerveDrivetrain swerveDrive, int tagID, int maxSamples) {
+    public void TagAimingRotation(SwerveDrivetrain swerveDrive, int tagID, int maxSamples, boolean setodo) {
         // make sure to reset before or after calling this function
         // make sure the cross is at the center!!! for tx
         // tagID == 0 means: don't care of tag's id, be careful for multi-tags location
@@ -209,7 +209,7 @@ public class DriverAssist implements Reportable{
         }
         else
         {
-            TagAimingRotation(swerveDrive, 0, 100);
+            TagAimingRotation(swerveDrive, 0, 100, false);
         }
     }
 
@@ -227,7 +227,7 @@ public class DriverAssist implements Reportable{
     Pose3d currentPose;
 
     // ************************ VISION ***********************
-    public void calculateTag(double targetTA, double targetTX, double targetskew, int tagID, int maxSamples) {
+    public void calculateTagDriving(double targetTA, double targetTX, double targetskew, int tagID, int maxSamples) {
         double taOffset;
         double txOffset;
         double skewOffset;
@@ -360,7 +360,7 @@ public class DriverAssist implements Reportable{
         if(limelight != null && limelight.getAprilTagID() != -1)
         {
             // 7 is blue side, 4 is red side, center of speaker
-            if(limelight.getAprilTagID() == apriltagId)
+            if(limelight.getAprilTagID() == apriltagId || apriltagId == 0)
             {
                 Pose3d p = getCurrentPose3DVision();
                 swerveDrive.resetOdometry(p.toPose2d());

@@ -250,7 +250,7 @@ public class RobotContainer {
     //TODO: Make sure April Tag ID is matching
     commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 0.8, 0, 0, 7, 100)))
       .onFalse(Commands.run(() -> apriltagCamera.reset())); //1.8, 0, 0, 7
-    commandDriverController.L2().onTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100));
+    commandDriverController.L2().onTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100, true));
 
 
     // Operator bindings
