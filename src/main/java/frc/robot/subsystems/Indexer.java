@@ -85,6 +85,8 @@ public class Indexer extends SubsystemBase implements Reportable {
         if (!result.isOK()){
             DriverStation.reportError("Could not apply indexer configs, error code:"+ result.toString(), new Error().getStackTrace());
         }
+
+        
     }
 
     @Override
