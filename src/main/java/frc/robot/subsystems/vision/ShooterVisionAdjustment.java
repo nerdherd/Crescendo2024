@@ -92,8 +92,13 @@ public class ShooterVisionAdjustment implements Reportable{
     public double getShooterAngle() {
         Pose3d currentPose = getRobotPose();
         if(currentPose == null) return -1;
+        if(poseRobot != null)
+            poseRobot.setString(currentPose.toString());
+            
         Pose3d tagPose = getTagPose(limelight.getAprilTagID());
         if(tagPose == null) return -1;
+        if(poseTag != null)
+            poseTag.setString(tagPose.toString());
 
         double distance = Math.abs(tagPose.getX() - currentPose.getX());
         if(distanceOffset != null) distanceOffset.setDouble(distance);
