@@ -14,6 +14,7 @@ public class SuperSystem {
     public IndexerV2 indexer;
     public ColorSensor colorSensor;
     public LinearActuator linearActuator;
+    public Climber climber;
 
     public SuperSystem(IntakePivot intakePivot, IntakeRoller intakeRoller, 
                         ShooterPivot shooterPivot, ShooterRoller shooterRoller,
@@ -71,10 +72,12 @@ public class SuperSystem {
 
     public Command shooterSpeaker() {
         Command command = Commands.sequence(
-            // Commands.deadline(
-            //     Commands.waitUntil(intakePivot::hasReachedNeutral),
-            //     intakePivot.moveToNeutral()         
-            // ),
+            Commands.deadline(
+                Commands.waitUntil(intakePivot::hasReachedNeutral),
+                intakePivot.setEnabledCommand(true),
+                intakePivot.moveToNeutral(),
+                Commands.waitUntil(() -> false)  
+            ),
             shooterPivot.moveToSpeaker()
         );
 
@@ -82,6 +85,7 @@ public class SuperSystem {
 
         return command;
     }
+
 
     public Command shooterNeutral() {
         Command command = Commands.sequence(
@@ -218,13 +222,15 @@ public class SuperSystem {
 
     public Command intakeDirectShoot() {
         return Commands.sequence(
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", true)),
             Commands.deadline(
                 Commands.waitUntil(() -> 
                     // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
-                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition2.get())),
                 // intakePickup(),
                 shooterPivot.moveToAutoHandoff()
                 ),
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", false)),
             shooterRoller.setEnabledCommand(true),
             intakeRoller.setEnabledCommand(true),
             indexer.setEnabledCommand(true),
@@ -320,5 +326,15 @@ public class SuperSystem {
                 indexer.stop();
             }
         );
+    }
+
+    public Command climbSequence() {
+        return Commands.sequence(
+            linearActuator.retractCommand(),
+            Commands.waitSeconds(1),
+            Commands.runOnce(() -> climber.climb())
+        
+        );
+            
     }
 }

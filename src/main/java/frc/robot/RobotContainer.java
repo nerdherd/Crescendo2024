@@ -265,7 +265,8 @@ public class RobotContainer {
 
     commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
     commandOperatorController.R2().whileTrue(superSystem.shootSequence2());
-    commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far());
+    // commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far());
+    commandOperatorController.R1().whileTrue(superSystem.shooterSpeaker());
 
     commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
   }
@@ -356,6 +357,7 @@ public class RobotContainer {
     intakePivot.initShuffleboard(loggingLevel);
     intakeRoller.initShuffleboard(loggingLevel);
     indexer.initShuffleboard(loggingLevel);
+    superSystem.colorSensor.initShuffleboard(loggingLevel);
 
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
