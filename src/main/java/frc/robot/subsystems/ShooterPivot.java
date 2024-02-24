@@ -249,6 +249,10 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         return hasReachedPosition(ShooterConstants.kNeutralPosition.get());
     }
 
+    public boolean hasReachedShooter() {
+        return hasReachedPosition(ShooterConstants.kSpeakerPosition.get());
+    }
+
     // Checks if the pivot is within deadband of the target pos
     public boolean atTargetPosition() {
         return hasReachedPosition(motionMagicRequest.Position);

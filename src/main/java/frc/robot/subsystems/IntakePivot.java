@@ -67,6 +67,10 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         intakeConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
         intakeConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         intakeConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+
+        intakeConfigs.CurrentLimits.StatorCurrentLimit = 20;
+        intakeConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
+
         
         intakeConfigs.Audio.AllowMusicDurDisable = true;
 
@@ -260,6 +264,10 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
     public Command moveToNeutral() {
         return setPositionCommand(IntakeConstants.kNeutralPosition.get());
+    }
+
+    public Command moveToVertical() {
+        return setPositionCommand(IntakeConstants.kVerticalPosition.get());
     }
 
     //****************************** LOGGING METHODS ******************************//

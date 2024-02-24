@@ -31,10 +31,12 @@ public class SuperSystem {
     public Command intakeStow() {
         Command command = Commands.sequence(
             Commands.deadline(
-                Commands.waitUntil(shooterPivot::hasReachedNeutral),
-                shooterPivot.moveToNeutral()
+                Commands.waitUntil(shooterPivot::hasReachedShooter),
+                shooterPivot.moveToSpeaker(),
+                Commands.waitUntil(() -> false)  
+
             ),
-            intakePivot.moveToStow()
+            intakePivot.moveToVertical()
         );
 
         command.addRequirements(intakePivot);
@@ -45,8 +47,9 @@ public class SuperSystem {
     public Command intakeNeutral() {
         Command command = Commands.sequence(
             Commands.deadline(
-                Commands.waitUntil(shooterPivot::hasReachedNeutral),            
-                shooterPivot.moveToNeutral()
+                Commands.waitUntil(shooterPivot::hasReachedShooter),            
+                shooterPivot.moveToSpeaker(),
+                Commands.waitUntil(() -> false)  
             ),
             intakePivot.moveToNeutral()
         );
@@ -59,8 +62,9 @@ public class SuperSystem {
     public Command intakePickup() {
         Command command = Commands.sequence(
             Commands.deadline(
-                Commands.waitUntil(shooterPivot::hasReachedNeutral), 
-                shooterPivot.moveToNeutral()           
+                Commands.waitUntil(shooterPivot::hasReachedShooter), 
+                shooterPivot.moveToSpeaker(), 
+                Commands.waitUntil(() -> false)  
             ),
             intakePivot.moveToIntake()
         );
@@ -87,26 +91,29 @@ public class SuperSystem {
     }
 
 
-    public Command shooterNeutral() {
-        Command command = Commands.sequence(
-            // Commands.deadline(
-            //     Commands.waitUntil(intakePivot::hasReachedNeutral),
-            //     intakePivot.moveToNeutral()         
-            // ),
-            shooterPivot.moveToNeutral()
-        );
+    // public Command shooterNeutral() {
+    //     Command command = Commands.sequence(
+    //         Commands.deadline(
+    //             Commands.waitUntil(intakePivot::hasReachedNeutral),
+    //             intakePivot.moveToNeutral(),
+    //             Commands.waitUntil(() -> false)  
+    //         ),
+    //         shooterPivot.moveToNeutral()
+    //     );
 
-        command.addRequirements(shooterPivot);
+    //     command.addRequirements(shooterPivot);
 
-        return command;
-    }
+    //     return command;
+    // }
 
     public Command shooterAmp() {
         Command command = Commands.sequence(
-            // Commands.deadline(
-            //     Commands.waitUntil(intakePivot::hasReachedNeutral),
-            //     intakePivot.moveToNeutral()
-            // ),
+            Commands.deadline(
+                Commands.waitUntil(intakePivot::hasReachedNeutral),
+                intakePivot.setEnabledCommand(true),
+                intakePivot.moveToNeutral(),
+                Commands.waitUntil(() -> false)  
+            ),
             shooterPivot.moveToAmp()
         );
 
@@ -117,10 +124,12 @@ public class SuperSystem {
 
     public Command shooterHandoff() {
         Command command = Commands.sequence(
-            // Commands.deadline(
-            //     Commands.waitUntil(intakePivot::hasReachedNeutral),  
-            //     intakePivot.moveToNeutral() 
-            // ),
+            Commands.deadline(
+                Commands.waitUntil(intakePivot::hasReachedNeutral), 
+                intakePivot.setEnabledCommand(true), 
+                intakePivot.moveToNeutral(),
+                Commands.waitUntil(() -> false)  
+            ),
             shooterPivot.moveToHandoff()
         );
 

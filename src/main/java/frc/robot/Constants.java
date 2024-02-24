@@ -325,7 +325,7 @@ public final class Constants {
     public static final double kIntakePivotNeutralDeadband = 0.01;
     public static final boolean kPivotInverted = true;
 
-    // ************************************** SHOOTER CONSTANTS *************************************** //
+    // ************************************** INTAKE CONSTANTS *************************************** //
 
     public static final PrefDouble kIntakeVelocity = new PrefDouble("Intake Velocity", 100);
     public static final PrefDouble kAutoIntakeVelocity = new PrefDouble("Intake Velocity Auto", 90);
