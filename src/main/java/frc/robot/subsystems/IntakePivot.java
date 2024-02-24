@@ -43,7 +43,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
         configureMotor();
         configurePID();
-        resetEncoder();
+        syncEncoders();
     }
     
     //****************************** SETUP METHODS ******************************/
@@ -109,7 +109,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         }
     }
 
-    public void resetEncoder() {
+    public void syncEncoders() {
         // Save a consistent position offset
         IntakeConstants.kPivotOffset.loadPreferences();
         throughBore.setPositionOffset(IntakeConstants.kPivotOffset.get());
@@ -131,7 +131,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
         // Save new offset to Preferences
         IntakeConstants.kPivotOffset.uploadPreferences();
-        resetEncoder();
+        syncEncoders();
     }
 
     public void zeroAbsoluteEncoderFullStow() {
@@ -141,7 +141,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         IntakeConstants.kPivotOffset.set(throughBore.getPositionOffset());
         IntakeConstants.kPivotOffset.uploadPreferences();
 
-        resetEncoder();
+        syncEncoders();
     }
 
     @Override
@@ -151,6 +151,8 @@ public class IntakePivot extends SubsystemBase implements Reportable {
             enabled = false;
             return;
         }
+
+        // syncEncoders();
         
         pivot.setControl(brakeRequest);
 
@@ -285,6 +287,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
                 tab.addBoolean("Intake Enabled", () -> this.enabled);
                 tab.addDouble("Intake Pivot Desired Position", this::getTargetPosition);
                 tab.addDouble("Intake Pivot Position", this::getPosition);
+                tab.addDouble("Intake Pivot Absolute Position", this::getAbsolutePosition);
                 tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));
                 tab.add("Zero Full Stow Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoderFullStow));
                 tab.addNumber("Intake Pivot Applied Voltage", () -> pivot.getMotorVoltage().getValueAsDouble());

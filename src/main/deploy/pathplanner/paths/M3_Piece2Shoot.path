@@ -4,24 +4,24 @@
     {
       "anchor": {
         "x": 7.95,
-        "y": 2.46
+        "y": 2.76
       },
       "prevControl": null,
       "nextControl": {
         "x": 8.01,
-        "y": 2.46
+        "y": 2.76
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.8644289499705946,
-        "y": 3.1619258673610067
+        "x": 2.60221165235483,
+        "y": 3.7357568581043004
       },
       "prevControl": {
-        "x": 4.522788845862998,
-        "y": 0.19908422127828404
+        "x": 2.35337207468298,
+        "y": -0.25649549671798644
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "shootSequence2"
+                "name": "shootSequence2Far"
               }
             }
           ]
@@ -57,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -48.4682292589172,
+    "rotation": -38.418055344821944,
     "rotateFast": true
   },
   "reversed": false,

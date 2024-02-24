@@ -30,28 +30,27 @@ public class Mid3Piece extends SequentialCommandGroup {
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
-            //Commands.runOnce(()-> tagCam.resetInitPoseByVision(swerve, startingPose, 4) ), // will add it back later
-            Commands.waitSeconds(2), // debug time
-
-            Commands.runOnce(swerve.getImu()::zeroAll),
-            Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
-            Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
-
+            // Commands.runOnce(()-> tagCam.resetInitPoseByVision(swerve, startingPose, 4, 4)), // will add it back later
+            // Commands.waitSeconds(2), // debug time
             Commands.sequence(
-            Commands.deadline(
-                Commands.waitSeconds(1.5),
-                superSystem.shootSequence2()
+                // Preload
+                Commands.deadline(
+                    Commands.waitSeconds(1.5),
+                    superSystem.shootSequence2()
                 ),
+                // Grab Note
                 Commands.deadline(
                     AutoBuilder.followPath(pathGroup.get(0))
                 ),
+                // Come back
                 Commands.deadline(
-                    AutoBuilder.followPath(pathGroup.get(1))
-                    
+                    AutoBuilder.followPath(pathGroup.get(1))  
                 ),
+                // Grab note
                 Commands.deadline(
                     AutoBuilder.followPath(pathGroup.get(2))
                 ),
+                // Come back
                 Commands.deadline(
                     AutoBuilder.followPath(pathGroup.get(3))
                 )

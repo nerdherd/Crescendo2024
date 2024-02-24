@@ -103,9 +103,9 @@ public class RobotContainer {
     // Moved to teleop init
 
     DriverStation.reportWarning("Initalization complete", false);
-
-      NamedCommands.registerCommand("intakeBasic1", superSystem.intakeBasic());
-      NamedCommands.registerCommand("intakeBasic2", superSystem.intakeBasic2());
+      NamedCommands.registerCommand("intakeBasic1", superSystem.intakeBasicHold());
+      NamedCommands.registerCommand("intakeBasic2", superSystem.stopIntaking());
+      NamedCommands.registerCommand("shootSequence2Far", superSystem.shootSequence2Far());
       NamedCommands.registerCommand("shootSequence2", superSystem.shootSequence2());
 
   }
@@ -296,7 +296,7 @@ public class RobotContainer {
 
     if (paths.contains("Basic4PieceSeparated")) {
       autoChooser.addOption("Basic4PieceWithVision", new Basic4PieceWithVision(swerveDrive, "Basic4PieceSeparated", superSystem, apriltagCamera));
-      autoChooser.addOption("Basic4PieceSeparated", new Basic4PieceSeparated(swerveDrive, "Basic4PieceSeparated", superSystem));
+      autoChooser.setDefaultOption("Basic4PieceSeparated", new Basic4PieceSeparated(swerveDrive, "Basic4PieceSeparated", superSystem));
     }
 
     // if (paths.contains("Basic5Piece")) {
@@ -336,9 +336,9 @@ public class RobotContainer {
       autoChooser.addOption("Mid4Notes with Vision", new AutoMidNotes(swerveDrive, "Mid4Notes", superSystem, noteCamera, apriltagCamera, superSystem.colorSensor));
     }
 
-    // if (paths.contains("Mid3Piece")) {
-    //   autoChooser.setDefaultOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem));
-    // }
+    if (paths.contains("Mid3Piece")) {
+      autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
+    }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 

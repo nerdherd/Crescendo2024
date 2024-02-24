@@ -195,12 +195,31 @@ public class SuperSystem {
         );
     }
 
-    public Command intakeBasic2() {
+    public Command intakeBasicHold() {
         return Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(() -> 
+                    intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+                handoff(),
+                Commands.waitSeconds(1)
+                ),
+            intakeRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
+            indexer.indexCommand(),
+            intakeRoller.intakeCommand()
+        );
+    }
+
+    public Command stopIntaking() {
+        return Commands.sequence(
+            indexer.reverseIndexCommand(),
+            Commands.waitSeconds(0.5),
             Commands.runOnce(() -> {
-            SmartDashboard.putBoolean("Intaking", false);
-            intakeRoller.stop();
-            indexer.stop();
+                SmartDashboard.putBoolean("Intaking", false);
+                intakeRoller.stop();
+                indexer.stop();
             })
         );
     }

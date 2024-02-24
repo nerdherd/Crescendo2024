@@ -38,7 +38,7 @@ public class AutoMidNotes extends SequentialCommandGroup {
                     Commands.sequence(
                         superSystem.intakeBasic(), // intake position and start intake
                         noteAssistance.driveToNoteCommand(swerve, 0, 0, 0, 0, 0, startingPose), // TODO: change target values
-                        superSystem.intakeBasic2(), // stop intake
+                        superSystem.stopIntaking(), // stop intake
                         new ConditionalCommand(
                                 Commands.sequence(
                                     AutoBuilder.followPath(pathGroup.get(1)), // Go to speaker
@@ -66,7 +66,7 @@ public class AutoMidNotes extends SequentialCommandGroup {
                     Commands.sequence(
                         superSystem.intakeBasic(), // start intake
                         noteAssistance.driveToNoteCommand(swerve, 0, 0, 0, 0, 0, startingPose), // TODO: change target values
-                        superSystem.intakeBasic2(), // stop intake
+                        superSystem.stopIntaking(), // stop intake
                         new ConditionalCommand(
                                 Commands.sequence(
                                     AutoBuilder.followPath(pathGroup.get(5)), // Go back to note 1 to be clear of stage
@@ -93,7 +93,7 @@ public class AutoMidNotes extends SequentialCommandGroup {
                 Commands.sequence(
                     superSystem.intakeBasic(), // Intake
                     noteAssistance.driveToNoteCommand(swerve, 0, 0, 0, 0, 0, startingPose), // Use vision to drive to note
-                    superSystem.intakeBasic2(), // stop intake
+                    superSystem.stopIntaking(), // stop intake
                     new ConditionalCommand(
                         Commands.sequence(
                             AutoBuilder.followPath(pathGroup.get(5)), // Go back to note 1 to be clear of stage

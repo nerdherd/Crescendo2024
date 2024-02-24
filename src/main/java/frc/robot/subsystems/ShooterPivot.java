@@ -69,12 +69,12 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         pivotConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
 
-        // pivotConfigs.CurrentLimits.SupplyCurrentLimit = 40;
-        // pivotConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
-        // pivotConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
-        // pivotConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
-        pivotConfigs.CurrentLimits.StatorCurrentLimit = 50;
-        pivotConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
+        pivotConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        pivotConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        pivotConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
+        pivotConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        pivotConfigs.CurrentLimits.StatorCurrentLimit = 100;
+        pivotConfigs.CurrentLimits.StatorCurrentLimitEnable = false;
         pivotConfigs.Audio.AllowMusicDurDisable = true;
 
         StatusCode leftStatusPivot = leftPivotConfigurator.apply(pivotConfigs);
