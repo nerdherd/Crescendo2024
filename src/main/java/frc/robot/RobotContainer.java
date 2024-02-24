@@ -329,7 +329,7 @@ public class RobotContainer {
     }
     
     if (paths.contains("Mid4Notes")) {
-      autoChooser.addOption("Mid4Notes with Vision", new AutoMidNotes(swerveDrive, "Mid4Notes", superSystem, noteCamera));
+      autoChooser.addOption("Mid4Notes with Vision", new AutoMidNotes(swerveDrive, "Mid4Notes", superSystem, noteCamera, apriltagCamera, superSystem.colorSensor));
     }
 
     // if (paths.contains("Mid3Piece")) {

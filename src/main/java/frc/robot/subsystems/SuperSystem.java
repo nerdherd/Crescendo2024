@@ -221,14 +221,20 @@ public class SuperSystem {
     }
 
     public Command intakeDirectShoot() {
+        return intakeDirectShoot(ShooterConstants.kHandoffPosition.get(), 
+                                 ShooterConstants.kTopOuttakeAuto1.get(),
+                                 ShooterConstants.kBottomOuttakeAuto1.get());
+    }
+
+    public Command intakeDirectShoot(double shooterPosition, double topShooterVelocity, double bottomShooterVelocity) {
         return Commands.sequence(
             Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", true)),
             Commands.deadline(
                 Commands.waitUntil(() -> 
                     // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
-                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition2.get())),
+                    shooterPivot.hasReachedPosition(shooterPosition)),
                 intakePickup(),
-                shooterPivot.moveToAutoHandoff()
+                shooterPivot.setPositionCommand(shooterPosition)
                 ),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", false)),
             shooterRoller.setEnabledCommand(true),
@@ -237,7 +243,7 @@ public class SuperSystem {
             Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
             indexer.indexCommand(),
             intakeRoller.autoIntakeCommand(),
-            shooterRoller.shootSpeakerAuto1(),
+            shooterRoller.setVelocityCommand(topShooterVelocity, bottomShooterVelocity),
             Commands.waitUntil(() -> false)
         ).finallyDo(
             () -> {
@@ -247,6 +253,10 @@ public class SuperSystem {
                 shooterRoller.stop();
             }
         );
+    }
+
+    public Command intakeDirectShoot(double shooterPosition, double shooterVelocity) {
+        return intakeDirectShoot(shooterPosition, shooterVelocity, shooterVelocity);
     }
 
     public Command eject() {
