@@ -64,7 +64,8 @@ public class ShooterVisionAdjustment implements Reportable{
         if(targetFound != null)
             targetFound.setBoolean(limelight.hasValidTarget());
 
-        if(poseRobot != null) poseRobot.setString(limelightHelperUser.getPose3d().toString());
+        if(poseRobot != null)
+            poseRobot.setString(limelightHelperUser.getPose3d().toString());
         return limelightHelperUser.getPose3d();
     }
 
@@ -74,7 +75,8 @@ public class ShooterVisionAdjustment implements Reportable{
         Optional<Pose3d> tagPose = layout.getTagPose(ID);
         if(tagPose.isEmpty()) return null;
         
-        if(poseTag != null) poseTag.setString(tagPose.toString());
+        if(poseTag != null) 
+            poseTag.setString(tagPose.toString());
         return tagPose.get();
     }
 
@@ -92,19 +94,16 @@ public class ShooterVisionAdjustment implements Reportable{
     public double getShooterAngle() {
         Pose3d currentPose = getRobotPose();
         if(currentPose == null) return -1;
-        if(poseRobot != null)
-            poseRobot.setString(currentPose.toString());
-            
         Pose3d tagPose = getTagPose(limelight.getAprilTagID());
         if(tagPose == null) return -1;
-        if(poseTag != null)
-            poseTag.setString(tagPose.toString());
 
         double distance = Math.abs(tagPose.getX() - currentPose.getX());
         if(distanceOffset != null) distanceOffset.setDouble(distance);
 
-        if(goalAngle != null) goalAngle.setDouble(angleEquation.getOutput(distance));
-        return angleEquation.getOutput(distance);
+        double output = angleEquation.getOutput(distance);
+        if(goalAngle != null) 
+            goalAngle.setDouble(output);
+        return angleEquation.getOutput(output);
     }
 
     @Override
