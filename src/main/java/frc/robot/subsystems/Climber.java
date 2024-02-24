@@ -53,10 +53,6 @@ public class Climber extends SubsystemBase{
         }
     }
 
-    public void climb() {
-        voltageRequest.Output = velocityRequest.Velocity * 12 / 100;
-    }
-
     @Override
     public void periodic() {
         if (!enabled) {
@@ -67,5 +63,8 @@ public class Climber extends SubsystemBase{
         climber.setControl(voltageRequest);
     }
 
+    public void climb() {
+        voltageRequest.Output = ClimberConstants.kClimberOutput; 
+    }
 
 }
