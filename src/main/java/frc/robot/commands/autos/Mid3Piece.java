@@ -29,7 +29,8 @@ public class Mid3Piece extends SequentialCommandGroup {
 
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
-            Commands.runOnce(()-> tagCam.resetInitPoseByVision(swerve, startingPose, 4) ),
+            Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
+            //Commands.runOnce(()-> tagCam.resetInitPoseByVision(swerve, startingPose, 4) ), // will add it back later
             Commands.waitSeconds(2), // debug time
 
             Commands.runOnce(swerve.getImu()::zeroAll),

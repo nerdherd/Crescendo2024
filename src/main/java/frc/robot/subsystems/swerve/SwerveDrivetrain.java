@@ -140,7 +140,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             runModules();
         }
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
-        counter = (counter + 1) % visionFrequency;
+        /*counter = (counter + 1) % visionFrequency;
 
         if(vision != null && vision.getAprilTagID() != -1)
         {
@@ -154,7 +154,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         else
         {
             SmartDashboard.putBoolean("Vision Used", false);
-        }
+        }*/
         
         field.setRobotPose(poseEstimator.getEstimatedPosition());
     }

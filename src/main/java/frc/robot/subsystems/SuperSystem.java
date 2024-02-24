@@ -72,10 +72,12 @@ public class SuperSystem {
 
     public Command shooterSpeaker() {
         Command command = Commands.sequence(
-            // Commands.deadline(
-            //     Commands.waitUntil(intakePivot::hasReachedNeutral),
-            //     intakePivot.moveToNeutral()         
-            // ),
+            Commands.deadline(
+                Commands.waitUntil(intakePivot::hasReachedNeutral),
+                intakePivot.setEnabledCommand(true),
+                intakePivot.moveToNeutral(),
+                Commands.waitUntil(() -> false)  
+            ),
             shooterPivot.moveToSpeaker()
         );
 
@@ -83,6 +85,7 @@ public class SuperSystem {
 
         return command;
     }
+
 
     public Command shooterNeutral() {
         Command command = Commands.sequence(
@@ -219,13 +222,15 @@ public class SuperSystem {
 
     public Command intakeDirectShoot() {
         return Commands.sequence(
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", true)),
             Commands.deadline(
                 Commands.waitUntil(() -> 
                     // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
-                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition2.get())),
                 // intakePickup(),
                 shooterPivot.moveToAutoHandoff()
                 ),
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", false)),
             shooterRoller.setEnabledCommand(true),
             intakeRoller.setEnabledCommand(true),
             indexer.setEnabledCommand(true),

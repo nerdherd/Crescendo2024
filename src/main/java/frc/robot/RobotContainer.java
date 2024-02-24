@@ -248,8 +248,9 @@ public class RobotContainer {
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
     //TODO: Make sure April Tag ID is matching
-    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 0.8, 0, 0, 4))); //1.8, 0, 0, 7
-    commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TurnToTag(swerveDrive, 0, 4)));
+    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 0.8, 0, 0, 7, 100)))
+      .onFalse(Commands.run(() -> apriltagCamera.reset())); //1.8, 0, 0, 7
+    commandDriverController.L2().onTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100, true));
 
 
     // Operator bindings
@@ -264,7 +265,8 @@ public class RobotContainer {
 
     commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
     commandOperatorController.R2().whileTrue(superSystem.shootSequence2());
-    commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far());
+    // commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far());
+    commandOperatorController.R1().whileTrue(superSystem.shooterSpeaker());
 
     commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
   }
@@ -355,6 +357,7 @@ public class RobotContainer {
     intakePivot.initShuffleboard(loggingLevel);
     intakeRoller.initShuffleboard(loggingLevel);
     indexer.initShuffleboard(loggingLevel);
+    superSystem.colorSensor.initShuffleboard(loggingLevel);
 
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
