@@ -36,7 +36,7 @@ public class AutoMidNotes extends SequentialCommandGroup {
             // TODO: add conditional to scan area if not seen
             new ConditionalCommand(
                     Commands.sequence(
-                        superSystem.intakeBasic1(), // intake position and start intake
+                        superSystem.intakeBasic(), // intake position and start intake
                         noteAssistance.driveToNoteCommand(swerve, 0, 0, 0, 0, 0, startingPose), // TODO: change target values
                         superSystem.intakeBasic2(), // stop intake
                         new ConditionalCommand(
@@ -64,7 +64,7 @@ public class AutoMidNotes extends SequentialCommandGroup {
             // TODO: add conditional to scan area if not seen
             new ConditionalCommand(
                     Commands.sequence(
-                        superSystem.intakeBasic1(), // start intake
+                        superSystem.intakeBasic(), // start intake
                         noteAssistance.driveToNoteCommand(swerve, 0, 0, 0, 0, 0, startingPose), // TODO: change target values
                         superSystem.intakeBasic2(), // stop intake
                         new ConditionalCommand(
@@ -91,7 +91,7 @@ public class AutoMidNotes extends SequentialCommandGroup {
             // TODO: add conditional to scan area if not seen
             new ConditionalCommand(
                 Commands.sequence(
-                    superSystem.intakeBasic1(), // Intake
+                    superSystem.intakeBasic(), // Intake
                     noteAssistance.driveToNoteCommand(swerve, 0, 0, 0, 0, 0, startingPose), // Use vision to drive to note
                     superSystem.intakeBasic2(), // stop intake
                     new ConditionalCommand(

@@ -57,31 +57,20 @@ public class SuperSystem {
     }
 
     public Command intakePickup() {
-        Command command = Commands.sequence(
-            Commands.deadline(
-                Commands.waitUntil(shooterPivot::hasReachedNeutral), 
-                shooterPivot.moveToNeutral()           
-            ),
-            intakePivot.moveToIntake()
-        );
-
-        command.addRequirements(intakePivot);
-
-        return command;
+        return intakePivot.moveToIntake();
     }
 
     public Command shooterSpeaker() {
         Command command = Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(intakePivot::hasReachedNeutral),
-                intakePivot.setEnabledCommand(true),
                 intakePivot.moveToNeutral(),
                 Commands.waitUntil(() -> false)  
             ),
             shooterPivot.moveToSpeaker()
         );
 
-        command.addRequirements(shooterPivot);
+        // command.addRequirements(shooterPivot);
 
         return command;
     }
@@ -101,12 +90,12 @@ public class SuperSystem {
         return command;
     }
 
-    public Command shooterAmp() {
+    public Command amp() {
         Command command = Commands.sequence(
-            // Commands.deadline(
-            //     Commands.waitUntil(intakePivot::hasReachedNeutral),
-            //     intakePivot.moveToNeutral()
-            // ),
+            Commands.deadline(
+                Commands.waitUntil(intakePivot::hasReachedNeutral),
+                intakePivot.moveToNeutral()
+            ),
             shooterPivot.moveToAmp()
         );
 
@@ -115,12 +104,24 @@ public class SuperSystem {
         return command;
     }
 
-    public Command shooterHandoff() {
+    public Command stow() {
+        return Commands.sequence(
+            intakePivot.setPositionCommand(IntakeConstants.kNeutralPosition.get()),
+            Commands.deadline(
+                Commands.waitUntil(shooterPivot::atTargetPosition),
+                shooterSpeaker(),
+                Commands.waitSeconds(2)
+            ),
+            intakePivot.setPositionCommand(IntakeConstants.kVerticalPosition.get())
+        );
+    }
+
+    public Command handoff() {
         Command command = Commands.sequence(
-            // Commands.deadline(
-            //     Commands.waitUntil(intakePivot::hasReachedNeutral),  
-            //     intakePivot.moveToNeutral() 
-            // ),
+            Commands.deadline(
+                Commands.waitUntil(intakePivot::hasReachedNeutral),  
+                intakePivot.moveToIntake() 
+            ),
             shooterPivot.moveToHandoff()
         );
 
@@ -143,7 +144,8 @@ public class SuperSystem {
         return Commands.sequence(
             shooterPivot.moveToSpeaker(),
             indexer.setEnabledCommand(true),
-            indexer.reverseIndexCommand()
+            indexer.reverseIndexCommand(),
+            Commands.waitSeconds(1)
         ).finallyDo(indexer::stop);
     }
 
@@ -153,8 +155,8 @@ public class SuperSystem {
                 Commands.waitUntil(() -> 
                     intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
                     shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
-                intakePickup(),
-                shooterHandoff()
+                handoff(),
+                Commands.waitSeconds(1)
                 ),
             intakeRoller.setEnabledCommand(true),
             indexer.setEnabledCommand(true),
@@ -172,10 +174,10 @@ public class SuperSystem {
         return Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(() -> 
-                    // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+                    intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
                     shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
-                // intakePickup(),
-                shooterHandoff()
+                handoff(),
+                Commands.waitSeconds(1)
                 ),
             intakeRoller.setEnabledCommand(true),
             indexer.setEnabledCommand(true),
@@ -189,24 +191,6 @@ public class SuperSystem {
                 intakeRoller.stop();
                 indexer.stop();
             }
-        );
-    }
-
-    public Command intakeBasic1() {
-        return Commands.sequence(
-            Commands.deadline(
-                Commands.waitUntil(() -> 
-                    // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
-                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
-                // intakePickup(),
-                shooterHandoff()
-                ),
-            intakeRoller.setEnabledCommand(true),
-            indexer.setEnabledCommand(true),
-            Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
-            indexer.indexCommand(),
-            intakeRoller.intakeCommand(),
-            Commands.waitUntil(() -> false)
         );
     }
 
@@ -266,7 +250,7 @@ public class SuperSystem {
                     // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
                     shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
                 // intakePickup(),
-                shooterHandoff()
+                handoff()
                 ),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Outtaking", true)),
             indexer.reverseIndexCommand(),
@@ -285,6 +269,7 @@ public class SuperSystem {
 
     public Command shootSequence2() {
         return Commands.sequence(
+            intakePivot.moveToNeutral(),
             // Prepare to shoot
             shooterSpeaker(),
             shooterRoller.setEnabledCommand(true),
@@ -303,6 +288,7 @@ public class SuperSystem {
 
     public Command shootSequence2Far() {
         return Commands.sequence(
+            intakePivot.moveToNeutral(),
             // Prepare to shoot
             shooterPivot.moveToSpeakerFar(),
             shooterRoller.setEnabledCommand(true),
@@ -321,7 +307,7 @@ public class SuperSystem {
 
     public Command ampSequence() {
         return Commands.sequence( 
-            shooterAmp(),
+            amp(),
             indexer.setEnabledCommand(false),
             Commands.waitUntil(shooterPivot::atTargetPosition),
             shooterRoller.setEnabledCommand(true),

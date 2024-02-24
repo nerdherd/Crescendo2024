@@ -104,7 +104,7 @@ public class RobotContainer {
 
     DriverStation.reportWarning("Initalization complete", false);
 
-      NamedCommands.registerCommand("intakeBasic1", superSystem.intakeBasic1());
+      NamedCommands.registerCommand("intakeBasic1", superSystem.intakeBasic());
       NamedCommands.registerCommand("intakeBasic2", superSystem.intakeBasic2());
       NamedCommands.registerCommand("shootSequence2", superSystem.shootSequence2());
 
@@ -224,17 +224,21 @@ public class RobotContainer {
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
-    commandOperatorController.square().whileTrue(superSystem.ampSequence());
+    commandOperatorController.square().whileTrue(superSystem.ampSequence()).onFalse(superSystem.stow());
 
     commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     // commandOperatorController.L2().whileTrue(superSystem.intakeBasic());
     
     commandOperatorController.L2().whileTrue(superSystem.intakeBasic())
-                                  .onFalse(superSystem.backupIndexer());
+                                  .onFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
 
     commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
-    commandOperatorController.R2().whileTrue(superSystem.shootSequence2());
-    commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far());
+    commandOperatorController.R2().whileTrue(superSystem.shootSequence2())
+                                  .onFalse(superSystem.stow());
+    commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far())
+                                  .onFalse(superSystem.stow());
+
+    commandOperatorController.cross().onTrue(superSystem.stow());
 
     commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
   }
@@ -264,8 +268,8 @@ public class RobotContainer {
 
     commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
     commandOperatorController.R2().whileTrue(superSystem.shootSequence2());
-    // commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far());
-    commandOperatorController.R1().whileTrue(superSystem.shooterSpeaker());
+    commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far());
+    // commandOperatorController.R1().whileTrue(superSystem.shooterSpeaker());
 
     commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
   }
