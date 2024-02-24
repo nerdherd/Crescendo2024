@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.util.NerdyMath;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterPivot extends SubsystemBase implements Reportable {
@@ -237,12 +236,12 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     public boolean hasReachedPosition(double position) {
         return NerdyMath.inRange(
             getPosition(),
-            position - IntakeConstants.kPivotDeadband.get(), 
-            position + IntakeConstants.kPivotDeadband.get()
+            position - ShooterConstants.kPivotDeadband.get(), 
+            position + ShooterConstants.kPivotDeadband.get()
         ) && NerdyMath.inRange(
             getTargetPosition(),
-            position - IntakeConstants.kPivotDeadband.get(), 
-            position + IntakeConstants.kPivotDeadband.get()
+            position - ShooterConstants.kPivotDeadband.get(), 
+            position + ShooterConstants.kPivotDeadband.get()
         );
     }
 
