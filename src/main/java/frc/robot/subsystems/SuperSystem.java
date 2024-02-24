@@ -14,6 +14,7 @@ public class SuperSystem {
     public IndexerV2 indexer;
     public ColorSensor colorSensor;
     public LinearActuator linearActuator;
+    public Climber climber;
 
     public SuperSystem(IntakePivot intakePivot, IntakeRoller intakeRoller, 
                         ShooterPivot shooterPivot, ShooterRoller shooterRoller,
@@ -325,5 +326,15 @@ public class SuperSystem {
                 indexer.stop();
             }
         );
+    }
+
+    public Command climbSequence() {
+        return Commands.sequence(
+            linearActuator.retractCommand(),
+            Commands.waitSeconds(1),
+            Commands.runOnce(() -> climber.climb())
+        
+        );
+            
     }
 }

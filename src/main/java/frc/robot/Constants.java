@@ -398,6 +398,12 @@ public final class Constants {
     public static final int inProximity = 75;
   }
 
+  public static final class ClimberConstants {
+    public static final int kClimberMotorID = 0;
+    public static final double kClimberNeutralDeadband = 0.05;
+    public static final double kClimberOutput = 0;
+  }
+
   public static final class SuperStructureConstants {
     public static final String kCANivoreBusName = "rio";
   }
