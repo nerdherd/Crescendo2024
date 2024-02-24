@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.TurnToAngle;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.vision.NoteAssistance;
@@ -27,15 +28,17 @@ public class AutoMidNotes extends SequentialCommandGroup {
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
 
-            // Preload shot
-            // Turn on intake
-            AutoBuilder.followPath(pathGroup.get(0)), // First path to note 1
+            superSystem.shootSequence2(), // Preload shot
+            AutoBuilder.followPath(pathGroup.get(0)), // First path to note 
+            new ConditionalCommand(new TurnToAngle(0, swerve), Commands.none(), () -> noteAssistance.hasTarget()),
             new ConditionalCommand(
                     Commands.sequence(
-                        // Drive on note with vision
+                        superSystem.intakeBasic1(), // intake position and start intake
+                        noteAssistance.driveToNoteCommand(swerve, 0, 0, 0, 0, 0, startingPose), // TODO: change target values
+                        superSystem.intakeBasic2(), // stop intake
                         AutoBuilder.followPath(pathGroup.get(1)), // Go to speaker
-                        // Shoot
-                        AutoBuilder.followPath(pathGroup.get(0)) // Drive back to the middle
+                        superSystem.shootSequence2(), // Shoot
+                        AutoBuilder.followPath(pathGroup.get(0)) // Drive back to the middle(note1)
                     )
                 ,
                     // If no target wait for movement to next spot
@@ -44,12 +47,15 @@ public class AutoMidNotes extends SequentialCommandGroup {
                 () -> noteAssistance.hasTarget()
             ),
             AutoBuilder.followPath(pathGroup.get(2)), // Go in front of note 2
+            new ConditionalCommand(new TurnToAngle(0, swerve), Commands.none(), () -> noteAssistance.hasTarget()),
             new ConditionalCommand(
                     Commands.sequence(
+                        superSystem.intakeBasic1(), // start intake
                         noteAssistance.driveToNoteCommand(swerve, 0, 0, 0, 0, 0, startingPose), // TODO: change target values
+                        superSystem.intakeBasic2(), // stop intake
                         AutoBuilder.followPath(pathGroup.get(5)), // Go back to note 1 to be clear of stage
                         AutoBuilder.followPath(pathGroup.get(1)), // Go to speaker
-                        // shoot
+                        superSystem.shootSequence2(), // shoot
                         AutoBuilder.followPath(pathGroup.get(0)) // Go to note 1 location to clear the stage
                     )
                 , 
@@ -58,13 +64,15 @@ public class AutoMidNotes extends SequentialCommandGroup {
                 () -> noteAssistance.hasTarget()
             ),
             AutoBuilder.followPath(pathGroup.get(3)), // Go in front of note 3
+            new ConditionalCommand(new TurnToAngle(0, swerve), Commands.none(), () -> noteAssistance.hasTarget()),
             new ConditionalCommand(
                 Commands.sequence(
-                    // Intake
-                    // Use vision to drive to note
+                    superSystem.intakeBasic1(), // Intake
+                    noteAssistance.driveToNoteCommand(swerve, 0, 0, 0, 0, 0, startingPose), // Use vision to drive to note
+                    superSystem.intakeBasic2(), // stop intake
                     AutoBuilder.followPath(pathGroup.get(5)), // Go back to note 1 to be clear of stage
                     AutoBuilder.followPath(pathGroup.get(1)), // Go to speaker
-                    // shoot
+                    superSystem.shootSequence2(), // shoot
                     AutoBuilder.followPath(pathGroup.get(0)) // Go to note 1 location to clear the stage
                 )
                 ,
@@ -73,20 +81,7 @@ public class AutoMidNotes extends SequentialCommandGroup {
                 , 
                 () -> noteAssistance.hasTarget()
             ),
-            AutoBuilder.followPath(pathGroup.get(4)), // // Go in front of note 4
-            new ConditionalCommand(
-                Commands.sequence(
-                    noteAssistance.driveToNoteCommand(swerve, 0, 0, 0, 0, 0, startingPose), //change target values
-                    AutoBuilder.followPath(pathGroup.get(5)), // Go back to note 1 to be clear of stage
-                    AutoBuilder.followPath(pathGroup.get(1)), // Go to speaker
-                    // shoot
-                    AutoBuilder.followPath(pathGroup.get(0)) // Go to note 1 location to clear the stage
-                )
-                , 
-                    Commands.none()
-                ,
-                () -> noteAssistance.hasTarget()
-            )
+            AutoBuilder.followPath(pathGroup.get(4)) // Go in front of note 4
         );
     }
 }
