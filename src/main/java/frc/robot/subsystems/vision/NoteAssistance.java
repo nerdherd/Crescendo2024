@@ -362,9 +362,9 @@ public class NoteAssistance implements Reportable{
         switch (priority) {
             case ALL:
        
-            try{
-                tab.addCamera(name + ": Stream", name, VisionConstants.kLimelightFrontIP);
-            }catch(Exception e){};
+            // try{
+            //     tab.addCamera(name + ": Stream", name, VisionConstants.kLimelightFrontIP);
+            // }catch(Exception e){};
 
             case MEDIUM:
                 currentArea = tab.add("Area", 0)

@@ -109,7 +109,8 @@ public class SuperSystem {
             intakePivot.setPositionCommand(IntakeConstants.kNeutralPosition.get()),
             Commands.deadline(
                 Commands.waitUntil(shooterPivot::atTargetPosition),
-                shooterSpeaker(),
+                // shooterSpeaker(),
+                shooterPivot.setPositionCommand(-0.1),
                 Commands.waitSeconds(2)
             ),
             intakePivot.setPositionCommand(IntakeConstants.kVerticalPosition.get())
@@ -269,9 +270,9 @@ public class SuperSystem {
 
     public Command shootSequence2() {
         return Commands.sequence(
-            intakePivot.moveToNeutral(),
+            intakePivot.moveToIntake(),
             // Prepare to shoot
-            shooterSpeaker(),
+            shooterPivot.moveToSpeaker(),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
             Commands.waitSeconds(0.8),

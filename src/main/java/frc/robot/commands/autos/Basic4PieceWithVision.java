@@ -52,7 +52,7 @@ public class Basic4PieceWithVision extends SequentialCommandGroup {
 
                 // Piece 2
                 // TODO: Change AprilTag ID based on alliance
-                driverAssist.resetOdoPoseByVision(swerve, startingPose, 7, true), //change april tag id ltr
+                driverAssist.resetOdoPoseByVision(swerve, startingPose, 4, true), //change april tag id ltr
                 Commands.deadline(
                     AutoBuilder.followPath(pathGroup.get(2)),
                     superSystem.intakeDirectShoot(ShooterConstants.k4PieceHandoffPosition2.get(), 
@@ -68,7 +68,7 @@ public class Basic4PieceWithVision extends SequentialCommandGroup {
 
                 // Piece 3
                 // TODO: Change AprilTag ID based on alliance
-                driverAssist.resetOdoPoseByVision(swerve, startingPose, 7, true), 
+                driverAssist.resetOdoPoseByVision(swerve, startingPose, 4, true), 
                 Commands.deadline(
                     Commands.sequence(
                         AutoBuilder.followPath(pathGroup.get(4)),
