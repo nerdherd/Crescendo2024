@@ -227,7 +227,7 @@ public class SuperSystem {
                 Commands.waitUntil(() -> 
                     // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
                     shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition2.get())),
-                // intakePickup(),
+                intakePickup(),
                 shooterPivot.moveToAutoHandoff()
                 ),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", false)),

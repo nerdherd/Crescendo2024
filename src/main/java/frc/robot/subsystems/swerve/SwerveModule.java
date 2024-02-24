@@ -235,7 +235,7 @@ public class SwerveModule implements Reportable {
      * @return Angle in degrees
      */
     public double getTurningPositionDegrees() {
-        double turningPosition = (360 * canCoder.getAbsolutePosition().getValue()) % 360;
+        double turningPosition = ((360 * canCoder.getAbsolutePosition().getValue()) % 360 + 360) % 360;
         return turningPosition;
     }
 

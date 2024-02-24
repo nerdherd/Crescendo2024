@@ -23,8 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
-import frc.robot.commands.autos.Auto4Notes;
-import frc.robot.commands.autos.Auto4NotesDirect;
+import frc.robot.commands.autos.Basic4PieceWithVision;
 import frc.robot.commands.autos.AutoMidNotes;
 import frc.robot.commands.autos.Basic2Piece;
 import frc.robot.commands.autos.Basic3Piece;
@@ -275,10 +274,6 @@ public class RobotContainer {
   	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands.none());
     
-    if (paths.contains("4PAuto")) {
-      autoChooser.addOption("4PAuto", new Auto4Notes(swerveDrive, "4PAuto", superSystem));
-      autoChooser.addOption("4PAuto Direct", new Auto4NotesDirect(swerveDrive, "4PAuto", superSystem));
-    }
     if (paths.contains("Basic2Piece")) {
       autoChooser.addOption("Basic2Piece", new Basic2Piece(swerveDrive, "Basic2Piece", superSystem));
     }
@@ -296,6 +291,7 @@ public class RobotContainer {
     }
 
     if (paths.contains("Basic4PieceSeparated")) {
+      autoChooser.addOption("Basic4PieceWithVision", new Basic4PieceWithVision(swerveDrive, "Basic4PieceSeparated", superSystem, apriltagCamera));
       autoChooser.addOption("Basic4PieceSeparated", new Basic4PieceSeparated(swerveDrive, "Basic4PieceSeparated", superSystem));
     }
 
