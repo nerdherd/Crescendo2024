@@ -14,6 +14,7 @@ public class SuperSystem {
     public IndexerV2 indexer;
     public ColorSensor colorSensor;
     public LinearActuator linearActuator;
+    public Climber climber;
 
     public SuperSystem(IntakePivot intakePivot, IntakeRoller intakeRoller, 
                         ShooterPivot shooterPivot, ShooterRoller shooterRoller,
@@ -71,10 +72,12 @@ public class SuperSystem {
 
     public Command shooterSpeaker() {
         Command command = Commands.sequence(
-            // Commands.deadline(
-            //     Commands.waitUntil(intakePivot::hasReachedNeutral),
-            //     intakePivot.moveToNeutral()         
-            // ),
+            Commands.deadline(
+                Commands.waitUntil(intakePivot::hasReachedNeutral),
+                intakePivot.setEnabledCommand(true),
+                intakePivot.moveToNeutral(),
+                Commands.waitUntil(() -> false)  
+            ),
             shooterPivot.moveToSpeaker()
         );
 
@@ -82,6 +85,7 @@ public class SuperSystem {
 
         return command;
     }
+
 
     public Command shooterNeutral() {
         Command command = Commands.sequence(
@@ -188,22 +192,58 @@ public class SuperSystem {
         );
     }
 
-    public Command intakeDirectShoot() {
+    public Command intakeBasic1() {
         return Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(() -> 
                     // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
                     shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
                 // intakePickup(),
-                shooterPivot.moveToAutoHandoff()
+                shooterHandoff()
                 ),
+            intakeRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
+            indexer.indexCommand(),
+            intakeRoller.intakeCommand(),
+            Commands.waitUntil(() -> false)
+        );
+    }
+
+    public Command intakeBasic2() {
+        return Commands.sequence(
+            Commands.runOnce(() -> {
+            SmartDashboard.putBoolean("Intaking", false);
+            intakeRoller.stop();
+            indexer.stop();
+            })
+        );
+    }
+
+    public Command intakeDirectShoot() {
+        return intakeDirectShoot(ShooterConstants.kHandoffPosition.get(), 
+                                 ShooterConstants.kTopOuttakeAuto1.get(),
+                                 ShooterConstants.kBottomOuttakeAuto1.get());
+    }
+
+    public Command intakeDirectShoot(double shooterPosition, double topShooterVelocity, double bottomShooterVelocity) {
+        return Commands.sequence(
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", true)),
+            Commands.deadline(
+                Commands.waitUntil(() -> 
+                    // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+                    shooterPivot.hasReachedPosition(shooterPosition)),
+                intakePickup(),
+                shooterPivot.setPositionCommand(shooterPosition)
+                ),
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", false)),
             shooterRoller.setEnabledCommand(true),
             intakeRoller.setEnabledCommand(true),
             indexer.setEnabledCommand(true),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
             indexer.indexCommand(),
             intakeRoller.autoIntakeCommand(),
-            shooterRoller.shootSpeakerAuto1(),
+            shooterRoller.setVelocityCommand(topShooterVelocity, bottomShooterVelocity),
             Commands.waitUntil(() -> false)
         ).finallyDo(
             () -> {
@@ -213,6 +253,10 @@ public class SuperSystem {
                 shooterRoller.stop();
             }
         );
+    }
+
+    public Command intakeDirectShoot(double shooterPosition, double shooterVelocity) {
+        return intakeDirectShoot(shooterPosition, shooterVelocity, shooterVelocity);
     }
 
     public Command eject() {
@@ -292,5 +336,15 @@ public class SuperSystem {
                 indexer.stop();
             }
         );
+    }
+
+    public Command climbSequence() {
+        return Commands.sequence(
+            linearActuator.retractCommand(),
+            Commands.waitSeconds(1),
+            Commands.runOnce(() -> climber.climb())
+        
+        );
+            
     }
 }

@@ -8,6 +8,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
@@ -31,7 +32,7 @@ public class Basic6PieceSeparated extends SequentialCommandGroup {
                 ),
                 Commands.deadline(
                     AutoBuilder.followPath((pathGroup.get(0))),
-                    superSystem.intakeDirectShoot()
+                    superSystem.intakeDirectShoot(ShooterConstants.k6PieceHandoffPosition.get(), ShooterConstants.kTopOuttakeAuto1.get(), ShooterConstants.kBottomOuttakeAuto1.get())
                 ),               
                 AutoBuilder.followPath(pathGroup.get(1)),
                 Commands.deadline(

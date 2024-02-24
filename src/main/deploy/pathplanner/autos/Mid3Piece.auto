@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7401886415755699,
+      "y": 4.414985377759629
+    },
+    "rotation": -59.64188454123336
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M3_Piece1Pick"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M3_Piece1Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M3_Piece2Pick"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M3_Piece2Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -154,10 +154,10 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         
         pivot.setControl(brakeRequest);
 
-        // if (enabled) {
-        //     pivot.setControl(motionMagicRequest);
-        // } else {
-        // }
+        if (enabled) {
+            pivot.setControl(motionMagicRequest);
+        } else {
+        }
     }
 
     /**
@@ -199,8 +199,8 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
     // Check if the intake is in a safe position for the shooter to move
     public boolean hasReachedNeutral() {
-        return hasReachedPosition(IntakeConstants.kNeutralPosition.get()) 
-            || hasReachedPosition(IntakeConstants.kPickupPosition.get());
+        return (getPosition() < IntakeConstants.kNeutralPosition.get()
+            && getTargetPosition() < IntakeConstants.kNeutralPosition.get());
     }
 
     // Checks if the pivot is within deadband of the target pos
@@ -282,6 +282,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
             case ALL:
             case MEDIUM:
             case MINIMAL:
+                tab.addBoolean("Intake Enabled", () -> this.enabled);
                 tab.addDouble("Intake Pivot Desired Position", this::getTargetPosition);
                 tab.addDouble("Intake Pivot Position", this::getPosition);
                 tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));

@@ -35,6 +35,7 @@ public class Limelight implements Reportable{
     private double tXList[] = new double[10];
     private double tAList[] = new double[10];
     private double tYList[] = new double[10];
+    private double tSKList[] = new double[10];
 
     public enum LightMode {
         DEFAULT(0), OFF(1), BLINK(2), ON(3);
@@ -172,10 +173,12 @@ public class Limelight implements Reportable{
         initDoneTX = false;
         //tYList = new double[10]; // do not need it?
         initDoneTY = false;
+        initDoneSK = false;
         
         indexTX = 0;
         indexTY = 0;
         indexTA = 0;
+        indexSK = 0;
     }
 
     public double getCamPoseSkew() {
@@ -192,7 +195,7 @@ public class Limelight implements Reportable{
             SmartDashboard.putNumber("BOT POSE 6: ", botPose[5]);
         }
 
-        if(camPose.length != 0) {
+        if(camPose.length >= 6) {
             SmartDashboard.putNumber("x tag pose: ", camPose[0]);
             SmartDashboard.putNumber("y tag pose: ", camPose[1]);
             SmartDashboard.putNumber("z tag pose: ", camPose[2]);
@@ -200,10 +203,47 @@ public class Limelight implements Reportable{
             SmartDashboard.putNumber("TAG POSE 4: ", camPose[3]);
             SmartDashboard.putNumber("TAG POSE 5: ", camPose[4]);
             SmartDashboard.putNumber("TAG POSE 6: ", camPose[5]);
+
+            return camPose[4];
+
+        }
+        else {
+            return 0;
         }
 
-        return camPose[4];
     }
+
+    int indexSK = 0;
+    boolean initDoneSK = false;
+    public double getSkew_avg() {
+        tSKList[indexSK] = getCamPoseSkew();
+        indexSK ++;
+        if(indexSK >= tSKList.length) {
+            indexSK = 0;
+            initDoneSK = true;
+        }
+
+        //SmartDashboard.putNumberArray("txFiltered", tXList);
+
+        double SKSum = 0;
+        if(initDoneSK) {
+            for(int i = 0; i < tSKList.length; i++) {
+                SKSum += tSKList[i];
+            }
+            
+            //SmartDashboard.putNumber("TXAverage", TXSum / tXList.length);
+
+            return SKSum / tSKList.length;
+        }
+        else {
+            for(int i = 0; i < indexSK; i++) {
+                SKSum += tSKList[i];
+            }
+
+            return SKSum / indexSK;
+        }
+    }
+
 
     public Pose2d getBotPose2D()
     {

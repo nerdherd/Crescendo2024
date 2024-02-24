@@ -37,6 +37,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
+    private final Follower followRequest = new Follower(53, true);
 
     public ShooterPivot() {
         leftPivot = new TalonFX(ShooterConstants.kLeftPivotMotorID, SuperStructureConstants.kCANivoreBusName);
@@ -44,7 +45,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         throughBore = new DutyCycleEncoder(ShooterConstants.kThroughBorePort);
         leftPivotConfigurator = leftPivot.getConfigurator();
         rightPivotConfigurator = rightPivot.getConfigurator();
-        rightPivot.setControl(new Follower(53, true));
+        rightPivot.setControl(followRequest);
 
         CommandScheduler.getInstance().registerSubsystem(this);
 
@@ -189,16 +190,19 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     public void periodic() {
         if (ShooterConstants.fullDisableShooter.get()) {
             leftPivot.setControl(brakeRequest);
+            // rightPivot.setControl(brakeRequest);
             enabled = false;
             return;
         }
+        
+        rightPivot.setControl(brakeRequest);
 
         if (enabled) {
             leftPivot.setControl(motionMagicRequest);
-            rightPivot.setControl(motionMagicRequest);
-
+            // rightPivot.setControl(followRequest);
+            // rightPivot.setControl(motionMagicRequest);
+            
         } else {
-            rightPivot.setControl(brakeRequest);
 
         }
     }
@@ -348,6 +352,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
                 tab.addDouble("Absolute Encoder Position", this::getAbsolutePosition);
                 tab.addDouble("Left Pivot Applied Voltage", () -> leftPivot.getMotorVoltage().getValueAsDouble());
                 tab.addDouble("Right Pivot Applied Voltage", () -> rightPivot.getMotorVoltage().getValueAsDouble());
+                tab.addBoolean("Shooter Enabled", () -> enabled);
                 break;
         }
     }

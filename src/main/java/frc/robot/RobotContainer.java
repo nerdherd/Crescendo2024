@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -21,14 +23,14 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
-import frc.robot.commands.autos.Auto4Notes;
-import frc.robot.commands.autos.Auto4NotesDirect;
+import frc.robot.commands.autos.Basic4PieceWithVision;
 import frc.robot.commands.autos.AutoMidNotes;
 import frc.robot.commands.autos.Basic2Piece;
 import frc.robot.commands.autos.Basic3Piece;
 import frc.robot.commands.autos.Basic4Piece;
 import frc.robot.commands.autos.Basic4PieceSeparated;
 import frc.robot.commands.autos.Basic6PieceSeparated;
+import frc.robot.commands.autos.Mid3Piece;
 import frc.robot.commands.autos.OneMeterSquareAuto;
 import frc.robot.commands.autos.RotateSquareAuto;
 import frc.robot.commands.autos.Test2M;
@@ -98,9 +100,14 @@ public class RobotContainer {
     initShuffleboard();
 
     // Configure the trigger bindings
-    configureBindings();
+    // Moved to teleop init
 
     DriverStation.reportWarning("Initalization complete", false);
+
+      NamedCommands.registerCommand("intakeBasic1", superSystem.intakeBasic1());
+      NamedCommands.registerCommand("intakeBasic2", superSystem.intakeBasic2());
+      NamedCommands.registerCommand("shootSequence2", superSystem.shootSequence2());
+
   }
 
   public static boolean IsRedSide()
@@ -184,7 +191,7 @@ public class RobotContainer {
         ));
   }
 
-  public void initDefaultCommands_autonomousAndTest() {
+  public void initDefaultCommands_test() {
     swerveDrive.setDefaultCommand(
       new SwerveJoystickCommand(
         swerveDrive,
@@ -207,16 +214,13 @@ public class RobotContainer {
       ));
   }
 
-  private void configureBindings() {
+  public void configureBindings_teleop() {
     // Driver bindings
     commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
-    //TODO: Make sure April Tag ID is matching 7
-    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1, 0, 0, 7))); //1.8, 0, 0, 7
-    // commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)));
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
@@ -235,14 +239,41 @@ public class RobotContainer {
     commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
   }
 
+  public void configureBindings_test() {
+    // Driver bindings
+    commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
+    commandDriverController.triangle()
+      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
+      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
+
+    //TODO: Make sure April Tag ID is matching
+    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 0.8, 0, 0, 7, 100)))
+      .onFalse(Commands.run(() -> apriltagCamera.reset())); //1.8, 0, 0, 7
+    commandDriverController.L2().onTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100, true));
+
+
+    // Operator bindings
+    commandOperatorController.triangle().whileTrue(superSystem.eject());
+    commandOperatorController.square().whileTrue(superSystem.ampSequence());
+
+    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
+    // commandOperatorController.L2().whileTrue(superSystem.intakeBasic());
+    
+    commandOperatorController.L2().whileTrue(superSystem.intakeBasic())
+                                  .onFalse(superSystem.backupIndexer());
+
+    commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
+    commandOperatorController.R2().whileTrue(superSystem.shootSequence2());
+    // commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far());
+    commandOperatorController.R1().whileTrue(superSystem.shooterSpeaker());
+
+    commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
+  }
+
   private void initAutoChoosers() {
   	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands.none());
     
-    if (paths.contains("4PAuto")) {
-      autoChooser.addOption("4PAuto", new Auto4Notes(swerveDrive, "4PAuto", superSystem));
-      autoChooser.addOption("4PAuto Direct", new Auto4NotesDirect(swerveDrive, "4PAuto", superSystem));
-    }
     if (paths.contains("Basic2Piece")) {
       autoChooser.addOption("Basic2Piece", new Basic2Piece(swerveDrive, "Basic2Piece", superSystem));
     }
@@ -260,7 +291,8 @@ public class RobotContainer {
     }
 
     if (paths.contains("Basic4PieceSeparated")) {
-      autoChooser.setDefaultOption("Basic4PieceSeparated", new Basic4PieceSeparated(swerveDrive, "Basic4PieceSeparated", superSystem));
+      autoChooser.addOption("Basic4PieceWithVision", new Basic4PieceWithVision(swerveDrive, "Basic4PieceSeparated", superSystem, apriltagCamera));
+      autoChooser.addOption("Basic4PieceSeparated", new Basic4PieceSeparated(swerveDrive, "Basic4PieceSeparated", superSystem));
     }
 
     // if (paths.contains("Basic5Piece")) {
@@ -295,9 +327,14 @@ public class RobotContainer {
     if (paths.contains("RotateSquareAuto")) {
       autoChooser.addOption("RotateSquareAuto", new RotateSquareAuto(swerveDrive, "RotateSquareAuto"));
     }
+    
     if (paths.contains("Mid4Notes")) {
-      autoChooser.addOption("Mid4Notes with Vision", new AutoMidNotes(swerveDrive, "Mid4Notes", superSystem, noteCamera));
+      autoChooser.addOption("Mid4Notes with Vision", new AutoMidNotes(swerveDrive, "Mid4Notes", superSystem, noteCamera, apriltagCamera, superSystem.colorSensor));
     }
+
+    // if (paths.contains("Mid3Piece")) {
+    //   autoChooser.setDefaultOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem));
+    // }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
@@ -316,6 +353,7 @@ public class RobotContainer {
     intakePivot.initShuffleboard(loggingLevel);
     intakeRoller.initShuffleboard(loggingLevel);
     indexer.initShuffleboard(loggingLevel);
+    superSystem.colorSensor.initShuffleboard(loggingLevel);
 
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
