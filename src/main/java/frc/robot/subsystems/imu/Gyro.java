@@ -20,6 +20,7 @@ public interface Gyro extends Reportable {
     /** Soft reset all axes */
     public void zeroAll();
     public void zeroHeading();
+    public void setHeading(double heading);
     /** Soft reset the pitch */
     public void zeroPitch();
     /** Soft reset the roll */

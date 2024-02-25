@@ -79,7 +79,10 @@ public class PigeonV2 extends SubsystemBase implements Gyro {
 
     public double getHeading() {
         return -(pigeon.getAngle() - offset);
+    }
 
+    public void setHeading(double heading) {
+        this.offset += (heading - getHeading());
     }
 
     public double getYaw() {
