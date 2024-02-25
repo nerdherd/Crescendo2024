@@ -15,7 +15,9 @@ import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.util.NerdyMath;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * Subsystem that uses Limelight for vision
@@ -92,6 +94,31 @@ public class DriverAssist implements Reportable{
     //         ).until(() -> Math.abs(Math.abs(getAngledPower())) <= 0.1)
     //     );
     // }
+
+    public int convertTagToAlliance(int tagID) {
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent() && alliance.get().equals(Alliance.Red)) {
+            switch (tagID) {
+                case 1: case 2: case 6: case 7: case 8:
+                    return 11 - tagID;
+                // 14 -> 13, 15 -> 12, 16 -> 11
+                case 14: case 15: case 16:
+                    return 27 - tagID;
+                default:
+                    return tagID;
+            }
+        } else {
+            switch (tagID) {
+                case 3: case 4: case 5: case 9: case 10:
+                    return 11 - tagID;
+                // 14 <- 13, 15 <- 12, 16 <- 11
+                case 11: case 12: case 13:
+                    return 27 - tagID;
+                default:
+                    return tagID;
+            }
+        }
+    }
 
     private void setRobotPoseByApriltag(SwerveDrivetrain drivetrain, int tagID, boolean resetToCurrentPose)
     {
@@ -386,6 +413,15 @@ public class DriverAssist implements Reportable{
             // Commands.run(
             //     () -> setRobotPoseByApriltag(drivetrain, tagID, resetToCurrentPose)
             // ).until(() -> dataSampleCount >= minSamples )
+        );
+    }
+
+    public Command resetOdoPoseWithConversion(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId, boolean forceToFind) {
+        return Commands.sequence(
+            Commands.runOnce(() -> TagFound=false),
+            Commands.run(
+                () -> resetOdoPose(swerveDrive, defaultPose, convertTagToAlliance(apriltagId), forceToFind)
+            ).until(() -> TagFound == true || forceToFind == false)
         );
     }
 

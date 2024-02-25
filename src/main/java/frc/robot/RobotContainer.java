@@ -32,6 +32,8 @@ import frc.robot.commands.autos.Basic4PieceSeparated;
 import frc.robot.commands.autos.Basic6PieceSeparated;
 import frc.robot.commands.autos.Mid3Piece;
 import frc.robot.commands.autos.OneMeterSquareAuto;
+import frc.robot.commands.autos.Reliable4Piece;
+import frc.robot.commands.autos.Reliable4PieceWithVision;
 import frc.robot.commands.autos.RotateSquareAuto;
 import frc.robot.commands.autos.Test2M;
 import frc.robot.commands.autos.Test2MBack;
@@ -343,6 +345,11 @@ public class RobotContainer {
 
     if (paths.contains("Mid3Piece")) {
       autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
+    }
+
+    if (paths.contains("Reliable4Piece")) {
+      autoChooser.addOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
+      autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
     }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.33,
-        "y": 5.55
+        "x": 2.53,
+        "y": 4.3
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.33,
-        "y": 5.5
+        "x": 2.50147148792904,
+        "y": 4.3410624402467395
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.53,
-        "y": 4.3
+        "x": 1.73,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 2.5585285120709598,
-        "y": 4.25893755975326
+        "x": 1.7134989912796526,
+        "y": 5.502801306043376
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,9 +30,9 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.35,
-      "rotationDegrees": 0.0,
-      "rotateFast": true
+      "waypointRelativePos": 0.25,
+      "rotationDegrees": -28.0,
+      "rotateFast": false
     }
   ],
   "constraintZones": [],
@@ -44,14 +44,14 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -28.0,
+    "velocity": 0,
+    "rotation": 0,
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "Basic4Piece",
+  "folder": "Reliable4Piece",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -29.850763453165577,
     "velocity": 0
   },
   "useDefaultConstraints": true

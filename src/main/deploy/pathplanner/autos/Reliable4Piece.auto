@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3725738150477713,
+      "y": 5.55
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Piece1Grab"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Piece1Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Piece2Grab"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Piece2Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Piece3Grab"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Piece3Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Leave"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
