@@ -330,9 +330,10 @@ public class DriverAssist implements Reportable{
             // 7 is blue side, 4 is red side, center of speaker; 0 don't care
             if( (limelight.getAprilTagID() == apriltagId) || apriltagId == 0)
             {
-                Pose3d p = getCurrentPose3DVision();
-                swerveDrive.resetOdometry(p.toPose2d());
-                swerveDrive.getImu().setOffset(p.getRotation().getZ());
+                Pose2d p = getCurrentPose3DVision().toPose2d();
+                swerveDrive.getImu().setOffset(p.getRotation().getDegrees());
+                //swerveDrive.resetOdometryWithAlliance(p);
+                swerveDrive.resetOdometry(p);
                 dataSampleCount = minSamples;
                 return;
             }
