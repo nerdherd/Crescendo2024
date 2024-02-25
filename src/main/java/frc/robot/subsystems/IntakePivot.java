@@ -201,8 +201,8 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
     // Check if the intake is in a safe position for the shooter to move
     public boolean hasReachedNeutral() {
-        return (getPosition() < IntakeConstants.kNeutralPosition.get()
-            && getTargetPosition() < IntakeConstants.kNeutralPosition.get());
+        return (getPosition() <= IntakeConstants.kNeutralPosition.get() + IntakeConstants.kPivotDeadband.get()
+            && getTargetPosition() <= IntakeConstants.kNeutralPosition.get() + IntakeConstants.kPivotDeadband.get());
     }
 
     // Checks if the pivot is within deadband of the target pos
@@ -285,6 +285,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
             case MEDIUM:
             case MINIMAL:
                 tab.addBoolean("Intake Enabled", () -> this.enabled);
+                tab.addBoolean("At Neutral", this::hasReachedNeutral);
                 tab.addDouble("Intake Pivot Desired Position", this::getTargetPosition);
                 tab.addDouble("Intake Pivot Position", this::getPosition);
                 tab.addDouble("Intake Pivot Absolute Position", this::getAbsolutePosition);

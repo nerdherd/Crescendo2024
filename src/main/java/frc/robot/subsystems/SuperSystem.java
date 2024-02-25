@@ -90,18 +90,38 @@ public class SuperSystem {
         return command;
     }
 
-    public Command amp() {
+    public Command getReadyForAmp() {
         Command command = Commands.sequence(
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Amp Rotating", false)),
             Commands.deadline(
                 Commands.waitUntil(intakePivot::hasReachedNeutral),
                 intakePivot.moveToNeutral()
             ),
-            shooterPivot.moveToAmp()
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Amp Rotating", true)),
+            shooterPivot.moveToAmp(),
+            Commands.waitUntil(shooterPivot::atTargetPosition),
+            intakePivot.setPositionCommand(IntakeConstants.kVerticalPosition.get())
         );
 
         command.addRequirements(shooterPivot);
 
         return command;
+    }
+
+    public Command shootAmp() {
+        return Commands.sequence(
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootAmp(),
+            Commands.waitSeconds(0.5),
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            Commands.waitSeconds(1)
+        ).finallyDo(
+            () -> {
+                shooterRoller.stop();
+                indexer.stop();
+            }
+        );
     }
 
     public Command stow() {
@@ -323,25 +343,6 @@ public class SuperSystem {
             indexer.stop();
             shooterRoller.stop();
         });
-    }
-
-    public Command ampSequence() {
-        return Commands.sequence( 
-            amp(),
-            indexer.setEnabledCommand(false),
-            Commands.waitUntil(shooterPivot::atTargetPosition),
-            shooterRoller.setEnabledCommand(true),
-            shooterRoller.shootAmp(),
-            Commands.waitSeconds(0.5),
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
-            Commands.waitUntil(() -> false)
-        ).finallyDo(
-            () -> {
-                shooterRoller.stop();
-                indexer.stop();
-            }
-        );
     }
 
     public Command climbSequence() {

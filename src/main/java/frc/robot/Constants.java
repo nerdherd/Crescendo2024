@@ -262,7 +262,7 @@ public final class Constants {
     public static final PrefDouble kTopOuttakeAuto1 = new PrefDouble("Top Shooter Outtake Auto 1", 100);
     public static final PrefDouble kTopOuttakeAuto2 = new PrefDouble("Top Shooter Outtake Auto 2", 100);
     public static final PrefDouble kTopOuttakeAuto3 = new PrefDouble("Top Shooter Outtake Auto 3", 100);
-    public static final PrefDouble kTopOuttakeAmp   = new PrefDouble("Top Shooter Outtake Amp", 20);
+    public static final PrefDouble kTopOuttakeAmp   = new PrefDouble("Top Shooter Outtake Amp", 40);
     public static final PrefDouble kTopIntake       = new PrefDouble("Top Shooter Intake", -10);
 
     public static final PrefDouble kBottomOuttakeHigh  = new PrefDouble("Bottom Shooter Outtake High", 80);
@@ -270,7 +270,7 @@ public final class Constants {
     public static final PrefDouble kBottomOuttakeAuto1 = new PrefDouble("Bottom Shooter Outtake Auto 1", 60);
     public static final PrefDouble kBottomOuttakeAuto2 = new PrefDouble("Bottom Shooter Outtake Auto 2", 60);
     public static final PrefDouble kBottomOuttakeAuto3 = new PrefDouble("Bottom Shooter Outtake Auto 3", 60);
-    public static final PrefDouble kBottomOuttakeAmp   = new PrefDouble("Bottom Shooter Outtake Amp", 20);
+    public static final PrefDouble kBottomOuttakeAmp   = new PrefDouble("Bottom Shooter Outtake Amp", 40);
     public static final PrefDouble kBottomIntake       = new PrefDouble("Bottom Shooter Intake", -10);
 
     public static final PrefDouble kPLeftMotor = new PrefDouble("kP Left Shooter", 0.8);
@@ -358,7 +358,7 @@ public final class Constants {
     public static final PrefDouble kPickupPosition   = new PrefDouble("Intake Pickup Position", -0.0864);
     public static final PrefDouble kNeutralPosition  = new PrefDouble("Intake Neutral Position", 0.12);
     public static final PrefDouble kStowPosition     = new PrefDouble("Intake Stow Position", 0.488);
-    public static final PrefDouble kVerticalPosition = new PrefDouble("Intake Vertical Position", 0.25);
+    public static final PrefDouble kVerticalPosition = new PrefDouble("Intake Vertical Position", 0.28);
 
     public static final PrefDouble kPivotOffset = new PrefDouble("Intake Pivot Offset", 0.21);
 

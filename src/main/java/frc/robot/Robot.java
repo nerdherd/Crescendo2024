@@ -119,8 +119,8 @@ public class Robot extends TimedRobot {
     // robotContainer.intakeRoller.configurePID();
     // robotContainer.shooterRoller.configurePID();
     // robotContainer.indexer.configurePID();
-    // robotContainer.configureBindings_test();
-    // robotContainer.initDefaultCommands_test();
+    robotContainer.configureBindings_test();
+    robotContainer.initDefaultCommands_test();
   }
 
   @Override
