@@ -366,9 +366,9 @@ public final class Constants {
     public static final PrefDouble kIntakeCruiseVelocity = new PrefDouble("Intake Pivot Cruise Velocity", 8);
     public static final PrefDouble kPivotDeadband = new PrefDouble("Intake Pivot Deadband", 0.04);
 
-    public static final PrefDouble kPPivotMotor = new PrefDouble("kP Intake Pivot", 16);
+    public static final PrefDouble kPPivotMotor = new PrefDouble("kP Intake Pivot", 13.6); //16 as of 2/24
     public static final PrefDouble kIPivotMotor = new PrefDouble("kI Intake Pivot", 0);
-    public static final PrefDouble kDPivotMotor = new PrefDouble("kD Intake Pivot", 0);
+    public static final PrefDouble kDPivotMotor = new PrefDouble("kD Intake Pivot", 1.6);
     public static final PrefDouble kVPivotMotor = new PrefDouble("kV Intake Pivot", 4);
     public static final PrefDouble kSPivotMotor = new PrefDouble("kS Intake Pivot", 0.1);
     public static final PrefDouble kAPivotMotor = new PrefDouble("kA Intake Pivot", 0.18);

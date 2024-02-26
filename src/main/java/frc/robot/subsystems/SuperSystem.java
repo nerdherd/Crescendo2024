@@ -163,9 +163,11 @@ public class SuperSystem {
 
     public Command backupIndexerManual() {
         return Commands.sequence(
-            shooterPivot.moveToSpeaker(),
+            // shooterPivot.moveToSpeaker(),
             indexer.setEnabledCommand(true),
+            shooterRoller.setEnabledCommand(true),
             indexer.reverseIndexCommand(),
+            shooterRoller.setReverseVelocityCommand(-0.1, -0.1), // TODO: Later
             Commands.waitSeconds(1)
         ).finallyDo(indexer::stop);
     }
