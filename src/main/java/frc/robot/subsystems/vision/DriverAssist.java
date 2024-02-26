@@ -350,7 +350,7 @@ public class DriverAssist implements Reportable{
     }
 
     //boolean initPoseByVisionDone = false;
-    public void resetInitPoseByVision(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId, int minSamples)
+    public void resetInitPoseByVision(SwerveDrivetrain swerveDrive, Pose2d defaultPoseInBlueside, int apriltagId, int minSamples)
     {
         if(limelight != null && limelight.getAprilTagID() != -1)
         {
@@ -369,16 +369,16 @@ public class DriverAssist implements Reportable{
         dataSampleCount++;
         if(dataSampleCount >= minSamples)
         {
-            swerveDrive.resetOdometry(defaultPose);
-            swerveDrive.getImu().setOffset(defaultPose.getRotation().getRadians());
+            swerveDrive.getImu().setOffset(defaultPoseInBlueside.getRotation().getDegrees());
+            swerveDrive.resetOdometryWithAlliance(defaultPoseInBlueside);
         }
     }
 
-    public Command InitPoseByVision(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId, int minSamples) {
+    public Command InitPoseByVision(SwerveDrivetrain swerveDrive, Pose2d defaultPoseInBlueside, int apriltagId, int minSamples) {
         return Commands.sequence(
             Commands.runOnce(() -> dataSampleCount = 0),
             Commands.run(
-                () -> resetInitPoseByVision(swerveDrive, defaultPose, apriltagId, minSamples)
+                () -> resetInitPoseByVision(swerveDrive, defaultPoseInBlueside, apriltagId, minSamples)
             ).until(() -> dataSampleCount >= minSamples )
         );
     }
@@ -416,6 +416,45 @@ public class DriverAssist implements Reportable{
         );
     }
 
+    public void resetOdoPose(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId, int maxSamples)
+    {
+        
+        if(limelight != null && limelight.getAprilTagID() != -1)
+        {
+            // 7 is blue side, 4 is red side, center of speaker
+            if(limelight.getAprilTagID() == apriltagId || apriltagId == 0)
+            {
+                Pose3d p = getCurrentPose3DVision();
+                swerveDrive.resetOdometry(p.toPose2d());
+                dataSampleCount = maxSamples;
+                TagFound = true;
+                return;
+            }
+            // to be done: else if, don't care
+        }
+
+        dataSampleCount++;
+        if(dataSampleCount >= maxSamples)
+            swerveDrive.resetOdometry(defaultPose);
+    }
+
+    public Command resetOdoPoseByVision(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId, 
+        int maxSamples) {
+        return Commands.sequence(
+            Commands.runOnce(() -> TagFound=false),
+            Commands.runOnce(() -> reset()),
+            Commands.run(
+                () -> resetOdoPose(swerveDrive, defaultPose, apriltagId, maxSamples)
+            ).until(() -> dataSampleCount >= maxSamples)
+
+            // Commands.runOnce(() -> reset()),
+            // Commands.run(
+            //     () -> setRobotPoseByApriltag(drivetrain, tagID, resetToCurrentPose)
+            // ).until(() -> dataSampleCount >= minSamples )
+        );
+    }
+    
+
     public Command resetOdoPoseWithConversion(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId, boolean forceToFind) {
         return Commands.sequence(
             Commands.runOnce(() -> TagFound=false),
@@ -423,6 +462,16 @@ public class DriverAssist implements Reportable{
                 () -> resetOdoPose(swerveDrive, defaultPose, convertTagToAlliance(apriltagId), forceToFind)
             ).until(() -> TagFound == true || forceToFind == false)
         );
+    }
+
+    public Command noteOnHoldConfirmSignal()
+    {
+        return Commands.sequence(
+            Commands.runOnce(()->limelight.turnLightOn()),
+            Commands.waitSeconds(2),
+            Commands.runOnce(()->limelight.turnLightOff())
+        );
+        //return Commands.none();
     }
 
     // Add any tag ID (align to closest tag) functionality same method different signature
