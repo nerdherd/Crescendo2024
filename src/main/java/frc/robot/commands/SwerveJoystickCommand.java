@@ -156,7 +156,7 @@ public class SwerveJoystickCommand extends Command {
         else {
             // Manual turning
             turningSpeed = turningSpdFunction.get();
-            turningSpeed *= -0.1;
+            turningSpeed *= -0.5;
             filteredTurningSpeed = turningFilter.calculate(turningSpeed);
         }
 

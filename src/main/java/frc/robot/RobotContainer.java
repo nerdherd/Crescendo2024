@@ -153,44 +153,66 @@ public class RobotContainer {
       ));
 
       swerveDrive.setDefaultCommand(
-        new SwerveJoystickCommand(
-          swerveDrive,
-          () -> -commandDriverController.getLeftY(), // Horizontal translation
-          commandDriverController::getLeftX, // Vertical Translation
+      new SwerveJoystickCommand(
+        swerveDrive,
+        () -> -commandDriverController.getLeftY(), // Horizontal translation
+        commandDriverController::getLeftX, // Vertical Translation
+        // () -> 0.0, // debug
+        commandDriverController::getRightX, // Rotationaq
+
+        // driverController::getSquareButton, // Field oriented
+        () -> false, // should be robot oriented now on true
+
+        driverController::getCrossButton, // Towing
+        // driverController::getR2Button, // Precision/"Sniper Button"
+        () -> driverController.getR2Button(), // Precision mode (disabled)
+        () -> driverController.getCircleButton(), // Turn to angle
+        // () -> false, // Turn to angle (disabled)
+        () -> { // Turn To angle Direction
+          return 0.0;
+        }
+      ));
+
+      // Point to angle
+      // swerveDrive.setDefaultCommand(
+      //   new SwerveJoystickCommand(
+      //     swerveDrive,
+      //     () -> -commandDriverController.getLeftY(), // Horizontal translation
+      //     commandDriverController::getLeftX, // Vertical Translation
           
-          () -> {
-            if (driverController.getCircleButton()) {
-              noteCamera.calculateRotationSpeed(0, 0); // Values from SwerveDrive2024/isMeToKitBot
-              return (noteCamera.getRotationSpeed() * 180 / Math.PI) / 20; // Convert radians to degrees and divide by 20 for how often it's run
-            }
-            if(driverController.getR1Button() && driverController.getL2Button()){
-              return 0.0;
-            }
-            if(driverController.getR1Button()){
-              return -4.5;
-            }
-            if(driverController.getL2Button()){
-              return 4.5;
-            }
-            return 0.0;
-          },
-          () -> false, // Field oriented
-          driverController::getCrossButton, // Towing
-          () -> driverController.getR2Button(), // Precision mode (disabled)
-          () -> true, // Turn to angle
-          () -> { // Turn To angle Direction
-            double xValue = commandDriverController.getRightX();
-            double yValue = commandDriverController.getRightY();
-            double magnitude = (xValue*xValue) + (yValue*yValue);
-            if (magnitude > 0.49) {
-              double angle = (90 + NerdyMath.radiansToDegrees(Math.atan2(commandDriverController.getRightY(), commandDriverController.getRightX())));
-              angle = (((-1 * angle) % 360) + 360) % 360;
-              SmartDashboard.putNumber("desired angle", angle);
-              return angle;
-            }
-            return 1000.0;
-          }
-        ));
+      //     () -> {
+      //       if (driverController.getCircleButton()) {
+      //         noteCamera.calculateRotationSpeed(0, 0); // Values from SwerveDrive2024/isMeToKitBot
+      //         return (noteCamera.getRotationSpeed() * 180 / Math.PI) / 20; // Convert radians to degrees and divide by 20 for how often it's run
+      //       }
+      //       if(driverController.getR1Button() && driverController.getL2Button()){
+      //         return 0.0;
+      //       }
+      //       if(driverController.getR1Button()){
+      //         return -4.5;
+      //       }
+      //       if(driverController.getL2Button()){
+      //         return 4.5;
+      //       }
+      //       return 0.0;
+      //     },
+      //     () -> false, // Field oriented
+      //     driverController::getCrossButton, // Towing
+      //     () -> driverController.getR2Button(), // Precision mode (disabled)
+      //     () -> true, // Turn to angle
+      //     () -> { // Turn To angle Direction
+      //       double xValue = commandDriverController.getRightX();
+      //       double yValue = commandDriverController.getRightY();
+      //       double magnitude = (xValue*xValue) + (yValue*yValue);
+      //       if (magnitude > 0.49) {
+      //         double angle = (90 + NerdyMath.radiansToDegrees(Math.atan2(commandDriverController.getRightY(), commandDriverController.getRightX())));
+      //         angle = (((-1 * angle) % 360) + 360) % 360;
+      //         SmartDashboard.putNumber("desired angle", angle);
+      //         return angle;
+      //       }
+      //       return 1000.0;
+      //     }
+      //   ));
   }
 
   public void initDefaultCommands_test() {
@@ -229,7 +251,10 @@ public class RobotContainer {
     commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
                                       .onFalse(superSystem.shootAmp().andThen(superSystem.stow()));
 
-    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
+    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual()) ;
+                                  // .onFalse(superSystem.shooterRoller.setReverseVelocityCommand(0, 0)); // TODO: TEST IF THIS WORKS ON FALSE
+    
+    // TODO: May have to bring manual stow back if we need it faster
     // commandOperatorController.L2().whileTrue(superSystem.intakeBasic());
     
     commandOperatorController.L2().whileTrue(superSystem.intakeBasic())

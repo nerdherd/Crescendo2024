@@ -549,6 +549,10 @@ public class DriverAssist implements Reportable{
         return Timer.getFPGATimestamp() - (limelight.getLatency_Pipeline()/1000.0) - (limelight.getLatency_Capture()/1000.0);
     }
 
+    // public Command blinkLimelight() {
+
+    // }
+
     /**
      * Sets the limelight pipeline
      * @param pipeline

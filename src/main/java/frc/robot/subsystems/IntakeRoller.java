@@ -31,7 +31,7 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     private final VoltageOut voltageRequest = new VoltageOut(0, true, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
     
-    private boolean enabled = false;
+    private boolean enabled = true;
     public boolean velocityControl = true;
 
     public IntakeRoller() {
