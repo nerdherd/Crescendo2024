@@ -41,32 +41,32 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
             driverAssist.InitPoseByVision(swerve, startingPoseBlue, 0, 50 ),
 
             Commands.sequence(
-                // superSystem.intakePivot.setEnabledCommand(true),
-                // superSystem.intakePivot.moveToIntake(),
+                superSystem.intakePivot.setEnabledCommand(true),
+                superSystem.intakePivot.moveToIntake(),
                 
                 // Preload 
                 Commands.deadline(
-                    Commands.waitSeconds(1.5) //,
-                    // superSystem.shootSequence2()
+                    Commands.waitSeconds(1.5),
+                    superSystem.shootSequence2()
                 ),
 
                 // Piece 1
                 Commands.deadline(
-                    AutoBuilder.followPath(pathGroup.get(0)) //,
-                    // superSystem.intakeBasicHold()
+                    AutoBuilder.followPath(pathGroup.get(0)) ,
+                    superSystem.intakeBasicHold()
                 ),
                 Commands.parallel(
                     PathCurrentToDest(startingPoseBlue),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
-                        // superSystem.backupIndexer(),
-                        Commands.waitSeconds(0.5) //,
-                        // superSystem.shootSequence2()  
+                        Commands.waitSeconds(0.5), 
+                        superSystem.backupIndexer()
                     )
+                    , Commands.waitSeconds(0.1)
+                    , superSystem.shootSequence2() 
                 ),
                 driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 100), //change april tag id ltr
                 
-                Commands.waitSeconds(0.5),
+                //Commands.waitSeconds(0.1),
 
                 // Piece 2
                 // TODO: Change AprilTag ID based on alliance
