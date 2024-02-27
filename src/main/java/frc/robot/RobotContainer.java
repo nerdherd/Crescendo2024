@@ -262,54 +262,56 @@ public class RobotContainer {
 
   public void configureBindings_teleop() {
     // Driver bindings
-    commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
+    commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()
-      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
-      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
+      .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
+      .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
     commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
-                                      .onFalse(superSystem.shootAmp().andThen(superSystem.stow()));
-
-    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual()) ;
-                                  // .onFalse(superSystem.shooterRoller.setReverseVelocityCommand(0, 0)); // TODO: TEST IF THIS WORKS ON FALSE
+                                      .whileFalse(superSystem.stow());
+    commandOperatorController.options().whileTrue(superSystem.shootAmp().andThen(superSystem.stow())); //change options to another button later
+    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual())
+     ;
+                                  // .whileFalse(superSystem.shooterRoller.setReverseVelocityCommand(0, 0)); // TODO: TEST IF THIS WORKS ON FALSE
     
     // TODO: May have to bring manual stow back if we need it faster
     // commandOperatorController.L2().whileTrue(superSystem.intakeBasic());
     
     commandOperatorController.L2().whileTrue(superSystem.intakeBasic())
-                                  .onFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
+                                  .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
 
     commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
     commandOperatorController.R2().whileTrue(superSystem.shootSequence2())
-                                  .onFalse(superSystem.stow());
+                                  .whileFalse(superSystem.stow());
     commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far())
-                                  .onFalse(superSystem.stow());
+                                  .whileFalse(superSystem.stow());
 
-    commandOperatorController.cross().onTrue(superSystem.stow());
+    commandOperatorController.cross().whileTrue(superSystem.stow());
 
     commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
   }
 
   public void configureBindings_test() {
     // Driver bindings
-    commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
+    commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()
-      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
-      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
+      .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
+      .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
     //TODO: Make sure April Tag ID is matching
     commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 0.8, 0, 0, 7, 100)))
-      .onFalse(Commands.run(() -> apriltagCamera.reset())); //1.8, 0, 0, 7
-    commandDriverController.L2().onTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100, true));
+      .whileFalse(Commands.run(() -> apriltagCamera.reset())); //1.8, 0, 0, 7
+    commandDriverController.L2().whileTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100, true));
 
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
     commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
-                                      .whileFalse(superSystem.shootAmp().andThen(superSystem.stow()));
+                                      .whileFalse(superSystem.stow());
+    commandOperatorController.options().whileTrue(superSystem.shootAmp().andThen(superSystem.stow())); //change options to another button later
 
     commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     // commandOperatorController.L2().whileTrue(superSystem.intakeBasic());
@@ -323,7 +325,7 @@ public class RobotContainer {
     commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far())
                                   .whileFalse(superSystem.stow());
 
-    commandOperatorController.cross().onTrue(superSystem.stow());
+    commandOperatorController.cross().whileTrue(superSystem.stow());
 
     commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
   }
