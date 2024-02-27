@@ -287,19 +287,19 @@ public class RobotContainer {
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
     commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
-                                      .onFalse(superSystem.shootAmp().andThen(superSystem.stow()));
+                                      .whileFalse(superSystem.shootAmp().andThen(superSystem.stow()));
 
     commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     // commandOperatorController.L2().whileTrue(superSystem.intakeBasic());
     
     commandOperatorController.L2().whileTrue(superSystem.intakeBasic())
-                                  .onFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
+                                  .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
 
     commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
     commandOperatorController.R2().whileTrue(superSystem.shootSequence2())
-                                  .onFalse(superSystem.stow());
+                                  .whileFalse(superSystem.stow());
     commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far())
-                                  .onFalse(superSystem.stow());
+                                  .whileFalse(superSystem.stow());
 
     commandOperatorController.cross().onTrue(superSystem.stow());
 

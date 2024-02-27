@@ -309,6 +309,12 @@ public class SuperSystem {
         );
     }
 
+    public Command prepareShooter() {
+        return Commands.sequence(
+            intakePivot.moveToIntake()
+        );
+    }
+
     public Command shootSequence2() {
         return Commands.sequence(
             intakePivot.moveToIntake(),
