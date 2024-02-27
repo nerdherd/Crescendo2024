@@ -61,9 +61,9 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
                         Commands.waitSeconds(0.5), 
                         superSystem.backupIndexer()
                     )
-                    , Commands.waitSeconds(0.1)
-                    , superSystem.shootSequence2() 
                 ),
+                Commands.waitSeconds(0.1),
+                superSystem.shootSequence2() ,
                 driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 100), //change april tag id ltr
                 
                 //Commands.waitSeconds(0.1),
