@@ -136,12 +136,12 @@ public class SwerveJoystickCommand extends Command {
                 targetAngle = tempAngle;
             } else {
                 targetAngle = ((targetAngle + turningSpdFunction.get() % 360) + 360) % 360;
-                SwerveDriveConstants.kPThetaTeleop.loadPreferences();
-                SwerveDriveConstants.kIThetaTeleop.loadPreferences();
-                SwerveDriveConstants.kDThetaTeleop.loadPreferences();
-                turnToAngleController.setP(SwerveDriveConstants.kPThetaTeleop.get());
-                turnToAngleController.setI(SwerveDriveConstants.kIThetaTeleop.get());
-                turnToAngleController.setD(SwerveDriveConstants.kDThetaTeleop.get());
+                // SwerveDriveConstants.kPThetaTeleop.loadPreferences();
+                // SwerveDriveConstants.kIThetaTeleop.loadPreferences();
+                // SwerveDriveConstants.kDThetaTeleop.loadPreferences();
+                // turnToAngleController.setP(SwerveDriveConstants.kPThetaTeleop.get());
+                // turnToAngleController.setI(SwerveDriveConstants.kIThetaTeleop.get());
+                // turnToAngleController.setD(SwerveDriveConstants.kDThetaTeleop.get());
             }
             turningSpeed = turnToAngleController.calculate(swerveDrive.getImu().getHeading(), targetAngle);
             turningSpeed = Math.toRadians(turningSpeed);
