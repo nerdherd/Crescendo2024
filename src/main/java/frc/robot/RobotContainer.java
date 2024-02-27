@@ -166,10 +166,21 @@ public class RobotContainer {
         driverController::getCrossButton, // Towing
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
-        () -> driverController.getCircleButton(), // Turn to angle
+        () -> {
+          return (driverController.getR1Button() || driverController.getL1Button()); // Turn to angle
+        }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          return 0.0;
+          if (driverController.getR1Button()) { //turn to amp
+            if (IsRedSide()){
+              return 270.0;
+            }
+            return 90.0;
+          }
+          else if (driverController.getL1Button()) { //turn to speaker
+            return 180.0;
+          }
+          return 0.0; 
         }
       ));
 
@@ -230,10 +241,21 @@ public class RobotContainer {
         driverController::getCrossButton, // Towing
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
-        () -> driverController.getCircleButton(), // Turn to angle
+        () -> {
+          return (driverController.getR1Button() || driverController.getL1Button()); // Turn to angle
+        }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          return 0.0;
+          if (driverController.getR1Button()) { //turn to amp
+            if (IsRedSide()){
+              return 270.0;
+            }
+            return 90.0;
+          }
+          else if (driverController.getL1Button()) { //turn to speaker
+            return 180.0;
+          }
+          return 0.0; 
         }
       ));
   }
