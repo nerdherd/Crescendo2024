@@ -72,35 +72,33 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
                 // TODO: Change AprilTag ID based on alliance
                 Commands.deadline(
                     PathCurrentToDest(SecondPickPoseBlue)                    
-                    // superSystem.intakeBasicHold()
+                    , superSystem.intakeBasicHold()
                 ),
                 Commands.parallel(
                     PathCurrentToDest(startingPoseBlue),
                     Commands.sequence(
                         Commands.waitSeconds(0.5),
-                        // superSystem.backupIndexer(),
-                        Commands.waitSeconds(0.5) //,
-                        // superSystem.shootSequence2()  
+                        superSystem.backupIndexer()
                     )
                 ),
-
+                Commands.waitSeconds(0.1),
+                superSystem.shootSequence2() ,  
                 driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 100), //change april tag id ltr
-                Commands.waitSeconds(0.5),
 
                 // Piece 3
                 Commands.deadline(
                     PathCurrentToDest(ThirdPickPoseBlue)
-                    // superSystem.intakeBasicHold()
+                    , superSystem.intakeBasicHold()
                 ),
                 Commands.parallel(
                     PathCurrentToDest(startingPoseBlue),
                     Commands.sequence(
                         Commands.waitSeconds(0.5),
-                        // superSystem.backupIndexer(),
-                        Commands.waitSeconds(0.5) //,
-                        // superSystem.shootSequence2()  
+                        superSystem.backupIndexer()
                     )
                 ),
+                Commands.waitSeconds(0.1),
+                superSystem.shootSequence2() , 
 
                 // Leave towards mid
                 /*Commands.parallel(
@@ -120,12 +118,17 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
 
     public Command PathCurrentToDest(Pose2d destPoseInBlue)
     {
-        if (RobotContainer.IsRedSide()) {
-            destPoseInBlue = (GeometryUtil.flipFieldPose(destPoseInBlue));
+        if (RobotContainer.IsRedSide()) 
+        {
+            return AutoBuilder.pathfindToPose(
+                GeometryUtil.flipFieldPose(destPoseInBlue), pathcons
+            );
         } 
-
-        return AutoBuilder.pathfindToPose(
-            destPoseInBlue, pathcons
-        );
+        else 
+        {
+            return AutoBuilder.pathfindToPose(
+                destPoseInBlue, pathcons
+            );
+        }
     }
 }
