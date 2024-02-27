@@ -6,10 +6,12 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
 import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,8 +32,13 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
 
         Pose2d startingPoseBlue = new Pose2d(1.33, 5.55, new Rotation2d());
         Pose2d FirstPickPose2d;
-        Pose2d SecondPickPoseBlue = new Pose2d(2.5, 5.55, new Rotation2d());;
+        Pose2d SecondPickPoseBlue = new Pose2d(2.5, 5.55, new Rotation2d());
         Pose2d ThirdPickPoseBlue = new Pose2d(2.65, 6.96, new Rotation2d(Units.degreesToRadians(26)));
+
+        // Comment out the red condition check within PathCurrentToDest if use these:
+        Pose2d startingPose = PathPlannerAuto.getStaringPoseFromAutoFile(autoPath);
+        Pose2d SecondPickPose =  GetEndPoseInPath(pathGroup.get(2));
+        Pose2d ThirdPickPose = GetEndPoseInPath(pathGroup.get(4));
         
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
@@ -108,7 +115,7 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
 
                 Commands.none()
             )
-            );
+        );
     }
 
     PathConstraints pathcons = new PathConstraints(
@@ -130,5 +137,22 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
                 destPoseInBlue, pathcons
             );
         }
+    }
+
+    
+
+    public Command FindPathThenFollowPlanned(PathPlannerPath goalPath)
+    {
+        return AutoBuilder.pathfindThenFollowPath(
+            goalPath, pathcons
+        );
+    }
+
+    public Pose2d GetEndPoseInPath(PathPlannerPath path)
+    {
+        PathPoint tail  = path.getPoint(path.numPoints()-1);
+        Translation2d pos = tail.position;
+        double rad = tail.rotationTarget.getTarget().getRadians();
+        return new Pose2d(pos, new Rotation2d(rad));
     }
 }
