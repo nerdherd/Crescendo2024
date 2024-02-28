@@ -38,7 +38,11 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
             //Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             //Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
             //Commands.runOnce(() -> swerve.resetInitPoseByVision()),
-            driverAssist.InitPoseByVision(swerve, startingPoseBlue, 0, 50 ),
+            Commands.either(
+                driverAssist.InitPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 50),
+                driverAssist.InitPoseByVision(swerve, startingPoseBlue, 0, 50 ),
+                RobotContainer::IsRedSide
+            ),
 
             Commands.sequence(
                 // superSystem.intakePivot.setEnabledCommand(true),
@@ -56,7 +60,7 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
                     // superSystem.intakeBasicHold()
                 ),
                 Commands.parallel(
-                    PathCurrentToDest(startingPoseBlue),
+                    driveToPose(startingPoseBlue),
                     Commands.sequence(
                         Commands.waitSeconds(0.5),
                         // superSystem.backupIndexer(),
@@ -71,11 +75,11 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
                 // Piece 2
                 // TODO: Change AprilTag ID based on alliance
                 Commands.deadline(
-                    PathCurrentToDest(SecondPickPoseBlue)                    
+                    driveToPose(SecondPickPoseBlue)                    
                     // superSystem.intakeBasicHold()
                 ),
                 Commands.parallel(
-                    PathCurrentToDest(startingPoseBlue),
+                    driveToPose(startingPoseBlue),
                     Commands.sequence(
                         Commands.waitSeconds(0.5),
                         // superSystem.backupIndexer(),
@@ -89,11 +93,11 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
 
                 // Piece 3
                 Commands.deadline(
-                    PathCurrentToDest(ThirdPickPoseBlue)
+                    driveToPose(ThirdPickPoseBlue)
                     // superSystem.intakeBasicHold()
                 ),
                 Commands.parallel(
-                    PathCurrentToDest(startingPoseBlue),
+                    driveToPose(startingPoseBlue),
                     Commands.sequence(
                         Commands.waitSeconds(0.5),
                         // superSystem.backupIndexer(),
@@ -118,14 +122,11 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
         Units.degreesToRadians(180), Units.degreesToRadians(360)
     );
 
-    public Command PathCurrentToDest(Pose2d destPoseInBlue)
-    {
-        if (RobotContainer.IsRedSide()) {
-            destPoseInBlue = (GeometryUtil.flipFieldPose(destPoseInBlue));
-        } 
-
-        return AutoBuilder.pathfindToPose(
-            destPoseInBlue, pathcons
+    public Command driveToPose(Pose2d destPoseInBlue) {
+        return Commands.either(
+            AutoBuilder.pathfindToPose(GeometryUtil.flipFieldPose(destPoseInBlue), pathcons),
+            AutoBuilder.pathfindToPose(destPoseInBlue, pathcons),
+            RobotContainer::IsRedSide  
         );
     }
 }
