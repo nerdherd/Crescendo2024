@@ -40,7 +40,6 @@ public class Basic6PieceSeparated extends SequentialCommandGroup {
                         AutoBuilder.followPath(pathGroup.get(2)),
                         Commands.waitSeconds(1)
                     ),
-                    superSystem.intakePickup(),
                     superSystem.intakeBasic()
                 ),
                 AutoBuilder.followPath(pathGroup.get(3)),
@@ -57,7 +56,6 @@ public class Basic6PieceSeparated extends SequentialCommandGroup {
                         AutoBuilder.followPath(pathGroup.get(6)),
                         Commands.waitSeconds(1)
                     ),
-                    superSystem.intakePickup(),
                     superSystem.intakeBasic()
                 ),
                 AutoBuilder.followPath(pathGroup.get(7)),

@@ -33,7 +33,7 @@ public class Basic5Piece extends SequentialCommandGroup {
                 Commands.waitSeconds(1),
                 Commands.parallel(                    
                     AutoBuilder.followPath(pathGroup.get(1)),
-                    Commands.run(() -> superSystem.intakePickup())
+                    Commands.run(() -> superSystem.intakeBasic())
                 ),
                 superSystem.shootSequence2Far()
             )

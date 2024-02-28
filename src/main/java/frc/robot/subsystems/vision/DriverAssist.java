@@ -90,7 +90,9 @@ public class DriverAssist implements Reportable{
 
         double allianceOffset = 90;
         double angle = NerdyMath.posMod(-Math.toDegrees(Math.atan2(xOffset, yOffset)) + allianceOffset, 360);
-        if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) GeometryUtil.flipFieldRotation(new Rotation2d(angle));
+        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
+            angle = 180 - angle;
+        }
         return angle;
     }
 

@@ -171,6 +171,10 @@ public class RobotContainer {
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
+          if (driverController.getOptionsButton()) {
+            // 4 if red side, 7 if blue
+            return apriltagCamera.getTurnToTagAngle(IsRedSide() ? 4 : 7);
+          }
           if (driverController.getR1Button()) { //turn to amp
             if (IsRedSide()){
               return 270.0;
@@ -267,6 +271,9 @@ public class RobotContainer {
       .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
       .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
+    commandDriverController.options().whileTrue(
+      Commands.run(() -> apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive.getPose(), (IsRedSide() ? 4 : 7), 3))
+    );
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
