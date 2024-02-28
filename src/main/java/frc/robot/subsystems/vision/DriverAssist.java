@@ -1,9 +1,15 @@
 package frc.robot.subsystems.vision;
 
+import java.util.Optional;
+
+import com.pathplanner.lib.util.GeometryUtil;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -47,6 +53,7 @@ public class DriverAssist implements Reportable{
      * @param name name of the limelight
      */
     public DriverAssist(String name, int pipeline) {
+        layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
         limelightName = name;
         ShuffleboardTab tab = Shuffleboard.getTab(limelightName);
 
@@ -66,6 +73,25 @@ public class DriverAssist implements Reportable{
     {
         limelight.reinitBuffer();
         dataSampleCount = 0;
+    }
+
+    public double getTurnToTagAngle(int ID) {
+        if(ID < 1 || ID > 16) return -1;
+        if(limelight.getAprilTagID() != ID) return -1;
+
+        Optional<Pose3d> tagPoseOptional = layout.getTagPose(ID);
+        if(tagPoseOptional.isEmpty()) return -1;
+        Pose3d tagPose = tagPoseOptional.get();
+
+        Pose3d robotPose = getCurrentPose3DVision();
+
+        double xOffset = tagPose.getX() - robotPose.getX();
+        double yOffset = tagPose.getY() - robotPose.getY();
+
+        double allianceOffset = 90;
+        double angle = NerdyMath.posMod(-Math.toDegrees(Math.atan2(xOffset, yOffset)) + allianceOffset, 360);
+        if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) GeometryUtil.flipFieldRotation(new Rotation2d(angle));
+        return angle;
     }
 
     public void TagDriving(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetSkew, int tagID, int maxSamples) {
