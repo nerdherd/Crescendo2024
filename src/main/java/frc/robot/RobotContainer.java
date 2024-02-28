@@ -272,7 +272,7 @@ public class RobotContainer {
     commandOperatorController.triangle().whileTrue(superSystem.eject());
     commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
                                       .whileFalse(superSystem.stow());
-    commandOperatorController.options().whileTrue(superSystem.shootAmp().andThen(superSystem.stow())); //change options to another button later
+    commandOperatorController.options().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow()); //change options to another button later
     commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual())
      ;
                                   // .whileFalse(superSystem.shooterRoller.setReverseVelocityCommand(0, 0)); // TODO: TEST IF THIS WORKS ON FALSE
