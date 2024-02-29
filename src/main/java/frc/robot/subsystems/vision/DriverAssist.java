@@ -398,7 +398,7 @@ public class DriverAssist implements Reportable{
         if(dataSampleCount >= minSamples)
         {
             swerveDrive.getImu().setOffset(defaultPoseInBlueside.getRotation().getDegrees());
-            swerveDrive.resetOdometryWithAlliance(defaultPoseInBlueside);
+            swerveDrive.resetOdometry(defaultPoseInBlueside);
         }
     }
 

@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -28,7 +29,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     private final DutyCycleEncoder throughBore;
 
     // Whether the pivot is running
-    private boolean enabled = true;
+    private boolean enabled = false;
 
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
@@ -43,7 +44,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
         configureMotor();
         configurePID();
-        syncEncoders();
+        syncEncoder();
     }
     
     //****************************** SETUP METHODS ******************************/
@@ -109,7 +110,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         }
     }
 
-    public void syncEncoders() {
+    public void syncEncoder() {
         // Save a consistent position offset
         IntakeConstants.kPivotOffset.loadPreferences();
         throughBore.setPositionOffset(IntakeConstants.kPivotOffset.get());
@@ -131,7 +132,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
         // Save new offset to Preferences
         IntakeConstants.kPivotOffset.uploadPreferences();
-        syncEncoders();
+        syncEncoder();
     }
 
     public void zeroAbsoluteEncoderFullStow() {
@@ -141,23 +142,33 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         IntakeConstants.kPivotOffset.set(throughBore.getPositionOffset());
         IntakeConstants.kPivotOffset.uploadPreferences();
 
-        syncEncoders();
+        syncEncoder();
     }
+
+    private int count = 0;
 
     @Override
     public void periodic() {
+        count++;
+        // SmartDashboard.putNumber("Intake Count", count);
+        if (count > 10) {
+            syncEncoder();
+            count = 0;
+            // SmartDashboard.putBoolean("Intake Reset", true);
+        } else {
+            // SmartDashboard.putBoolean("Intake Reset", false);
+        }
+
         if (IntakeConstants.fullDisableIntake.get()) {
             pivot.setControl(brakeRequest);
             enabled = false;
             return;
         }
-
-        // syncEncoders();
         
         pivot.setControl(brakeRequest);
 
         if (enabled) {
-            pivot.setControl(motionMagicRequest);
+            // pivot.setControl(motionMagicRequest);
         } else {
         }
     }
@@ -181,9 +192,9 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
     public double getAbsolutePosition() {
         if (IntakeConstants.kPivotAbsoluteEncoderInverted) {
-            return throughBore.getPositionOffset() - throughBore.getAbsolutePosition();
+            return mapRev(throughBore.getPositionOffset() - throughBore.getAbsolutePosition());
         }
-        return throughBore.getAbsolutePosition() - throughBore.getPositionOffset();
+        return mapRev(throughBore.getAbsolutePosition() - throughBore.getPositionOffset());
     }
 
     // Checks whether the pivot is within the deadband for a position

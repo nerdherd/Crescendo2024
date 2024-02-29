@@ -36,73 +36,86 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
             //Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
-            //Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
+            // Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
             //Commands.runOnce(() -> swerve.resetInitPoseByVision()),
-            Commands.either(
-                driverAssist.InitPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 50),
-                driverAssist.InitPoseByVision(swerve, startingPoseBlue, 0, 50 ),
-                RobotContainer::IsRedSide
-            ),
+            driverAssist.InitPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 50),
 
             Commands.sequence(
-                // superSystem.intakePivot.setEnabledCommand(true),
-                // superSystem.intakePivot.moveToIntake(),
+                superSystem.intakePivot.setEnabledCommand(true),
+                superSystem.intakePivot.moveToIntake(),
                 
                 // Preload 
                 Commands.deadline(
-                    Commands.waitSeconds(1.5) //,
-                    // superSystem.shootSequence2()
+                    Commands.waitSeconds(1.5),
+                    superSystem.shootSequence2()
                 ),
 
                 // Piece 1
                 Commands.deadline(
-                    AutoBuilder.followPath(pathGroup.get(0)) //,
-                    // superSystem.intakeBasicHold()
+                    AutoBuilder.followPath(pathGroup.get(0)),
+                    superSystem.intakeBasicHold()
                 ),
                 Commands.parallel(
                     driveToPose(startingPoseBlue),
                     Commands.sequence(
                         Commands.waitSeconds(0.5),
-                        // superSystem.backupIndexer(),
-                        Commands.waitSeconds(0.5) //,
-                        // superSystem.shootSequence2()  
+                        superSystem.backupIndexer(),
+                        Commands.waitSeconds(0.5),
+                        Commands.deadline(
+                            Commands.waitSeconds(1),
+                            superSystem.shootSequence2()
+                        )
                     )
                 ),
-                driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 100), //change april tag id ltr
+                Commands.either(
+                    driverAssist.resetOdoPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 100), //change april tag id ltr
+                    driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 100), //change april tag id ltr
+                    RobotContainer::IsRedSide
+                ),
                 
                 Commands.waitSeconds(0.5),
 
                 // Piece 2
                 // TODO: Change AprilTag ID based on alliance
                 Commands.deadline(
-                    driveToPose(SecondPickPoseBlue)                    
-                    // superSystem.intakeBasicHold()
+                    driveToPose(SecondPickPoseBlue),                    
+                    superSystem.intakeBasicHold()
                 ),
                 Commands.parallel(
                     driveToPose(startingPoseBlue),
                     Commands.sequence(
                         Commands.waitSeconds(0.5),
-                        // superSystem.backupIndexer(),
-                        Commands.waitSeconds(0.5) //,
-                        // superSystem.shootSequence2()  
+                        superSystem.backupIndexer(),
+                        Commands.waitSeconds(0.5),
+                        Commands.deadline(
+                            Commands.waitSeconds(1),
+                            superSystem.shootSequence2()
+                        )
                     )
                 ),
 
-                driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 100), //change april tag id ltr
+                Commands.either(
+                    driverAssist.resetOdoPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 100), //change april tag id ltr
+                    driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 100), //change april tag id ltr
+                    RobotContainer::IsRedSide
+                ),                
                 Commands.waitSeconds(0.5),
 
                 // Piece 3
                 Commands.deadline(
-                    driveToPose(ThirdPickPoseBlue)
-                    // superSystem.intakeBasicHold()
+                    driveToPose(ThirdPickPoseBlue),
+                    superSystem.intakeBasicHold()
                 ),
                 Commands.parallel(
                     driveToPose(startingPoseBlue),
                     Commands.sequence(
                         Commands.waitSeconds(0.5),
-                        // superSystem.backupIndexer(),
-                        Commands.waitSeconds(0.5) //,
-                        // superSystem.shootSequence2()  
+                        superSystem.backupIndexer(),
+                        Commands.waitSeconds(0.5),
+                        Commands.deadline(
+                            Commands.waitSeconds(1),
+                            superSystem.shootSequence2()
+                        )
                     )
                 ),
 

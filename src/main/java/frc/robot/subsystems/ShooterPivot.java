@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -50,7 +51,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
         configureMotor();
         configurePID();
-        resetEncoder();
+        syncEncoder();
     }
     
     //****************************** SETUP METHODS ******************************/
@@ -152,7 +153,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         }
     }
 
-    public void resetEncoder() {
+    public void syncEncoder() {
         // Save a consistent position offset
         ShooterConstants.kPivotOffset.loadPreferences();
         throughBore.setPositionOffset(ShooterConstants.kPivotOffset.get());
@@ -174,7 +175,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
         // Save new offset to Preferences
         ShooterConstants.kPivotOffset.uploadPreferences();
-        resetEncoder();
+        syncEncoder();
     }
 
     public void zeroAbsoluteEncoderFullStow() {
@@ -184,23 +185,37 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         ShooterConstants.kPivotOffset.set(throughBore.getPositionOffset());
         ShooterConstants.kPivotOffset.uploadPreferences();
 
-        resetEncoder();
+        syncEncoder();
     }
 
+    private int count = 0;
+    
     @Override
     public void periodic() {
+        count++;
+        // SmartDashboard.putNumber("Shooter Count", count);
+        if (count > 40) {
+            syncEncoder();
+            count = 0;
+            // SmartDashboard.putBoolean("Shooter Reset", true);
+        } else {
+            // SmartDashboard.putBoolean("Shooter Reset", false);
+        }
+
         if (ShooterConstants.fullDisableShooter.get()) {
             leftPivot.setControl(brakeRequest);
-            // rightPivot.setControl(brakeRequest);
+            rightPivot.setControl(brakeRequest);
             enabled = false;
             return;
         }
         
-        rightPivot.setControl(brakeRequest);
+        // rightPivot.setControl(brakeRequest);
+
+        // leftPivot.setControl(brakeRequest);
 
         if (enabled) {
             leftPivot.setControl(motionMagicRequest);
-            // rightPivot.setControl(followRequest);
+            rightPivot.setControl(followRequest);
             // rightPivot.setControl(motionMagicRequest);
             
         } else {
@@ -227,9 +242,9 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     public double getAbsolutePosition() {
         if (ShooterConstants.kPivotAbsoluteEncoderInverted) {
-            return throughBore.getPositionOffset() - throughBore.getAbsolutePosition();
+            return mapRev(throughBore.getPositionOffset() - throughBore.getAbsolutePosition());
         }
-        return throughBore.getAbsolutePosition() - throughBore.getPositionOffset();
+        return mapRev(throughBore.getAbsolutePosition() - throughBore.getPositionOffset());
     }
 
     // Checks whether the pivot is within the deadband for a position
@@ -349,7 +364,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
                 tab.addDouble("Right Shooter Pivot Velocity", () -> rightPivot.getVelocity().getValueAsDouble());
                 tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));
                 tab.add("Full Stow Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoderFullStow));
-                tab.add("Sync Encoder", Commands.runOnce(this::resetEncoder));
+                tab.add("Sync Encoder", Commands.runOnce(this::syncEncoder));
                 tab.addDouble("Absolute Encoder Position", this::getAbsolutePosition);
                 tab.addDouble("Left Pivot Applied Voltage", () -> leftPivot.getMotorVoltage().getValueAsDouble());
                 tab.addDouble("Right Pivot Applied Voltage", () -> rightPivot.getMotorVoltage().getValueAsDouble());

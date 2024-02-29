@@ -102,6 +102,12 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
             return;
         }
 
+        if (velocityRequest.Velocity < 0.5) {
+            velocityRequest.Velocity = 0;
+            intake.setControl(brakeRequest);
+            return;
+        }
+
         if (velocityControl) {
             intake.setControl(velocityRequest);
             return;

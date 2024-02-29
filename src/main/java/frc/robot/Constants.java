@@ -308,13 +308,13 @@ public final class Constants {
 
     public static final PrefDouble kFullStowPosition = new PrefDouble("Pivot Full Stow Position", -0.1135);
 
-    public static final PrefDouble kPPivotMotor = new PrefDouble("kP Shooter Pivot", 16);
+    public static final PrefDouble kPPivotMotor = new PrefDouble("kP Shooter Pivot", 0.16);
     public static final PrefDouble kIPivotMotor = new PrefDouble("kI Shooter Pivot", 0);
-    public static final PrefDouble kDPivotMotor = new PrefDouble("kD Shooter Pivot", 0);
+    public static final PrefDouble kDPivotMotor = new PrefDouble("kD Shooter Pivot", 0.1);
     public static final PrefDouble kVPivotMotor = new PrefDouble("kV Shooter Pivot", 25);
     public static final PrefDouble kSPivotMotor = new PrefDouble("kS Shooter Pivot", 0.26);
-    public static final PrefDouble kAPivotMotor = new PrefDouble("kA Shooter Pivot", 2.25);
-    public static final PrefDouble kGPivotMotor = new PrefDouble("kG Shooter Pivot", 0.22);
+    public static final PrefDouble kAPivotMotor = new PrefDouble("kA Shooter Pivot", 0.01);
+    public static final PrefDouble kGPivotMotor = new PrefDouble("kG Shooter Pivot", 0.44);
   
     public static final PrefDouble kCruiseAcceleration = new PrefDouble("Shooter Pivot Cruise Acceleration", 0.85);
     public static final PrefDouble kCruiseVelocity = new PrefDouble("Shooter Pivot Cruise Velocity", 0.425);
