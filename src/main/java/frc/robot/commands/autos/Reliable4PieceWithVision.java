@@ -38,7 +38,12 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
             //Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             // Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
             //Commands.runOnce(() -> swerve.resetInitPoseByVision()),
-            driverAssist.InitPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 50),
+            
+            Commands.either(
+                    driverAssist.InitPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 50), 
+                    driverAssist.InitPoseByVision(swerve, startingPoseBlue, 0, 50), 
+                    RobotContainer::IsRedSide
+                ),
 
             Commands.sequence(
                 superSystem.intakePivot.setEnabledCommand(true),

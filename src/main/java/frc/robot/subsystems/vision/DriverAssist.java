@@ -378,7 +378,7 @@ public class DriverAssist implements Reportable{
     }
 
     //boolean initPoseByVisionDone = false;
-    public void resetInitPoseByVision(SwerveDrivetrain swerveDrive, Pose2d defaultPoseInBlueside, int apriltagId, int minSamples)
+    public void resetInitPoseByVision(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId, int minSamples)
     {
         if(limelight != null && limelight.getAprilTagID() != -1)
         {
@@ -397,16 +397,16 @@ public class DriverAssist implements Reportable{
         dataSampleCount++;
         if(dataSampleCount >= minSamples)
         {
-            swerveDrive.getImu().setOffset(defaultPoseInBlueside.getRotation().getDegrees());
-            swerveDrive.resetOdometry(defaultPoseInBlueside);
+            swerveDrive.getImu().setOffset(defaultPose.getRotation().getDegrees());
+            swerveDrive.resetOdometry(defaultPose);
         }
     }
 
-    public Command InitPoseByVision(SwerveDrivetrain swerveDrive, Pose2d defaultPoseInBlueside, int apriltagId, int minSamples) {
+    public Command InitPoseByVision(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId, int minSamples) {
         return Commands.sequence(
             Commands.runOnce(() -> dataSampleCount = 0),
             Commands.run(
-                () -> resetInitPoseByVision(swerveDrive, defaultPoseInBlueside, apriltagId, minSamples)
+                () -> resetInitPoseByVision(swerveDrive, defaultPose, apriltagId, minSamples)
             ).until(() -> dataSampleCount >= minSamples )
         );
     }
