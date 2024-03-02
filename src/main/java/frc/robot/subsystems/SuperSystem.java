@@ -142,6 +142,8 @@ public class SuperSystem {
             indexer.indexCommand(),
             intakeRoller.intakeCommand(),
             Commands.waitUntil(colorSensor::noteIntook),
+            indexer.reverseIndexCommand(),
+            Commands.waitSeconds(0.4),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", false)),
             intakeRoller.stopCommand(),
             indexer.stopCommand()

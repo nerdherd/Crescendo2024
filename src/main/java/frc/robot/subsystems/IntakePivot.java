@@ -165,7 +165,8 @@ public class IntakePivot extends SubsystemBase implements Reportable {
             return;
         }
         
-        
+        // pivot.setControl(brakeRequest);
+
         if (enabled) {
             pivot.setControl(motionMagicRequest);
         } else {
@@ -300,6 +301,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
                 tab.addDouble("Intake Pivot Desired Position", this::getTargetPosition);
                 tab.addDouble("Intake Pivot Position", this::getPosition);
                 tab.addDouble("Intake Pivot Absolute Position", this::getAbsolutePosition);
+                tab.addDouble("Intake Pivot Velocity", () -> pivot.getVelocity().getValueAsDouble());
                 tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));
                 tab.add("Zero Full Stow Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoderFullStow));
                 tab.addNumber("Intake Pivot Applied Voltage", () -> pivot.getMotorVoltage().getValueAsDouble());

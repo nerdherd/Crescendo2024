@@ -320,7 +320,7 @@ public final class Constants {
     public static final PrefDouble kCruiseVelocity = new PrefDouble("Shooter Pivot Cruise Velocity", 0.425);
     public static final PrefDouble kPivotDeadband = new PrefDouble ("Shooter Pivot Deadband", 0.04); 
 
-    public static final PrefDouble kPivotOffset = new PrefDouble("Shooter Pivot Offset", 0.8610582);
+    public static final PrefDouble kPivotOffset = new PrefDouble("Shooter Pivot Offset", 0.689990669749767);
   }
   
   public static final class IntakeConstants {
@@ -358,21 +358,21 @@ public final class Constants {
     public static final PrefDouble kPickupPosition   = new PrefDouble("Intake Pickup Position", -0.0864);
     public static final PrefDouble kNeutralPosition  = new PrefDouble("Intake Neutral Position", 0.12);
     public static final PrefDouble kStowPosition     = new PrefDouble("Intake Stow Position", 0.488);
-    public static final PrefDouble kVerticalPosition = new PrefDouble("Intake Vertical Position", 0.28);
+    public static final PrefDouble kVerticalPosition = new PrefDouble("Intake Vertical Position", 0.26);
 
-    public static final PrefDouble kPivotOffset = new PrefDouble("Intake Pivot Offset", -0.484);
+    public static final PrefDouble kPivotOffset = new PrefDouble("Intake Pivot Offset", 0.535928515558213);
 
     public static final PrefDouble kIntakeCruiseAcceleration = new PrefDouble("Intake Pivot Cruise Acceleration", 10);
     public static final PrefDouble kIntakeCruiseVelocity = new PrefDouble("Intake Pivot Cruise Velocity", 8);
     public static final PrefDouble kPivotDeadband = new PrefDouble("Intake Pivot Deadband", 0.04);
 
-    public static final PrefDouble kPPivotMotor = new PrefDouble("kP Intake Pivot", 13.6); //16 as of 2/24
+    public static final PrefDouble kPPivotMotor = new PrefDouble("kP Intake Pivot", 15); //16 as of 2/24
     public static final PrefDouble kIPivotMotor = new PrefDouble("kI Intake Pivot", 0);
-    public static final PrefDouble kDPivotMotor = new PrefDouble("kD Intake Pivot", 1.6);
-    public static final PrefDouble kVPivotMotor = new PrefDouble("kV Intake Pivot", 4);
-    public static final PrefDouble kSPivotMotor = new PrefDouble("kS Intake Pivot", 0.1);
-    public static final PrefDouble kAPivotMotor = new PrefDouble("kA Intake Pivot", 0.18);
-    public static final PrefDouble kGPivotMotor = new PrefDouble("kG Intake Pivot", 0.56);
+    public static final PrefDouble kDPivotMotor = new PrefDouble("kD Intake Pivot", 0);
+    public static final PrefDouble kVPivotMotor = new PrefDouble("kV Intake Pivot", 2);
+    public static final PrefDouble kSPivotMotor = new PrefDouble("kS Intake Pivot", 0);
+    public static final PrefDouble kAPivotMotor = new PrefDouble("kA Intake Pivot", 0.001);
+    public static final PrefDouble kGPivotMotor = new PrefDouble("kG Intake Pivot", 0.54);
   }
   
   public static final class IndexerConstants {

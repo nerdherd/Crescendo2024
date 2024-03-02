@@ -35,7 +35,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     // Whether the pivot is running
     private boolean enabled = true;
 
-    private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
+    private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(-0.1, true, 0, 0, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
     private final Follower followRequest = new Follower(53, true);
 
