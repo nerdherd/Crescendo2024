@@ -22,8 +22,8 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.vision.DriverAssist;
 
 
-public class Mid3PieceWithVision extends SequentialCommandGroup {
-    public Mid3PieceWithVision(SwerveDrivetrain swerve, String autoPath, DriverAssist driverAssist) {     
+public class Mid3PiecePodium extends SequentialCommandGroup {
+    public Mid3PiecePodium(SwerveDrivetrain swerve, String autoPath, DriverAssist driverAssist) {     
         
         // Use the PathPlannerAuto class to get a path group from an auto
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
