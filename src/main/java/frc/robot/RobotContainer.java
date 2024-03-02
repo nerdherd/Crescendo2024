@@ -52,6 +52,7 @@ import frc.robot.subsystems.imu.PigeonV2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.vision.NoteAssistance;
+import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.util.NerdyMath;
 
@@ -82,6 +83,7 @@ public class RobotContainer {
 
   private NoteAssistance noteCamera; 
   private DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
+  private ShooterVisionAdjustment adjustmentCamera;
   
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -90,6 +92,7 @@ public class RobotContainer {
     try {
       noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
       apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
+      adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, apriltagCamera.getLimelight());
       swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
 
     } catch (IllegalArgumentException e) {

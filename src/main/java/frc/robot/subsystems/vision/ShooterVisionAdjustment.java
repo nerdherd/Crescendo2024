@@ -13,12 +13,12 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelperUser;
+import frc.robot.util.NerdyMath;
 import frc.robot.util.NerdySpline;
 
 public class ShooterVisionAdjustment implements Reportable{
     private Limelight limelight;
     private String name;
-    private LimelightHelperUser limelightHelperUser;
 
     private NerdySpline angleEquation;
     private NerdySpline distanceEquation;
@@ -31,20 +31,9 @@ public class ShooterVisionAdjustment implements Reportable{
     private GenericEntry poseTag;
     private GenericEntry goalDistance;
 
-    public ShooterVisionAdjustment(String name) {
+    public ShooterVisionAdjustment(String name, Limelight limelight) {
         this.name = name;
-        try {
-            limelight = new Limelight(name);
-            limelightHelperUser = new LimelightHelperUser(name);
-            limelight.setLightState(LightMode.OFF);
-            limelight.setPipeline(VisionConstants.kAprilTagPipeline);
-
-            SmartDashboard.putBoolean("Limelight: " + name + " inited", true);
-            SmartDashboard.putBoolean("LimelightHelper inited", true);
-        } catch (Exception e) {
-            SmartDashboard.putBoolean("limelight-" + name + " inited", false);
-            SmartDashboard.putBoolean("LimelightHelper inited", false);
-        }
+        this.limelight = limelight;
 
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
@@ -65,8 +54,8 @@ public class ShooterVisionAdjustment implements Reportable{
             targetFound.setBoolean(limelight.hasValidTarget());
 
         if(poseRobot != null)
-            poseRobot.setString(limelightHelperUser.getPose3d().toString());
-        return limelightHelperUser.getPose3d();
+            poseRobot.setString(limelight.getBotPose3D().toString());
+        return limelight.getBotPose3D();
     }
 
     public Pose3d getTagPose(int ID) {
@@ -93,17 +82,17 @@ public class ShooterVisionAdjustment implements Reportable{
  
     public double getShooterAngle() {
         Pose3d currentPose = getRobotPose();
-        if(currentPose == null) return -1;
+        if(currentPose == null) return -0.1;
         Pose3d tagPose = getTagPose(limelight.getAprilTagID());
-        if(tagPose == null) return -1;
+        if(tagPose == null) return -0.1;
 
-        double distance = Math.abs(tagPose.getX() - currentPose.getX());
+        double distance = Math.sqrt(Math.pow(currentPose.getX() - tagPose.getX(), 2) + Math.pow(currentPose.getY() - tagPose.getY(), 2));
         if(distanceOffset != null) distanceOffset.setDouble(distance);
 
         double output = angleEquation.getOutput(distance);
         if(goalAngle != null) 
             goalAngle.setDouble(output);
-        return angleEquation.getOutput(output);
+        return NerdyMath.clamp(output, -0.1, 0.2);
     }
 
     @Override
@@ -116,7 +105,7 @@ public class ShooterVisionAdjustment implements Reportable{
         if (priority == LOG_LEVEL.OFF)  {
             return;
         }
-        ShuffleboardTab tab = Shuffleboard.getTab(name);
+        ShuffleboardTab tab = Shuffleboard.getTab("spline:" + name);
 
         //the lack of "break;"'s is intentional
         switch (priority) {

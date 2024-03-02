@@ -69,6 +69,8 @@ public class DriverAssist implements Reportable{
         
     }
 
+    public Limelight getLimelight() { return limelight; }
+
     public void reset()
     {
         limelight.reinitBuffer();
