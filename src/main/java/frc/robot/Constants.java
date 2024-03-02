@@ -415,4 +415,9 @@ public final class Constants {
     public static final String kCANivoreBusName = "rio";
   }
 
+  public static final class climberActuatorConstants{
+    public static final int rightClimberActuatorChannelID = 0;
+    public static final int leftClimberActuatorChannelID = 0;
+  }
+
 }
