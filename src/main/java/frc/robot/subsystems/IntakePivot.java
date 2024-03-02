@@ -29,7 +29,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     private final DutyCycleEncoder throughBore;
 
     // Whether the pivot is running
-    private boolean enabled = false;
+    private boolean enabled = true;
 
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
@@ -165,11 +165,11 @@ public class IntakePivot extends SubsystemBase implements Reportable {
             return;
         }
         
-        pivot.setControl(brakeRequest);
-
+        
         if (enabled) {
-            // pivot.setControl(motionMagicRequest);
+            pivot.setControl(motionMagicRequest);
         } else {
+            pivot.setControl(brakeRequest);
         }
     }
 

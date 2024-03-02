@@ -360,7 +360,7 @@ public final class Constants {
     public static final PrefDouble kStowPosition     = new PrefDouble("Intake Stow Position", 0.488);
     public static final PrefDouble kVerticalPosition = new PrefDouble("Intake Vertical Position", 0.28);
 
-    public static final PrefDouble kPivotOffset = new PrefDouble("Intake Pivot Offset", 0.21);
+    public static final PrefDouble kPivotOffset = new PrefDouble("Intake Pivot Offset", -0.484);
 
     public static final PrefDouble kIntakeCruiseAcceleration = new PrefDouble("Intake Pivot Cruise Acceleration", 10);
     public static final PrefDouble kIntakeCruiseVelocity = new PrefDouble("Intake Pivot Cruise Velocity", 8);
@@ -417,7 +417,7 @@ public final class Constants {
 
   public static final class climberActuatorConstants{
     public static final int rightClimberActuatorChannelID = 0;
-    public static final int leftClimberActuatorChannelID = 0;
+    public static final int leftClimberActuatorChannelID = 1;
   }
 
 }
