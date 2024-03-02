@@ -288,7 +288,7 @@ public class RobotContainer {
     commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     
     commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
-                                  .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
+                                  .whileFalse(superSystem.stow());
 
     commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
     commandOperatorController.R2().whileTrue(superSystem.shootSequence2())
