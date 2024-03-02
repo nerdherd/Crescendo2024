@@ -353,7 +353,16 @@ public class DriverAssist implements Reportable{
     // PIDController pidSkew = new PIDController(0.1, 0, 0);
     PIDController pidTX = new PIDController(0.05, 0, 0); // Probably gonna use TX for this
 
+    private void pidTuning_test() {
+        VisionConstants.kPTagAngular.loadPreferences();
+        VisionConstants.kITagAngular.loadPreferences();
+        VisionConstants.kDTagAngular.loadPreferences();
+
+        pidTX.setPID(VisionConstants.kPTagAngular.get(), VisionConstants.kITagAngular.get(), VisionConstants.kDTagAngular.get());
+    }
+
     public void calculateTagTurning(double targetTX, int tagID) {
+        pidTuning_test();
         double TXOffset;
         int foundId = -1;
 

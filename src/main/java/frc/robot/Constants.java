@@ -241,6 +241,10 @@ public final class Constants {
     public static final PrefDouble kPNoteAngle = new PrefDouble("P Note Angle", 0);
     public static final PrefDouble kINoteAngle = new PrefDouble("I Note Angle", 0);
     public static final PrefDouble kDNoteAngle = new PrefDouble("D Note Angle", 0);
+
+    public static final PrefDouble kPTagAngular = new PrefDouble("P Tag Angular", 0);
+    public static final PrefDouble kITagAngular = new PrefDouble("I Tag Angular", 0);
+    public static final PrefDouble kDTagAngular = new PrefDouble("D Tag Angular", 0);
   }
   
   public static final class ShooterConstants {
