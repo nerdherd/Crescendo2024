@@ -297,7 +297,9 @@ public class RobotContainer {
                                   .whileFalse(superSystem.stow());
 
     commandOperatorController.options().whileTrue(superSystem.stow());
-    commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
+    // commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
+    commandOperatorController.share().whileTrue(superSystem.shootSequenceAdjustable(adjustmentCamera))
+                                  .whileFalse(superSystem.stow());
   }
 
   public void configureBindings_test() {
@@ -420,6 +422,7 @@ public class RobotContainer {
     swerveDrive.initModuleShuffleboard(loggingLevel);
     apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
     noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+    adjustmentCamera.initShuffleboard(LOG_LEVEL.ALL);
 
     shooterRoller.initShuffleboard(loggingLevel);
     shooterPivot.initShuffleboard(loggingLevel);
