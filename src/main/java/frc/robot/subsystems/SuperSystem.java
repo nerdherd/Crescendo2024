@@ -15,7 +15,7 @@ public class SuperSystem {
     public ShooterRoller shooterRoller;
     public IndexerV2 indexer;
     public ColorSensor colorSensor;
-    public LinearActuator linearActuator;
+    public ClimbActuator linearActuator;
     public Climber climber;
 
     public SuperSystem(IntakePivot intakePivot, IntakeRoller intakeRoller, 
@@ -26,7 +26,7 @@ public class SuperSystem {
         this.shooterPivot = shooterPivot;
         this.shooterRoller = shooterRoller;
         this.indexer = indexer;
-        this.linearActuator = new LinearActuator();
+        this.linearActuator = new ClimbActuator();
         this.colorSensor = new ColorSensor();
     }
 
