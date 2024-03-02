@@ -177,7 +177,7 @@ public class RobotContainer {
         () -> { // Turn To angle Direction
           if (driverController.getOptionsButton()) {
             // 4 if red side, 7 if blue
-            return apriltagCamera.getTurnToTagAngle(IsRedSide() ? 4 : 7);
+            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
           }
           if (driverController.getR1Button()) { //turn to amp
             if (IsRedSide()){
@@ -275,7 +275,7 @@ public class RobotContainer {
       .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
       .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
-    commandDriverController.options().whileTrue(
+    commandDriverController.L2().whileTrue(
       Commands.run(() -> apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive.getPose(), (IsRedSide() ? 4 : 7), 3))
     );
 
@@ -311,7 +311,7 @@ public class RobotContainer {
     commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 0.8, 0, 0, 7, 100)))
       .whileFalse(Commands.run(() -> apriltagCamera.reset())); //1.8, 0, 0, 7
     commandDriverController.L2().whileTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100, true));
-    commandDriverController.R1().whileTrue(Commands.run(() -> new TurnToAngle(apriltagCamera.getTurnToTagAngle(7), swerveDrive)));
+    // commandDriverController.R1().whileTrue(Commands.run(() -> new TurnToAngle(apriltagCamera.getTurnToTagAngle(7), swerveDrive)));
     commandDriverController.R2().whileTrue(noteCamera.turnToNoteCommand(swerveDrive, 0, 0, 0));
 
 
