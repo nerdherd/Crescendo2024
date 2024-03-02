@@ -31,15 +31,15 @@ public class ShooterVisionAdjustment implements Reportable{
     private GenericEntry poseTag;
     private GenericEntry goalDistance;
 
+    //TODO: Test actual input and output data
+    private double[] distances = {0, 1, 2, 3}; // meters, from least to greatest
+    private double[] angles = {-0.092, -0.04, -0.0174, -0.00796}; // rotations
+
     public ShooterVisionAdjustment(String name, Limelight limelight) {
         this.name = name;
         this.limelight = limelight;
 
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-
-        //TODO: Get actual input and output data
-        double[] distances = {0, 1, 2, 3}; // meters
-        double[] angles = {0, 0.841, 0.909, 0.141}; // degrees
 
         angleEquation = new NerdySpline(distances, angles);
         angleEquation.create();
@@ -88,6 +88,7 @@ public class ShooterVisionAdjustment implements Reportable{
 
         double distance = Math.sqrt(Math.pow(currentPose.getX() - tagPose.getX(), 2) + Math.pow(currentPose.getY() - tagPose.getY(), 2));
         if(distanceOffset != null) distanceOffset.setDouble(distance);
+        if(distance < distances[0] || distance > distances[distances.length - 1]) return -0.1;
 
         double output = angleEquation.getOutput(distance);
         if(goalAngle != null) 
