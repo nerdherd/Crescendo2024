@@ -84,7 +84,7 @@ public class DriverAssist implements Reportable{
      */
     public double getTurnToSpecificTagAngle(int ID) {
         if(ID < 1 || ID > 16) return 1000;
-        if(limelight.hasValidTarget()) return 1000;
+        if(!limelight.hasValidTarget()) return 1000;
 
         Optional<Pose3d> tagPoseOptional = layout.getTagPose(ID);
         if(tagPoseOptional.isEmpty()) return 1000;
