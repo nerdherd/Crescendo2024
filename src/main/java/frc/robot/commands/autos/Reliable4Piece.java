@@ -33,6 +33,10 @@ public class Reliable4Piece extends SequentialCommandGroup {
                     Commands.waitSeconds(1.5),
                     superSystem.shootSequence2()
                 ),
+                Commands.sequence(
+                    superSystem.indexer.stopCommand(),
+                    superSystem.shooterRoller.stopCommand()
+                ), 
 
                 // Piece 1
                 Commands.deadline(
@@ -45,7 +49,12 @@ public class Reliable4Piece extends SequentialCommandGroup {
                         Commands.waitSeconds(0.5),
                         superSystem.backupIndexer(),
                         Commands.waitSeconds(0.5),
-                        superSystem.shootSequence2()  
+                        Commands.deadline(
+                            Commands.waitSeconds(1),
+                            superSystem.shootSequence2()  
+                        ),
+                        superSystem.indexer.stopCommand(),
+                        superSystem.shooterRoller.stopCommand()
                     )
                 ),
 
@@ -60,7 +69,12 @@ public class Reliable4Piece extends SequentialCommandGroup {
                         Commands.waitSeconds(0.5),
                         superSystem.backupIndexer(),
                         Commands.waitSeconds(0.5),
-                        superSystem.shootSequence2()  
+                        Commands.deadline(
+                            Commands.waitSeconds(1),
+                            superSystem.shootSequence2()  
+                        ),
+                        superSystem.indexer.stopCommand(),
+                        superSystem.shooterRoller.stopCommand()
                     )
                 ),
 
@@ -75,7 +89,12 @@ public class Reliable4Piece extends SequentialCommandGroup {
                         Commands.waitSeconds(0.5),
                         superSystem.backupIndexer(),
                         Commands.waitSeconds(0.5),
-                        superSystem.shootSequence2()  
+                        Commands.deadline(
+                            Commands.waitSeconds(1),
+                            superSystem.shootSequence2()  
+                        ),
+                        superSystem.indexer.stopCommand(),
+                        superSystem.shooterRoller.stopCommand()
                     )
                 ),
 
