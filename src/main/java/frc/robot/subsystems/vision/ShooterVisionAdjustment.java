@@ -59,7 +59,7 @@ public class ShooterVisionAdjustment implements Reportable{
     }
 
     public Pose3d getTagPose(int ID) {
-        if(ID < 1 || ID > 16) return null;
+        if(ID == 7 || ID == 4) return null;
         if(layout == null) return null;
         Optional<Pose3d> tagPose = layout.getTagPose(ID);
         if(tagPose.isEmpty()) return null;
