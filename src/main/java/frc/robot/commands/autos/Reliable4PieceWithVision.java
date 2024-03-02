@@ -74,11 +74,13 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
                         )
                     )
                 ),
-                Commands.either(
-                    driverAssist.resetOdoPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 100), //change april tag id ltr
-                    driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 100), //change april tag id ltr
-                    RobotContainer::IsRedSide
-                ),
+
+                driverAssist.resetOdoPoseWithConversion(swerve, startingPoseBlue, 4, true), //change april tag id ltr
+                // Commands.either(
+                //     driverAssist.resetOdoPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 100), //change april tag id ltr
+                //     driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 100), //change april tag id ltr
+                //     RobotContainer::IsRedSide
+                // ),
                 
                 Commands.waitSeconds(0.5),
 
@@ -103,11 +105,13 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
                     )
                 ),
 
-                Commands.either(
-                    driverAssist.resetOdoPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 100), //change april tag id ltr
-                    driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 100), //change april tag id ltr
-                    RobotContainer::IsRedSide
-                ),                
+                driverAssist.resetOdoPoseWithConversion(swerve, startingPoseBlue, 7, true),
+
+                // Commands.either(
+                //     driverAssist.resetOdoPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 100), //change april tag id ltr
+                //     driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 100), //change april tag id ltr
+                //     RobotContainer::IsRedSide
+                // ),                
                 Commands.waitSeconds(0.5),
 
                 // Piece 3
