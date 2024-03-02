@@ -177,7 +177,7 @@ public class RobotContainer {
         () -> { // Turn To angle Direction
           if (driverController.getOptionsButton()) {
             // 4 if red side, 7 if blue
-            return apriltagCamera.getTurnToTagAngle(IsRedSide() ? 4 : 7);
+            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
           }
           if (driverController.getR1Button()) { //turn to amp
             if (IsRedSide()){
