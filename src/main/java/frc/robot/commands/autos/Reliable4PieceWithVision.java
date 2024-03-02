@@ -40,10 +40,10 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
             //Commands.runOnce(() -> swerve.resetInitPoseByVision()),
             
             Commands.either(
-                    driverAssist.InitPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 50), 
-                    driverAssist.InitPoseByVision(swerve, startingPoseBlue, 0, 50), 
-                    RobotContainer::IsRedSide
-                ),
+                driverAssist.InitPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 50), 
+                driverAssist.InitPoseByVision(swerve, startingPoseBlue, 0, 50), 
+                RobotContainer::IsRedSide
+            ),
 
             Commands.sequence(
                 superSystem.intakePivot.setEnabledCommand(true),

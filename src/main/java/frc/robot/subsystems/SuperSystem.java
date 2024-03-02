@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -126,7 +127,7 @@ public class SuperSystem {
         return command.withInterruptBehavior(InterruptionBehavior.kCancelSelf);
     }
 
-    public Command intakeFinal() {
+    public Command intakeUntilSensed() {
         Command command = Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(() -> 
@@ -134,7 +135,7 @@ public class SuperSystem {
                     shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
                 handoff(),
                 Commands.waitSeconds(1)
-                ),
+            ),
             intakeRoller.setEnabledCommand(true),
             indexer.setEnabledCommand(true),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
@@ -144,7 +145,11 @@ public class SuperSystem {
             Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", false)),
             intakeRoller.stopCommand(),
             indexer.stopCommand()
-        );
+        ).finallyDo(() -> {
+            SmartDashboard.putBoolean("Intaking", false);
+            intakeRoller.stop();
+            indexer.stop();
+        });
 
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
         return command;
@@ -310,8 +315,32 @@ public class SuperSystem {
     public Command shootSequence2() {
         Command command = Commands.sequence(
             intakePivot.moveToIntake(),
+            Commands.waitUntil(intakePivot::hasReachedNeutral),
             // Prepare to shoot
             shooterPivot.moveToSpeaker(),
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker(),
+            Commands.waitSeconds(0.8),
+            
+            // Shoot
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            Commands.waitUntil(() -> false)
+        ).finallyDo(interrupted -> {
+            indexer.stop();
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
+        return command;
+    }
+
+    public Command shootSequenceAdjustable(ShooterVisionAdjustment sva) {
+        Command command = Commands.sequence(
+            intakePivot.moveToIntake(),
+            Commands.waitUntil(intakePivot::hasReachedNeutral),
+            // Prepare to shoot
+            shooterPivot.setPositionCommand(sva.getShooterAngle()),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
             Commands.waitSeconds(0.8),

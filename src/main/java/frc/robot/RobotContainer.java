@@ -279,13 +279,9 @@ public class RobotContainer {
     commandOperatorController.triangle().whileTrue(superSystem.eject());
     commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
                                       .whileFalse(superSystem.stow());
-    commandOperatorController.options().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow()); //change options to another button later
-    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual())
-     ;
-                                  // .whileFalse(superSystem.shooterRoller.setReverseVelocityCommand(0, 0)); // TODO: TEST IF THIS WORKS ON FALSE
     
-    // TODO: May have to bring manual stow back if we need it faster
-    // commandOperatorController.L2().whileTrue(superSystem.intakeBasic());
+    commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
+    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     
     commandOperatorController.L2().whileTrue(superSystem.intakeBasic())
                                   .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
@@ -296,8 +292,7 @@ public class RobotContainer {
     commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far())
                                   .whileFalse(superSystem.stow());
 
-    commandOperatorController.cross().whileTrue(superSystem.stow());
-
+    commandOperatorController.options().whileTrue(superSystem.stow());
     commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
   }
 
