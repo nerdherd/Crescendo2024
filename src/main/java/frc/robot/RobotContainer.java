@@ -286,23 +286,24 @@ public class RobotContainer {
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
     commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
-                                      .whileFalse(superSystem.stow());
-    
+                                      .whileFalse(superSystem.stow()); // TODO: Can we try getting rid of this whileFalse line here **(field testing)**
     commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
+
     commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     
     commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
                                   .whileFalse(superSystem.stow());
 
     commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
+
     commandOperatorController.R2().whileTrue(superSystem.shootSequence2())
                                   .whileFalse(superSystem.stow());
     commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far())
                                   .whileFalse(superSystem.stow());
 
-    commandOperatorController.options().whileTrue(superSystem.stow());
+    commandOperatorController.options().whileTrue(superSystem.stow()); // TODO: Change this binding
     // commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
-    commandOperatorController.share().whileTrue(superSystem.shootSequenceAdjustable(adjustmentCamera))
+    commandOperatorController.share().whileTrue(superSystem.shootSequenceAdjustable(adjustmentCamera)) //
                                   .whileFalse(superSystem.stow());
   }
 
