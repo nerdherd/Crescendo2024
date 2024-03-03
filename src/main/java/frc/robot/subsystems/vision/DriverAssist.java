@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.TurnToAngleContinuous;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.util.NerdyMath;
@@ -101,6 +102,12 @@ public class DriverAssist implements Reportable{
             return GeometryUtil.flipFieldRotation(Rotation2d.fromDegrees(angle)).getDegrees();
         }
         return angle;
+    }
+
+    public Command turnToTag(int ID, SwerveDrivetrain swerve) {
+        return Commands.sequence(
+            new TurnToAngleContinuous(() -> getTurnToSpecificTagAngle(ID), swerve)
+        );
     }
 
     public void TagDriving(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetSkew, int tagID, int maxSamples) {
