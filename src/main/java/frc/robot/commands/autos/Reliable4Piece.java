@@ -88,7 +88,7 @@ public class Reliable4Piece extends SequentialCommandGroup {
                     Commands.sequence(
                         Commands.waitSeconds(0.85),
                         Commands.deadline(
-                            Commands.waitSeconds(0.6),
+                            Commands.waitSeconds(1),
                             superSystem.shootSequenceAuto()  
                         ),
                         superSystem.indexer.stopCommand(),

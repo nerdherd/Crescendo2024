@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.TurnToAngleContinuous;
 import frc.robot.subsystems.Reportable;
@@ -601,14 +602,16 @@ public class DriverAssist implements Reportable{
     public Pose3d getCurrentPose3DVision()
     {
         currentPose = limelight.getBotPose3D();
-        Pose3d newPose = new Pose3d(VisionConstants.fieldXOffset*2 - currentPose.getX(), VisionConstants.fieldYOffset*2 - currentPose.getY(), currentPose.getZ(), new Rotation3d(0, 0, currentPose.getRotation().getZ()));
+        if (RobotContainer.IsRedSide()) {
+            currentPose = new Pose3d(VisionConstants.fieldXOffset*2 - currentPose.getX(), VisionConstants.fieldYOffset*2 - currentPose.getY(), currentPose.getZ(), new Rotation3d(0, 0, currentPose.getRotation().getZ()));
+        }
         if(botPoseByVisionX != null)
         {
-            botPoseByVisionX.setDouble(newPose.getX());
-            botPoseByVisionY.setDouble(newPose.getY());
-            botPoseByVisionR.setDouble(Units.radiansToDegrees(newPose.getRotation().getZ()));
+            botPoseByVisionX.setDouble(currentPose.getX());
+            botPoseByVisionY.setDouble(currentPose.getY());
+            botPoseByVisionR.setDouble(Units.radiansToDegrees(currentPose.getRotation().getZ()));
         }
-        return newPose;
+        return currentPose;
     }
 
     public double getVisionFrameTimestamp()
