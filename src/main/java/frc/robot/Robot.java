@@ -46,6 +46,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     CommandScheduler.getInstance().cancelAll();
+    robotContainer.swerveDrive.setBreak(true);
   }
 
   @Override
@@ -54,7 +55,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    
+    robotContainer.swerveDrive.setBreak(false);
     robotContainer.swerveDrive.refreshModulePID();
     robotContainer.imu.zeroHeading();
     robotContainer.imu.zeroAll();
@@ -89,6 +90,7 @@ public class Robot extends TimedRobot {
     if (autoCommand != null) {
       autoCommand.cancel();
     }
+    robotContainer.swerveDrive.setBreak(false);
     // robotContainer.swerveDrive.setVelocityControl(true);
     // robotContainer.swerveDrive.refreshModulePID();
     // ShooterConstants.kPivotDeadband.loadPreferences();

@@ -33,8 +33,8 @@ public class ShooterVisionAdjustment implements Reportable{
     private GenericEntry goalDistance;
 
     //TODO: Test actual input and output data
-    private double[] distances = {1.4257, 2.836, 3.5482}; // meters, from least to greatest
-    private double[] angles = {-0.064, -0.025, -0.003}; // rotations
+    private double[] distances = {1.4257, 2.836, 3.5482, 3.6585}; // meters, from least to greatest
+    private double[] angles = {-0.064, -0.025, -0.003, 0.01}; // rotations
 
     public ShooterVisionAdjustment(String name, Limelight limelight) {
         this.name = name;
@@ -95,9 +95,13 @@ public class ShooterVisionAdjustment implements Reportable{
         double distance = Math.sqrt(Math.pow(currentPose.getX() - tagPose.getX(), 2) + Math.pow(currentPose.getY() - tagPose.getY(), 2));
         if(distanceOffset != null) distanceOffset.setDouble(distance);
         SmartDashboard.putNumber("Distance", distance);
-        if(distance < distances[0] || distance > distances[distances.length - 1]) {
-            SmartDashboard.putBoolean("Visioni failed", true);
+        if(distance < distances[0]) {
+            SmartDashboard.putBoolean("Vision failed", true);
             return -0.1;
+        }
+        if (distance > distances[distances.length - 1]) {
+            SmartDashboard.putBoolean("Vision failed", true);
+            return 0.01;
         }
 
         SmartDashboard.putBoolean("Visioni failed", false);

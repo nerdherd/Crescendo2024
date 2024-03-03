@@ -32,6 +32,7 @@ import frc.robot.commands.autos.Basic4Piece;
 import frc.robot.commands.autos.Basic4PieceSeparated;
 import frc.robot.commands.autos.Basic6PieceSeparated;
 import frc.robot.commands.autos.Mid3Piece;
+import frc.robot.commands.autos.Mid3PiecePodiumShooting;
 import frc.robot.commands.autos.OneMeterSquareAuto;
 import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.commands.autos.Reliable4PieceWithVision;
@@ -407,6 +408,7 @@ public class RobotContainer {
 
     if (paths.contains("Mid3Piece")) {
       autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
+      autoChooser.addOption("Mid3Piece Podium Vision", new Mid3PiecePodiumShooting(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
     }
 
     if (paths.contains("Reliable4Piece")) {
