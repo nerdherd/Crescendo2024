@@ -171,11 +171,11 @@ public class RobotContainer {
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
         () -> {
-          return (driverController.getR1Button() || driverController.getL1Button()); // Turn to angle
+          return (driverController.getR1Button() || driverController.getL1Button() || driverController.getL2Button()); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          if (driverController.getOptionsButton()) {
+          if (driverController.getL2Button()) {
             // 4 if red side, 7 if blue
             return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
           }
@@ -276,7 +276,10 @@ public class RobotContainer {
       .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
     commandDriverController.L2().whileTrue(
-      Commands.run(() -> apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive.getPose(), 0, 3))
+      Commands.repeatingSequence(
+        apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive::getPose, 0, 3),
+        Commands.waitSeconds(0.2)
+      )
     );
 
     // Operator bindings

@@ -372,7 +372,7 @@ public class SuperSystem {
             intakePivot.moveToIntake(),
             Commands.waitUntil(intakePivot::hasReachedNeutral),
             // Prepare to shoot
-            shooterPivot.setPositionCommand(sva.getShooterAngle()),
+            Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
             Commands.waitSeconds(0.8),

@@ -150,6 +150,7 @@ public class SwerveJoystickCommand extends Command {
                 -SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond, 
                 SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond);
             SmartDashboard.putNumber("Turning Speed", turningSpeed);
+            SmartDashboard.putNumber("Target Angle", targetAngle);
             
             filteredTurningSpeed = turningSpeed;
         }
