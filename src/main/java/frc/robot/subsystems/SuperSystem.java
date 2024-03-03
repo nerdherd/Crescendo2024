@@ -148,7 +148,7 @@ public class SuperSystem {
             // Move note back
             indexer.reverseIndexCommand(),
             shooterRoller.setVelocityCommand(-10, -10),
-            Commands.waitSeconds(0.4),
+            Commands.waitSeconds(0.6),
 
             intakeRoller.stopCommand(),
             indexer.stopCommand(),

@@ -180,13 +180,13 @@ public class RobotContainer {
             return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
           }
           if (driverController.getR1Button()) { //turn to amp
-            if (IsRedSide()){
+            if (!IsRedSide()){
               return 270.0;
             }
             return 90.0;
           }
           else if (driverController.getL1Button()) { //turn to speaker
-            return 180.0;
+            return 0.0;
           }
           return 0.0; 
         }
@@ -276,7 +276,7 @@ public class RobotContainer {
       .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
     commandDriverController.L2().whileTrue(
-      Commands.run(() -> apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive.getPose(), (IsRedSide() ? 4 : 7), 3))
+      Commands.run(() -> apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive.getPose(), 0, 3))
     );
 
     // Operator bindings

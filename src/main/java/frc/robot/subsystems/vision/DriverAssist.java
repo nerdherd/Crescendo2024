@@ -100,7 +100,7 @@ public class DriverAssist implements Reportable{
         if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
             return GeometryUtil.flipFieldRotation(Rotation2d.fromDegrees(angle)).getDegrees();
         }
-        return angle;
+        return (angle + 180) % 360;
     }
 
     public void TagDriving(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetSkew, int tagID, int maxSamples) {

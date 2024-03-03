@@ -30,7 +30,7 @@ public class Reliable4Piece extends SequentialCommandGroup {
 
                 // Preload 
                 Commands.deadline(
-                    Commands.waitSeconds(0.5),
+                    Commands.waitUntil(() -> !superSystem.colorSensor.noteIntook()).andThen(Commands.waitSeconds(0.2)),
                     superSystem.shootSequence2()
                 ),
                 Commands.sequence(
