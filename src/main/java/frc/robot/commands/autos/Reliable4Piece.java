@@ -23,78 +23,76 @@ public class Reliable4Piece extends SequentialCommandGroup {
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
-            Commands.runOnce(() -> swerve.resetInitPoseByVision()),
+            // Commands.runOnce(() -> swerve.resetInitPoseByVision()),
             Commands.sequence(
                 superSystem.intakePivot.setEnabledCommand(true),
                 superSystem.intakePivot.moveToIntake(),
 
                 // Preload 
                 Commands.deadline(
-                    Commands.waitSeconds(1.5),
+                    Commands.waitUntil(() -> !superSystem.colorSensor.noteIntook()).andThen(Commands.waitSeconds(0.2)),
                     superSystem.shootSequence2()
                 ),
                 Commands.sequence(
                     superSystem.indexer.stopCommand(),
-                    superSystem.shooterRoller.stopCommand()
+                    superSystem.shooterRoller.setVelocityCommand(0, 0)
                 ), 
 
                 // Piece 1
                 Commands.deadline(
+                    Commands.waitSeconds(1.75),
                     AutoBuilder.followPath(pathGroup.get(0)),
-                    superSystem.intakeBasicHold()
+                    superSystem.intakeUntilSensed()
                 ),
+
                 Commands.parallel(
                     AutoBuilder.followPath(pathGroup.get(1)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
-                        superSystem.backupIndexer(),
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.85),
                         Commands.deadline(
-                            Commands.waitSeconds(1),
-                            superSystem.shootSequence2()  
+                            Commands.waitSeconds(0.6),
+                            superSystem.shootSequenceAuto()  
                         ),
                         superSystem.indexer.stopCommand(),
-                        superSystem.shooterRoller.stopCommand()
+                        superSystem.shooterRoller.setVelocityCommand(0, 0)
                     )
                 ),
 
                 // Piece 2
                 Commands.deadline(
+                    Commands.waitSeconds(1.75),
                     AutoBuilder.followPath(pathGroup.get(2)),
-                    superSystem.intakeBasicHold()
+                    superSystem.intakeUntilSensed()
                 ),
                 Commands.parallel(
                     AutoBuilder.followPath(pathGroup.get(3)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
-                        superSystem.backupIndexer(),
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.85),
                         Commands.deadline(
-                            Commands.waitSeconds(1),
-                            superSystem.shootSequence2()  
+                            Commands.waitSeconds(0.6),
+                            superSystem.shootSequenceAuto()  
                         ),
                         superSystem.indexer.stopCommand(),
-                        superSystem.shooterRoller.stopCommand()
+                        superSystem.shooterRoller.setVelocityCommand(0, 0)
                     )
                 ),
 
                 // Piece 3
                 Commands.deadline(
+                    Commands.waitSeconds(1.75),
                     AutoBuilder.followPath(pathGroup.get(4)),
-                    superSystem.intakeBasicHold()
+                    superSystem.intakeUntilSensed()
                 ),
                 Commands.parallel(
                     AutoBuilder.followPath(pathGroup.get(5)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
-                        superSystem.backupIndexer(),
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.85),
                         Commands.deadline(
-                            Commands.waitSeconds(1),
-                            superSystem.shootSequence2()  
+                            Commands.waitSeconds(0.6),
+                            superSystem.shootSequenceAuto()  
                         ),
                         superSystem.indexer.stopCommand(),
-                        superSystem.shooterRoller.stopCommand()
+                        superSystem.shooterRoller.setVelocityCommand(0, 0)
                     )
                 ),
 

@@ -109,10 +109,10 @@ public class RobotContainer {
     // Moved to teleop init
 
     DriverStation.reportWarning("Initalization complete", false);
-      NamedCommands.registerCommand("intakeBasic1", superSystem.intakeBasicHold());
-      NamedCommands.registerCommand("intakeBasic2", superSystem.stopIntaking());
-      NamedCommands.registerCommand("shootSequence2Far", superSystem.shootSequence2Far());
-      NamedCommands.registerCommand("shootSequence2", superSystem.shootSequence2());
+      // NamedCommands.registerCommand("intakeBasic1", superSystem.intakeBasicHold());
+      // NamedCommands.registerCommand("intakeBasic2", superSystem.stopIntaking());
+      // NamedCommands.registerCommand("shootSequence2Far", superSystem.shootSequence2Far());
+      // NamedCommands.registerCommand("shootSequence2", superSystem.shootSequence2());
 
   }
 
@@ -180,13 +180,13 @@ public class RobotContainer {
             return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
           }
           if (driverController.getR1Button()) { //turn to amp
-            if (IsRedSide()){
+            if (!IsRedSide()){
               return 270.0;
             }
             return 90.0;
           }
           else if (driverController.getL1Button()) { //turn to speaker
-            return 180.0;
+            return 0.0;
           }
           return 0.0; 
         }
@@ -276,7 +276,7 @@ public class RobotContainer {
       .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
     commandDriverController.L2().whileTrue(
-      Commands.run(() -> apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive.getPose(), (IsRedSide() ? 4 : 7), 3))
+      Commands.run(() -> apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive.getPose(), 0, 3))
     );
 
     // Operator bindings
@@ -288,7 +288,7 @@ public class RobotContainer {
     commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     
     commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
-                                  .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
+                                  .whileFalse(superSystem.stow());
 
     commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
     commandOperatorController.R2().whileTrue(superSystem.shootSequence2())
