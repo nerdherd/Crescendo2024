@@ -324,6 +324,10 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         return Commands.runOnce(() -> setPosition(ShooterConstants.kSpeakerPosition.get()));
     }
 
+    public Command moveToSpeakerAuto() {
+        return Commands.runOnce(() -> setPosition(ShooterConstants.kSpeakerPositionAuto.get()));
+    }
+
     public Command moveToSpeakerFar() {
         return Commands.runOnce(() -> setPosition(ShooterConstants.kSpeakerPosition2.get()));
     }

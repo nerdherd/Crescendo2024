@@ -109,10 +109,10 @@ public class RobotContainer {
     // Moved to teleop init
 
     DriverStation.reportWarning("Initalization complete", false);
-      NamedCommands.registerCommand("intakeBasic1", superSystem.intakeBasicHold());
-      NamedCommands.registerCommand("intakeBasic2", superSystem.stopIntaking());
-      NamedCommands.registerCommand("shootSequence2Far", superSystem.shootSequence2Far());
-      NamedCommands.registerCommand("shootSequence2", superSystem.shootSequence2());
+      // NamedCommands.registerCommand("intakeBasic1", superSystem.intakeBasicHold());
+      // NamedCommands.registerCommand("intakeBasic2", superSystem.stopIntaking());
+      // NamedCommands.registerCommand("shootSequence2Far", superSystem.shootSequence2Far());
+      // NamedCommands.registerCommand("shootSequence2", superSystem.shootSequence2());
 
   }
 

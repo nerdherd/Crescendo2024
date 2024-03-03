@@ -149,22 +149,24 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
     @Override
     public void periodic() {
         if (!enabled) {
-            leftShooter.setControl(brakeRequest);
-            rightShooter.setControl(brakeRequest);
+            leftVelocityRequest.Velocity = 0;
+            rightVelocityRequest.Velocity = 0;
+            leftShooter.setControl(leftVelocityRequest);
+            rightShooter.setControl(rightVelocityRequest);
             return;
         }
 
 
-        if (velocityControl) {
-            leftShooter.setControl(leftVelocityRequest);
-            rightShooter.setControl(rightVelocityRequest);
-            return;
-        } 
+        // if (velocityControl) {
+        leftShooter.setControl(leftVelocityRequest);
+        rightShooter.setControl(rightVelocityRequest);
+        //     return;
+        // } 
 
-        leftVoltageRequest.Output = leftVelocityRequest.Velocity * 12 / 100.0;
-        rightVoltageRequest.Output = rightVelocityRequest.Velocity * 12 / 100.0;
-        leftShooter.setControl(leftVoltageRequest);
-        rightShooter.setControl(rightVoltageRequest);
+        // leftVoltageRequest.Output = leftVelocityRequest.Velocity * 12 / 100.0;
+        // rightVoltageRequest.Output = rightVelocityRequest.Velocity * 12 / 100.0;
+        // leftShooter.setControl(leftVoltageRequest);
+        // rightShooter.setControl(rightVoltageRequest);
     }
 
     //****************************** STATE METHODS ******************************//
@@ -173,8 +175,8 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         this.enabled = false;
         leftVelocityRequest.Velocity = 0;
         rightVelocityRequest.Velocity = 0;
-        leftShooter.setControl(brakeRequest);
-        rightShooter.setControl(brakeRequest);
+        // leftShooter.setControl(brakeRequest);
+        // rightShooter.setControl(brakeRequest);
     }
 
     public Command stopCommand() {
