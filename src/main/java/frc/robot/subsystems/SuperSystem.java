@@ -52,7 +52,7 @@ public class SuperSystem {
         Command command = Commands.sequence(
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootAmp(),
-            Commands.waitSeconds(0.5),
+            Commands.waitSeconds(0.3), // Was 0.5    3/3/24    Code Orange
             indexer.setEnabledCommand(true),
             indexer.indexCommand(),
             Commands.waitSeconds(1)
@@ -148,7 +148,7 @@ public class SuperSystem {
             // Move note back
             indexer.reverseIndexCommand(),
             shooterRoller.setVelocityCommand(-10, -10),
-            Commands.waitSeconds(0.6),
+            Commands.waitSeconds(0.4), // Was 0.6   3/3/24   Code Orange
 
             intakeRoller.stopCommand(),
             indexer.stopCommand(),
@@ -329,7 +329,7 @@ public class SuperSystem {
             shooterPivot.moveToSpeaker(),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
-            Commands.waitSeconds(0.2),
+            Commands.waitSeconds(0.8), // Was 0.2     3/3/24     But 0.8   @Code Orange
             
             // Shoot
             indexer.setEnabledCommand(true),

@@ -294,17 +294,17 @@ public class RobotContainer {
     commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
                                   .whileFalse(superSystem.stow());
 
-    commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
+    // commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot()); // Don't need?
 
     commandOperatorController.R2().whileTrue(superSystem.shootSequence2())
                                   .whileFalse(superSystem.stow());
     commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far())
                                   .whileFalse(superSystem.stow());
 
-    commandOperatorController.options().whileTrue(superSystem.stow()); // TODO: Change this binding
+    commandOperatorController.circle().whileTrue(superSystem.stow()); // TODO: Change this binding
     // commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
-    commandOperatorController.share().whileTrue(superSystem.shootSequenceAdjustable(adjustmentCamera)) //
-                                  .whileFalse(superSystem.stow());
+    commandOperatorController.options().whileTrue(superSystem.shootSequenceAdjustable(adjustmentCamera)) //
+                                  .whileFalse(superSystem.stow()); // TODO: Safety *Do nothing if April Tag is not seen*
   }
 
   public void configureBindings_test() {
@@ -408,13 +408,13 @@ public class RobotContainer {
     }
 
     if (paths.contains("Mid3Piece")) {
-      autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
+      // autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
       autoChooser.addOption("Mid3Piece Podium Vision", new Mid3PiecePodiumShooting(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
     }
 
     if (paths.contains("Reliable4Piece")) {
       autoChooser.addOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
-      autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
+      // autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
     }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");

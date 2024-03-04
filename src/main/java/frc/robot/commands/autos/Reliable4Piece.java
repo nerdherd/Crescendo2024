@@ -30,7 +30,10 @@ public class Reliable4Piece extends SequentialCommandGroup {
 
                 // Preload 
                 Commands.deadline(
-                    Commands.waitUntil(() -> !superSystem.colorSensor.noteIntook()).andThen(Commands.waitSeconds(0.2)),
+                    // Commands.waitUntil(() -> !superSystem.colorSensor.noteIntook()).andThen(Commands.waitSeconds(0.2)),
+                    
+                    // Color Sensor wait for preload didn't work at Code Orange: May need more testing
+                    Commands.waitSeconds(1.5),
                     superSystem.shootSequence2()
                 ),
                 Commands.sequence(
