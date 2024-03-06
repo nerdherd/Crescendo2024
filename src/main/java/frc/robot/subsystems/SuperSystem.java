@@ -74,9 +74,9 @@ public class SuperSystem {
             shooterRoller.stopCommand(),
             indexer.stopCommand(),
             intakePivot.setPositionCommand(IntakeConstants.kNeutralPosition.get()),
+            shooterPivot.setPositionCommand(-0.1058),
             Commands.deadline(
                 Commands.waitUntil(shooterPivot::atTargetPosition),
-                shooterPivot.setPositionCommand(-0.1),
                 Commands.waitSeconds(2)
             ),
             intakePivot.setPositionCommand(IntakeConstants.kVerticalPosition.get())
@@ -143,7 +143,10 @@ public class SuperSystem {
             indexer.indexCommand(),
             intakeRoller.intakeCommand(),
 
-            Commands.waitUntil(colorSensor::noteIntook),
+            // Commands.deadline(
+                // Commands.waitSeconds(1), // testing - check wait time             
+                Commands.waitUntil(colorSensor::noteIntook),
+            // ),
             
             // Move note back
             indexer.reverseIndexCommand(),
@@ -323,7 +326,7 @@ public class SuperSystem {
 
     public Command shootSequence2() {
         Command command = Commands.sequence(
-            intakePivot.moveToIntake(),
+            intakePivot.moveToNeutral(),
             Commands.waitUntil(intakePivot::hasReachedNeutral),
             // Prepare to shoot
             shooterPivot.moveToSpeaker(),

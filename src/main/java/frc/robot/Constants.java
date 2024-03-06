@@ -311,7 +311,7 @@ public final class Constants {
     public static final PrefDouble k4PieceHandoffPosition3 = new PrefDouble("4 Piece Handoff Position 3", -0.03);   
     public static final PrefDouble k6PieceHandoffPosition = new PrefDouble("6 Piece Handoff Position", -0.03); 
 
-    public static final PrefDouble kFullStowPosition = new PrefDouble("Pivot Full Stow Position", -0.1135);
+    public static final PrefDouble kFullStowPosition = new PrefDouble("Pivot Full Stow Position", -0.1058);
 
     public static final PrefDouble kPPivotMotor = new PrefDouble("kP Shooter Pivot", 0.16);
     public static final PrefDouble kIPivotMotor = new PrefDouble("kI Shooter Pivot", 0);
@@ -363,7 +363,8 @@ public final class Constants {
     public static final PrefDouble kPickupPosition   = new PrefDouble("Intake Pickup Position", -0.0864);
     public static final PrefDouble kNeutralPosition  = new PrefDouble("Intake Neutral Position", 0.12);
     public static final PrefDouble kStowPosition     = new PrefDouble("Intake Stow Position", 0.488);
-    public static final PrefDouble kVerticalPosition = new PrefDouble("Intake Vertical Position", 0.26);
+    public static final PrefDouble kVerticalPosition = new PrefDouble("Intake Vertical Position", 0.28);
+    // public static final PrefDouble kIntakeShootingPosition = new PrefDouble("Intake Shooting Position", 0);
 
     public static final PrefDouble kPivotOffset = new PrefDouble("Intake Pivot Offset", 0.535928515558213);
 
@@ -407,7 +408,7 @@ public final class Constants {
   }
     
   public static final class ColorSensorConstants {
-    public static final int inProximity = 75;
+    public static final int inProximity = 150;
   }
 
   public static final class ClimberConstants {

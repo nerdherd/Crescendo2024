@@ -217,6 +217,12 @@ public class IntakePivot extends SubsystemBase implements Reportable {
             && getTargetPosition() <= IntakeConstants.kNeutralPosition.get() + IntakeConstants.kPivotDeadband.get());
     }
 
+    // public boolean hasReachedIntakeShootingPosition() {
+    //     return (getPosition() <= IntakeConstants.kIntakeShootingPosition.get() + IntakeConstants.kPivotDeadband.get()
+    //         && getTargetPosition() <= IntakeConstants.kIntakeShootingPosition.get() + IntakeConstants.kPivotDeadband.get());
+    // }
+
+
     // Checks if the pivot is within deadband of the target pos
     public boolean atTargetPosition() {
         return hasReachedPosition(motionMagicRequest.Position);
@@ -267,6 +273,10 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     public Command moveToStow() {
         return setPositionCommand(IntakeConstants.kStowPosition.get());
     }
+
+    // public Command moveToIntakeShootingPosition() {
+    //     return setPositionCommand(IntakeConstants.kIntakeShootingPosition.get());
+    // }
 
     public Command moveToIntake() {
         return setPositionCommand(IntakeConstants.kPickupPosition.get());

@@ -68,9 +68,11 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         leftMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         leftMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
         leftMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
-        leftMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        leftMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
         leftMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         leftMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        leftMotorConfigs.CurrentLimits.StatorCurrentLimit = 80;
+        leftMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         leftMotorConfigs.Audio.AllowMusicDurDisable = true;
 
         TalonFXConfiguration rightMotorConfigs = new TalonFXConfiguration();
@@ -81,9 +83,11 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         rightMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         rightMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
         rightMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
-        rightMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        rightMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
         rightMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         rightMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        rightMotorConfigs.CurrentLimits.StatorCurrentLimit = 80;
+        rightMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         rightMotorConfigs.Audio.AllowMusicDurDisable = true;
 
         StatusCode leftResponse  = leftShooterConfigurator.apply(leftMotorConfigs);
@@ -161,7 +165,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         leftShooter.setControl(leftVelocityRequest);
         rightShooter.setControl(rightVelocityRequest);
         //     return;
-        // } 
+        // } \][]
 
         // leftVoltageRequest.Output = leftVelocityRequest.Velocity * 12 / 100.0;
         // rightVoltageRequest.Output = rightVelocityRequest.Velocity * 12 / 100.0;
