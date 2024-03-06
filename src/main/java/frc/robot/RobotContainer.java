@@ -32,6 +32,7 @@ import frc.robot.commands.autos.Basic4Piece;
 import frc.robot.commands.autos.Basic4PieceSeparated;
 import frc.robot.commands.autos.Basic6PieceSeparated;
 import frc.robot.commands.autos.Mid3Piece;
+import frc.robot.commands.autos.Mid3PiecePodiumShooting;
 import frc.robot.commands.autos.OneMeterSquareAuto;
 import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.commands.autos.Reliable4PieceWithVision;
@@ -109,10 +110,10 @@ public class RobotContainer {
     // Moved to teleop init
 
     DriverStation.reportWarning("Initalization complete", false);
-      NamedCommands.registerCommand("intakeBasic1", superSystem.intakeBasicHold());
-      NamedCommands.registerCommand("intakeBasic2", superSystem.stopIntaking());
-      NamedCommands.registerCommand("shootSequence2Far", superSystem.shootSequence2Far());
-      NamedCommands.registerCommand("shootSequence2", superSystem.shootSequence2());
+      // NamedCommands.registerCommand("intakeBasic1", superSystem.intakeBasicHold());
+      // NamedCommands.registerCommand("intakeBasic2", superSystem.stopIntaking());
+      // NamedCommands.registerCommand("shootSequence2Far", superSystem.shootSequence2Far());
+      // NamedCommands.registerCommand("shootSequence2", superSystem.shootSequence2());
 
   }
 
@@ -171,22 +172,22 @@ public class RobotContainer {
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
         () -> {
-          return (driverController.getR1Button() || driverController.getL1Button()); // Turn to angle
+          return (driverController.getR1Button() || driverController.getL1Button() || driverController.getL2Button()); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          if (driverController.getOptionsButton()) {
+          if (driverController.getL2Button()) {
             // 4 if red side, 7 if blue
             return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
           }
           if (driverController.getR1Button()) { //turn to amp
-            if (IsRedSide()){
+            if (!IsRedSide()){
               return 270.0;
             }
             return 90.0;
           }
           else if (driverController.getL1Button()) { //turn to speaker
-            return 180.0;
+            return 0.0;
           }
           return 0.0; 
         }
@@ -276,28 +277,34 @@ public class RobotContainer {
       .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
     commandDriverController.L2().whileTrue(
-      Commands.run(() -> apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive.getPose(), (IsRedSide() ? 4 : 7), 3))
+      Commands.repeatingSequence(
+        apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive::getPose, 0, 3),
+        Commands.waitSeconds(0.2)
+      )
     );
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
     commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
-                                      .whileFalse(superSystem.stow());
-    
+                                      .whileFalse(superSystem.stow()); // TODO: Can we try getting rid of this whileFalse line here **(field testing)**
     commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
+
     commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     
     commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
-                                  .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
+                                  .whileFalse(superSystem.stow());
 
-    commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
+    // commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot()); // Don't need?
+
     commandOperatorController.R2().whileTrue(superSystem.shootSequence2())
                                   .whileFalse(superSystem.stow());
     commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far())
                                   .whileFalse(superSystem.stow());
 
-    commandOperatorController.options().whileTrue(superSystem.stow());
-    commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
+    commandOperatorController.circle().whileTrue(superSystem.stow()); // TODO: Change this binding
+    // commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
+    commandOperatorController.options().whileTrue(superSystem.shootSequenceAdjustable(adjustmentCamera)) //
+                                  .whileFalse(superSystem.stow()); // TODO: Safety *Do nothing if April Tag is not seen*
   }
 
   public void configureBindings_test() {
@@ -401,12 +408,13 @@ public class RobotContainer {
     }
 
     if (paths.contains("Mid3Piece")) {
-      autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
+      // autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
+      autoChooser.addOption("Mid3Piece Podium Vision", new Mid3PiecePodiumShooting(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
     }
 
     if (paths.contains("Reliable4Piece")) {
       autoChooser.addOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
-      autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
+      // autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
     }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
@@ -420,6 +428,7 @@ public class RobotContainer {
     swerveDrive.initModuleShuffleboard(loggingLevel);
     apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
     noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+    adjustmentCamera.initShuffleboard(LOG_LEVEL.ALL);
 
     shooterRoller.initShuffleboard(loggingLevel);
     shooterPivot.initShuffleboard(loggingLevel);

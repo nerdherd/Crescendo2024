@@ -52,7 +52,7 @@ public class SuperSystem {
         Command command = Commands.sequence(
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootAmp(),
-            Commands.waitSeconds(0.5),
+            Commands.waitSeconds(0.3), // Was 0.5    3/3/24    Code Orange
             indexer.setEnabledCommand(true),
             indexer.indexCommand(),
             Commands.waitSeconds(1)
@@ -136,21 +136,27 @@ public class SuperSystem {
                 handoff(),
                 Commands.waitSeconds(1)
             ),
+            shooterRoller.setVelocityCommand(0, 0),
+            shooterRoller.setEnabledCommand(true),
             intakeRoller.setEnabledCommand(true),
             indexer.setEnabledCommand(true),
-            Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
             indexer.indexCommand(),
             intakeRoller.intakeCommand(),
+
             Commands.waitUntil(colorSensor::noteIntook),
+            
+            // Move note back
             indexer.reverseIndexCommand(),
-            Commands.waitSeconds(0.4),
-            Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", false)),
+            shooterRoller.setVelocityCommand(-10, -10),
+            Commands.waitSeconds(0.4), // Was 0.6   3/3/24   Code Orange
+
             intakeRoller.stopCommand(),
-            indexer.stopCommand()
+            indexer.stopCommand(),
+            shooterRoller.stopCommand()
         ).finallyDo(() -> {
-            SmartDashboard.putBoolean("Intaking", false);
             intakeRoller.stop();
             indexer.stop();
+            shooterRoller.stop();
         });
 
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
@@ -250,7 +256,7 @@ public class SuperSystem {
                 SmartDashboard.putBoolean("Intaking", false);
                 intakeRoller.stop();
                 indexer.stop();
-                shooterRoller.stop();
+                shooterRoller.setVelocity(0, 0);
             }
         );
 
@@ -323,7 +329,30 @@ public class SuperSystem {
             shooterPivot.moveToSpeaker(),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
-            Commands.waitSeconds(0.8),
+            Commands.waitSeconds(0.8), // Was 0.2     3/3/24     But 0.8   @Code Orange
+            
+            // Shoot
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            Commands.waitUntil(() -> false)
+        ).finallyDo(interrupted -> {
+            indexer.stop();
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
+        return command;
+    }
+
+    public Command shootSequenceAuto() {
+        Command command = Commands.sequence(
+            intakePivot.moveToIntake(),
+            Commands.waitUntil(intakePivot::hasReachedNeutral),
+            // Prepare to shoot
+            shooterPivot.moveToSpeakerAuto(),
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker(),
+            Commands.waitSeconds(0.2),
             
             // Shoot
             indexer.setEnabledCommand(true),
@@ -343,7 +372,7 @@ public class SuperSystem {
             intakePivot.moveToIntake(),
             Commands.waitUntil(intakePivot::hasReachedNeutral),
             // Prepare to shoot
-            shooterPivot.setPositionCommand(sva.getShooterAngle()),
+            Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
             Commands.waitSeconds(0.8),

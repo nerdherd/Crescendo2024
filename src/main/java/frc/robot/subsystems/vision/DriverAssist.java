@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import com.pathplanner.lib.util.GeometryUtil;
 
@@ -10,13 +11,16 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.TurnToAngleContinuous;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.util.NerdyMath;
@@ -98,9 +102,15 @@ public class DriverAssist implements Reportable{
         double allianceOffset = 90;
         double angle = NerdyMath.posMod(-Math.toDegrees(Math.atan2(xOffset, yOffset)) + allianceOffset, 360);
         if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
-            return GeometryUtil.flipFieldRotation(Rotation2d.fromDegrees(angle)).getDegrees();
+            return Rotation2d.fromDegrees(angle).getDegrees();
         }
-        return angle;
+        return (180 + angle) % 360;
+    }
+
+    public Command turnToTag(int ID, SwerveDrivetrain swerve) {
+        return Commands.sequence(
+            new TurnToAngleContinuous(() -> getTurnToSpecificTagAngle(ID), swerve)
+        );
     }
 
     public void TagDriving(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetSkew, int tagID, int maxSamples) {
@@ -497,6 +507,22 @@ public class DriverAssist implements Reportable{
             // ).until(() -> dataSampleCount >= minSamples )
         );
     }
+
+    public Command resetOdoPoseByVision(SwerveDrivetrain swerveDrive, Supplier<Pose2d> defaultPose, int apriltagId, 
+        int maxSamples) {
+        return Commands.sequence(
+            Commands.runOnce(() -> TagFound=false),
+            Commands.runOnce(() -> reset()),
+            Commands.run(
+                () -> resetOdoPose(swerveDrive, defaultPose.get(), apriltagId, maxSamples)
+            ).until(() -> dataSampleCount >= maxSamples)
+
+            // Commands.runOnce(() -> reset()),
+            // Commands.run(
+            //     () -> setRobotPoseByApriltag(drivetrain, tagID, resetToCurrentPose)
+            // ).until(() -> dataSampleCount >= minSamples )
+        );
+    }
     
 
     public Command resetOdoPoseWithConversion(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId, boolean forceToFind) {
@@ -576,6 +602,9 @@ public class DriverAssist implements Reportable{
     public Pose3d getCurrentPose3DVision()
     {
         currentPose = limelight.getBotPose3D();
+        if (RobotContainer.IsRedSide()) {
+            currentPose = new Pose3d(VisionConstants.fieldXOffset*2 - currentPose.getX(), VisionConstants.fieldYOffset*2 - currentPose.getY(), currentPose.getZ(), new Rotation3d(0, 0, currentPose.getRotation().getZ()));
+        }
         if(botPoseByVisionX != null)
         {
             botPoseByVisionX.setDouble(currentPose.getX());

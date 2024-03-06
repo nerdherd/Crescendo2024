@@ -5,11 +5,13 @@ import java.util.Optional;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelperUser;
@@ -32,8 +34,8 @@ public class ShooterVisionAdjustment implements Reportable{
     private GenericEntry goalDistance;
 
     //TODO: Test actual input and output data
-    private double[] distances = {0, 1, 2, 3}; // meters, from least to greatest
-    private double[] angles = {-0.092, -0.04, -0.0174, -0.00796}; // rotations
+    private double[] distances = {1.4257, 2.836, 3.5482, 3.6585}; // meters, from least to greatest
+    private double[] angles = {-0.064, -0.025, -0.003, 0.01}; // rotations
 
     public ShooterVisionAdjustment(String name, Limelight limelight) {
         this.name = name;
@@ -53,13 +55,20 @@ public class ShooterVisionAdjustment implements Reportable{
         if(targetFound != null)
             targetFound.setBoolean(limelight.hasValidTarget());
 
+        Pose3d pose = limelight.getBotPose3D();
+
+        if (RobotContainer.IsRedSide()) {
+            pose = new Pose3d(VisionConstants.fieldXOffset*2 - pose.getX(), VisionConstants.fieldYOffset*2 - pose.getY(), pose.getZ(), new Rotation3d(0, 0, pose.getRotation().getZ()));
+        }
+
         if(poseRobot != null)
-            poseRobot.setString(limelight.getBotPose3D().toString());
-        return limelight.getBotPose3D();
+            poseRobot.setString(pose.toString());
+
+        return pose;
     }
 
     public Pose3d getTagPose(int ID) {
-        if(ID == 7 || ID == 4) return null;
+        if(ID != 7 && ID != 4 && ID != 8 && ID != 3) return null;
         if(layout == null) return null;
         Optional<Pose3d> tagPose = layout.getTagPose(ID);
         if(tagPose.isEmpty()) return null;
@@ -88,12 +97,24 @@ public class ShooterVisionAdjustment implements Reportable{
 
         double distance = Math.sqrt(Math.pow(currentPose.getX() - tagPose.getX(), 2) + Math.pow(currentPose.getY() - tagPose.getY(), 2));
         if(distanceOffset != null) distanceOffset.setDouble(distance);
-        if(distance < distances[0] || distance > distances[distances.length - 1]) return -0.1;
+        SmartDashboard.putNumber("Distance", distance);
+        if(distance < distances[0]) {
+            SmartDashboard.putBoolean("Vision failed", true);
+            return -0.1;
+        }
+        if (distance > distances[distances.length - 1]) {
+            SmartDashboard.putBoolean("Vision failed", true);
+            return 0.01;
+        }
 
-        double output = angleEquation.getOutput(distance);
+        SmartDashboard.putBoolean("Visioni failed", false);
+
+        double output = NerdyMath.clamp(angleEquation.getOutput(distance), -0.1, 0.2);
+        SmartDashboard.putNumber("Vision Angle", output);
+        SmartDashboard.putNumber("Vision Distance", distance);
         if(goalAngle != null) 
             goalAngle.setDouble(output);
-        return NerdyMath.clamp(output, -0.1, 0.2);
+        return output;
     }
 
     @Override
@@ -119,22 +140,22 @@ public class ShooterVisionAdjustment implements Reportable{
             case MEDIUM:
 
             case MINIMAL:   
-                goalAngle = tab.add("Calculated Angle", false)
+                goalAngle = tab.add("Calculated Angle", 0)
                 .withPosition(2, 0)
                 .withSize(2, 1)
                 .getEntry();
 
-                distanceOffset = tab.add("Distance Offset", false)
+                distanceOffset = tab.add("Distance Offset", 0)
                 .withPosition(2, 1)
                 .withSize(2, 1)
                 .getEntry();
 
-                poseRobot = tab.add("Calculated Angle", false)
+                poseRobot = tab.add("Robot Pose", "null")
                 .withPosition(0, 2)
                 .withSize(3, 1)
                 .getEntry();
 
-                poseTag = tab.add("Distance Offset", false)
+                poseTag = tab.add("Tag Pose", "null")
                 .withPosition(0, 3)
                 .withSize(3, 1)
                 .getEntry();

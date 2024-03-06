@@ -175,6 +175,11 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
                 velocity, 
                 IndexerConstants.kIndexerMinVelocityRPS, 
                 IndexerConstants.kIndexerMaxVelocityRPS);
+        trapVelocityRequest.Velocity = 
+            NerdyMath.clamp(
+                velocity, 
+                IndexerConstants.kIndexerMinVelocityRPS, 
+                IndexerConstants.kIndexerMaxVelocityRPS);
     }
 
     public void setVelocity(double indexerVelocity, double trapVelocity) {
