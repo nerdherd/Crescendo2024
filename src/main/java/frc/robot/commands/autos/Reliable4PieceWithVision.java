@@ -49,7 +49,7 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
                 // Preload 
                 Commands.deadline(
                     Commands.waitSeconds(1.5),
-                    superSystem.shootSequence2()
+                    superSystem.shootSubwoofer()
                 ),
                 Commands.sequence(
                     superSystem.indexer.stopCommand(),
@@ -69,7 +69,7 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
                         Commands.waitSeconds(0.85),
                         Commands.deadline(
                             Commands.waitSeconds(0.6),
-                            superSystem.shootSequenceAuto()  
+                            superSystem.shootSubwooferAuto()  
                         ),
                         superSystem.indexer.stopCommand(),
                         superSystem.shooterRoller.setVelocityCommand(0, 0)

@@ -27,7 +27,7 @@ public class Basic4Piece extends SequentialCommandGroup {
             Commands.sequence(
                 Commands.deadline(
                     Commands.waitSeconds(1.5),
-                    superSystem.shootSequence2()
+                    superSystem.shootSubwoofer()
                 ),
                 Commands.sequence(
                     Commands.waitSeconds(2),

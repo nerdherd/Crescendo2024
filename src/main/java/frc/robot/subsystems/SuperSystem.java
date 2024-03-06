@@ -324,7 +324,7 @@ public class SuperSystem {
         return command;
     }
 
-    public Command shootSequence2() {
+    public Command shootSubwoofer() {
         Command command = Commands.sequence(
             intakePivot.moveToNeutral(),
             Commands.waitUntil(intakePivot::hasReachedNeutral),
@@ -347,7 +347,7 @@ public class SuperSystem {
         return command;
     }
 
-    public Command shootSequenceAuto() {
+    public Command shootSubwooferAuto() {
         Command command = Commands.sequence(
             intakePivot.moveToIntake(),
             Commands.waitUntil(intakePivot::hasReachedNeutral),
@@ -393,7 +393,7 @@ public class SuperSystem {
         return command;
     }
 
-    public Command shootSequence2Far() {
+    public Command shootPodium() {
         Command command = Commands.sequence(
             intakePivot.moveToNeutral(),
             // Prepare to shoot

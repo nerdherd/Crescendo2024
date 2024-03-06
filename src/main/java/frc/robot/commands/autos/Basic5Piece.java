@@ -35,7 +35,7 @@ public class Basic5Piece extends SequentialCommandGroup {
                     AutoBuilder.followPath(pathGroup.get(1)),
                     Commands.run(() -> superSystem.intakeBasic())
                 ),
-                superSystem.shootSequence2Far()
+                superSystem.shootPodium()
             )
             );
     }

@@ -38,8 +38,8 @@ public class Mid3PiecePodiumShooting extends SequentialCommandGroup {
 
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
-            Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
-            // Commands.runOnce(() -> swerve.resetInitPoseByVision()),
+            // Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
+            Commands.runOnce(() -> swerve.resetInitPoseByVision()),
             // Commands.runOnce(()-> tagCam.resetInitPoseByVision(swerve, startingPose, 4, 4)), // will add it back later
 
             // Commands.waitSeconds(2), // debug time
@@ -52,8 +52,10 @@ public class Mid3PiecePodiumShooting extends SequentialCommandGroup {
             // Preload
             Commands.deadline(
                 Commands.waitUntil(() -> !superSystem.colorSensor.noteIntook()).andThen(Commands.waitSeconds(0.2)),
-                superSystem.shootSequence2()
+                superSystem.shootSubwoofer()
             ),
+
+            
             Commands.sequence(
                 superSystem.indexer.stopCommand(),
                 superSystem.shooterRoller.setVelocityCommand(0, 0)

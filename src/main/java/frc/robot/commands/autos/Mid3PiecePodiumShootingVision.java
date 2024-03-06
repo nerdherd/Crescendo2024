@@ -60,7 +60,7 @@ public class Mid3PiecePodiumShootingVision extends SequentialCommandGroup {
             // Preload
             Commands.deadline(
                 Commands.waitUntil(() -> !superSystem.colorSensor.noteIntook()).andThen(Commands.waitSeconds(0.2)),
-                superSystem.shootSequence2()
+                superSystem.shootSubwoofer()
             ),
             Commands.sequence(
                 superSystem.indexer.stopCommand(),

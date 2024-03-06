@@ -33,7 +33,7 @@ public class Basic4PieceWithVision extends SequentialCommandGroup {
                 // Preload 
                 Commands.deadline(
                     Commands.waitSeconds(1.5),
-                    superSystem.shootSequence2()
+                    superSystem.shootSubwoofer()
                 ),
 
                 // Piece 1

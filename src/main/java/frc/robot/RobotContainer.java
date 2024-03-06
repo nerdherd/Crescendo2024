@@ -277,9 +277,9 @@ public class RobotContainer {
 
     // commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot()); // Don't need?
 
-    commandOperatorController.R2().whileTrue(superSystem.shootSequence2())
+    commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
                                   .whileFalse(superSystem.stow());
-    commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far())
+    commandOperatorController.R1().whileTrue(superSystem.shootPodium())
                                   .whileFalse(superSystem.stow());
 
     commandOperatorController.circle().whileTrue(superSystem.stow()); // TODO: Change this binding
@@ -316,9 +316,9 @@ public class RobotContainer {
                                   .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
 
     commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
-    commandOperatorController.R2().whileTrue(superSystem.shootSequence2())
+    commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
                                   .whileFalse(superSystem.stow());
-    commandOperatorController.R1().whileTrue(superSystem.shootSequence2Far())
+    commandOperatorController.R1().whileTrue(superSystem.shootPodium())
                                   .whileFalse(superSystem.stow());
 
     commandOperatorController.cross().whileTrue(superSystem.stow());

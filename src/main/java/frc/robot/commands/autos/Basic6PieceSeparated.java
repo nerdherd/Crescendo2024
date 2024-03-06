@@ -28,7 +28,7 @@ public class Basic6PieceSeparated extends SequentialCommandGroup {
             Commands.sequence(
                 Commands.deadline(
                     Commands.waitSeconds(1.5), // possibly change this time based on testing time
-                    superSystem.shootSequence2()
+                    superSystem.shootSubwoofer()
                 ),
                 Commands.deadline(
                     AutoBuilder.followPath((pathGroup.get(0))),

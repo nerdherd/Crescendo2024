@@ -36,7 +36,7 @@ public class Mid3Piece extends SequentialCommandGroup {
                 // Preload
                 Commands.deadline(
                     Commands.waitSeconds(1.5),
-                    superSystem.shootSequence2()
+                    superSystem.shootSubwoofer()
                 ),
                 // Grab Note
                 Commands.deadline(
