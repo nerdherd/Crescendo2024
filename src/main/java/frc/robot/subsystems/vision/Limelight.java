@@ -13,6 +13,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 import java.util.Arrays;
 
+import javax.lang.model.util.ElementScanner14;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -137,7 +139,8 @@ public class Limelight implements Reportable{
     private double m_LimelightDriveCommand = 0.0;
     private double m_LimelightSteerCommand = 0.0;
 
-    private final NetworkTableEntry m_botPos;
+    private final NetworkTableEntry m_botPosRed;
+    private final NetworkTableEntry m_botPosBlue;
     private final NetworkTableEntry m_camPos;
 
     public Limelight(String keyN)
@@ -152,13 +155,13 @@ public class Limelight implements Reportable{
         ta = table.getEntry("ta");
 
         // same as Pathfinder's Coordinate System
-        if(RobotContainer.IsRedSide())
+        //if(RobotContainer.IsRedSide())
         {
-            m_botPos = table.getEntry("botpose_wpired");
+            m_botPosRed = table.getEntry("botpose_wpired");
         }
-        else
+        //else
         {
-            m_botPos = table.getEntry("botpose_wpiblue");
+            m_botPosBlue = table.getEntry("botpose_wpiblue");
         }
 
         m_camPos = table.getEntry("targetpose_cameraspace");
@@ -182,18 +185,18 @@ public class Limelight implements Reportable{
     }
 
     public double getCamPoseSkew() {
-        double[] botPose = m_botPos.getDoubleArray(new double[6]);
+        //double[] botPose = m_botPos.getDoubleArray(new double[6]);
         double[] camPose = m_camPos.getDoubleArray(new double[6]);
 
-        if(botPose.length != 0) {
-            SmartDashboard.putNumber("x bot pose: ", botPose[0]);
-            SmartDashboard.putNumber("y bot pose: ", botPose[1]);
-            SmartDashboard.putNumber("z bot pose: ", botPose[2]);
+        // if(botPose.length != 0) {
+        //     SmartDashboard.putNumber("x bot pose: ", botPose[0]);
+        //     SmartDashboard.putNumber("y bot pose: ", botPose[1]);
+        //     SmartDashboard.putNumber("z bot pose: ", botPose[2]);
 
-            SmartDashboard.putNumber("BOT POSE 4: ", botPose[3]);
-            SmartDashboard.putNumber("BOT POSE 5: ", botPose[4]);
-            SmartDashboard.putNumber("BOT POSE 6: ", botPose[5]);
-        }
+        //     SmartDashboard.putNumber("BOT POSE 4: ", botPose[3]);
+        //     SmartDashboard.putNumber("BOT POSE 5: ", botPose[4]);
+        //     SmartDashboard.putNumber("BOT POSE 6: ", botPose[5]);
+        // }
 
         if(camPose.length >= 6) {
             SmartDashboard.putNumber("x tag pose: ", camPose[0]);
@@ -245,18 +248,23 @@ public class Limelight implements Reportable{
     }
 
 
-    public Pose2d getBotPose2D()
-    {
-        double[] botPose = m_botPos.getDoubleArray(new double[6]);
+    // public Pose2d getBotPose2D()
+    // {
+    //     double[] botPose = m_botPos.getDoubleArray(new double[6]);
 
-        Translation2d tran2d = new Translation2d(botPose[0], botPose[1]);
-        Rotation2d r2d = new Rotation2d(Units.degreesToRadians(botPose[5]));
-        return new Pose2d(tran2d, r2d);
-    }
+    //     Translation2d tran2d = new Translation2d(botPose[0], botPose[1]);
+    //     Rotation2d r2d = new Rotation2d(Units.degreesToRadians(botPose[5]));
+    //     return new Pose2d(tran2d, r2d);
+    // }
 
     public Pose3d getBotPose3D()
     {
-        double[] botPose = m_botPos.getDoubleArray(new double[6]);
+        double[] botPose;
+        if(RobotContainer.IsRedSide())
+        botPose = m_botPosRed.getDoubleArray(new double[6]);
+        else 
+        botPose = m_botPosBlue.getDoubleArray(new double[6]);
+
         return new Pose3d(
             new Translation3d(botPose[0], botPose[1], botPose[2]),
             new Rotation3d(Units.degreesToRadians(botPose[3]), Units.degreesToRadians(botPose[4]),
