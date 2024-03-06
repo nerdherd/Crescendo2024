@@ -29,22 +29,18 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
         //Pose2d startingPose = PathPlannerAuto.getStaringPoseFromAutoFile(autoPath);
 
         Pose2d startingPoseBlue = new Pose2d(1.33, 5.55, new Rotation2d());
-        Pose2d FirstPickPose2d;
-        Pose2d SecondPickPoseBlue = new Pose2d(2.5, 5.55, new Rotation2d());;
-        Pose2d ThirdPickPoseBlue = new Pose2d(2.65, 6.96, new Rotation2d(Units.degreesToRadians(26)));
+        Pose2d FirstPickPose2d = new Pose2d(2.53, 4.3, new Rotation2d(Units.degreesToRadians(-20)));
+        Pose2d SecondPickPoseBlue = new Pose2d(2.95, 5.55, new Rotation2d());
+        Pose2d ThirdPickPoseBlue = new Pose2d(2.85, 6.96, new Rotation2d(Units.degreesToRadians(26)));
         
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
-            //Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             // Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
-            //Commands.runOnce(() -> swerve.resetInitPoseByVision()),
-            
-            driverAssist.InitPoseByVision(swerve, startingPoseBlue, 0, 50),
-            // Commands.either(
-            //     driverAssist.InitPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 50), 
-            //     driverAssist.InitPoseByVision(swerve, startingPoseBlue, 0, 50), 
-            //     RobotContainer::IsRedSide
-            // ),
+            Commands.either(
+                driverAssist.InitPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 10), 
+                driverAssist.InitPoseByVision(swerve, startingPoseBlue, 0, 10), 
+                RobotContainer::IsRedSide
+            ),
 
             Commands.sequence(
                 superSystem.intakePivot.setEnabledCommand(true),
@@ -55,103 +51,92 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
                     Commands.waitSeconds(1.5),
                     superSystem.shootSequence2()
                 ),
+                Commands.sequence(
+                    superSystem.indexer.stopCommand(),
+                    superSystem.shooterRoller.setVelocityCommand(0, 0)
+                ), 
 
                 // Piece 1
                 Commands.deadline(
+                    Commands.waitSeconds(1.75),
                     AutoBuilder.followPath(pathGroup.get(0)),
-                    superSystem.intakeBasicHold()
+                    superSystem.intakeUntilSensed()
                 ),
+
                 Commands.parallel(
-                    PathCurrentToDest(startingPoseBlue),
-                    // driveToPose(startingPoseBlue),
+                    AutoBuilder.followPath(pathGroup.get(1)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
-                        superSystem.backupIndexer(),
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.85),
                         Commands.deadline(
-                            Commands.waitSeconds(1),
-                            superSystem.shootSequence2()
-                        )
+                            Commands.waitSeconds(0.6),
+                            superSystem.shootSequenceAuto()  
+                        ),
+                        superSystem.indexer.stopCommand(),
+                        superSystem.shooterRoller.setVelocityCommand(0, 0)
                     )
                 ),
+
                 Commands.either(
-                    driverAssist.resetOdoPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 100), //change april tag id ltr
-                    driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 100), //change april tag id ltr
+                    driverAssist.resetOdoPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 20), 
+                    driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 20), 
                     RobotContainer::IsRedSide
                 ),
-                
-                Commands.waitSeconds(0.5),
 
+/* 
                 // Piece 2
-                // TODO: Change AprilTag ID based on alliance
                 Commands.deadline(
-                    PathCurrentToDest(SecondPickPoseBlue),
-                    // driveToPose(SecondPickPoseBlue),                    
-                    superSystem.intakeBasicHold()
+                    Commands.waitSeconds(1.75),
+                    AutoBuilder.followPath(pathGroup.get(2)),
+                    superSystem.intakeUntilSensed()
                 ),
                 Commands.parallel(
-                    PathCurrentToDest(startingPoseBlue),
-                    // driveToPose(startingPoseBlue),
+                    AutoBuilder.followPath(pathGroup.get(3)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
-                        superSystem.backupIndexer(),
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.85),
                         Commands.deadline(
-                            Commands.waitSeconds(1),
-                            superSystem.shootSequence2()
-                        )
+                            Commands.waitSeconds(0.6),
+                            superSystem.shootSequenceAuto()  
+                        ),
+                        superSystem.indexer.stopCommand(),
+                        superSystem.shooterRoller.setVelocityCommand(0, 0)
                     )
                 ),
 
                 Commands.either(
-                    driverAssist.resetOdoPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 100), //change april tag id ltr
-                    driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 100), //change april tag id ltr
+                    driverAssist.resetOdoPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPoseBlue), 0, 20),
+                    driverAssist.resetOdoPoseByVision(swerve, startingPoseBlue, 0, 20), 
                     RobotContainer::IsRedSide
-                ),                
-                Commands.waitSeconds(0.5),
+                ),     
+                
 
                 // Piece 3
                 Commands.deadline(
-                    PathCurrentToDest(ThirdPickPoseBlue),
-                    // driveToPose(ThirdPickPoseBlue),
-                    superSystem.intakeBasicHold()
+                    Commands.waitSeconds(1.75),
+                    AutoBuilder.followPath(pathGroup.get(4)),
+                    superSystem.intakeUntilSensed()
                 ),
                 Commands.parallel(
-                    PathCurrentToDest(startingPoseBlue),
-                    // driveToPose(startingPoseBlue),
+                    AutoBuilder.followPath(pathGroup.get(5)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
-                        superSystem.backupIndexer(),
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.85),
                         Commands.deadline(
                             Commands.waitSeconds(1),
-                            superSystem.shootSequence2()
-                        )
+                            superSystem.shootSequenceAuto()  
+                        ),
+                        superSystem.indexer.stopCommand(),
+                        superSystem.shooterRoller.setVelocityCommand(0, 0)
                     )
-                ),
-
-                // Leave towards mid
-                /*Commands.parallel(
-                    AutoBuilder.followPath(pathGroup.get(6)),
-                    superSystem.stow()
                 ),*/
 
                 Commands.none()
             )
-            );
+        );
     }
 
     PathConstraints pathcons = new PathConstraints(
         3, 3, 
         Units.degreesToRadians(180), Units.degreesToRadians(360)
     );
-
-    public Command PathCurrentToDest(Pose2d destPoseInBlue) {
-        if (RobotContainer.IsRedSide()) {
-            destPoseInBlue = (GeometryUtil.flipFieldPose(destPoseInBlue));
-        }
-        return AutoBuilder.pathfindToPose(destPoseInBlue, pathcons);
-    }
 
     public Command driveToPose(Pose2d destPoseInBlue) {
         return Commands.either(

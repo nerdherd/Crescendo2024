@@ -185,17 +185,15 @@ public class DriverAssist implements Reportable{
     }
 
     int dataSampleCount = 0;
-    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples, Boolean setOdo) {
+    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples) {
         return Commands.sequence(
             Commands.runOnce(() -> reset()),
             Commands.run(
-                () -> TagAimingRotation(drivetrain, tagID, maxSamples, setOdo)
+                () -> TagAimingRotation(drivetrain, tagID, maxSamples)
             ).until(() -> dataSampleCount >= minSamples && Math.abs(calculatedAngledPower) <= 0.1),
 
             Commands.runOnce(() -> reset()),
-            Commands.run(
-                () -> setRobotPoseByApriltag(drivetrain, tagID, setOdo)
-            ).until(() -> dataSampleCount >= minSamples )
+            resetOdoPoseByVision(drivetrain, tagID, maxSamples)
         );
     }
 
@@ -211,7 +209,7 @@ public class DriverAssist implements Reportable{
         return ((MaxTxIn-MinTxIn)/(MaxTA-MinTA))*(currentTa-MinTA) + MinTxIn;
     }
     PIDController pidTxRotation = new PIDController(0.1, 0, 0); // todo, tuning pls.
-    public void TagAimingRotation(SwerveDrivetrain swerveDrive, int tagID, int maxSamples, boolean setodo) {
+    public void TagAimingRotation(SwerveDrivetrain swerveDrive, int tagID, int maxSamples) {
         // make sure to reset before or after calling this function
         // make sure the cross is at the center!!! for tx
         // tagID == 0 means: don't care of tag's id, be careful for multi-tags location
@@ -281,7 +279,7 @@ public class DriverAssist implements Reportable{
         }
         else
         {
-            TagAimingRotation(swerveDrive, 0, 100, false);
+            TagAimingRotation(swerveDrive, 0, 100);
         }
     }
 
@@ -412,6 +410,9 @@ public class DriverAssist implements Reportable{
             if( (limelight.getAprilTagID() == apriltagId) || apriltagId == 0)
             {
                 Pose2d p = getCurrentPose3DVision().toPose2d();
+                
+                // please add protection here!!!!!!
+
                 swerveDrive.getImu().setOffset(p.getRotation().getDegrees());
                 //swerveDrive.resetOdometryWithAlliance(p);
                 swerveDrive.resetOdometry(p);
@@ -489,7 +490,9 @@ public class DriverAssist implements Reportable{
 
         dataSampleCount++;
         if(dataSampleCount >= maxSamples)
-            swerveDrive.resetOdometry(defaultPose);
+            if(defaultPose != null)
+                swerveDrive.resetOdometry(defaultPose);
+            else{} // nothing to reset, use whatever drive has currently. Protection may be needed!!!
     }
 
     public Command resetOdoPoseByVision(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId, 
@@ -521,6 +524,17 @@ public class DriverAssist implements Reportable{
             // Commands.run(
             //     () -> setRobotPoseByApriltag(drivetrain, tagID, resetToCurrentPose)
             // ).until(() -> dataSampleCount >= minSamples )
+        );
+    }
+
+    public Command resetOdoPoseByVision(SwerveDrivetrain swerveDrive, int apriltagId, 
+        int maxSamples) {
+        return Commands.sequence(
+            Commands.runOnce(() -> TagFound=false),
+            Commands.runOnce(() -> reset()),
+            Commands.run(
+                () -> resetOdoPose(swerveDrive, null, apriltagId, maxSamples)
+            ).until(() -> dataSampleCount >= maxSamples)
         );
     }
     

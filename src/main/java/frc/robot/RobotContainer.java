@@ -317,7 +317,7 @@ public class RobotContainer {
     //TODO: Make sure April Tag ID is matching
     commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 0.8, 0, 0, 7, 100)))
       .whileFalse(Commands.run(() -> apriltagCamera.reset())); //1.8, 0, 0, 7
-    commandDriverController.L2().whileTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100, true));
+    commandDriverController.L2().toggleOnTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100));
     // commandDriverController.R1().whileTrue(Commands.run(() -> new TurnToAngle(apriltagCamera.getTurnToTagAngle(7), swerveDrive)));
     commandDriverController.R2().whileTrue(noteCamera.turnToNoteCommand(swerveDrive, 0, 0, 0));
 
