@@ -414,7 +414,7 @@ public final class Constants {
   public static final class ClimberConstants {
     public static final int kClimberMotorID = 0;
     public static final double kClimberNeutralDeadband = 0.05;
-    public static final double kClimberOutput = 0;
+    public static final double kClimberOutput = 2;
   }
 
   public static final class SuperStructureConstants {

@@ -327,6 +327,9 @@ public class RobotContainer {
     commandOperatorController.cross().whileTrue(superSystem.stow());
 
     commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
+
+    commandOperatorController.povDown().onTrue(superSystem.climber.climbCommand())
+                                       .onFalse(superSystem.climber.stopCommand());
   }
 
   private void initAutoChoosers() {
