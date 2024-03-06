@@ -6,8 +6,6 @@ package frc.robot;
 
 import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -15,7 +13,6 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -23,25 +20,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
-import frc.robot.commands.TurnToAngle;
-import frc.robot.commands.autos.Basic4PieceWithVision;
-import frc.robot.commands.autos.AutoMidNotes;
-import frc.robot.commands.autos.Basic2Piece;
 import frc.robot.commands.autos.Basic3Piece;
-import frc.robot.commands.autos.Basic4Piece;
-import frc.robot.commands.autos.Basic4PieceSeparated;
-import frc.robot.commands.autos.Basic6PieceSeparated;
-import frc.robot.commands.autos.Mid3Piece;
 import frc.robot.commands.autos.Mid3PiecePodiumShooting;
-import frc.robot.commands.autos.OneMeterSquareAuto;
 import frc.robot.commands.autos.Reliable4Piece;
-import frc.robot.commands.autos.Reliable4PieceWithVision;
-import frc.robot.commands.autos.RotateSquareAuto;
-import frc.robot.commands.autos.Test2M;
-import frc.robot.commands.autos.Test2MBack;
-import frc.robot.commands.autos.ThreeMeterSquareAuto;
-import frc.robot.commands.autos.TwoMeterSquareAuto;
-import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.IndexerV2;
 import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.IntakeRoller;
@@ -349,27 +330,6 @@ public class RobotContainer {
   	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands.none());
     
-    if (paths.contains("Basic2Piece")) {
-      autoChooser.addOption("Basic2Piece", new Basic2Piece(swerveDrive, "Basic2Piece", superSystem));
-    }
-
-    if (paths.contains("Basic2PiecePos2")) {
-      autoChooser.addOption("Basic2PiecePos2", new Basic2Piece(swerveDrive, "Basic2PiecePos2", superSystem));
-    }
-
-    if (paths.contains("Basic3Piece")) {
-      autoChooser.addOption("Basic3Piece", new Basic3Piece(swerveDrive, "Basic3Piece", superSystem));
-    }
-
-    if (paths.contains("Basic4Piece")) {
-      autoChooser.addOption("Basic4Piece", new Basic4Piece(swerveDrive, "Basic4Piece", superSystem));
-    }
-
-    if (paths.contains("Basic4PieceSeparated")) {
-      autoChooser.addOption("Basic4PieceWithVision", new Basic4PieceWithVision(swerveDrive, "Basic4PieceSeparated", superSystem, apriltagCamera));
-      autoChooser.setDefaultOption("Basic4PieceSeparated", new Basic4PieceSeparated(swerveDrive, "Basic4PieceSeparated", superSystem));
-    }
-
     // if (paths.contains("Basic5Piece")) {
     //   autoChooser.addOption("Basic5Piece", new Basic5Piece(swerveDrive, "Basic5Piece", superSystem));
     // }
@@ -381,31 +341,25 @@ public class RobotContainer {
     if (paths.contains("Basic3PieceV2")) {
       autoChooser.addOption("Basic3PieceV2", new Basic3Piece(swerveDrive, "Basic3PieceV2", superSystem));
     }
-    if (paths.contains("Test2M")) {
-      autoChooser.addOption("Test2M", new Test2M(swerveDrive));
-    }
-    if (paths.contains("Test2MBack")) {
-      autoChooser.addOption("Test2MBack", new Test2MBack(swerveDrive));
-    }
-    if (paths.contains("Basic6PieceSeparated")) {
-      autoChooser.addOption("Basic6PieceSeparated", new Basic6PieceSeparated(swerveDrive, "Basic6PieceSeparated", superSystem));
-    }
-    if (paths.contains("OneMeterSquareAuto")) {
-      autoChooser.addOption("OneMeterSquareAuto", new OneMeterSquareAuto(swerveDrive, "OneMeterSquareAuto"));
-    }
-    if (paths.contains("TwoMeterSquareAuto")) {
-      autoChooser.addOption("TwoMeterSquareAuto", new TwoMeterSquareAuto(swerveDrive, "TwoMeterSquareAuto"));
-    }
-    if (paths.contains("ThreeMeterSquareAuto")) {
-      autoChooser.addOption("ThreeMeterSquareAuto", new ThreeMeterSquareAuto(swerveDrive, "ThreeMeterSquareAuto"));
-    }
-    if (paths.contains("RotateSquareAuto")) {
-      autoChooser.addOption("RotateSquareAuto", new RotateSquareAuto(swerveDrive, "RotateSquareAuto"));
-    }
-    
-    if (paths.contains("Mid4Notes")) {
-      autoChooser.addOption("Mid4Notes with Vision", new AutoMidNotes(swerveDrive, "Mid4Notes", superSystem, noteCamera, apriltagCamera, superSystem.colorSensor));
-    }
+    // Testing/characterization autos
+    // if (paths.contains("Test2M")) {
+    //   autoChooser.addOption("Test2M", new Test2M(swerveDrive));
+    // }
+    // if (paths.contains("Test2MBack")) {
+    //   autoChooser.addOption("Test2MBack", new Test2MBack(swerveDrive));
+    // }
+    // if (paths.contains("OneMeterSquareAuto")) {
+    //   autoChooser.addOption("OneMeterSquareAuto", new OneMeterSquareAuto(swerveDrive, "OneMeterSquareAuto"));
+    // }
+    // if (paths.contains("TwoMeterSquareAuto")) {
+    //   autoChooser.addOption("TwoMeterSquareAuto", new TwoMeterSquareAuto(swerveDrive, "TwoMeterSquareAuto"));
+    // }
+    // if (paths.contains("ThreeMeterSquareAuto")) {
+    //   autoChooser.addOption("ThreeMeterSquareAuto", new ThreeMeterSquareAuto(swerveDrive, "ThreeMeterSquareAuto"));
+    // }
+    // if (paths.contains("RotateSquareAuto")) {
+    //   autoChooser.addOption("RotateSquareAuto", new RotateSquareAuto(swerveDrive, "RotateSquareAuto"));
+    // }
 
     if (paths.contains("Mid3Piece")) {
       // autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
