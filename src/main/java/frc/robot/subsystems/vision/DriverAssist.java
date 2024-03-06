@@ -412,7 +412,7 @@ public class DriverAssist implements Reportable{
                 Pose2d p = getCurrentPose3DVision().toPose2d();
                 
                 // please add protection here!!!!!!
-
+                swerveDrive.getImu().zeroHeading();
                 swerveDrive.getImu().setOffset(p.getRotation().getDegrees());
                 //swerveDrive.resetOdometryWithAlliance(p);
                 swerveDrive.resetOdometry(p);

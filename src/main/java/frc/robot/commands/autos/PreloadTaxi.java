@@ -11,27 +11,38 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
-public class Basic3PieceV2 extends SequentialCommandGroup {
-    public Basic3PieceV2(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem) {     
-        
-        // Use the PathPlannerAuto class to get a path group from an auto
+public class PreloadTaxi extends SequentialCommandGroup {
+    public PreloadTaxi(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem) {     
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
-
-        // You can also get the starting pose from the auto. Only call this if the auto actually has a starting pose.
         Pose2d startingPose = PathPlannerAuto.getStaringPoseFromAutoFile(autoPath);
 
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
+            
+            // Preload
             Commands.deadline(
+                Commands.waitUntil(() -> !superSystem.colorSensor.noteIntook()).andThen(Commands.waitSeconds(0.2)),
+                superSystem.shootSubwoofer()
+            ),
+
+            // Stop shooter and indexer
+            Commands.parallel(
+                superSystem.indexer.stopCommand(),
+                superSystem.shooterRoller.stopCommand()
+            ), 
+            
+            // Leave
+            Commands.deadline(
+                AutoBuilder.followPath(pathGroup.get(0)),
+                Commands.waitSeconds(4.5),
                 Commands.sequence(
+                    superSystem.stow(),
                     Commands.waitSeconds(2),
-                    AutoBuilder.followPath((pathGroup.get(0))),
-                    Commands.waitSeconds(1)
-                ),
-                superSystem.intakeDirectShoot()
+                    superSystem.intakeUntilSensed()
+                )
             )
-            );
+        );
     }
 }

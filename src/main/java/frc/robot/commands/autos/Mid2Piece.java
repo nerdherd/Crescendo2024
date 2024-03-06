@@ -21,8 +21,8 @@ import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 
-public class Mid3Piece extends SequentialCommandGroup {
-    public Mid3Piece(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem, DriverAssist driverAssist, ShooterVisionAdjustment sva) {     
+public class Mid2Piece extends SequentialCommandGroup {
+    public Mid2Piece(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem, DriverAssist driverAssist, ShooterVisionAdjustment sva) {     
         
         // Use the PathPlannerAuto class to get a path group from an auto
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
@@ -104,58 +104,6 @@ public class Mid3Piece extends SequentialCommandGroup {
             
             // Stop shooter and indexer
             Commands.parallel(
-                superSystem.indexer.stopCommand(),
-                superSystem.shooterRoller.stopCommand()
-            ), 
-
-            /************************************ NOTE TWO **************************************/
-
-            // Grab note
-            Commands.deadline(
-                AutoBuilder.followPath(pathGroup.get(2)),
-                Commands.waitSeconds(4.5),
-                Commands.sequence(
-                    superSystem.stow(),
-                    Commands.waitSeconds(2),
-                    superSystem.intakeUntilSensed()
-                )
-            ),
-            
-            // Come back
-            Commands.deadline(
-                AutoBuilder.followPath(pathGroup.get(3)),
-                superSystem.stow(),
-                Commands.waitSeconds(4)
-            ),
-
-            // Reset odometry
-            Commands.either(
-                driverAssist.resetOdoPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPose), 0, 100), //change april tag id ltr
-                driverAssist.resetOdoPoseByVision(swerve, startingPose, 0, 100), //change april tag id ltr
-                RobotContainer::IsRedSide
-            ),
-            
-            // Make sure swerve is in the right pos
-            driveToPose(podiumPoseBlue),  
-
-            // Turn towards tag                      
-            Commands.deadline(
-                Commands.waitSeconds(2),
-                Commands.either(
-                    driverAssist.turnToTag(4, swerve),
-                    driverAssist.turnToTag(7, swerve),
-                    RobotContainer::IsRedSide 
-                )
-            ),
-
-            // Shoot
-            Commands.deadline(
-                Commands.waitSeconds(1.2),
-                superSystem.shootSequenceAdjustable(sva)
-            ),
-
-            // Stop shooter and indexer
-            Commands.sequence(
                 superSystem.indexer.stopCommand(),
                 superSystem.shooterRoller.stopCommand()
             ), 

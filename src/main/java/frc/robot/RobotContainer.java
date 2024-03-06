@@ -20,8 +20,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
-import frc.robot.commands.autos.Basic3Piece;
-import frc.robot.commands.autos.Mid3PiecePodiumShooting;
+import frc.robot.commands.autos.Mid3PiecePathOnly;
+import frc.robot.commands.autos.Mid2Piece;
+import frc.robot.commands.autos.Mid3Piece;
+import frc.robot.commands.autos.Mid3PieceDeadReckoning;
+import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.subsystems.IndexerV2;
 import frc.robot.subsystems.IntakePivot;
@@ -330,21 +333,11 @@ public class RobotContainer {
   	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands.none());
     
-    // if (paths.contains("Basic5Piece")) {
-    //   autoChooser.addOption("Basic5Piece", new Basic5Piece(swerveDrive, "Basic5Piece", superSystem));
-    // }
-
-    if (paths.contains("Basic3PiecePos2")) {
-      autoChooser.addOption("Basic3PiecePos2", new Basic3Piece(swerveDrive, "Basic3PiecePos2", superSystem));
-    }
-
-    if (paths.contains("Basic3PieceV2")) {
-      autoChooser.addOption("Basic3PieceV2", new Basic3Piece(swerveDrive, "Basic3PieceV2", superSystem));
-    }
     // Testing/characterization autos
-    // if (paths.contains("Test2M")) {
-    //   autoChooser.addOption("Test2M", new Test2M(swerveDrive));
-    // }
+    if (paths.contains("Test2M")) {
+      // autoChooser.addOption("Test2M", new Test2M(swerveDrive));
+      autoChooser.addOption("Preload Taxi Straight", new PreloadTaxi(swerveDrive, "Test2M", superSystem));
+    }
     // if (paths.contains("Test2MBack")) {
     //   autoChooser.addOption("Test2MBack", new Test2MBack(swerveDrive));
     // }
@@ -361,14 +354,19 @@ public class RobotContainer {
     //   autoChooser.addOption("RotateSquareAuto", new RotateSquareAuto(swerveDrive, "RotateSquareAuto"));
     // }
 
+    // Note to self: IMU may not be facing the right way at the end of the auto
     if (paths.contains("Mid3Piece")) {
-      // autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
-      autoChooser.addOption("Mid3Piece Podium Vision", new Mid3PiecePodiumShooting(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
+      autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
+      autoChooser.addOption("Mid3Piece Path Only", new Mid3PiecePathOnly(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
+      autoChooser.addOption("Mid3Piece Dead Reckoning", new Mid3PieceDeadReckoning(swerveDrive, "Mid3Piece", superSystem));
+      autoChooser.addOption("Mid2Piece", new Mid2Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
+      autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, "Mid3Piece", superSystem));
     }
 
     if (paths.contains("Reliable4Piece")) {
       autoChooser.addOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
       // autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
+      autoChooser.addOption("Preload Taxi Amp Side", new PreloadTaxi(swerveDrive, "Reliable4Piece", superSystem));
     }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
