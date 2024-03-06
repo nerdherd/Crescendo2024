@@ -602,9 +602,9 @@ public class DriverAssist implements Reportable{
     public Pose3d getCurrentPose3DVision()
     {
         currentPose = limelight.getBotPose3D();
-        if (RobotContainer.IsRedSide()) {
-            currentPose = new Pose3d(VisionConstants.fieldXOffset*2 - currentPose.getX(), VisionConstants.fieldYOffset*2 - currentPose.getY(), currentPose.getZ(), new Rotation3d(0, 0, currentPose.getRotation().getZ()));
-        }
+        // if (RobotContainer.IsRedSide()) {
+        //     currentPose = new Pose3d(VisionConstants.fieldXOffset*2 - currentPose.getX(), VisionConstants.fieldYOffset*2 - currentPose.getY(), currentPose.getZ(), new Rotation3d(0, 0, currentPose.getRotation().getZ()));
+        // }
         if(botPoseByVisionX != null)
         {
             botPoseByVisionX.setDouble(currentPose.getX());
