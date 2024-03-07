@@ -53,7 +53,7 @@ public class Reliable4Piece extends SequentialCommandGroup {
                     Commands.sequence(
                         Commands.waitSeconds(0.85),
                         Commands.deadline(
-                            Commands.waitSeconds(0.6),
+                            Commands.waitSeconds(1.2),
                             superSystem.shootSubwooferAuto()  
                         ),
                         superSystem.indexer.stopCommand(),
@@ -72,7 +72,7 @@ public class Reliable4Piece extends SequentialCommandGroup {
                     Commands.sequence(
                         Commands.waitSeconds(0.85),
                         Commands.deadline(
-                            Commands.waitSeconds(0.6),
+                            Commands.waitSeconds(1.2),
                             superSystem.shootSubwooferAuto()  
                         ),
                         superSystem.indexer.stopCommand(),
@@ -91,7 +91,7 @@ public class Reliable4Piece extends SequentialCommandGroup {
                     Commands.sequence(
                         Commands.waitSeconds(0.85),
                         Commands.deadline(
-                            Commands.waitSeconds(1),
+                            Commands.waitSeconds(1.2),
                             superSystem.shootSubwooferAuto()  
                         ),
                         superSystem.indexer.stopCommand(),

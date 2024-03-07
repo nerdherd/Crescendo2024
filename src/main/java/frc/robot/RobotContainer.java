@@ -118,10 +118,10 @@ public class RobotContainer {
           intakePivot.incrementPosition(
             Math.signum(
               NerdyMath.deadband(
-              operatorController.getRightY(), 
+              -operatorController.getRightY(), 
               -ControllerConstants.kDeadband, 
               ControllerConstants.kDeadband)
-            ) / 4000), // (20 / x) revolutions per second
+            ) / 400), // (20 / x) revolutions per second
                        // 0.005 rev/seconds @ x = 4000
         intakePivot
       ));
@@ -132,7 +132,7 @@ public class RobotContainer {
           shooterPivot.incrementPosition(
             Math.signum(
               NerdyMath.deadband(
-                operatorController.getLeftY(), //0.5 rev/second 
+                -operatorController.getLeftY(), //0.5 rev/second 
                 -ControllerConstants.kDeadband, 
                 ControllerConstants.kDeadband)
             ) / 4000); // (20 / x) revolutions per second
@@ -156,7 +156,7 @@ public class RobotContainer {
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
         () -> {
-          return (driverController.getR1Button() || driverController.getL1Button() || driverController.getL2Button()); // Turn to angle
+          return (driverController.getR1Button() || driverController.getL1Button() || driverController.getL2Button() || driverController.getCircleButton()); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
@@ -164,7 +164,7 @@ public class RobotContainer {
             // 4 if red side, 7 if blue
             return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
           }
-          if (driverController.getR1Button()) { //turn to amp
+          if (driverController.getCircleButton()) { //turn to amp
             if (!IsRedSide()){
               return 270.0;
             }
@@ -172,6 +172,9 @@ public class RobotContainer {
           }
           else if (driverController.getL1Button()) { //turn to speaker
             return 0.0;
+          }
+          else if (driverController.getR1Button()) {
+            return 180.0;
           }
           return 0.0; 
         }
@@ -278,13 +281,13 @@ public class RobotContainer {
     commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
                                   .whileFalse(superSystem.stow());
 
-    // commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot()); // Don't need?
-
     commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
                                   .whileFalse(superSystem.stow());
     commandOperatorController.R1().whileTrue(superSystem.shootPodium())
                                   .whileFalse(superSystem.stow());
 
+    commandOperatorController.touchpad().whileTrue(superSystem.panicButton())
+                                        .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
     commandOperatorController.circle().whileTrue(superSystem.stow()); // TODO: Change this binding
     // commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
     commandOperatorController.options().whileTrue(superSystem.shootSequenceAdjustable(adjustmentCamera)) //
@@ -327,9 +330,6 @@ public class RobotContainer {
     commandOperatorController.cross().whileTrue(superSystem.stow());
 
     commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
-
-    commandOperatorController.povDown().onTrue(superSystem.climber.climbCommand())
-                                       .onFalse(superSystem.climber.stopCommand());
   }
 
   private void initAutoChoosers() {

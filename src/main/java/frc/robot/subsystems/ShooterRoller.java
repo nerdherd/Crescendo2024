@@ -71,7 +71,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         leftMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
         leftMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         leftMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
-        leftMotorConfigs.CurrentLimits.StatorCurrentLimit = 80;
+        leftMotorConfigs.CurrentLimits.StatorCurrentLimit = 100;
         leftMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         leftMotorConfigs.Audio.AllowMusicDurDisable = true;
 
@@ -86,7 +86,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         rightMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
         rightMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         rightMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
-        rightMotorConfigs.CurrentLimits.StatorCurrentLimit = 80;
+        rightMotorConfigs.CurrentLimits.StatorCurrentLimit = 100;
         rightMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         rightMotorConfigs.Audio.AllowMusicDurDisable = true;
 
@@ -317,6 +317,14 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
                     incrementRightVelocityCommand(increment)
                 )
             );
+    }
+
+    public boolean atVelocity(double velocity) {
+        return leftShooter.getVelocity().getValue() > velocity;
+    }
+
+    public boolean atTargetVelocity() {
+        return atVelocity(leftVelocityRequest.Velocity);
     }
 
     public Command rampVelocity(double initialVelocity, double finalVelocity, double rampTimeSeconds) {

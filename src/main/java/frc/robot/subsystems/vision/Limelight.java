@@ -260,9 +260,9 @@ public class Limelight implements Reportable{
     public Pose3d getBotPose3D()
     {
         double[] botPose;
-        if(RobotContainer.IsRedSide())
-        botPose = m_botPosRed.getDoubleArray(new double[6]);
-        else 
+        // if(RobotContainer.IsRedSide())
+        // botPose = m_botPosRed.getDoubleArray(new double[6]);
+        // else 
         botPose = m_botPosBlue.getDoubleArray(new double[6]);
 
         return new Pose3d(

@@ -99,6 +99,28 @@ public class SuperSystem {
         return command;
     }
 
+    public Command panicButton() {
+        Command command = Commands.sequence(
+            intakePivot.moveToIntake(),
+            Commands.waitSeconds(0.2),
+            shooterPivot.setPositionCommand(0.093),
+            shooterRoller.setVelocityCommand(-20),
+            shooterRoller.setEnabledCommand(true),
+            indexer.indexCommand(),
+            indexer.setEnabledCommand(true),
+            Commands.waitUntil(() -> false)
+        ).finallyDo(
+            () -> {
+                shooterRoller.stop();
+                indexer.stop();
+            }
+        );
+
+        command.addRequirements(shooterPivot, intakePivot, indexer, shooterRoller);
+
+        return command;
+    }
+
     public Command backupIndexer() {
         Command command = Commands.sequence(
             indexer.setEnabledCommand(true),
@@ -355,7 +377,10 @@ public class SuperSystem {
             shooterPivot.moveToSpeakerAuto(),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
-            Commands.waitSeconds(0.2),
+            Commands.deadline(
+                Commands.waitSeconds(0.6),
+                Commands.waitUntil(shooterRoller::atTargetVelocity)
+            ),
             
             // Shoot
             indexer.setEnabledCommand(true),

@@ -408,11 +408,11 @@ public final class Constants {
   }
     
   public static final class ColorSensorConstants {
-    public static final int inProximity = 150;
+    public static final int inProximity = 140;
   }
 
   public static final class ClimberConstants {
-    public static final int kClimberMotorID = 0;
+    public static final int kClimberMotorID = 60;
     public static final double kClimberNeutralDeadband = 0.05;
     public static final double kClimberOutput = 2;
   }
