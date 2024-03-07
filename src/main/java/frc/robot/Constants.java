@@ -197,9 +197,9 @@ public final class Constants {
     public static final double kPP_D = new PrefDouble("PP_kD", 0.0).get();
     public static final PIDConstants kPPTranslationPIDConstants = new PIDConstants(kPP_P, kPP_I, kPP_D);
 
-    public static final double kPP_ThetaP = new PrefDouble("PP_kThetaP", 1.5).get();
+    public static final double kPP_ThetaP = new PrefDouble("PP_kThetaP", 3).get();
     public static final double kPP_ThetaI = new PrefDouble("PP_kThetaI", 0).get();
-    public static final double kPP_ThetaD = new PrefDouble("PP_kThetaD", 0).get();
+    public static final double kPP_ThetaD = new PrefDouble("PP_kThetaD", 0.1).get();
     public static final PIDConstants kPPRotationPIDConstants = new PIDConstants(kPP_ThetaP, kPP_ThetaI, kPP_ThetaD);
 
     public static final boolean kUseAllianceColor = true;
