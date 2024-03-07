@@ -292,7 +292,7 @@ public final class Constants {
     public static final double kPivotGearRatio = 225;
     public static final boolean kPivotAbsoluteEncoderInverted = true;
 
-    public static final PrefBool fullDisableShooter = new PrefBool("Full Disable Shooter Pivot", false);
+    public static final PrefBool fullDisableShooter = new PrefBool("Full Disable Shooter Pivot", false, true);
 
     // TODO: Set max and min pos
     public static final double kPivotMaxPos = 0.5;
@@ -325,7 +325,7 @@ public final class Constants {
     public static final PrefDouble kCruiseVelocity = new PrefDouble("Shooter Pivot Cruise Velocity", 0.425);
     public static final PrefDouble kPivotDeadband = new PrefDouble ("Shooter Pivot Deadband", 0.04); 
 
-    public static final PrefDouble kPivotOffset = new PrefDouble("Shooter Pivot Offset", 0.689990669749767);
+    public static final PrefDouble kPivotOffset = new PrefDouble("Shooter Pivot Offset", 0.689990669749767, true);
   }
   
   public static final class IntakeConstants {
@@ -355,7 +355,7 @@ public final class Constants {
     public static final double kPivotMaxPos = 0.5;
     public static final double kPivotMinPos = -0.2;
 
-    public static final PrefBool fullDisableIntake = new PrefBool("Full Disable Intake Pivot", false);
+    public static final PrefBool fullDisableIntake = new PrefBool("Full Disable Intake Pivot", false, true);
 
     public static final double kPivotGearRatio = 36;
     public static final boolean kPivotAbsoluteEncoderInverted = true;
@@ -366,7 +366,7 @@ public final class Constants {
     public static final PrefDouble kVerticalPosition = new PrefDouble("Intake Vertical Position", 0.28);
     // public static final PrefDouble kIntakeShootingPosition = new PrefDouble("Intake Shooting Position", 0);
 
-    public static final PrefDouble kPivotOffset = new PrefDouble("Intake Pivot Offset", 0.535928515558213);
+    public static final PrefDouble kPivotOffset = new PrefDouble("Intake Pivot Offset", 0.535928515558213, true);
 
     public static final PrefDouble kIntakeCruiseAcceleration = new PrefDouble("Intake Pivot Cruise Acceleration", 10);
     public static final PrefDouble kIntakeCruiseVelocity = new PrefDouble("Intake Pivot Cruise Velocity", 8);

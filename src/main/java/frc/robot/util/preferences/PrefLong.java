@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Preferences;
 public class PrefLong {
     private long value;
     private String key;
+    private final boolean active;
 
     /**
      * Create a long preference with the provided key and value
@@ -17,8 +18,13 @@ public class PrefLong {
      * @param value
      */
     public PrefLong(String key, long value) {
+        this(key, value, false);
+    }
+
+    public PrefLong(String key, long value, boolean isPreference) {
         this.key = key;
         this.value = value;
+        this.active = isPreference;
         loadPreferences();
     }
 
@@ -26,6 +32,8 @@ public class PrefLong {
      * Load preference from robot memory
      */
     public void loadPreferences() {
+        if (!active) return;
+
         Preferences.initLong(key, value);
         value = Preferences.getLong(key, value);
     }
@@ -34,6 +42,8 @@ public class PrefLong {
      * Upload the current value of the preference in code to the robot memory
      */
     public void uploadPreferences() {
+        if (!active) return;
+
         Preferences.setLong(key, value);
     }
 
@@ -50,6 +60,8 @@ public class PrefLong {
      * @param value
      */
     public void set(long value) {
+        if (!active) return;
+
         this.value = value;
         uploadPreferences();
     }

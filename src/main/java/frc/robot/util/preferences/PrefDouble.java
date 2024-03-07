@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Preferences;
 public class PrefDouble {
     private double value;
     private String key;
+    private final boolean active;
 
     /**
      * Creates a double preference with the provided key and value
@@ -17,8 +18,13 @@ public class PrefDouble {
      * @param value
      */
     public PrefDouble(String key, double value) {
+        this(key, value, false);
+    }
+
+    public PrefDouble(String key, double value, boolean isPreference) {
         this.key = key;
         this.value = value;
+        this.active = isPreference;
         loadPreferences();
     }
 
@@ -26,6 +32,8 @@ public class PrefDouble {
      * Load preference from robot memory
      */
     public void loadPreferences() {
+        if (!active) return;
+
         Preferences.initDouble(key, value);
         value = Preferences.getDouble(key, value);
     }
@@ -34,6 +42,8 @@ public class PrefDouble {
      * Upload the current value of the preference in code to the robot memory
      */
     public void uploadPreferences() {
+        if (!active) return;
+
         Preferences.setDouble(key, value);
     }
 
@@ -50,6 +60,8 @@ public class PrefDouble {
      * @param value
      */
     public void set(double value) {
+        if (!active) return;
+
         this.value = value;
         uploadPreferences();
     }
