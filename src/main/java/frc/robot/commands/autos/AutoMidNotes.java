@@ -11,14 +11,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.TurnToAngle;
-import frc.robot.subsystems.ColorSensor;
+import frc.robot.subsystems.BeamBreak;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.NoteAssistance;
 
 public class AutoMidNotes extends SequentialCommandGroup {
-    public AutoMidNotes(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem, NoteAssistance noteAssistance, DriverAssist tagAssist, ColorSensor sensor) {
+    public AutoMidNotes(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem, NoteAssistance noteAssistance, DriverAssist tagAssist, BeamBreak sensor) {
         // Use the PathPlannerAuto class to get a path group from an auto
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
 

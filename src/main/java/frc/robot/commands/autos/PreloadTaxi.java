@@ -23,7 +23,7 @@ public class PreloadTaxi extends SequentialCommandGroup {
             
             // Preload
             Commands.deadline(
-                Commands.waitUntil(() -> !superSystem.colorSensor.noteIntook()).andThen(Commands.waitSeconds(0.2)),
+                Commands.waitUntil(() -> !superSystem.noteSensor.noteIntook()).andThen(Commands.waitSeconds(0.2)),
                 superSystem.shootSubwoofer()
             ),
 

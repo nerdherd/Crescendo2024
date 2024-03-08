@@ -390,7 +390,7 @@ public class RobotContainer {
     intakePivot.initShuffleboard(loggingLevel);
     intakeRoller.initShuffleboard(loggingLevel);
     indexer.initShuffleboard(loggingLevel);
-    superSystem.colorSensor.initShuffleboard(loggingLevel);
+    superSystem.noteSensor.initShuffleboard(loggingLevel);
 
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);

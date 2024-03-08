@@ -411,6 +411,10 @@ public final class Constants {
     public static final int inProximity = 140;
   }
 
+  public static final class BeamBreakConstants {
+    public static final int beamBreakPort = 5;
+  }
+
   public static final class ClimberConstants {
     public static final int kClimberMotorID = 60;
     public static final double kClimberNeutralDeadband = 0.05;
