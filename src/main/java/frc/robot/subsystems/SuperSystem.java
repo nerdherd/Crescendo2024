@@ -14,7 +14,8 @@ public class SuperSystem {
     public ShooterPivot shooterPivot;
     public ShooterRoller shooterRoller;
     public IndexerV2 indexer;
-    public ColorSensor colorSensor;
+    public ColorSensor noteSensor;
+    // public BeamBreak noteSensor;
     public ClimbActuator linearActuator;
     public Climber climber;
 
@@ -27,7 +28,8 @@ public class SuperSystem {
         this.shooterRoller = shooterRoller;
         this.indexer = indexer;
         this.linearActuator = new ClimbActuator();
-        this.colorSensor = new ColorSensor();
+        this.noteSensor = new ColorSensor();
+        // this.noteSensor = new BeamBreak();
     }
 
     public Command getReadyForAmp() {
@@ -167,7 +169,7 @@ public class SuperSystem {
 
             // Commands.deadline(
                 // Commands.waitSeconds(1), // testing - check wait time             
-                Commands.waitUntil(colorSensor::noteIntook),
+                Commands.waitUntil(noteSensor::noteIntook),
             // ),
             
             // Move note back
