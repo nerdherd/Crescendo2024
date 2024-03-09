@@ -127,11 +127,30 @@ public class SuperSystem {
         Command command = Commands.sequence(
             indexer.setEnabledCommand(true),
             indexer.reverseIndexCommand(),
-            Commands.waitSeconds(0.5),
+            Commands.waitSeconds(0.4),
             indexer.stopCommand()
         ).finallyDo(indexer::stop);
 
         command.addRequirements(indexer);
+        
+        return command;
+    }
+
+    public Command backupIndexerAndShooter() {
+        Command command = Commands.sequence(
+            shooterRoller.setVelocityCommand(-20, -20),
+            shooterRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
+            indexer.reverseIndexCommand(),
+            Commands.waitSeconds(0.4),
+            indexer.stopCommand(),
+            shooterRoller.stopCommand()
+        ).finallyDo(() -> {
+            indexer.stop();
+            shooterRoller.stop();    
+        });
+
+        command.addRequirements(indexer, shooterRoller);
         
         return command;
     }
@@ -142,7 +161,7 @@ public class SuperSystem {
             indexer.setEnabledCommand(true),
             shooterRoller.setEnabledCommand(true),
             indexer.reverseIndexCommand(),
-            shooterRoller.setReverseVelocityCommand(-0.1, -0.1), // TODO: Later
+            shooterRoller.setReverseVelocityCommand(-10, -10), // TODO: Later
             Commands.waitSeconds(1)
         ).finallyDo(indexer::stop);
 
@@ -160,7 +179,7 @@ public class SuperSystem {
                 handoff(),
                 Commands.waitSeconds(1)
             ),
-            shooterRoller.setVelocityCommand(0, 0),
+            shooterRoller.setVelocityCommand(-10, -10),
             shooterRoller.setEnabledCommand(true),
             intakeRoller.setEnabledCommand(true),
             indexer.setEnabledCommand(true),
@@ -180,6 +199,75 @@ public class SuperSystem {
             intakeRoller.stopCommand(),
             indexer.stopCommand(),
             shooterRoller.stopCommand()
+        ).finallyDo(() -> {
+            intakeRoller.stop();
+            indexer.stop();
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
+        return command;
+    }
+
+    public Command intakeUntilSensed(double timeout) {
+        Command command = Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(() -> 
+                    intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+                handoff(),
+                Commands.waitSeconds(1)
+            ),
+            shooterRoller.setVelocityCommand(-10, -10),
+            shooterRoller.setEnabledCommand(true),
+            intakeRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            intakeRoller.intakeCommand(),
+
+            Commands.deadline(
+                Commands.waitSeconds(timeout), // testing - check wait time             
+                Commands.waitUntil(noteSensor::noteIntook)
+            ),
+            
+            // Move note back
+            indexer.reverseIndexCommand(),
+            shooterRoller.setVelocityCommand(-10, -10),
+            Commands.waitSeconds(1), // Was 0.6   3/3/24   Code Orange
+
+            intakeRoller.stopCommand(),
+            indexer.stopCommand(),
+            shooterRoller.stopCommand()
+        ).finallyDo(() -> {
+            intakeRoller.stop();
+            indexer.stop();
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
+        return command;
+    }
+
+    public Command intakeUntilSensedAuto(double timeout) {
+        Command command = Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(() -> 
+                    intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+                handoff(),
+                Commands.waitSeconds(1)
+            ),
+            shooterRoller.setVelocityCommand(-10, -10),
+            shooterRoller.setEnabledCommand(true),
+            intakeRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            intakeRoller.intakeCommand(),
+
+            Commands.deadline(
+                Commands.waitSeconds(timeout), // testing - check wait time             
+                Commands.waitUntil(noteSensor::noteIntook)
+            )
         ).finallyDo(() -> {
             intakeRoller.stop();
             indexer.stop();

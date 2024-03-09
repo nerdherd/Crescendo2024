@@ -301,7 +301,7 @@ public final class Constants {
     public static final PrefDouble kSpeakerPosition  = new PrefDouble("Pivot Speaker Position", -0.07);
     public static final PrefDouble kSpeakerPositionAuto  = new PrefDouble("Pivot Speaker Position Auto", -0.07);
     public static final PrefDouble kSpeakerPosition2 = new PrefDouble("Pivot Speaker Position 2", -0.02);
-    public static final PrefDouble kNeutralPosition  = new PrefDouble("Pivot Neutral Position", 0.035);
+    public static final PrefDouble kNeutralPosition  = new PrefDouble("Pivot Neutral Position", -0.1);
     public static final PrefDouble kAmpPosition      = new PrefDouble("Pivot Amp Position"    , 0.173);
     public static final PrefDouble kHandoffPosition  = new PrefDouble("Pivot Handoff Position", -0.04);
     public static final PrefDouble kHandoffPosition2 = new PrefDouble("Pivot Handoff Position2", -0.04);   
@@ -390,7 +390,7 @@ public final class Constants {
     public static final PrefDouble kIndexerVelocityRPS = new PrefDouble("Indexer Velocity", 90);
     public static final PrefDouble kTrapVelocityRPS = new PrefDouble("Trap Velocity", 81);
 
-    public static final PrefDouble kIndexerReverseRPS = new PrefDouble("Indexer Reverse Velocity", -10);
+    public static final PrefDouble kIndexerReverseRPS = new PrefDouble("Indexer Reverse Velocity", -50);
     public static final double kIndexerMinVelocityRPS = -100;
     public static final double kIndexerMaxVelocityRPS = 100;
 

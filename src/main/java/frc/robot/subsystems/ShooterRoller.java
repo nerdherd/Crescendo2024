@@ -71,7 +71,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         leftMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
         leftMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         leftMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
-        leftMotorConfigs.CurrentLimits.StatorCurrentLimit = 100;
+        leftMotorConfigs.CurrentLimits.StatorCurrentLimit = 150;
         leftMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         leftMotorConfigs.Audio.AllowMusicDurDisable = true;
 
@@ -86,7 +86,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         rightMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
         rightMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         rightMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
-        rightMotorConfigs.CurrentLimits.StatorCurrentLimit = 100;
+        rightMotorConfigs.CurrentLimits.StatorCurrentLimit = 150;
         rightMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         rightMotorConfigs.Audio.AllowMusicDurDisable = true;
 
@@ -358,6 +358,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
     @Override
     public void initShuffleboard(LOG_LEVEL priority) {
         ShuffleboardTab tab = Shuffleboard.getTab("Shooter");
+        tab.addBoolean("Shooter Enabled", () -> this.enabled);
         tab.addNumber("Left Velocity", ()-> leftShooter.getVelocity().getValueAsDouble());
         tab.addNumber("Right Velocity", ()-> rightShooter.getVelocity().getValueAsDouble());
         tab.addNumber("Left Target Velocity", ()-> leftVelocityRequest.Velocity);

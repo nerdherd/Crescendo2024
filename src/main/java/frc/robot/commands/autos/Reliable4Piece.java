@@ -38,26 +38,32 @@ public class Reliable4Piece extends SequentialCommandGroup {
                 ),
                 Commands.sequence(
                     superSystem.indexer.stopCommand(),
-                    superSystem.shooterRoller.setVelocityCommand(0, 0)
+                    superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                    superSystem.shooterRoller.setEnabledCommand(true)
                 ), 
 
                 // Piece 1
                 Commands.deadline(
                     Commands.waitSeconds(2),
                     AutoBuilder.followPath(pathGroup.get(0)),
-                    superSystem.intakeUntilSensed()
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        superSystem.intakeUntilSensedAuto(1.25)
+                    )                
                 ),
 
                 Commands.parallel(
                     AutoBuilder.followPath(pathGroup.get(1)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.85),
+                        superSystem.backupIndexerAndShooter(),
+                        Commands.waitSeconds(0.45),
                         Commands.deadline(
                             Commands.waitSeconds(1.2),
                             superSystem.shootSubwooferAuto()  
                         ),
                         superSystem.indexer.stopCommand(),
-                        superSystem.shooterRoller.setVelocityCommand(0, 0)
+                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                        superSystem.shooterRoller.setEnabledCommand(true)
                     )
                 ),
 
@@ -65,18 +71,23 @@ public class Reliable4Piece extends SequentialCommandGroup {
                 Commands.deadline(
                     Commands.waitSeconds(2),
                     AutoBuilder.followPath(pathGroup.get(2)),
-                    superSystem.intakeUntilSensed()
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        superSystem.intakeUntilSensedAuto(1.25)
+                    )                
                 ),
                 Commands.parallel(
                     AutoBuilder.followPath(pathGroup.get(3)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.85),
+                        superSystem.backupIndexerAndShooter(),
+                        Commands.waitSeconds(0.45),
                         Commands.deadline(
-                            Commands.waitSeconds(1.2),
+                            Commands.waitSeconds(1.4),
                             superSystem.shootSubwooferAuto()  
                         ),
                         superSystem.indexer.stopCommand(),
-                        superSystem.shooterRoller.setVelocityCommand(0, 0)
+                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                        superSystem.shooterRoller.setEnabledCommand(true)
                     )
                 ),
 
@@ -84,18 +95,23 @@ public class Reliable4Piece extends SequentialCommandGroup {
                 Commands.deadline(
                     Commands.waitSeconds(2),
                     AutoBuilder.followPath(pathGroup.get(4)),
-                    superSystem.intakeUntilSensed()
+                    Commands.sequence(
+                        Commands.waitSeconds(0.5),
+                        superSystem.intakeUntilSensedAuto(1.25)
+                    )
                 ),
                 Commands.parallel(
                     AutoBuilder.followPath(pathGroup.get(5)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.85),
+                        superSystem.backupIndexerAndShooter(),
+                        Commands.waitSeconds(0.45),
                         Commands.deadline(
                             Commands.waitSeconds(1.2),
                             superSystem.shootSubwooferAuto()  
                         ),
                         superSystem.indexer.stopCommand(),
-                        superSystem.shooterRoller.setVelocityCommand(0, 0)
+                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                        superSystem.shooterRoller.setEnabledCommand(true)
                     )
                 ),
 
