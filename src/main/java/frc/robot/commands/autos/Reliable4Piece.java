@@ -42,16 +42,16 @@ public class Reliable4Piece extends SequentialCommandGroup {
                     superSystem.shooterRoller.setEnabledCommand(true)
                 ), 
 
-                // Piece 1
-                Commands.deadline(
+                // Piece 1 intake
+                Commands.race(
                     Commands.waitSeconds(2),
-                    AutoBuilder.followPath(pathGroup.get(0)),
+                    AutoBuilder.followPath(pathGroup.get(0)).andThen(Commands.waitSeconds(0.75)),
                     Commands.sequence(
                         Commands.waitSeconds(0.5),
-                        superSystem.intakeUntilSensedAuto(1.25)
+                        superSystem.intakeUntilSensedAuto(1.75)
                     )                
                 ),
-
+                // Piece 1 shot
                 Commands.parallel(
                     AutoBuilder.followPath(pathGroup.get(1)),
                     Commands.sequence(
@@ -67,15 +67,16 @@ public class Reliable4Piece extends SequentialCommandGroup {
                     )
                 ),
 
-                // Piece 2
-                Commands.deadline(
+                // Piece 2 intake
+                Commands.race(
                     Commands.waitSeconds(2),
-                    AutoBuilder.followPath(pathGroup.get(2)),
+                    AutoBuilder.followPath(pathGroup.get(2)).andThen(Commands.waitSeconds(0.75)),
                     Commands.sequence(
                         Commands.waitSeconds(0.5),
-                        superSystem.intakeUntilSensedAuto(1.25)
+                        superSystem.intakeUntilSensedAuto(1.75)
                     )                
                 ),
+                // Piece 2 shot
                 Commands.parallel(
                     AutoBuilder.followPath(pathGroup.get(3)),
                     Commands.sequence(
@@ -91,15 +92,17 @@ public class Reliable4Piece extends SequentialCommandGroup {
                     )
                 ),
 
-                // Piece 3
-                Commands.deadline(
-                    Commands.waitSeconds(2),
-                    AutoBuilder.followPath(pathGroup.get(4)),
+                // Piece 3 intake
+                Commands.race(
+                    Commands.waitSeconds(1.75),
+                    AutoBuilder.followPath(pathGroup.get(4)).andThen(Commands.waitSeconds(0.5)),
                     Commands.sequence(
                         Commands.waitSeconds(0.5),
-                        superSystem.intakeUntilSensedAuto(1.25)
+                        superSystem.intakeUntilSensedAuto(1.75)
                     )
                 ),
+
+                // Piece 3 shot
                 Commands.parallel(
                     AutoBuilder.followPath(pathGroup.get(5)),
                     Commands.sequence(

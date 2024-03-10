@@ -393,13 +393,16 @@ public class SuperSystem {
                 handoff()
                 ),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Outtaking", true)),
-            indexer.reverseIndexCommand(),
-            intakeRoller.outtakeCommand(),
-            intakeRoller.setEnabledCommand(true),
+            Commands.waitSeconds(0.25),
             indexer.setEnabledCommand(true),
+            indexer.setVelocityCommand(-100),
+            intakeRoller.setEnabledCommand(true),
+            intakeRoller.setVelocityCommand(-100),
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Intake roller", true)),
             Commands.waitUntil(() -> false)
         ).finallyDo(
             () -> {
+                SmartDashboard.putBoolean("Intake roller", false);
                 SmartDashboard.putBoolean("Outtaking", false);
                 intakeRoller.stop();
                 indexer.stop();

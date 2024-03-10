@@ -358,7 +358,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
     @Override
     public void initShuffleboard(LOG_LEVEL priority) {
         ShuffleboardTab tab = Shuffleboard.getTab("Shooter");
-        tab.addBoolean("Shooter Enabled", () -> this.enabled);
+        tab.addBoolean("Shooter Roller Enabled", () -> this.enabled);
         tab.addNumber("Left Velocity", ()-> leftShooter.getVelocity().getValueAsDouble());
         tab.addNumber("Right Velocity", ()-> rightShooter.getVelocity().getValueAsDouble());
         tab.addNumber("Left Target Velocity", ()-> leftVelocityRequest.Velocity);

@@ -102,7 +102,7 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
             return;
         }
 
-        if (velocityRequest.Velocity < 0.5) {
+        if (Math.abs(velocityRequest.Velocity) < 0.5) {
             velocityRequest.Velocity = 0;
             intake.setControl(brakeRequest);
             return;
@@ -220,6 +220,7 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     @Override
     public void initShuffleboard(LOG_LEVEL priority) {
         ShuffleboardTab tab = Shuffleboard.getTab("Intake");
+        tab.addBoolean("Intake Roller Enabled", () -> enabled);
         tab.addNumber("Intake Velocity", ()-> intake.getVelocity().getValueAsDouble());
         tab.addNumber("Intake Target Velocity", ()-> velocityRequest.Velocity);
         tab.addNumber("Intake Roller Current", () -> intake.getSupplyCurrent().getValueAsDouble());
