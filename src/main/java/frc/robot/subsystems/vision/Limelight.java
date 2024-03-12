@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Reportable;
 import frc.robot.util.NerdyMath;
+import frc.robot.util.filters.ExponentialSmoothingFilter;
 
 public class Limelight implements Reportable{
     private static Limelight m_Instance;
@@ -269,6 +270,21 @@ public class Limelight implements Reportable{
             new Translation3d(botPose[0], botPose[1], botPose[2]),
             new Rotation3d(Units.degreesToRadians(botPose[3]), Units.degreesToRadians(botPose[4]),
                     Units.degreesToRadians(botPose[5])));
+    }
+
+    private ExponentialSmoothingFilter filterPoseX = new ExponentialSmoothingFilter(2.0 / 11);
+    private ExponentialSmoothingFilter filterPoseY = new ExponentialSmoothingFilter(2.0 / 11);
+    private ExponentialSmoothingFilter filterPoseZ = new ExponentialSmoothingFilter(2.0 / 11);
+    private Pose3d currentPoseAvg = null;
+    private void updateAvgPose() {
+        Pose3d pose = getBotPose3D();
+        if(!hasValidTarget()) return;
+        if(currentPoseAvg == null) currentPoseAvg = pose;
+        else currentPoseAvg = new Pose3d(filterPoseX.calculate(pose.getX()), filterPoseY.calculate(pose.getX()), filterPoseZ.calculate(pose.getX()), pose.getRotation());
+    }
+    public Pose3d getBotPose3D_avg() {
+        updateAvgPose();
+        return currentPoseAvg;
     }
 
     public String getName() {

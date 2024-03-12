@@ -43,6 +43,10 @@ public class ShooterVisionAdjustment implements Reportable{
 
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
+        for (int i = 0; i < angles.length; i++) {
+            angles[i] += VisionConstants.kSplineAngleOffset; //currently 0
+        }
+
         angleEquation = new NerdySpline(distances, angles);
         angleEquation.create();
         distanceEquation = new NerdySpline(angles, distances);

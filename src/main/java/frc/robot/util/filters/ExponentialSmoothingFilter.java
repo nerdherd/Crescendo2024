@@ -57,4 +57,8 @@ public class ExponentialSmoothingFilter implements Filter {
         lastInput = output;
         return output;
     }
+
+    public void reset(double input) {
+        lastInput = input;
+    }
 }
