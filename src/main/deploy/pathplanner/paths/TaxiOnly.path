@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 5.601499977928731
+        "x": 0.6,
+        "y": 2.4081902795634575
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.06,
-        "y": 5.601499977928731
+        "x": 0.9802405704573878,
+        "y": 2.3886907631297456
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.0,
-        "y": 5.6
+        "x": 3.0,
+        "y": 2.0
       },
       "prevControl": {
-        "x": 5.9399999999999995,
-        "y": 5.6
+        "x": 2.7172570117111734,
+        "y": 2.0
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,10 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
-  "previewStartingState": {
-    "rotation": 0,
-    "velocity": 0
-  },
-  "useDefaultConstraints": true
+  "folder": "Preload Taxi",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
 }

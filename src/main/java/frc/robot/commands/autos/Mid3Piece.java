@@ -109,7 +109,8 @@ public class Mid3Piece extends SequentialCommandGroup {
             // Shoot
             Commands.deadline(
                 Commands.waitSeconds(1.2),
-                superSystem.shootSequenceAdjustable(sva)
+                superSystem.shootPodium()
+                // superSystem.shootSequenceAdjustable(sva)
             ),
 
             Commands.runOnce(() -> SmartDashboard.putNumber("Mid3Piece", 5)),
@@ -161,7 +162,8 @@ public class Mid3Piece extends SequentialCommandGroup {
             // Shoot
             Commands.deadline(
                 Commands.waitSeconds(1.2),
-                superSystem.shootSequenceAdjustable(sva)
+                superSystem.shootPodium()
+                // superSystem.shootSequenceAdjustable(sva)
             ),
 
             /************************************ LEAVE **************************************/

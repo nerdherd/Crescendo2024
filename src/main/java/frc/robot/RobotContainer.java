@@ -6,6 +6,9 @@ package frc.robot;
 
 import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -363,13 +366,24 @@ public class RobotContainer {
       autoChooser.addOption("Mid3Piece Path Only", new Mid3PiecePathOnly(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
       autoChooser.addOption("Mid3Piece Dead Reckoning", new Mid3PieceDeadReckoning(swerveDrive, "Mid3Piece", superSystem));
       autoChooser.addOption("Mid2Piece", new Mid2Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
-      autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, "Mid3Piece", superSystem));
     }
 
+    if (paths.contains("PreloadTaxiSourceSide")) {
+      autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, "PreloadTaxiSourceSide", superSystem));
+    }
+
+    if (paths.contains("PreloadTaxiPodiumSide")) {
+      autoChooser.addOption("Preload Taxi Podium Side", new PreloadTaxi(swerveDrive, "PreloadTaxiPodiumSide", superSystem));
+    }
+
+    if (paths.contains("TaxiOnly")) {
+      autoChooser.addOption("Taxi Only", AutoBuilder.buildAuto("TaxiOnly"));
+    }
+    
+
     if (paths.contains("Reliable4Piece")) {
-      autoChooser.addOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
+      autoChooser.setDefaultOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
       // autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
-      autoChooser.addOption("Preload Taxi Amp Side", new PreloadTaxi(swerveDrive, "Reliable4Piece", superSystem));
     }
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
