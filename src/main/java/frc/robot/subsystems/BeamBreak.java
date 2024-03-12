@@ -16,6 +16,7 @@ public class BeamBreak implements Reportable {
     }
 
     public boolean noteIntook() {
+        // TODO: check if this needs to be inverted
         return beamBreak.get();
     }
 

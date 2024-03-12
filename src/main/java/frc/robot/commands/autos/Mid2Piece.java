@@ -31,7 +31,7 @@ public class Mid2Piece extends SequentialCommandGroup {
         Pose2d startingPose = PathPlannerAuto.getStaringPoseFromAutoFile(autoPath);
 
         // from auto file
-        Pose2d podiumPoseBlue = new Pose2d(2.60, 3.74, Rotation2d.fromDegrees(-59.30));
+        // Pose2d podiumPoseBlue = new Pose2d(2.60, 3.74, Rotation2d.fromDegrees(-59.30));
     
 
         addCommands(
@@ -84,7 +84,7 @@ public class Mid2Piece extends SequentialCommandGroup {
             ),
 
             // Make sure swerve is in the right pos
-            driveToPose(podiumPoseBlue),  
+            // driveToPose(podiumPoseBlue),  
 
             // Turn towards tag                      
             Commands.deadline(
