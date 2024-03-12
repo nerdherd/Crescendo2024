@@ -31,6 +31,8 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.autos.Mid3PiecePathOnly;
+import frc.robot.commands.autos.FivePieceEnd;
+import frc.robot.commands.autos.FivePieceSecond;
 import frc.robot.commands.autos.Mid2Piece;
 import frc.robot.commands.autos.Mid3Piece;
 import frc.robot.commands.autos.Mid3PieceDeadReckoning;
@@ -403,6 +405,15 @@ public class RobotContainer {
       autoChooser.setDefaultOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
       // autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
     }
+
+    if (paths.contains("5PieceMid")){
+      autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5 Piece Mid", superSystem));
+    }
+
+    if (paths.contains("5PieceMidSecond")){
+      autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5 Piece Mid Second", superSystem));
+    }
+    
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 

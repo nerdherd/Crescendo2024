@@ -76,7 +76,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "6 Piece",
+  "folder": null,
   "previewStartingState": {
     "rotation": 30.70269550733253,
     "velocity": 0
