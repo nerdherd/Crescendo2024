@@ -5,11 +5,15 @@
 package frc.robot;
 
 import java.util.List;
+
+import org.ejml.equation.Sequence;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -19,7 +23,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
+import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
@@ -29,6 +36,7 @@ import frc.robot.commands.autos.Mid3Piece;
 import frc.robot.commands.autos.Mid3PieceDeadReckoning;
 import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
+import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.IndexerV2;
 import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.IntakeRoller;
@@ -95,6 +103,7 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     // Moved to teleop init
+    
 
     DriverStation.reportWarning("Initalization complete", false);
       // NamedCommands.registerCommand("intakeBasic1", superSystem.intakeBasicHold());
@@ -261,6 +270,15 @@ public class RobotContainer {
 
   public void configureBindings_teleop() {
     // Driver bindings
+    Trigger noteTrigger = new Trigger(superSystem.noteSensor::noteIntook);
+    driverController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
+    operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
+    noteTrigger.onTrue(Commands.sequence(
+      Commands.runOnce(() -> operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
+      Commands.runOnce(() -> driverController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
+      Commands.runOnce(() -> apriltagCamera.toggleLight(true))
+    ));
+
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()
       .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
