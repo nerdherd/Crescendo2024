@@ -35,7 +35,7 @@ public class ShooterVisionAdjustment implements Reportable{
 
     //TODO: Test actual input and output data
     private double[] distances = {1.4257, 2.836, 3.5482, 3.6585}; // meters, from least to greatest
-    private double[] angles = {-0.064, -0.025, -0.003, 0.01}; // rotations
+    private double[] angles = {-23.04, -9, -1.08, 3.6}; // rotations
 
     public ShooterVisionAdjustment(String name, Limelight limelight) {
         this.name = name;

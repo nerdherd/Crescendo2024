@@ -76,7 +76,7 @@ public class SuperSystem {
             shooterRoller.stopCommand(),
             indexer.stopCommand(),
             intakePivot.setPositionCommand(IntakeConstants.kNeutralPosition.get()),
-            shooterPivot.setPositionCommand(-0.095),
+            shooterPivot.setPositionCommand(ShooterConstants.kFullStowPosition.get()),
             Commands.deadline(
                 Commands.waitUntil(shooterPivot::atTargetPosition),
                 Commands.waitSeconds(2)
@@ -105,7 +105,7 @@ public class SuperSystem {
         Command command = Commands.sequence(
             intakePivot.moveToIntake(),
             Commands.waitSeconds(0.2),
-            shooterPivot.setPositionCommand(0.093),
+            shooterPivot.setPositionCommand(33.48),
             shooterRoller.setVelocityCommand(-20),
             shooterRoller.setEnabledCommand(true),
             indexer.indexCommand(),
