@@ -384,13 +384,13 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
             case MINIMAL:
                 tab.addDouble("Shooter Desired Position", this::getTargetPositionDegrees);
                 tab.addDouble("Left Pivot Position", this::getPositionDegrees);
-                tab.addDouble("Left Pivot Velocity", () -> leftPivot.getVelocity().getValueAsDouble());
+                tab.addDouble("Left Pivot Velocity (DPS)", () -> leftPivot.getVelocity().getValueAsDouble() * 360);
                 tab.addDouble("Left Pivot Applied Voltage", () -> leftPivot.getMotorVoltage().getValueAsDouble());
                 tab.addDouble("Left Pivot Stator Current", () -> leftPivot.getStatorCurrent().getValueAsDouble());
                 tab.addDouble("Left Pivot Supply Current", () -> leftPivot.getSupplyCurrent().getValueAsDouble());
 
-                tab.addDouble("Right Pivot Position", () -> rightPivot.getPosition().getValueAsDouble());
-                tab.addDouble("Right Pivot Velocity", () -> rightPivot.getVelocity().getValueAsDouble());
+                tab.addDouble("Right Pivot Position", () -> rightPivot.getPosition().getValueAsDouble() * 360);
+                tab.addDouble("Right Pivot Velocity (DPS)", () -> rightPivot.getVelocity().getValueAsDouble() * 360);
                 tab.addDouble("Right Pivot Applied Voltage", () -> rightPivot.getMotorVoltage().getValueAsDouble());
                 tab.addDouble("Right Pivot Stator Current", () -> rightPivot.getStatorCurrent().getValueAsDouble());
                 tab.addDouble("Right Pivot Supply Current", () -> rightPivot.getSupplyCurrent().getValueAsDouble());
@@ -399,7 +399,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
                 tab.add("Full Stow Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoderFullStow));
                 tab.add("Sync Encoder", Commands.runOnce(this::syncEncoder));
 
-                tab.addDouble("Absolute Encoder Position", this::getAbsolutePositionRev);
+                tab.addDouble("Absolute Encoder Position", this::getAbsolutePositionDegrees);
                 tab.addBoolean("Shooter Enabled", () -> enabled);
                 break;
         }
