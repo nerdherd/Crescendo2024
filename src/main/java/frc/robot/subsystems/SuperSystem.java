@@ -42,7 +42,7 @@ public class SuperSystem {
             Commands.runOnce(() -> SmartDashboard.putBoolean("Amp Rotating", true)),
             shooterPivot.moveToAmp(),
             Commands.waitUntil(shooterPivot::atTargetPosition),
-            intakePivot.setPositionCommand(IntakeConstants.kVerticalPosition.get())
+            intakePivot.moveToVertical()
         );
 
         command.addRequirements(shooterPivot, intakePivot);
@@ -75,13 +75,13 @@ public class SuperSystem {
             intakeRoller.stopCommand(),
             shooterRoller.stopCommand(),
             indexer.stopCommand(),
-            intakePivot.setPositionCommand(IntakeConstants.kNeutralPosition.get()),
+            intakePivot.moveToNeutral(),
             shooterPivot.setPositionCommand(ShooterConstants.kFullStowPosition.get()),
             Commands.deadline(
                 Commands.waitUntil(shooterPivot::atTargetPosition),
                 Commands.waitSeconds(2)
             ),
-            intakePivot.setPositionCommand(IntakeConstants.kVerticalPosition.get())
+            intakePivot.moveToVertical()
         );
 
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);

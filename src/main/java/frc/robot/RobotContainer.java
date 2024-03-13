@@ -135,8 +135,10 @@ public class RobotContainer {
               -operatorController.getRightY(), 
               -ControllerConstants.kDeadband, 
               ControllerConstants.kDeadband)
-            ) / 400), // (20 / x) revolutions per second
-                       // 0.005 rev/seconds @ x = 4000
+            ) * 2
+            
+            ), // (20 * x) degrees per second
+                // If x = 2, then v = 40 degrees per second
         intakePivot
       ));
     
@@ -149,8 +151,9 @@ public class RobotContainer {
                 -operatorController.getLeftY(), //0.5 rev/second 
                 -ControllerConstants.kDeadband, 
                 ControllerConstants.kDeadband)
-            ) / 4000); // (20 / x) revolutions per second
-                       // 0.005 rev/seconds @ x = 4000
+            ) * 0.1); // (20 * x) degrees per second
+            // If x = 0.1, then v = 2 degrees per second
+            
         },
         shooterPivot
       ));

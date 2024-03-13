@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -78,7 +77,6 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     }
 
     public void configurePID() {
-        IntakeConstants.kStowPosition.loadPreferences();
         IntakeConstants.kPickupPosition.loadPreferences();
         IntakeConstants.kNeutralPosition.loadPreferences();
 
@@ -113,9 +111,11 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     public void syncEncoder() {
         // Save a consistent position offset
         IntakeConstants.kPivotOffset.loadPreferences();
-        throughBore.setPositionOffset(IntakeConstants.kPivotOffset.get());
 
-        double position = getAbsolutePosition();
+        // ThroughBore reads in revolutions
+        throughBore.setPositionOffset(IntakeConstants.kPivotOffset.get() / 360);
+
+        double position = getAbsolutePositionRev();
         position = mapRev(position);
 
         pivot.setPosition(position);
@@ -128,7 +128,8 @@ public class IntakePivot extends SubsystemBase implements Reportable {
      */
     public void zeroAbsoluteEncoder() {
         throughBore.reset();
-        IntakeConstants.kPivotOffset.set(throughBore.getPositionOffset());
+        // Save the offset in degrees (for readability)
+        IntakeConstants.kPivotOffset.set(throughBore.getPositionOffset() * 360);
 
         // Save new offset to Preferences
         IntakeConstants.kPivotOffset.uploadPreferences();
@@ -138,8 +139,12 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     public void zeroAbsoluteEncoderFullStow() {
         throughBore.reset();
         IntakeConstants.kPickupPosition.loadPreferences();
-        throughBore.setPositionOffset((throughBore.getPositionOffset() + IntakeConstants.kPickupPosition.get()) % 1);
-        IntakeConstants.kPivotOffset.set(throughBore.getPositionOffset());
+
+        // Apply the pickup position to offset as revolutions
+        throughBore.setPositionOffset((throughBore.getPositionOffset() + (IntakeConstants.kPickupPosition.get() / 360)) % 1);
+
+        // Save the new offset as degrees
+        IntakeConstants.kPivotOffset.set(throughBore.getPositionOffset() * 360);
         IntakeConstants.kPivotOffset.uploadPreferences();
 
         syncEncoder();
@@ -181,31 +186,50 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         return NerdyMath.posMod(rev + 0.25, 1) - 0.25;
     }
 
+    /**
+     * Maps the value to the range [-90, 270]
+     */
+    public double mapDegrees(double deg) {
+        return NerdyMath.posMod(deg + 90, 360) - 90;
+    }
+
     //****************************** STATE METHODS ******************************/
 
-    public double getTargetPosition() {
+    public double getTargetPositionRev() {
         return motionMagicRequest.Position;
     }
 
-    public double getPosition() {
+    public double getTargetPositionDegrees() {
+        return getTargetPositionRev() * 360;
+    }
+
+    public double getPositionRev() {
         return pivot.getPosition().getValueAsDouble();
     }
 
-    public double getAbsolutePosition() {
+    public double getPositionDegrees() {
+        return getPositionRev() * 360;
+    }
+
+    public double getAbsolutePositionRev() {
         if (IntakeConstants.kPivotAbsoluteEncoderInverted) {
             return mapRev(throughBore.getPositionOffset() - throughBore.getAbsolutePosition());
         }
         return mapRev(throughBore.getAbsolutePosition() - throughBore.getPositionOffset());
     }
 
+    public double getAbsolutePositionDegrees() {
+        return getAbsolutePositionRev() * 360;
+    }
+
     // Checks whether the pivot is within the deadband for a position
     public boolean hasReachedPosition(double position) {
         return NerdyMath.inRange(
-            getPosition(),
+            getPositionDegrees(),
             position - IntakeConstants.kPivotDeadband.get(), 
             position + IntakeConstants.kPivotDeadband.get()
         ) && NerdyMath.inRange(
-            getTargetPosition(),
+            getTargetPositionDegrees(),
             position - IntakeConstants.kPivotDeadband.get(), 
             position + IntakeConstants.kPivotDeadband.get()
         );
@@ -213,8 +237,8 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
     // Check if the intake is in a safe position for the shooter to move
     public boolean hasReachedNeutral() {
-        return (getPosition() <= IntakeConstants.kNeutralPosition.get() + IntakeConstants.kPivotDeadband.get()
-            && getTargetPosition() <= IntakeConstants.kNeutralPosition.get() + IntakeConstants.kPivotDeadband.get());
+        return (getPositionDegrees() <= IntakeConstants.kNeutralPosition.get() + IntakeConstants.kPivotDeadband.get()
+            && getTargetPositionDegrees() <= IntakeConstants.kNeutralPosition.get() + IntakeConstants.kPivotDeadband.get());
     }
 
     // public boolean hasReachedIntakeShootingPosition() {
@@ -229,7 +253,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     }
 
     public void stop() {
-        motionMagicRequest.Position = getPosition();
+        motionMagicRequest.Position = getPositionRev();
         enabled = false;
         pivot.setControl(brakeRequest);
     }
@@ -243,13 +267,13 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     public void setPosition(double position) {
         motionMagicRequest.Position = 
             NerdyMath.clamp(
-                mapRev(position),
+                mapDegrees(position),
                 IntakeConstants.kPivotMinPos,
-                IntakeConstants.kPivotMaxPos);  
+                IntakeConstants.kPivotMaxPos) / 360;  
     }
 
     public void incrementPosition(double increment) {
-        setPosition(motionMagicRequest.Position + increment);
+        setPosition(getPositionDegrees() + increment);
     }
 
     //****************************** POSITION COMMANDS *****************************//
@@ -270,20 +294,16 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         return Commands.runOnce(() -> incrementPosition(increment));
     }
 
-    public Command moveToStow() {
-        return setPositionCommand(IntakeConstants.kStowPosition.get());
-    }
-
-    // public Command moveToIntakeShootingPosition() {
-    //     return setPositionCommand(IntakeConstants.kIntakeShootingPosition.get());
-    // }
-
     public Command moveToIntake() {
         return setPositionCommand(IntakeConstants.kPickupPosition.get());
     }
 
     public Command moveToNeutral() {
         return setPositionCommand(IntakeConstants.kNeutralPosition.get());
+    }
+
+    public Command moveToVertical() {
+        return setPositionCommand(IntakeConstants.kVerticalPosition.get());
     }
 
     //****************************** LOGGING METHODS ******************************//
@@ -308,13 +328,17 @@ public class IntakePivot extends SubsystemBase implements Reportable {
             case MINIMAL:
                 tab.addBoolean("Intake Enabled", () -> this.enabled);
                 tab.addBoolean("At Neutral", this::hasReachedNeutral);
-                tab.addDouble("Intake Pivot Desired Position", this::getTargetPosition);
-                tab.addDouble("Intake Pivot Position", this::getPosition);
-                tab.addDouble("Intake Pivot Absolute Position", this::getAbsolutePosition);
-                tab.addDouble("Intake Pivot Velocity", () -> pivot.getVelocity().getValueAsDouble());
+
+                tab.addDouble("Pivot Desired Position", this::getTargetPositionDegrees);
+                tab.addDouble("Pivot Position", this::getPositionDegrees);
+                tab.addDouble("Pivot Absolute Position", this::getAbsolutePositionDegrees);
+                tab.addDouble("Pivot Velocity (DPS)", () -> pivot.getVelocity().getValueAsDouble() * 360);
+                tab.addDouble("Pivot Supply Current", () -> pivot.getSupplyCurrent().getValueAsDouble());
+                tab.addDouble("Pivot Stator Current", () -> pivot.getStatorCurrent().getValueAsDouble());
+                tab.addNumber("Pivot Applied Voltage", () -> pivot.getMotorVoltage().getValueAsDouble());
+
                 tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));
                 tab.add("Zero Full Stow Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoderFullStow));
-                tab.addNumber("Intake Pivot Applied Voltage", () -> pivot.getMotorVoltage().getValueAsDouble());
                 break;
         }
     }
