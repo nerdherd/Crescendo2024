@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 2.53,
-        "y": 4.36
+        "y": 4.3
       },
       "prevControl": {
         "x": 2.5585285120709598,
-        "y": 4.318937559753261
+        "y": 4.25893755975326
       },
       "nextControl": null,
       "isLocked": false,
@@ -49,7 +49,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Basic4Piece",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

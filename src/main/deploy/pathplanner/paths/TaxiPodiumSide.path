@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.74,
+        "y": 4.41
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.6121726455329406,
+        "y": 2.7817903777850317
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.505550303262128,
+        "y": 2.076698500190349
+      },
+      "prevControl": {
+        "x": 5.38355148508135,
+        "y": 0.4210660977528584
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Preload Taxi",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

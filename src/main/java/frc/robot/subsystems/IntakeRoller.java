@@ -31,7 +31,7 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     private final VoltageOut voltageRequest = new VoltageOut(0, true, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
     
-    private boolean enabled = false;
+    private boolean enabled = true;
     public boolean velocityControl = true;
 
     public IntakeRoller() {
@@ -98,6 +98,12 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     @Override
     public void periodic() {
         if (!enabled) {
+            intake.setControl(brakeRequest);
+            return;
+        }
+
+        if (Math.abs(velocityRequest.Velocity) < 0.5) {
+            velocityRequest.Velocity = 0;
             intake.setControl(brakeRequest);
             return;
         }
@@ -214,6 +220,7 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     @Override
     public void initShuffleboard(LOG_LEVEL priority) {
         ShuffleboardTab tab = Shuffleboard.getTab("Intake");
+        tab.addBoolean("Intake Roller Enabled", () -> enabled);
         tab.addNumber("Intake Velocity", ()-> intake.getVelocity().getValueAsDouble());
         tab.addNumber("Intake Target Velocity", ()-> velocityRequest.Velocity);
         tab.addNumber("Intake Roller Current", () -> intake.getSupplyCurrent().getValueAsDouble());

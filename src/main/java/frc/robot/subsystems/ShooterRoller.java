@@ -68,9 +68,11 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         leftMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         leftMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
         leftMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
-        leftMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        leftMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
         leftMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         leftMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        leftMotorConfigs.CurrentLimits.StatorCurrentLimit = 150;
+        leftMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         leftMotorConfigs.Audio.AllowMusicDurDisable = true;
 
         TalonFXConfiguration rightMotorConfigs = new TalonFXConfiguration();
@@ -81,9 +83,11 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         rightMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         rightMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
         rightMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
-        rightMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        rightMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
         rightMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         rightMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        rightMotorConfigs.CurrentLimits.StatorCurrentLimit = 150;
+        rightMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         rightMotorConfigs.Audio.AllowMusicDurDisable = true;
 
         StatusCode leftResponse  = leftShooterConfigurator.apply(leftMotorConfigs);
@@ -149,22 +153,24 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
     @Override
     public void periodic() {
         if (!enabled) {
-            leftShooter.setControl(brakeRequest);
-            rightShooter.setControl(brakeRequest);
+            leftVelocityRequest.Velocity = 0;
+            rightVelocityRequest.Velocity = 0;
+            leftShooter.setControl(leftVelocityRequest);
+            rightShooter.setControl(rightVelocityRequest);
             return;
         }
 
 
-        if (velocityControl) {
-            leftShooter.setControl(leftVelocityRequest);
-            rightShooter.setControl(rightVelocityRequest);
-            return;
-        } 
+        // if (velocityControl) {
+        leftShooter.setControl(leftVelocityRequest);
+        rightShooter.setControl(rightVelocityRequest);
+        //     return;
+        // } \][]
 
-        leftVoltageRequest.Output = leftVelocityRequest.Velocity * 12 / 100.0;
-        rightVoltageRequest.Output = rightVelocityRequest.Velocity * 12 / 100.0;
-        leftShooter.setControl(leftVoltageRequest);
-        rightShooter.setControl(rightVoltageRequest);
+        // leftVoltageRequest.Output = leftVelocityRequest.Velocity * 12 / 100.0;
+        // rightVoltageRequest.Output = rightVelocityRequest.Velocity * 12 / 100.0;
+        // leftShooter.setControl(leftVoltageRequest);
+        // rightShooter.setControl(rightVoltageRequest);
     }
 
     //****************************** STATE METHODS ******************************//
@@ -173,8 +179,8 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         this.enabled = false;
         leftVelocityRequest.Velocity = 0;
         rightVelocityRequest.Velocity = 0;
-        leftShooter.setControl(brakeRequest);
-        rightShooter.setControl(brakeRequest);
+        // leftShooter.setControl(brakeRequest);
+        // rightShooter.setControl(brakeRequest);
     }
 
     public Command stopCommand() {
@@ -240,6 +246,10 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
     }
 
     public Command setVelocityCommand(double topVelocity, double bottomVelocity) {
+        return Commands.runOnce(() -> setVelocity(topVelocity, bottomVelocity));
+    }
+
+    public Command setReverseVelocityCommand(double topVelocity, double bottomVelocity) {
         return Commands.runOnce(() -> setVelocity(topVelocity, bottomVelocity));
     }
 
@@ -309,6 +319,14 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
             );
     }
 
+    public boolean atVelocity(double velocity) {
+        return leftShooter.getVelocity().getValue() > velocity;
+    }
+
+    public boolean atTargetVelocity() {
+        return atVelocity(leftVelocityRequest.Velocity);
+    }
+
     public Command rampVelocity(double initialVelocity, double finalVelocity, double rampTimeSeconds) {
         return Commands.parallel(
             rampLeftVelocity(initialVelocity, finalVelocity, rampTimeSeconds),
@@ -340,6 +358,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
     @Override
     public void initShuffleboard(LOG_LEVEL priority) {
         ShuffleboardTab tab = Shuffleboard.getTab("Shooter");
+        tab.addBoolean("Shooter Roller Enabled", () -> this.enabled);
         tab.addNumber("Left Velocity", ()-> leftShooter.getVelocity().getValueAsDouble());
         tab.addNumber("Right Velocity", ()-> rightShooter.getVelocity().getValueAsDouble());
         tab.addNumber("Left Target Velocity", ()-> leftVelocityRequest.Velocity);

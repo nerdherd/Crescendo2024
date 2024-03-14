@@ -5,20 +5,22 @@ import java.util.Optional;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelperUser;
+import frc.robot.util.NerdyMath;
 import frc.robot.util.NerdySpline;
 
 public class ShooterVisionAdjustment implements Reportable{
     private Limelight limelight;
     private String name;
-    private LimelightHelperUser limelightHelperUser;
 
     private NerdySpline angleEquation;
     private NerdySpline distanceEquation;
@@ -31,26 +33,19 @@ public class ShooterVisionAdjustment implements Reportable{
     private GenericEntry poseTag;
     private GenericEntry goalDistance;
 
-    public ShooterVisionAdjustment(String name) {
-        this.name = name;
-        try {
-            limelight = new Limelight(name);
-            limelightHelperUser = new LimelightHelperUser(name);
-            limelight.setLightState(LightMode.OFF);
-            limelight.setPipeline(VisionConstants.kAprilTagPipeline);
+    //TODO: Test actual input and output data
+    private double[] distances = {1.4257, 2.836, 3.5482, 3.6585}; // meters, from least to greatest
+    private double[] angles = {-0.064, -0.025, -0.003, 0.01}; // rotations
 
-            SmartDashboard.putBoolean("Limelight: " + name + " inited", true);
-            SmartDashboard.putBoolean("LimelightHelper inited", true);
-        } catch (Exception e) {
-            SmartDashboard.putBoolean("limelight-" + name + " inited", false);
-            SmartDashboard.putBoolean("LimelightHelper inited", false);
-        }
+    public ShooterVisionAdjustment(String name, Limelight limelight) {
+        this.name = name;
+        this.limelight = limelight;
 
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
-        //TODO: Get actual input and output data
-        double[] distances = {0, 1, 2, 3}; // meters
-        double[] angles = {0, 0.841, 0.909, 0.141}; // degrees
+        for (int i = 0; i < angles.length; i++) {
+            angles[i] += VisionConstants.kSplineAngleOffset; //currently 0
+        }
 
         angleEquation = new NerdySpline(distances, angles);
         angleEquation.create();
@@ -64,17 +59,26 @@ public class ShooterVisionAdjustment implements Reportable{
         if(targetFound != null)
             targetFound.setBoolean(limelight.hasValidTarget());
 
-        if(poseRobot != null) poseRobot.setString(limelightHelperUser.getPose3d().toString());
-        return limelightHelperUser.getPose3d();
+        Pose3d pose = limelight.getBotPose3D();
+
+        // if (RobotContainer.IsRedSide()) {
+        //     pose = new Pose3d(VisionConstants.fieldXOffset*2 - pose.getX(), VisionConstants.fieldYOffset*2 - pose.getY(), pose.getZ(), new Rotation3d(0, 0, Math.PI - pose.getRotation().getZ()));
+        // }
+
+        if(poseRobot != null)
+            poseRobot.setString(pose.toString());
+
+        return pose;
     }
 
     public Pose3d getTagPose(int ID) {
-        if(ID < 1 || ID > 16) return null;
+        if(ID != 7 && ID != 4 && ID != 8 && ID != 3) return null;
         if(layout == null) return null;
         Optional<Pose3d> tagPose = layout.getTagPose(ID);
         if(tagPose.isEmpty()) return null;
         
-        if(poseTag != null) poseTag.setString(tagPose.toString());
+        if(poseTag != null) 
+            poseTag.setString(tagPose.toString());
         return tagPose.get();
     }
 
@@ -91,15 +95,30 @@ public class ShooterVisionAdjustment implements Reportable{
  
     public double getShooterAngle() {
         Pose3d currentPose = getRobotPose();
-        if(currentPose == null) return -1;
+        if(currentPose == null) return -0.1;
         Pose3d tagPose = getTagPose(limelight.getAprilTagID());
-        if(tagPose == null) return -1;
+        if(tagPose == null) return -0.1;
 
-        double distance = Math.abs(tagPose.getX() - currentPose.getX());
+        double distance = Math.sqrt(Math.pow(currentPose.getX() - tagPose.getX(), 2) + Math.pow(currentPose.getY() - tagPose.getY(), 2));
         if(distanceOffset != null) distanceOffset.setDouble(distance);
+        SmartDashboard.putNumber("Distance", distance);
+        if(distance < distances[0]) {
+            SmartDashboard.putBoolean("Vision failed", true);
+            return -0.1;
+        }
+        if (distance > distances[distances.length - 1]) {
+            SmartDashboard.putBoolean("Vision failed", true);
+            return 0.01;
+        }
 
-        if(goalAngle != null) goalAngle.setDouble(angleEquation.getOutput(distance));
-        return angleEquation.getOutput(distance);
+        SmartDashboard.putBoolean("Visioni failed", false);
+
+        double output = NerdyMath.clamp(angleEquation.getOutput(distance), -0.1, 0.2);
+        SmartDashboard.putNumber("Vision Angle", output);
+        SmartDashboard.putNumber("Vision Distance", distance);
+        if(goalAngle != null) 
+            goalAngle.setDouble(output);
+        return output;
     }
 
     @Override
@@ -112,7 +131,7 @@ public class ShooterVisionAdjustment implements Reportable{
         if (priority == LOG_LEVEL.OFF)  {
             return;
         }
-        ShuffleboardTab tab = Shuffleboard.getTab(name);
+        ShuffleboardTab tab = Shuffleboard.getTab("spline:" + name);
 
         //the lack of "break;"'s is intentional
         switch (priority) {
@@ -125,22 +144,22 @@ public class ShooterVisionAdjustment implements Reportable{
             case MEDIUM:
 
             case MINIMAL:   
-                goalAngle = tab.add("Calculated Angle", false)
+                goalAngle = tab.add("Calculated Angle", 0)
                 .withPosition(2, 0)
                 .withSize(2, 1)
                 .getEntry();
 
-                distanceOffset = tab.add("Distance Offset", false)
+                distanceOffset = tab.add("Distance Offset", 0)
                 .withPosition(2, 1)
                 .withSize(2, 1)
                 .getEntry();
 
-                poseRobot = tab.add("Calculated Angle", false)
+                poseRobot = tab.add("Robot Pose", "null")
                 .withPosition(0, 2)
                 .withSize(3, 1)
                 .getEntry();
 
-                poseTag = tab.add("Distance Offset", false)
+                poseTag = tab.add("Tag Pose", "null")
                 .withPosition(0, 3)
                 .withSize(3, 1)
                 .getEntry();

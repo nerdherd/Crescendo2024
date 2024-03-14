@@ -29,7 +29,7 @@ public class NerdyMath {
      * Maps x to the range [0, mod]
      */
     public static double posMod(double x, double mod) {
-        return ((x % 1) + 1) % 1;
+        return ((x % mod) + mod) % mod;
     }
 
     public static double degreesToRadians(double deg) {

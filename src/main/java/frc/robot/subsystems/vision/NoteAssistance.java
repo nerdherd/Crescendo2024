@@ -284,7 +284,16 @@ public class NoteAssistance implements Reportable{
             sidewaysSpeed.setDouble(speeds[1]);
     }
 
+    private void pidTurnTuning_test() {
+        VisionConstants.kPNoteAngle.loadPreferences();
+        VisionConstants.kINoteAngle.loadPreferences();
+        VisionConstants.kDNoteAngle.loadPreferences();
+
+        rotationController.setPID(VisionConstants.kPNoteAngle.get(), VisionConstants.kINoteAngle.get(), VisionConstants.kDNoteAngle.get());
+    }
+
     public void calculateRotationSpeed(double targetTX, int maxSamples) {
+        pidTurnTuning_test();
         dataSampleCount++;
         if(dataSampleCount > maxSamples && maxSamples > 0) {
             speeds[2] = 0;
@@ -362,9 +371,9 @@ public class NoteAssistance implements Reportable{
         switch (priority) {
             case ALL:
        
-            try{
-                tab.addCamera(name + ": Stream", name, VisionConstants.kLimelightFrontIP);
-            }catch(Exception e){};
+            // try{
+            //     tab.addCamera(name + ": Stream", name, VisionConstants.kLimelightFrontIP);
+            // }catch(Exception e){};
 
             case MEDIUM:
                 currentArea = tab.add("Area", 0)

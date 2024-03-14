@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -28,7 +29,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     private final DutyCycleEncoder throughBore;
 
     // Whether the pivot is running
-    private boolean enabled = false;
+    private boolean enabled = true;
 
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
@@ -43,7 +44,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
         configureMotor();
         configurePID();
-        resetEncoder();
+        syncEncoder();
     }
     
     //****************************** SETUP METHODS ******************************/
@@ -113,7 +114,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         }
     }
 
-    public void resetEncoder() {
+    public void syncEncoder() {
         // Save a consistent position offset
         IntakeConstants.kPivotOffset.loadPreferences();
         throughBore.setPositionOffset(IntakeConstants.kPivotOffset.get());
@@ -121,8 +122,8 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         double position = getAbsolutePosition();
         position = mapRev(position);
 
-        // pivot.setPosition(position);
-        pivot.setPosition(IntakeConstants.kPickupPosition.get());
+        pivot.setPosition(position);
+        // pivot.setPosition(IntakeConstants.kPickupPosition.get());
     }
 
     /**
@@ -135,7 +136,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
         // Save new offset to Preferences
         IntakeConstants.kPivotOffset.uploadPreferences();
-        resetEncoder();
+        syncEncoder();
     }
 
     public void zeroAbsoluteEncoderFullStow() {
@@ -145,22 +146,35 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         IntakeConstants.kPivotOffset.set(throughBore.getPositionOffset());
         IntakeConstants.kPivotOffset.uploadPreferences();
 
-        resetEncoder();
+        syncEncoder();
     }
+
+    private int count = 0;
 
     @Override
     public void periodic() {
+        count++;
+        // SmartDashboard.putNumber("Intake Count", count);
+        if (count > 10) {
+            syncEncoder();
+            count = 0;
+            // SmartDashboard.putBoolean("Intake Reset", true);
+        } else {
+            // SmartDashboard.putBoolean("Intake Reset", false);
+        }
+
         if (IntakeConstants.fullDisableIntake.get()) {
             pivot.setControl(brakeRequest);
             enabled = false;
             return;
         }
         
-        pivot.setControl(brakeRequest);
+        // pivot.setControl(brakeRequest);
 
         if (enabled) {
             pivot.setControl(motionMagicRequest);
         } else {
+            pivot.setControl(brakeRequest);
         }
     }
 
@@ -183,9 +197,9 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
     public double getAbsolutePosition() {
         if (IntakeConstants.kPivotAbsoluteEncoderInverted) {
-            return throughBore.getPositionOffset() - throughBore.getAbsolutePosition();
+            return mapRev(throughBore.getPositionOffset() - throughBore.getAbsolutePosition());
         }
-        return throughBore.getAbsolutePosition() - throughBore.getPositionOffset();
+        return mapRev(throughBore.getAbsolutePosition() - throughBore.getPositionOffset());
     }
 
     // Checks whether the pivot is within the deadband for a position
@@ -203,9 +217,15 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
     // Check if the intake is in a safe position for the shooter to move
     public boolean hasReachedNeutral() {
-        return (getPosition() < IntakeConstants.kNeutralPosition.get()
-            && getTargetPosition() < IntakeConstants.kNeutralPosition.get());
+        return (getPosition() <= IntakeConstants.kNeutralPosition.get() + IntakeConstants.kPivotDeadband.get()
+            && getTargetPosition() <= IntakeConstants.kNeutralPosition.get() + IntakeConstants.kPivotDeadband.get());
     }
+
+    // public boolean hasReachedIntakeShootingPosition() {
+    //     return (getPosition() <= IntakeConstants.kIntakeShootingPosition.get() + IntakeConstants.kPivotDeadband.get()
+    //         && getTargetPosition() <= IntakeConstants.kIntakeShootingPosition.get() + IntakeConstants.kPivotDeadband.get());
+    // }
+
 
     // Checks if the pivot is within deadband of the target pos
     public boolean atTargetPosition() {
@@ -258,6 +278,10 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         return setPositionCommand(IntakeConstants.kStowPosition.get());
     }
 
+    // public Command moveToIntakeShootingPosition() {
+    //     return setPositionCommand(IntakeConstants.kIntakeShootingPosition.get());
+    // }
+
     public Command moveToIntake() {
         return setPositionCommand(IntakeConstants.kPickupPosition.get());
     }
@@ -291,8 +315,11 @@ public class IntakePivot extends SubsystemBase implements Reportable {
             case MEDIUM:
             case MINIMAL:
                 tab.addBoolean("Intake Enabled", () -> this.enabled);
+                tab.addBoolean("At Neutral", this::hasReachedNeutral);
                 tab.addDouble("Intake Pivot Desired Position", this::getTargetPosition);
                 tab.addDouble("Intake Pivot Position", this::getPosition);
+                tab.addDouble("Intake Pivot Absolute Position", this::getAbsolutePosition);
+                tab.addDouble("Intake Pivot Velocity", () -> pivot.getVelocity().getValueAsDouble());
                 tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));
                 tab.add("Zero Full Stow Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoderFullStow));
                 tab.addNumber("Intake Pivot Applied Voltage", () -> pivot.getMotorVoltage().getValueAsDouble());

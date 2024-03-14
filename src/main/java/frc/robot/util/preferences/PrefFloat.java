@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Preferences;
 public class PrefFloat {
     private float value;
     private String key;
+    private final boolean active;
 
     /**
      * Create a float preference with the provided key and value
@@ -17,8 +18,13 @@ public class PrefFloat {
      * @param value
      */
     public PrefFloat(String key, float value) {
+        this(key, value, false);
+    }
+
+    public PrefFloat(String key, float value, boolean isPreference) {
         this.key = key;
         this.value = value;
+        this.active = isPreference;
         loadPreferences();
     }
 
@@ -26,6 +32,8 @@ public class PrefFloat {
      * Load preference from robot memory
      */
     public void loadPreferences() {
+        if (!active) return;
+
         Preferences.initFloat(key, value);
         value = Preferences.getFloat(key, value);
     }
@@ -34,6 +42,8 @@ public class PrefFloat {
      * Upload the current value of the preference in code to the robot memory
      */
     public void uploadPreferences() {
+        if (!active) return;
+
         Preferences.setFloat(key, value);
     }
 
@@ -50,6 +60,8 @@ public class PrefFloat {
      * @param value
      */
     public void set(float value) {
+        if (!active) return;
+
         this.value = value;
         uploadPreferences();
     }

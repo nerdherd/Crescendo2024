@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Preferences;
 public class PrefString {
     private String value;
     private String key;
+    private final boolean active;
 
     /**
      * Create a string preference with the provided key and value
@@ -17,8 +18,13 @@ public class PrefString {
      * @param value
      */
     public PrefString(String key, String value) {
+        this(key, value, false);
+    }
+
+    public PrefString(String key, String value, boolean isPreference) {
         this.key = key;
         this.value = value;
+        this.active = isPreference;
         loadPreferences();
     }
 
@@ -26,6 +32,8 @@ public class PrefString {
      * Load preference from robot memory
      */
     public void loadPreferences() {
+        if (!active) return;
+
         Preferences.initString(key, value);
         value = Preferences.getString(key, value);
     }
@@ -34,6 +42,8 @@ public class PrefString {
      * Upload the current value of the preference in code to the robot memory
      */
     public void uploadPreferences() {
+        if (!active) return;
+
         Preferences.setString(key, value);
     }
 
@@ -50,6 +60,8 @@ public class PrefString {
      * @param value
      */
     public void set(String value) {
+        if (!active) return;
+
         this.value = value;
         uploadPreferences();
     }

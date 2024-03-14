@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Preferences;
 public class PrefBool {
     private boolean value;
     private String key;
+    private final boolean active;
 
     /**
      * Creates a boolean preference with the provided key and value
@@ -17,8 +18,13 @@ public class PrefBool {
      * @param value
      */
     public PrefBool(String key, boolean value) {
+        this(key, value, false);
+    }
+
+    public PrefBool(String key, boolean value, boolean isPreference) {
         this.key = key;
         this.value = value;
+        this.active = isPreference;
         loadPreferences();
     }
 
@@ -26,6 +32,8 @@ public class PrefBool {
      * Load preference from robot memory
      */
     public void loadPreferences() {
+        if (!active) return;
+
         Preferences.initBoolean(key, value);
         value = Preferences.getBoolean(key, value);
     }
@@ -34,6 +42,8 @@ public class PrefBool {
      * Upload the current value of the preference in code to the robot memory
      */
     public void uploadPreferences() {
+        if (!active) return;
+
         Preferences.setBoolean(key, value);
     }
 
@@ -50,6 +60,8 @@ public class PrefBool {
      * @param value
      */
     public void set(boolean value) {
+        if (!active) return;
+
         this.value = value;
         uploadPreferences();
     }
