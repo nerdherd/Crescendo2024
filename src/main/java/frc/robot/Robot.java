@@ -46,7 +46,6 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     CommandScheduler.getInstance().cancelAll();
-    robotContainer.swerveDrive.setBreak(true);
   }
 
   @Override
@@ -55,20 +54,20 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    robotContainer.swerveDrive.setBreak(false);
+    
     robotContainer.swerveDrive.refreshModulePID();
     robotContainer.imu.zeroHeading();
     robotContainer.imu.zeroAll();
 
-    // ShooterConstants.kPivotDeadband.loadPreferences();
-    // ShooterConstants.fullDisableShooter.loadPreferences();
-    // IntakeConstants.fullDisableIntake.loadPreferences();
+    ShooterConstants.kPivotDeadband.loadPreferences();
+    ShooterConstants.fullDisableShooter.loadPreferences();
+    IntakeConstants.fullDisableIntake.loadPreferences();
     
-    // robotContainer.intakePivot.configurePID();
-    // robotContainer.shooterPivot.configurePID();
-    // robotContainer.intakeRoller.configurePID();
-    // robotContainer.shooterRoller.configurePID();
-    // robotContainer.indexer.configurePID();
+    robotContainer.intakePivot.configurePID();
+    robotContainer.shooterPivot.configurePID();
+    robotContainer.intakeRoller.configurePID();
+    robotContainer.shooterRoller.configurePID();
+    robotContainer.indexer.configurePID();
     // robotContainer.swerveDrive.setVelocityControl(false);
     autoCommand = robotContainer.getAutonomousCommand();
 
@@ -90,18 +89,17 @@ public class Robot extends TimedRobot {
     if (autoCommand != null) {
       autoCommand.cancel();
     }
-    robotContainer.swerveDrive.setBreak(false);
     // robotContainer.swerveDrive.setVelocityControl(true);
-    // robotContainer.swerveDrive.refreshModulePID();
-    // ShooterConstants.kPivotDeadband.loadPreferences();
-    // ShooterConstants.fullDisableShooter.loadPreferences();
-    // IntakeConstants.fullDisableIntake.loadPreferences();
+    robotContainer.swerveDrive.refreshModulePID();
+    ShooterConstants.kPivotDeadband.loadPreferences();
+    ShooterConstants.fullDisableShooter.loadPreferences();
+    IntakeConstants.fullDisableIntake.loadPreferences();
     
-    // robotContainer.intakePivot.configurePID();
-    // robotContainer.shooterPivot.configurePID();
-    // robotContainer.intakeRoller.configurePID();
-    // robotContainer.shooterRoller.configurePID();
-    // robotContainer.indexer.configurePID();
+    robotContainer.intakePivot.configurePID();
+    robotContainer.shooterPivot.configurePID();
+    robotContainer.intakeRoller.configurePID();
+    robotContainer.shooterRoller.configurePID();
+    robotContainer.indexer.configurePID();
     robotContainer.configureBindings_teleop();
     robotContainer.initDefaultCommands_teleop();
   }
@@ -112,15 +110,15 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
-    // ShooterConstants.kPivotDeadband.loadPreferences();
-    // ShooterConstants.fullDisableShooter.loadPreferences();
-    // IntakeConstants.fullDisableIntake.loadPreferences();
+    ShooterConstants.kPivotDeadband.loadPreferences();
+    ShooterConstants.fullDisableShooter.loadPreferences();
+    IntakeConstants.fullDisableIntake.loadPreferences();
     
-    // robotContainer.intakePivot.configurePID();
-    // robotContainer.shooterPivot.configurePID();
-    // robotContainer.intakeRoller.configurePID();
-    // robotContainer.shooterRoller.configurePID();
-    // robotContainer.indexer.configurePID();
+    robotContainer.intakePivot.configurePID();
+    robotContainer.shooterPivot.configurePID();
+    robotContainer.intakeRoller.configurePID();
+    robotContainer.shooterRoller.configurePID();
+    robotContainer.indexer.configurePID();
     robotContainer.configureBindings_test();
     robotContainer.initDefaultCommands_test();
   }

@@ -235,7 +235,7 @@ public class SwerveModule implements Reportable {
      * @return Angle in degrees
      */
     public double getTurningPositionDegrees() {
-        double turningPosition = ((360 * canCoder.getAbsolutePosition().getValue()) % 360 + 360) % 360;
+        double turningPosition = (360 * canCoder.getAbsolutePosition().getValue()) % 360;
         return turningPosition;
     }
 
@@ -345,14 +345,14 @@ public class SwerveModule implements Reportable {
                 tab.addNumber("Turn angle percent", () -> turnMotor.getDutyCycle().getValue());
                 tab.addNumber("Angle Difference", () -> desiredAngle - currentAngle);
             case MINIMAL:
-                // tab.addNumber("Turn angle", this::getTurningPositionDegrees);
-                // tab.addNumber("Desired Angle", () -> desiredAngle);
+                tab.addNumber("Turn angle", this::getTurningPositionDegrees);
+                tab.addNumber("Desired Angle", () -> desiredAngle);
                 tab.addNumber("Drive Supply Current", () -> driveMotor.getSupplyCurrent().getValue());
                 // tab.addNumber("Module Velocity", this::getDriveVelocity);
                 tab.addNumber("Module Velocity RPS", this::getDriveVelocityRPS);
                 tab.addNumber("Desired Velocity", () -> this.desiredVelocity);
-                // tab.addBoolean("Velocity Control", () -> this.velocityControl);
-                // tab.addString("Error Status", () -> driveMotor.getFaultField().getName());
+                tab.addBoolean("Velocity Control", () -> this.velocityControl);
+                tab.addString("Error Status", () -> driveMotor.getFaultField().getName());
                 tab.addNumber("Drive Stator Current", () -> driveMotor.getStatorCurrent().getValue());
                 break;
             }

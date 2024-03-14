@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -11,8 +9,8 @@ import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.util.NerdyMath;
 
-public class TurnToAngleContinuous extends Command {
-    private Supplier<Double> targetAngle;
+public class TurnToBigAngle extends Command {
+    private double targetAngle;
     private SwerveDrivetrain swerveDrive;
     private PIDController pidController;
     // private SlewRateLimiter limiter;
@@ -23,7 +21,7 @@ public class TurnToAngleContinuous extends Command {
      * @param swerveDrive   Swerve drivetrain to rotate
      * @param period        Time between each calculation (default 20ms)
      */
-    public TurnToAngleContinuous(Supplier<Double> targetAngle, SwerveDrivetrain swerveDrive, double period) {
+    public TurnToBigAngle(double targetAngle, SwerveDrivetrain swerveDrive, double period) {
         this.targetAngle = targetAngle;
         this.swerveDrive = swerveDrive;
 
@@ -44,7 +42,7 @@ public class TurnToAngleContinuous extends Command {
         addRequirements(swerveDrive);
     }
 
-    public TurnToAngleContinuous(Supplier<Double> targetAngle, SwerveDrivetrain swerveDrive) {
+    public TurnToBigAngle(double targetAngle, SwerveDrivetrain swerveDrive) {
         // Default period is 20 ms
         this(targetAngle, swerveDrive, 0.02);
     }
@@ -57,13 +55,13 @@ public class TurnToAngleContinuous extends Command {
     @Override
     public void execute() {
         // Calculate turning speed with PID
-        double turningSpeed = pidController.calculate(swerveDrive.getImu().getHeading(), targetAngle.get());
+        double turningSpeed = pidController.calculate(swerveDrive.getImu().getHeading(), targetAngle);
         turningSpeed = Math.toRadians(turningSpeed);
 
         turningSpeed = NerdyMath.clamp(
             turningSpeed, 
-            -SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond, 
-            SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond);
+            -SwerveDriveConstants.kTurnToBigAngleMaxAngularSpeedRadiansPerSecond, 
+            SwerveDriveConstants.kTurnToBigAngleMaxAngularSpeedRadiansPerSecond);
         // SmartDashboard.putNumber("Turning speed limited", turningSpeed);
         
         // Convert speed into swerve states

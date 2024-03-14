@@ -16,13 +16,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.util.NerdyMath;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterPivot extends SubsystemBase implements Reportable {
@@ -35,7 +35,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     // Whether the pivot is running
     private boolean enabled = true;
 
-    private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(-0.1, true, 0, 0, false, false, false);
+    private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
     private final Follower followRequest = new Follower(53, true);
 
@@ -51,7 +51,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
         configureMotor();
         configurePID();
-        syncEncoder();
+        resetEncoder();
     }
     
     //****************************** SETUP METHODS ******************************/
@@ -74,8 +74,6 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         pivotConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
         pivotConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         pivotConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
-        pivotConfigs.CurrentLimits.StatorCurrentLimit = 100;
-        pivotConfigs.CurrentLimits.StatorCurrentLimitEnable = false;
         pivotConfigs.Audio.AllowMusicDurDisable = true;
 
         StatusCode leftStatusPivot = leftPivotConfigurator.apply(pivotConfigs);
@@ -153,7 +151,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         }
     }
 
-    public void syncEncoder() {
+    public void resetEncoder() {
         // Save a consistent position offset
         ShooterConstants.kPivotOffset.loadPreferences();
         throughBore.setPositionOffset(ShooterConstants.kPivotOffset.get());
@@ -175,7 +173,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
         // Save new offset to Preferences
         ShooterConstants.kPivotOffset.uploadPreferences();
-        syncEncoder();
+        resetEncoder();
     }
 
     public void zeroAbsoluteEncoderFullStow() {
@@ -185,37 +183,23 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         ShooterConstants.kPivotOffset.set(throughBore.getPositionOffset());
         ShooterConstants.kPivotOffset.uploadPreferences();
 
-        syncEncoder();
+        resetEncoder();
     }
 
-    private int count = 0;
-    
     @Override
     public void periodic() {
-        count++;
-        // SmartDashboard.putNumber("Shooter Count", count);
-        if (count > 40) {
-            syncEncoder();
-            count = 0;
-            // SmartDashboard.putBoolean("Shooter Reset", true);
-        } else {
-            // SmartDashboard.putBoolean("Shooter Reset", false);
-        }
-
         if (ShooterConstants.fullDisableShooter.get()) {
             leftPivot.setControl(brakeRequest);
-            rightPivot.setControl(brakeRequest);
+            // rightPivot.setControl(brakeRequest);
             enabled = false;
             return;
         }
         
-        // rightPivot.setControl(brakeRequest);
-
-        // leftPivot.setControl(brakeRequest);
+        rightPivot.setControl(brakeRequest);
 
         if (enabled) {
             leftPivot.setControl(motionMagicRequest);
-            rightPivot.setControl(followRequest);
+            // rightPivot.setControl(followRequest);
             // rightPivot.setControl(motionMagicRequest);
             
         } else {
@@ -242,21 +226,21 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     public double getAbsolutePosition() {
         if (ShooterConstants.kPivotAbsoluteEncoderInverted) {
-            return mapRev(throughBore.getPositionOffset() - throughBore.getAbsolutePosition());
+            return throughBore.getPositionOffset() - throughBore.getAbsolutePosition();
         }
-        return mapRev(throughBore.getAbsolutePosition() - throughBore.getPositionOffset());
+        return throughBore.getAbsolutePosition() - throughBore.getPositionOffset();
     }
 
     // Checks whether the pivot is within the deadband for a position
     public boolean hasReachedPosition(double position) {
         return NerdyMath.inRange(
             getPosition(),
-            position - ShooterConstants.kPivotDeadband.get(), 
-            position + ShooterConstants.kPivotDeadband.get()
+            position - IntakeConstants.kPivotDeadband.get(), 
+            position + IntakeConstants.kPivotDeadband.get()
         ) && NerdyMath.inRange(
             getTargetPosition(),
-            position - ShooterConstants.kPivotDeadband.get(), 
-            position + ShooterConstants.kPivotDeadband.get()
+            position - IntakeConstants.kPivotDeadband.get(), 
+            position + IntakeConstants.kPivotDeadband.get()
         );
     }
 
@@ -328,10 +312,6 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         return Commands.runOnce(() -> setPosition(ShooterConstants.kSpeakerPosition.get()));
     }
 
-    public Command moveToSpeakerAuto() {
-        return Commands.runOnce(() -> setPosition(ShooterConstants.kSpeakerPositionAuto.get()));
-    }
-
     public Command moveToSpeakerFar() {
         return Commands.runOnce(() -> setPosition(ShooterConstants.kSpeakerPosition2.get()));
     }
@@ -372,7 +352,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
                 tab.addDouble("Right Shooter Pivot Velocity", () -> rightPivot.getVelocity().getValueAsDouble());
                 tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));
                 tab.add("Full Stow Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoderFullStow));
-                tab.add("Sync Encoder", Commands.runOnce(this::syncEncoder));
+                tab.add("Sync Encoder", Commands.runOnce(this::resetEncoder));
                 tab.addDouble("Absolute Encoder Position", this::getAbsolutePosition);
                 tab.addDouble("Left Pivot Applied Voltage", () -> leftPivot.getMotorVoltage().getValueAsDouble());
                 tab.addDouble("Right Pivot Applied Voltage", () -> rightPivot.getMotorVoltage().getValueAsDouble());

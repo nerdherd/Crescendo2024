@@ -105,10 +105,6 @@ public class NavX extends SubsystemBase implements Gyro {
         return heading - offset;
     }
 
-    public void setHeading(double heading) {
-        this.offset += (getHeading() - heading);
-    }
-
     public double getPitch() {
         return (ahrs.getPitch() - this.pitchOffset) % 360;
     }

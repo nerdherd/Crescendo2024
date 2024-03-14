@@ -8,7 +8,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
@@ -28,11 +27,11 @@ public class Basic6PieceSeparated extends SequentialCommandGroup {
             Commands.sequence(
                 Commands.deadline(
                     Commands.waitSeconds(1.5), // possibly change this time based on testing time
-                    superSystem.shootSubwoofer()
+                    superSystem.shootSequence2()
                 ),
                 Commands.deadline(
                     AutoBuilder.followPath((pathGroup.get(0))),
-                    superSystem.intakeDirectShoot(ShooterConstants.k6PieceHandoffPosition.get(), ShooterConstants.kTopOuttakeAuto1.get(), ShooterConstants.kBottomOuttakeAuto1.get())
+                    superSystem.intakeDirectShoot()
                 ),               
                 AutoBuilder.followPath(pathGroup.get(1)),
                 Commands.deadline(
@@ -40,6 +39,7 @@ public class Basic6PieceSeparated extends SequentialCommandGroup {
                         AutoBuilder.followPath(pathGroup.get(2)),
                         Commands.waitSeconds(1)
                     ),
+                    superSystem.intakePickup(),
                     superSystem.intakeBasic()
                 ),
                 AutoBuilder.followPath(pathGroup.get(3)),
@@ -56,6 +56,7 @@ public class Basic6PieceSeparated extends SequentialCommandGroup {
                         AutoBuilder.followPath(pathGroup.get(6)),
                         Commands.waitSeconds(1)
                     ),
+                    superSystem.intakePickup(),
                     superSystem.intakeBasic()
                 ),
                 AutoBuilder.followPath(pathGroup.get(7)),

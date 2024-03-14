@@ -136,12 +136,12 @@ public class SwerveJoystickCommand extends Command {
                 targetAngle = tempAngle;
             } else {
                 targetAngle = ((targetAngle + turningSpdFunction.get() % 360) + 360) % 360;
-                // SwerveDriveConstants.kPThetaTeleop.loadPreferences();
-                // SwerveDriveConstants.kIThetaTeleop.loadPreferences();
-                // SwerveDriveConstants.kDThetaTeleop.loadPreferences();
-                // turnToAngleController.setP(SwerveDriveConstants.kPThetaTeleop.get());
-                // turnToAngleController.setI(SwerveDriveConstants.kIThetaTeleop.get());
-                // turnToAngleController.setD(SwerveDriveConstants.kDThetaTeleop.get());
+                SwerveDriveConstants.kPThetaTeleop.loadPreferences();
+                SwerveDriveConstants.kIThetaTeleop.loadPreferences();
+                SwerveDriveConstants.kDThetaTeleop.loadPreferences();
+                turnToAngleController.setP(SwerveDriveConstants.kPThetaTeleop.get());
+                turnToAngleController.setI(SwerveDriveConstants.kIThetaTeleop.get());
+                turnToAngleController.setD(SwerveDriveConstants.kDThetaTeleop.get());
             }
             turningSpeed = turnToAngleController.calculate(swerveDrive.getImu().getHeading(), targetAngle);
             turningSpeed = Math.toRadians(turningSpeed);
@@ -150,14 +150,13 @@ public class SwerveJoystickCommand extends Command {
                 -SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond, 
                 SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond);
             SmartDashboard.putNumber("Turning Speed", turningSpeed);
-            SmartDashboard.putNumber("Target Angle", targetAngle);
             
             filteredTurningSpeed = turningSpeed;
         }
         else {
             // Manual turning
             turningSpeed = turningSpdFunction.get();
-            turningSpeed *= -0.5;
+            turningSpeed *= -0.1;
             filteredTurningSpeed = turningFilter.calculate(turningSpeed);
         }
 

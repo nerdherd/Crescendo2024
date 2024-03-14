@@ -13,8 +13,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 import java.util.Arrays;
 
-import javax.lang.model.util.ElementScanner14;
-
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Reportable;
 import frc.robot.util.NerdyMath;
-import frc.robot.util.filters.ExponentialSmoothingFilter;
 
 public class Limelight implements Reportable{
     private static Limelight m_Instance;
@@ -38,7 +35,6 @@ public class Limelight implements Reportable{
     private double tXList[] = new double[10];
     private double tAList[] = new double[10];
     private double tYList[] = new double[10];
-    private double tSKList[] = new double[10];
 
     public enum LightMode {
         DEFAULT(0), OFF(1), BLINK(2), ON(3);
@@ -140,8 +136,7 @@ public class Limelight implements Reportable{
     private double m_LimelightDriveCommand = 0.0;
     private double m_LimelightSteerCommand = 0.0;
 
-    private final NetworkTableEntry m_botPosRed;
-    private final NetworkTableEntry m_botPosBlue;
+    private final NetworkTableEntry m_botPos;
     private final NetworkTableEntry m_camPos;
 
     public Limelight(String keyN)
@@ -156,13 +151,13 @@ public class Limelight implements Reportable{
         ta = table.getEntry("ta");
 
         // same as Pathfinder's Coordinate System
-        //if(RobotContainer.IsRedSide())
+        if(RobotContainer.IsRedSide())
         {
-            m_botPosRed = table.getEntry("botpose_wpired");
+            m_botPos = table.getEntry("botpose_wpired");
         }
-        //else
+        else
         {
-            m_botPosBlue = table.getEntry("botpose_wpiblue");
+            m_botPos = table.getEntry("botpose_wpiblue");
         }
 
         m_camPos = table.getEntry("targetpose_cameraspace");
@@ -177,27 +172,25 @@ public class Limelight implements Reportable{
         initDoneTX = false;
         //tYList = new double[10]; // do not need it?
         initDoneTY = false;
-        initDoneSK = false;
         
         indexTX = 0;
         indexTY = 0;
         indexTA = 0;
-        indexSK = 0;
     }
 
     public double getCamPoseSkew() {
-        //double[] botPose = m_botPos.getDoubleArray(new double[6]);
+        double[] botPose = m_botPos.getDoubleArray(new double[6]);
         double[] camPose = m_camPos.getDoubleArray(new double[6]);
 
-        // if(botPose.length != 0) {
-        //     SmartDashboard.putNumber("x bot pose: ", botPose[0]);
-        //     SmartDashboard.putNumber("y bot pose: ", botPose[1]);
-        //     SmartDashboard.putNumber("z bot pose: ", botPose[2]);
+        if(botPose.length != 0) {
+            SmartDashboard.putNumber("x bot pose: ", botPose[0]);
+            SmartDashboard.putNumber("y bot pose: ", botPose[1]);
+            SmartDashboard.putNumber("z bot pose: ", botPose[2]);
 
-        //     SmartDashboard.putNumber("BOT POSE 4: ", botPose[3]);
-        //     SmartDashboard.putNumber("BOT POSE 5: ", botPose[4]);
-        //     SmartDashboard.putNumber("BOT POSE 6: ", botPose[5]);
-        // }
+            SmartDashboard.putNumber("BOT POSE 4: ", botPose[3]);
+            SmartDashboard.putNumber("BOT POSE 5: ", botPose[4]);
+            SmartDashboard.putNumber("BOT POSE 6: ", botPose[5]);
+        }
 
         if(camPose.length >= 6) {
             SmartDashboard.putNumber("x tag pose: ", camPose[0]);
@@ -217,74 +210,22 @@ public class Limelight implements Reportable{
 
     }
 
-    int indexSK = 0;
-    boolean initDoneSK = false;
-    public double getSkew_avg() {
-        tSKList[indexSK] = getCamPoseSkew();
-        indexSK ++;
-        if(indexSK >= tSKList.length) {
-            indexSK = 0;
-            initDoneSK = true;
-        }
+    public Pose2d getBotPose2D()
+    {
+        double[] botPose = m_botPos.getDoubleArray(new double[6]);
 
-        //SmartDashboard.putNumberArray("txFiltered", tXList);
-
-        double SKSum = 0;
-        if(initDoneSK) {
-            for(int i = 0; i < tSKList.length; i++) {
-                SKSum += tSKList[i];
-            }
-            
-            //SmartDashboard.putNumber("TXAverage", TXSum / tXList.length);
-
-            return SKSum / tSKList.length;
-        }
-        else {
-            for(int i = 0; i < indexSK; i++) {
-                SKSum += tSKList[i];
-            }
-
-            return SKSum / indexSK;
-        }
+        Translation2d tran2d = new Translation2d(botPose[0], botPose[1]);
+        Rotation2d r2d = new Rotation2d(Units.degreesToRadians(botPose[5]));
+        return new Pose2d(tran2d, r2d);
     }
-
-
-    // public Pose2d getBotPose2D()
-    // {
-    //     double[] botPose = m_botPos.getDoubleArray(new double[6]);
-
-    //     Translation2d tran2d = new Translation2d(botPose[0], botPose[1]);
-    //     Rotation2d r2d = new Rotation2d(Units.degreesToRadians(botPose[5]));
-    //     return new Pose2d(tran2d, r2d);
-    // }
 
     public Pose3d getBotPose3D()
     {
-        double[] botPose;
-        // if(RobotContainer.IsRedSide())
-        // botPose = m_botPosRed.getDoubleArray(new double[6]);
-        // else 
-        botPose = m_botPosBlue.getDoubleArray(new double[6]);
-
+        double[] botPose = m_botPos.getDoubleArray(new double[6]);
         return new Pose3d(
             new Translation3d(botPose[0], botPose[1], botPose[2]),
             new Rotation3d(Units.degreesToRadians(botPose[3]), Units.degreesToRadians(botPose[4]),
                     Units.degreesToRadians(botPose[5])));
-    }
-
-    private ExponentialSmoothingFilter filterPoseX = new ExponentialSmoothingFilter(2.0 / 11);
-    private ExponentialSmoothingFilter filterPoseY = new ExponentialSmoothingFilter(2.0 / 11);
-    private ExponentialSmoothingFilter filterPoseZ = new ExponentialSmoothingFilter(2.0 / 11);
-    private Pose3d currentPoseAvg = null;
-    private void updateAvgPose() {
-        Pose3d pose = getBotPose3D();
-        if(!hasValidTarget()) return;
-        if(currentPoseAvg == null) currentPoseAvg = pose;
-        else currentPoseAvg = new Pose3d(filterPoseX.calculate(pose.getX()), filterPoseY.calculate(pose.getX()), filterPoseZ.calculate(pose.getX()), pose.getRotation());
-    }
-    public Pose3d getBotPose3D_avg() {
-        updateAvgPose();
-        return currentPoseAvg;
     }
 
     public String getName() {

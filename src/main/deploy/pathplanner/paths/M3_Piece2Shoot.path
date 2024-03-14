@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.930642280685416,
-        "y": 2.459275674614116
+        "x": 7.95,
+        "y": 2.46
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.763622579884244,
-        "y": 0.0037574248044347502
+        "x": 8.01,
+        "y": 2.46
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.60221165235483,
-        "y": 3.7357568581043004
+        "x": 1.8644289499705946,
+        "y": 3.1619258673610067
       },
       "prevControl": {
-        "x": 2.477791863518905,
-        "y": 1.7396306806931567
+        "x": 4.522788845862998,
+        "y": 0.19908422127828404
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "shootSequence2Far"
+                "name": "shootSequence2"
               }
             }
           ]
@@ -57,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -38.418055344821944,
+    "rotation": -48.4682292589172,
     "rotateFast": true
   },
   "reversed": false,

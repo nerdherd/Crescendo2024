@@ -35,8 +35,8 @@ public class ColorSensor implements Reportable {
     @Override
     public void initShuffleboard(LOG_LEVEL priority) {
         ShuffleboardTab tab = Shuffleboard.getTab("Indexer");
-        // tab.addBoolean("Note Detected", this::noteIntook);
-        // tab.addNu+mber("Distance Detected", () -> colorSensor.getProximity());
+        tab.addBoolean("Note Detected", this::noteIntook);
+        tab.addNumber("Distance Detected", () -> colorSensor.getProximity());
     }
     
 }

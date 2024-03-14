@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
-public class Basic5Piece extends SequentialCommandGroup {
-    public Basic5Piece(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem) {     
+public class Auto4Notes extends SequentialCommandGroup {
+    public Auto4Notes(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem) {     
         
         // Use the PathPlannerAuto class to get a path group from an auto
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
@@ -24,19 +24,13 @@ public class Basic5Piece extends SequentialCommandGroup {
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
-            Commands.sequence(
-                Commands.waitSeconds(2),
-                Commands.parallel(
-                    AutoBuilder.followPath((pathGroup.get(0))),
-                    superSystem.intakeDirectShoot()
-                ),
-                Commands.waitSeconds(1),
-                Commands.parallel(                    
-                    AutoBuilder.followPath(pathGroup.get(1)),
-                    Commands.run(() -> superSystem.intakePickup())
-                ),
-                superSystem.shootSequence2Far()
-            )
+
+            AutoBuilder.followPath((pathGroup.get(0))),
+
+            AutoBuilder.followPath((pathGroup.get(1))),
+
+            AutoBuilder.followPath((pathGroup.get(2)))
+            
             );
     }
 }

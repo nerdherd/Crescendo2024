@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.021775923723031,
-        "y": 1.4404328951311258
+        "x": 7.87,
+        "y": 0.77
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.6,
-        "y": 3.74
+        "x": 1.9159453703522806,
+        "y": 3.1968894707020192
       },
       "prevControl": {
-        "x": 2.9535367487282747,
-        "y": 2.3538781457020823
+        "x": 1.9100753606342618,
+        "y": 3.1371773028807923
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "shootSequence2Far"
+                "name": "shootSequence2"
               }
             }
           ]
@@ -57,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.30027744918559,
+    "rotation": -43.36342295838336,
     "rotateFast": true
   },
   "reversed": false,

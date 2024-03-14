@@ -34,16 +34,10 @@
           "data": {
             "pathName": "M3_Piece2Shoot"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "M3_GoToMid"
-          }
         }
       ]
     }
   },
-  "folder": "Comp Autos",
+  "folder": null,
   "choreoAuto": false
 }
