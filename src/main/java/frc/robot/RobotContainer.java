@@ -274,8 +274,6 @@ public class RobotContainer {
   public void configureBindings_teleop() {
     // Driver bindings
     Trigger noteTrigger = new Trigger(superSystem.noteSensor::noteIntook);
-    driverController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
-    operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
     noteTrigger.onTrue(Commands.sequence(
       Commands.runOnce(() -> {
         operatorController.setRumble(GenericHID.RumbleType.kRightRumble, .7);
