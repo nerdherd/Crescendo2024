@@ -249,7 +249,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
 
     // Checks if the pivot is within deadband of the target pos
     public boolean atTargetPosition() {
-        return hasReachedPosition(motionMagicRequest.Position);
+        return hasReachedPosition(motionMagicRequest.Position * 360);
     }
 
     public void stop() {
@@ -273,6 +273,9 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     }
 
     public void incrementPosition(double increment) {
+        if (Math.abs(increment) <= 0.1) {
+            return;
+        } 
         setPosition(getPositionDegrees() + increment);
     }
 

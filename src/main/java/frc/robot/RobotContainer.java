@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -126,37 +127,39 @@ public class RobotContainer {
 
   public void initDefaultCommands_teleop() {
 
-    intakePivot.setDefaultCommand(
-      new RunCommand(
-        () -> 
-          intakePivot.incrementPosition(
-            Math.signum(
-              NerdyMath.deadband(
-              -operatorController.getRightY(), 
-              -ControllerConstants.kDeadband, 
-              ControllerConstants.kDeadband)
-            ) * 2
+    // intakePivot.setDefaultCommand(
+    //   new RunCommand(
+    //     () -> 
+    //       intakePivot.incrementPosition(
+    //         Math.signum(
+    //           NerdyMath.deadband(
+    //           -operatorController.getRightY(), 
+    //           -ControllerConstants.kDeadband, 
+    //           ControllerConstants.kDeadband)
+    //         ) * 2
             
-            ), // (20 * x) degrees per second
-                // If x = 2, then v = 40 degrees per second
-        intakePivot
-      ));
+    //         ), // (20 * x) degrees per second
+    //             // If x = 2, then v = 40 degrees per second
+    //     intakePivot
+    //   ));
     
-    shooterPivot.setDefaultCommand(
-      new RunCommand(
-        () -> {
-          shooterPivot.incrementPosition(
-            Math.signum(
-              NerdyMath.deadband(
-                -operatorController.getLeftY(), //0.5 rev/second 
-                -ControllerConstants.kDeadband, 
-                ControllerConstants.kDeadband)
-            ) * 0.1); // (20 * x) degrees per second
-            // If x = 0.1, then v = 2 degrees per second
+    // shooterPivot.setDefaultCommand(
+    //   new RunCommand(
+    //     () -> {
+    //       double increment = Math.signum(
+    //           NerdyMath.deadband(
+    //             -operatorController.getLeftY(), //0.5 rev/second 
+    //             -ControllerConstants.kDeadband, 
+    //             ControllerConstants.kDeadband)
+    //         ) * 0.1;
+    //       SmartDashboard.putNumber("Increment", increment);
+    //       shooterPivot.incrementPosition(increment);
+    //          // (20 * x) degrees per second
+    //         // If x = 0.1, then v = 2 degrees per second
             
-        },
-        shooterPivot
-      ));
+    //     },
+    //     shooterPivot
+    //   ));
 
       swerveDrive.setDefaultCommand(
       new SwerveJoystickCommand(
@@ -275,14 +278,14 @@ public class RobotContainer {
 
   public void configureBindings_teleop() {
     // Driver bindings
-    Trigger noteTrigger = new Trigger(superSystem.noteSensor::noteIntook);
-    driverController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
-    operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
-    noteTrigger.onTrue(Commands.sequence(
-      Commands.runOnce(() -> operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
-      Commands.runOnce(() -> driverController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
-      Commands.runOnce(() -> apriltagCamera.toggleLight(true))
-    ));
+    // Trigger noteTrigger = new Trigger(superSystem.noteSensor::noteIntook);
+    // driverController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
+    // operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
+    // noteTrigger.onTrue(Commands.sequence(
+    //   Commands.runOnce(() -> operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
+    //   Commands.runOnce(() -> driverController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
+    //   Commands.runOnce(() -> apriltagCamera.toggleLight(true))
+    // ));
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()
@@ -410,11 +413,11 @@ public class RobotContainer {
     }
 
     if (paths.contains("5PieceMid")){
-      autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5 Piece Mid", superSystem));
+      autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5PieceMid", superSystem));
     }
 
     if (paths.contains("5PieceMidSecond")){
-      autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5 Piece Mid Second", superSystem));
+      autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem));
     }
     
 

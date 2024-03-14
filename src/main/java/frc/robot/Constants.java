@@ -299,20 +299,21 @@ public final class Constants {
     public static final double kPivotMaxPos = 108;
     public static final double kPivotMinPos = -72;
 
-    public static final PrefDouble kSpeakerPosition  = new PrefDouble("Pivot Speaker Position", -25.2);
-    public static final PrefDouble kSpeakerPositionAuto  = new PrefDouble("Pivot Speaker Position Auto", -25.2);
-    public static final PrefDouble kSpeakerPosition2 = new PrefDouble("Pivot Speaker Position 2", -7.2);
+    public static final PrefDouble kSpeakerPosition  = new PrefDouble("Pivot Speaker Position", -51);
+    public static final PrefDouble kSpeakerPositionAuto  = new PrefDouble("Pivot Speaker Position Auto", -51);
+    public static final PrefDouble kSpeakerPosition2 = new PrefDouble("Pivot Speaker Position 2", -21.5);
     public static final PrefDouble kNeutralPosition  = new PrefDouble("Pivot Neutral Position", 36);
-    public static final PrefDouble kAmpPosition      = new PrefDouble("Pivot Amp Position"    , 62.28);
-    public static final PrefDouble kHandoffPosition  = new PrefDouble("Pivot Handoff Position", -14.4);
-    public static final PrefDouble kHandoffPosition2 = new PrefDouble("Pivot Handoff Position2", -14.4);   
+    public static final PrefDouble kAmpPosition      = new PrefDouble("Pivot Amp Position"    , 32);
+    public static final PrefDouble kHandoffPosition  = new PrefDouble("Pivot Handoff Position", -43);
+    public static final PrefDouble kEjectPosition  = new PrefDouble("Pivot Eject Position", -30);
+    public static final PrefDouble kHandoffPosition2 = new PrefDouble("Pivot Handoff Position2", -43);   
     
-    public static final PrefDouble k4PieceHandoffPosition1 = new PrefDouble("4 Piece Handoff Position 1", -10.8);
-    public static final PrefDouble k4PieceHandoffPosition2 = new PrefDouble("4 Piece Handoff Position 2", -10.8);
-    public static final PrefDouble k4PieceHandoffPosition3 = new PrefDouble("4 Piece Handoff Position 3", -10.8);   
-    public static final PrefDouble k6PieceHandoffPosition = new PrefDouble("6 Piece Handoff Position", -10.8); 
+    public static final PrefDouble k4PieceHandoffPosition1 = new PrefDouble("4 Piece Handoff Position 1", -43);
+    public static final PrefDouble k4PieceHandoffPosition2 = new PrefDouble("4 Piece Handoff Position 2", -43);
+    public static final PrefDouble k4PieceHandoffPosition3 = new PrefDouble("4 Piece Handoff Position 3", -43);   
+    public static final PrefDouble k6PieceHandoffPosition = new PrefDouble("6 Piece Handoff Position", -43); 
 
-    public static final PrefDouble kFullStowPosition = new PrefDouble("Pivot Full Stow Position", -34.2);
+    public static final PrefDouble kFullStowPosition = new PrefDouble("Pivot Full Stow Position", -62);
 
     public static final PrefDouble kPPivotMotor = new PrefDouble("kP Shooter Pivot", 0.16);
     public static final PrefDouble kIPivotMotor = new PrefDouble("kI Shooter Pivot", 0);
@@ -371,7 +372,7 @@ public final class Constants {
 
     public static final PrefDouble kIntakeCruiseAcceleration = new PrefDouble("Intake Pivot Cruise Acceleration", 10);
     public static final PrefDouble kIntakeCruiseVelocity = new PrefDouble("Intake Pivot Cruise Velocity", 8);
-    public static final PrefDouble kPivotDeadband = new PrefDouble("Intake Pivot Deadband", 0.04);
+    public static final PrefDouble kPivotDeadband = new PrefDouble("Intake Pivot Deadband", 14.4);
 
     public static final PrefDouble kPPivotMotor = new PrefDouble("kP Intake Pivot", 15); //16 as of 2/24
     public static final PrefDouble kIPivotMotor = new PrefDouble("kI Intake Pivot", 0);

@@ -105,7 +105,7 @@ public class SuperSystem {
         Command command = Commands.sequence(
             intakePivot.moveToIntake(),
             Commands.waitSeconds(0.2),
-            shooterPivot.setPositionCommand(33.48),
+            shooterPivot.setPositionCommand(6),
             shooterRoller.setVelocityCommand(-20),
             shooterRoller.setEnabledCommand(true),
             indexer.indexCommand(),
@@ -127,7 +127,7 @@ public class SuperSystem {
         Command command = Commands.sequence(
             indexer.setEnabledCommand(true),
             indexer.reverseIndexCommand(),
-            Commands.waitSeconds(0.4),
+            Commands.waitSeconds(0.2),
             indexer.stopCommand()
         ).finallyDo(indexer::stop);
 
@@ -142,7 +142,7 @@ public class SuperSystem {
             shooterRoller.setEnabledCommand(true),
             indexer.setEnabledCommand(true),
             indexer.reverseIndexCommand(),
-            Commands.waitSeconds(0.4),
+            Commands.waitSeconds(0.2),
             indexer.stopCommand(),
             shooterRoller.stopCommand()
         ).finallyDo(() -> {
@@ -194,7 +194,7 @@ public class SuperSystem {
             // Move note back
             indexer.reverseIndexCommand(),
             shooterRoller.setVelocityCommand(-10, -10),
-            Commands.waitSeconds(0.4), // Was 0.6   3/3/24   Code Orange
+            Commands.waitSeconds(0.2), // Was 0.6   3/3/24   Code Orange
 
             intakeRoller.stopCommand(),
             indexer.stopCommand(),
@@ -388,14 +388,14 @@ public class SuperSystem {
             Commands.deadline(
                 Commands.waitUntil(() -> 
                     intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
-                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+                    shooterPivot.hasReachedPosition(ShooterConstants.kEjectPosition.get())),
                 intakePivot.moveToIntake(),
-                handoff()
+                shooterPivot.setPositionCommand(ShooterConstants.kEjectPosition.get())
                 ),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Outtaking", true)),
             Commands.waitSeconds(0.25),
             indexer.setEnabledCommand(true),
-            indexer.setVelocityCommand(-100),
+            indexer.setVelocityCommand(-50),
             intakeRoller.setEnabledCommand(true),
             intakeRoller.setVelocityCommand(-100),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Intake roller", true)),

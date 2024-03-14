@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -34,7 +35,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     // Whether the pivot is running
     private boolean enabled = true;
 
-    private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(ShooterConstants.kFullStowPosition.get(), true, 0, 0, false, false, false);
+    private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(ShooterConstants.kFullStowPosition.get() / 360, true, 0, 0, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
     private final Follower followRequest = new Follower(53, true);
 
@@ -229,14 +230,14 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
      * Maps the value to the range [-0.25, 0.75]
      */
     public double mapRev(double rev) {
-        return NerdyMath.posMod(rev + 0.25, 1) - 0.25;
+        return NerdyMath.posMod(rev + 0.5, 1) - 0.5;
     }
 
     /**
-     * Maps the value to the range [-90, 270]
+     * Maps the value to the range [-180, 180]
      */
     public double mapDegrees(double deg) {
-        return NerdyMath.posMod(deg + 90, 360) - 90;
+        return NerdyMath.posMod(deg + 180, 360) - 180;
     }
 
     //****************************** STATE METHODS ******************************/
@@ -288,7 +289,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     // Checks if the pivot is within deadband of the target pos
     public boolean atTargetPosition() {
-        return hasReachedPosition(motionMagicRequest.Position);
+        return hasReachedPosition(getTargetPositionDegrees());
     }
 
     public void stop() {
@@ -312,11 +313,13 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     //****************************** POSITION METHODS ******************************//
 
     public void setPosition(double positionDegrees) {
-        motionMagicRequest.Position = 
-            NerdyMath.clamp(
+        double newPos = NerdyMath.clamp(
                 mapDegrees(positionDegrees),
                 ShooterConstants.kPivotMinPos,
-                ShooterConstants.kPivotMaxPos) / 360;  
+                ShooterConstants.kPivotMaxPos) / 360;
+        motionMagicRequest.Position = newPos;
+        SmartDashboard.putNumber("Shooter New Position", newPos);
+        SmartDashboard.putNumber("Shooter New Position", newPos * 360);
     }
 
     public Command setPositionCommand(double position) {
@@ -324,6 +327,10 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     }
 
     public void incrementPosition(double incrementDegrees) {
+        SmartDashboard.putNumber("increment", incrementDegrees);
+        if (Math.abs(incrementDegrees) <= 0.001) {
+            return;
+        } 
         setPosition(getPositionDegrees() + incrementDegrees);   
     }
 
