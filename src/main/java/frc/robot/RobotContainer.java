@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -278,14 +279,14 @@ public class RobotContainer {
 
   public void configureBindings_teleop() {
     // Driver bindings
-    // Trigger noteTrigger = new Trigger(superSystem.noteSensor::noteIntook);
-    // driverController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
-    // operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
-    // noteTrigger.onTrue(Commands.sequence(
-    //   Commands.runOnce(() -> operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
-    //   Commands.runOnce(() -> driverController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
-    //   Commands.runOnce(() -> apriltagCamera.toggleLight(true))
-    // ));
+    Trigger noteTrigger = new Trigger(superSystem.noteSensor::noteIntook);
+    driverController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
+    operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
+    noteTrigger.onTrue(Commands.sequence(
+      Commands.runOnce(() -> operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
+      Commands.runOnce(() -> driverController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
+      Commands.runOnce(() -> apriltagCamera.toggleLight(true))
+    ));
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()
