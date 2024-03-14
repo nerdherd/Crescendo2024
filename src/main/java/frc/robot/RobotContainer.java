@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -276,9 +277,21 @@ public class RobotContainer {
     driverController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
     operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
     noteTrigger.onTrue(Commands.sequence(
-      Commands.runOnce(() -> operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
-      Commands.runOnce(() -> driverController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
-      Commands.runOnce(() -> apriltagCamera.toggleLight(true))
+      Commands.runOnce(() -> {
+        operatorController.setRumble(GenericHID.RumbleType.kRightRumble, .7);
+        driverController.setRumble(GenericHID.RumbleType.kRightRumble, .7);
+        operatorController.setRumble(GenericHID.RumbleType.kLeftRumble, .7);
+        driverController.setRumble(GenericHID.RumbleType.kLeftRumble, .7);
+        apriltagCamera.toggleLight(true);
+      }),
+      new WaitCommand(1),
+      Commands.runOnce(() -> {
+        operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+        driverController.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+        operatorController.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+        driverController.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+        apriltagCamera.toggleLight(false);
+      })
     ));
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
@@ -405,15 +418,6 @@ public class RobotContainer {
       autoChooser.setDefaultOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
       // autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
     }
-
-    if (paths.contains("5PieceMid")){
-      autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5 Piece Mid", superSystem));
-    }
-
-    if (paths.contains("5PieceMidSecond")){
-      autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5 Piece Mid Second", superSystem));
-    }
-    
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
