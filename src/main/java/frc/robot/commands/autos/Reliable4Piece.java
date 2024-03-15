@@ -47,7 +47,7 @@ public class Reliable4Piece extends SequentialCommandGroup {
                     Commands.waitSeconds(2),
                     AutoBuilder.followPath(pathGroup.get(0)).andThen(Commands.waitSeconds(0.75)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.125),
                         superSystem.intakeUntilSensedAuto(1.75)
                     )                
                 ),
@@ -72,7 +72,7 @@ public class Reliable4Piece extends SequentialCommandGroup {
                     Commands.waitSeconds(2),
                     AutoBuilder.followPath(pathGroup.get(2)).andThen(Commands.waitSeconds(0.75)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.125),
                         superSystem.intakeUntilSensedAuto(1.75)
                     )                
                 ),
@@ -97,7 +97,7 @@ public class Reliable4Piece extends SequentialCommandGroup {
                     Commands.waitSeconds(1.75),
                     AutoBuilder.followPath(pathGroup.get(4)).andThen(Commands.waitSeconds(0.5)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.125),
                         superSystem.intakeUntilSensedAuto(1.75)
                     )
                 ),

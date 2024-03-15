@@ -48,7 +48,7 @@ public class Mid3Piece extends SequentialCommandGroup {
             // Preload
             Commands.deadline(
                 Commands.race(
-                    Commands.waitUntil(() -> !superSystem.colorSensor.noteIntook()).andThen(Commands.waitSeconds(0.2)),
+                    Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.2)),
                     Commands.waitSeconds(1.5)
                 ),
                 superSystem.shootSubwoofer()

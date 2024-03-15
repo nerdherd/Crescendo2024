@@ -192,7 +192,7 @@ public class SuperSystem {
                 handoff(),
                 Commands.waitSeconds(1)
             ),
-            shooterRoller.setVelocityCommand(-10, -10),
+            shooterRoller.setVelocityCommand(0, 0),
             shooterRoller.setEnabledCommand(true),
             intakeRoller.setEnabledCommand(true),
             indexer.setEnabledCommand(true),
@@ -206,7 +206,7 @@ public class SuperSystem {
             
             // Move note back
             indexer.reverseIndexCommand(),
-            shooterRoller.setVelocityCommand(-10, -10),
+            shooterRoller.setVelocityCommand(0, 0),
             Commands.waitSeconds(0.2), // Was 0.6   3/3/24   Code Orange
 
             intakeRoller.stopCommand(),

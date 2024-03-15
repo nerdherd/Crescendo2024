@@ -192,8 +192,9 @@ public class DriverAssist implements Reportable{
                 () -> TagAimingRotation(drivetrain, tagID, maxSamples)
             ).until(() -> dataSampleCount >= minSamples && Math.abs(calculatedAngledPower) <= 0.1),
 
-            Commands.runOnce(() -> reset()),
-            resetOdoPoseByVision(drivetrain, tagID, maxSamples)
+            Commands.runOnce(() -> reset())
+            // ,
+            // resetOdoPoseByVision(drivetrain, tagID, maxSamples)
         );
     }
 

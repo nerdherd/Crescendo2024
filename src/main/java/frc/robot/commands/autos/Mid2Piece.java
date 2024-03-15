@@ -46,7 +46,7 @@ public class Mid2Piece extends SequentialCommandGroup {
             
             // Preload
             Commands.deadline(
-                Commands.waitUntil(() -> !superSystem.colorSensor.noteIntook()).andThen(Commands.waitSeconds(0.2)),
+                Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.2)),
                 superSystem.shootSubwoofer()
             ),
 

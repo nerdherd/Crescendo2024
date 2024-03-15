@@ -282,11 +282,13 @@ public class RobotContainer {
     Trigger noteTrigger = new Trigger(superSystem::noteIntook);
     noteTrigger.onTrue(Commands.sequence(
       Commands.runOnce(() -> {
+        SmartDashboard.putBoolean("Note Detected", true);
         operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
         operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
       }),
       (apriltagCamera.noteOnHoldConfirmSignal()),
       Commands.runOnce(() -> {
+        SmartDashboard.putBoolean("Note Detected", false);
         operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
         operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
       })
@@ -323,7 +325,7 @@ public class RobotContainer {
     commandOperatorController.touchpad().whileTrue(superSystem.panicButton())
                                         .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
     commandOperatorController.circle().whileTrue(superSystem.stow()); // TODO: Change this binding
-    // commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
+    commandOperatorController.share().whileTrue(superSystem.intakeDirectShoot());
     commandOperatorController.options().whileTrue(superSystem.shootSequenceAdjustable(adjustmentCamera)) //
                                   .whileFalse(superSystem.stow()); // TODO: Safety *Do nothing if April Tag is not seen*
   }

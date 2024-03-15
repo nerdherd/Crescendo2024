@@ -29,10 +29,10 @@ public class BannerSensor implements Reportable {
         lastBlackValue = bannerSensorBlack.get();
         lastWhiteValue = bannerSensorWhite.get();
         // TODO: check if this needs to be inverted
-        if(lastBlackValue && !lastWhiteValue){
+        if(!lastBlackValue && lastWhiteValue){
             noteDetected = true;
         }
-        else if(!lastBlackValue && lastWhiteValue){
+        else if(lastBlackValue && !lastWhiteValue){
             noteDetected = false;
         }
         else{
