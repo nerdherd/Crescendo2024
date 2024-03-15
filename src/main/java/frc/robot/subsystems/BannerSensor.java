@@ -14,6 +14,8 @@ public class BannerSensor implements Reportable {
     private final DigitalInput bannerSensorWhite;
 
     private boolean noteDetected;
+    private boolean lastBlackValue;
+    private boolean lastWhiteValue;
 
     public BannerSensor() {
         blackPort = BannerSensorConstants.blackPort;
@@ -24,11 +26,13 @@ public class BannerSensor implements Reportable {
     }
 
     public boolean noteIntook() {
+        lastBlackValue = bannerSensorBlack.get();
+        lastWhiteValue = bannerSensorWhite.get();
         // TODO: check if this needs to be inverted
-        if(bannerSensorBlack.get()&&!bannerSensorWhite.get()){
+        if(lastBlackValue && !lastWhiteValue){
             noteDetected = true;
         }
-        else if(!bannerSensorBlack.get()&&bannerSensorWhite.get()){
+        else if(!lastBlackValue && lastWhiteValue){
             noteDetected = false;
         }
         else{
@@ -49,6 +53,8 @@ public class BannerSensor implements Reportable {
     public void initShuffleboard(LOG_LEVEL priority) {
         ShuffleboardTab tab = Shuffleboard.getTab("Indexer");
         tab.addBoolean("Note Detected", this::noteIntook);
+        tab.addBoolean("Last Black Value", () -> lastBlackValue);
+        tab.addBoolean("Last White Value", () -> lastWhiteValue);
     }
     
 }

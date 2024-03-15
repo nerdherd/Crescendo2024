@@ -279,7 +279,7 @@ public class RobotContainer {
 
   public void configureBindings_teleop() {
     // Driver bindings
-    Trigger noteTrigger = new Trigger(() -> superSystem.colorSensor.noteIntookWithoutPolling() || superSystem.bannerSensor.noteIntookWithoutPolling());
+    Trigger noteTrigger = new Trigger(superSystem::noteIntook);
     noteTrigger.onTrue(Commands.sequence(
       Commands.runOnce(() -> {
         operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
@@ -444,7 +444,8 @@ public class RobotContainer {
     intakePivot.initShuffleboard(loggingLevel);
     intakeRoller.initShuffleboard(loggingLevel);
     indexer.initShuffleboard(loggingLevel);
-    superSystem.colorSensor.initShuffleboard(loggingLevel);
+    // superSystem.colorSensor.initShuffleboard(loggingLevel);
+    superSystem.bannerSensor.initShuffleboard(loggingLevel);
 
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);

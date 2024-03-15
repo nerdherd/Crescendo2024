@@ -17,7 +17,7 @@ public class SuperSystem {
     public ShooterPivot shooterPivot;
     public ShooterRoller shooterRoller;
     public IndexerV2 indexer;
-    public ColorSensor colorSensor;
+    // public ColorSensor colorSensor;
     public BannerSensor bannerSensor;
     // public BeamBreak noteSensor;
     public ClimbActuator linearActuator;
@@ -32,9 +32,14 @@ public class SuperSystem {
         this.shooterRoller = shooterRoller;
         this.indexer = indexer;
         this.linearActuator = new ClimbActuator();
-        this.colorSensor = new ColorSensor();
+        // this.colorSensor = new ColorSensor();
         this.bannerSensor = new BannerSensor();
         // this.noteSensor = new BeamBreak();
+    }
+
+    public boolean noteIntook() {
+        // return colorSensor.noteIntook() || bannerSensor.noteIntook();
+        return bannerSensor.noteIntook();
     }
 
     public Command getReadyForAmp() {
@@ -196,7 +201,7 @@ public class SuperSystem {
 
             // Commands.deadline(
                 // Commands.waitSeconds(1), // testing - check wait time             
-            Commands.waitUntil(() -> colorSensor.noteIntook() || bannerSensor.noteIntook()),
+            Commands.waitUntil(this::noteIntook),
             // ),
             
             // Move note back
@@ -235,7 +240,7 @@ public class SuperSystem {
 
             Commands.deadline(
                 Commands.waitSeconds(timeout), // testing - check wait time             
-                Commands.waitUntil(() -> colorSensor.noteIntook() || bannerSensor.noteIntook())
+                Commands.waitUntil(this::noteIntook)
             ),
             
             // Move note back
@@ -274,7 +279,7 @@ public class SuperSystem {
 
             Commands.deadline(
                 Commands.waitSeconds(timeout), // testing - check wait time             
-                Commands.waitUntil(() -> colorSensor.noteIntook() || bannerSensor.noteIntook())
+                Commands.waitUntil(this::noteIntook)
             )
         ).finallyDo(() -> {
             intakeRoller.stop();
