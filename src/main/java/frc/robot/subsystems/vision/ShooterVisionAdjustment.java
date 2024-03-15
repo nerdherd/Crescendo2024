@@ -35,9 +35,8 @@ public class ShooterVisionAdjustment implements Reportable{
     private GenericEntry poseTag;
     private GenericEntry goalDistance;
 
-    //TODO: Test actual input and output data
     private double[] distances = {1.4257, 2.836, 3.5482, 3.6585}; // meters, from least to greatest
-    private double[] angles = {-23.04, -9, -1.08, 3.6}; // rotations
+    private double[] angles = {-23.04, -9, -1.08, 3.6}; // rotations // TODO: Convert to degrees
 
     public ShooterVisionAdjustment(String name, Limelight limelight) {
         this.name = name;
@@ -63,9 +62,9 @@ public class ShooterVisionAdjustment implements Reportable{
 
         Pose3d pose = limelight.getBotPose3D();
 
-        // if (RobotContainer.IsRedSide()) {
-        //     pose = new Pose3d(VisionConstants.fieldXOffset*2 - pose.getX(), VisionConstants.fieldYOffset*2 - pose.getY(), pose.getZ(), new Rotation3d(0, 0, Math.PI - pose.getRotation().getZ()));
-        // }
+        if (RobotContainer.IsRedSide()) {
+            pose = new Pose3d(VisionConstants.fieldXOffset*2 - pose.getX(), VisionConstants.fieldYOffset*2 - pose.getY(), pose.getZ(), new Rotation3d(0, 0, Math.PI - pose.getRotation().getZ()));
+        }
 
         if(poseRobot != null)
             poseRobot.setString(pose.toString());
