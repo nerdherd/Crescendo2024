@@ -128,39 +128,39 @@ public class RobotContainer {
 
   public void initDefaultCommands_teleop() {
 
-    // intakePivot.setDefaultCommand(
-    //   new RunCommand(
-    //     () -> 
-    //       intakePivot.incrementPosition(
-    //         Math.signum(
-    //           NerdyMath.deadband(
-    //           -operatorController.getRightY(), 
-    //           -ControllerConstants.kDeadband, 
-    //           ControllerConstants.kDeadband)
-    //         ) * 2
+    intakePivot.setDefaultCommand(
+      new RunCommand(
+        () -> 
+          intakePivot.incrementPosition(
+            Math.signum(
+              NerdyMath.deadband(
+              -operatorController.getRightY(), 
+              -ControllerConstants.kDeadband, 
+              ControllerConstants.kDeadband)
+            ) * 2
             
-    //         ), // (20 * x) degrees per second
-    //             // If x = 2, then v = 40 degrees per second
-    //     intakePivot
-    //   ));
+            ), // (20 * x) degrees per second
+                // If x = 2, then v = 40 degrees per second
+        intakePivot
+      ));
     
-    // shooterPivot.setDefaultCommand(
-    //   new RunCommand(
-    //     () -> {
-    //       double increment = Math.signum(
-    //           NerdyMath.deadband(
-    //             -operatorController.getLeftY(), //0.5 rev/second 
-    //             -ControllerConstants.kDeadband, 
-    //             ControllerConstants.kDeadband)
-    //         ) * 0.1;
-    //       SmartDashboard.putNumber("Increment", increment);
-    //       shooterPivot.incrementPosition(increment);
-    //          // (20 * x) degrees per second
-    //         // If x = 0.1, then v = 2 degrees per second
+    shooterPivot.setDefaultCommand(
+      new RunCommand(
+        () -> {
+          double increment = Math.signum(
+              NerdyMath.deadband(
+                -operatorController.getLeftY(), //0.5 rev/second 
+                -ControllerConstants.kDeadband, 
+                ControllerConstants.kDeadband)
+            ) * 0.1;
+          SmartDashboard.putNumber("Increment", increment);
+          shooterPivot.incrementPosition(increment);
+             // (20 * x) degrees per second
+            // If x = 0.1, then v = 2 degrees per second
             
-    //     },
-    //     shooterPivot
-    //   ));
+        },
+        shooterPivot
+      ));
 
       swerveDrive.setDefaultCommand(
       new SwerveJoystickCommand(
@@ -280,12 +280,16 @@ public class RobotContainer {
   public void configureBindings_teleop() {
     // Driver bindings
     Trigger noteTrigger = new Trigger(superSystem.noteSensor::noteIntookWithoutPolling);
-    driverController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
-    operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 10);
     noteTrigger.onTrue(Commands.sequence(
-      Commands.runOnce(() -> operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
-      Commands.runOnce(() -> driverController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
-      (apriltagCamera.noteOnHoldConfirmSignal())
+      Commands.runOnce(() -> {
+        operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
+        operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
+      }),
+      (apriltagCamera.noteOnHoldConfirmSignal()),
+      Commands.runOnce(() -> {
+        operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+        operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+      })
     ));
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));

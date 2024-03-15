@@ -276,7 +276,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
         if (Math.abs(increment) <= 0.1) {
             return;
         } 
-        setPosition(getPositionDegrees() + increment);
+        setPosition(getTargetPositionDegrees() + increment);
     }
 
     //****************************** POSITION COMMANDS *****************************//

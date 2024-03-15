@@ -331,7 +331,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         if (Math.abs(incrementDegrees) <= 0.001) {
             return;
         } 
-        setPosition(getPositionDegrees() + incrementDegrees);   
+        setPosition(getTargetPositionDegrees() + incrementDegrees);   
     }
 
     public Command incrementPositionCommand(double increment) {
