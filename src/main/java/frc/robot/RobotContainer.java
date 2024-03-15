@@ -285,7 +285,7 @@ public class RobotContainer {
     noteTrigger.onTrue(Commands.sequence(
       Commands.runOnce(() -> operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
       Commands.runOnce(() -> driverController.setRumble(GenericHID.RumbleType.kRightRumble, 1)),
-      Commands.runOnce(() -> apriltagCamera.toggleLight(true))
+      (apriltagCamera.noteOnHoldConfirmSignal())
     ));
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
