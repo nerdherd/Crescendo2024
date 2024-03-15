@@ -7,16 +7,13 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Reportable;
-import frc.robot.subsystems.vision.Limelight.LightMode;
-import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelperUser;
 import frc.robot.util.NerdyMath;
 import frc.robot.util.NerdySpline;
 
@@ -35,8 +32,8 @@ public class ShooterVisionAdjustment implements Reportable{
     private GenericEntry poseTag;
     private GenericEntry goalDistance;
 
-    private double[] distances = {1.4257, 2.836, 3.5482, 3.6585}; // meters, from least to greatest
-    private double[] angles = {-23.04, -9, -1.08, 3.6}; // rotations // TODO: Convert to degrees
+    private double[] distances = {1.33, 3.00, 5.00}; // meters, from least to greatest
+    private double[] angles = {ShooterConstants.kSpeakerPosition.get(), ShooterConstants.kSpeakerPosition2.get(), -10}; // rotations // TODO: Convert to degrees
 
     public ShooterVisionAdjustment(String name, Limelight limelight) {
         this.name = name;
@@ -106,23 +103,23 @@ public class ShooterVisionAdjustment implements Reportable{
         else{
             tagPose = getTagPose(7);
         }
-        if(tagPose == null) return -0.1;
+        if(tagPose == null) return 0;
 
         double distance = Math.sqrt(Math.pow(currentPose.getX() - tagPose.getX(), 2) + Math.pow(currentPose.getY() - tagPose.getY(), 2));
         if(distanceOffset != null) distanceOffset.setDouble(distance);
         SmartDashboard.putNumber("Distance", distance);
         if(distance < distances[0]) {
             SmartDashboard.putBoolean("Vision failed", true);
-            return -0.1;
+            return 0;
         }
         if (distance > distances[distances.length - 1]) {
             SmartDashboard.putBoolean("Vision failed", true);
-            return 0.01;
+            return 0;
         }
 
-        SmartDashboard.putBoolean("Visioni failed", false);
+        SmartDashboard.putBoolean("Vision failed", false);
 
-        double output = NerdyMath.clamp(angleEquation.getOutput(distance), -0.1, 0.2);
+        double output = NerdyMath.clamp(angleEquation.getOutput(distance), ShooterConstants.kFullStowPosition.get(), 20);
         SmartDashboard.putNumber("Vision Angle", output);
         SmartDashboard.putNumber("Vision Distance", distance);
         if(goalAngle != null) 
