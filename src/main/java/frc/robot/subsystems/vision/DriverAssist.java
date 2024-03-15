@@ -550,12 +550,16 @@ public class DriverAssist implements Reportable{
 
     public Command noteOnHoldConfirmSignal()
     {
+        // this command should be called by other parallel structure commands with 2s at least
         return Commands.sequence(
             Commands.runOnce(()->limelight.turnLightOn()),
-            Commands.waitSeconds(2),
+            Commands.waitSeconds(0.5),
+            Commands.runOnce(()->limelight.turnLightOff()),
+            Commands.waitSeconds(0.5),
+            Commands.runOnce(()->limelight.turnLightOn()),
+            Commands.waitSeconds(0.5),
             Commands.runOnce(()->limelight.turnLightOff())
-        );
-        //return Commands.none();
+        ).finallyDo(()->limelight.turnLightOff());
     }
 
     // Add any tag ID (align to closest tag) functionality same method different signature
