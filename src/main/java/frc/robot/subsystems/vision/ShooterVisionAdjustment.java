@@ -92,6 +92,7 @@ public class ShooterVisionAdjustment implements Reportable{
         SmartDashboard.putNumberArray("Spline Test Inputs", inputs);
         SmartDashboard.putNumberArray("Spline Test Outputs", outputs);
     }
+    
  
     public double getShooterAngle() {
         Pose3d currentPose = getRobotPose();
