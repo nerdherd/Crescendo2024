@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.446567628177991,
-        "y": 3.063868463919264
+        "x": 2.388096855965791,
+        "y": 2.1283361085240693
       },
       "isLocked": false,
       "linkedName": null
@@ -45,5 +45,5 @@
   "reversed": false,
   "folder": "Mid3Piece",
   "previewStartingState": null,
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

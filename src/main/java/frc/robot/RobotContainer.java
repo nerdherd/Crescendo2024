@@ -177,14 +177,16 @@ public class RobotContainer {
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
         () -> {
-          return (driverController.getR1Button() || driverController.getL1Button() || driverController.getL2Button() || driverController.getCircleButton()); // Turn to angle
+          return (driverController.getR1Button() || driverController.getL1Button() || 
+          // driverController.getL2Button() || 
+          driverController.getCircleButton()); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          if (driverController.getL2Button()) {
-            // 4 if red side, 7 if blue
-            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
-          }
+          // if (driverController.getL2Button()) {
+          //   // 4 if red side, 7 if blue
+          //   return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
+          // }
           if (driverController.getCircleButton()) { //turn to amp
             if (!IsRedSide()){
               return 270.0;
@@ -300,10 +302,11 @@ public class RobotContainer {
       .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
     commandDriverController.L2().whileTrue(
-      Commands.repeatingSequence(
-        apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive::getPose, 0, 3),
-        Commands.waitSeconds(0.2)
-      )
+      // Commands.repeatingSequence(
+        // apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive::getPose, 0, 3),
+        // Commands.waitSeconds(0.2)
+        apriltagCamera.aimToApriltagCommand(swerveDrive, 4, 4, 8)
+      // )
     );
 
     // Operator bindings
@@ -420,11 +423,11 @@ public class RobotContainer {
     }
 
     if (paths.contains("5PieceMid")){
-      autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5PieceMid", superSystem));
+      autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5PieceMid", superSystem, adjustmentCamera));
     }
 
     if (paths.contains("5PieceMidSecond")){
-      autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem));
+      autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem, adjustmentCamera));
     }
     
 

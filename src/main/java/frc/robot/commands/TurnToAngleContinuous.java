@@ -15,6 +15,7 @@ public class TurnToAngleContinuous extends Command {
     private Supplier<Double> targetAngle;
     private SwerveDrivetrain swerveDrive;
     private PIDController pidController;
+    private double target;
     // private SlewRateLimiter limiter;
 
     /**
@@ -51,13 +52,13 @@ public class TurnToAngleContinuous extends Command {
 
     @Override
     public void initialize() {
-
+        target = targetAngle.get();
     }
 
     @Override
     public void execute() {
         // Calculate turning speed with PID
-        double turningSpeed = pidController.calculate(swerveDrive.getImu().getHeading(), targetAngle.get());
+        double turningSpeed = pidController.calculate(swerveDrive.getImu().getHeading(), target);
         turningSpeed = Math.toRadians(turningSpeed);
 
         turningSpeed = NerdyMath.clamp(

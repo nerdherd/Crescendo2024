@@ -16,62 +16,27 @@
     },
     {
       "anchor": {
-        "x": 7.930642280685415,
-        "y": 0.7729152120215779
+        "x": 8.6,
+        "y": 1.0
       },
       "prevControl": {
-        "x": 7.990642280685415,
-        "y": 0.7729152120215779
+        "x": 8.659999999999998,
+        "y": 1.0
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
-  "constraintZones": [],
-  "eventMarkers": [
+  "rotationTargets": [
     {
-      "name": "intake",
-      "waypointRelativePos": 0.55,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "intakeBasic1"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "stopIntake",
-      "waypointRelativePos": 1.0,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "wait",
-              "data": {
-                "waitTime": 1.0
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "intakeBasic2"
-              }
-            }
-          ]
-        }
-      }
+      "waypointRelativePos": 0.05,
+      "rotationDegrees": -39.889999999999986,
+      "rotateFast": true
     }
   ],
+  "constraintZones": [],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -81,7 +46,7 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": 0,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "Mid3Piece",

@@ -186,7 +186,7 @@ public class DriverAssist implements Reportable{
 
     int dataSampleCount = 0;
     public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples) {
-        return Commands.sequence(
+        Command command = Commands.sequence(
             Commands.runOnce(() -> reset()),
             Commands.run(
                 () -> TagAimingRotation(drivetrain, tagID, maxSamples)
@@ -196,6 +196,9 @@ public class DriverAssist implements Reportable{
             // ,
             // resetOdoPoseByVision(drivetrain, tagID, maxSamples)
         );
+        command.addRequirements(drivetrain);
+
+        return command;
     }
 
 
