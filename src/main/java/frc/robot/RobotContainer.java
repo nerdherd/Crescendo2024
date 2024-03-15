@@ -82,7 +82,7 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
-  private NoteAssistance noteCamera; 
+  // private NoteAssistance noteCamera; 
   private DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   private ShooterVisionAdjustment adjustmentCamera;
   
@@ -91,7 +91,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     try {
-      noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
+      // noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
       apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
       swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
       adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, apriltagCamera.getLimelight());
@@ -342,7 +342,7 @@ public class RobotContainer {
       .whileFalse(Commands.run(() -> apriltagCamera.reset())); //1.8, 0, 0, 7
     commandDriverController.L2().toggleOnTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100));
     // commandDriverController.R1().whileTrue(Commands.run(() -> new TurnToAngle(apriltagCamera.getTurnToTagAngle(7), swerveDrive)));
-    commandDriverController.R2().whileTrue(noteCamera.turnToNoteCommand(swerveDrive, 0, 0, 0));
+    // commandDriverController.R2().whileTrue(noteCamera.turnToNoteCommand(swerveDrive, 0, 0, 0));
 
 
     // Operator bindings
@@ -438,7 +438,7 @@ public class RobotContainer {
     swerveDrive.initShuffleboard(loggingLevel);
     swerveDrive.initModuleShuffleboard(loggingLevel);
     apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
-    noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+    // noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
     adjustmentCamera.initShuffleboard(LOG_LEVEL.ALL);
 
     shooterRoller.initShuffleboard(loggingLevel);
