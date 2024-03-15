@@ -2,9 +2,12 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -509,6 +512,17 @@ public class SuperSystem {
 
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
         return command;
+    }
+
+    public Command turnAndShootWithVision(frc.robot.subsystems.swerve.SwerveDrivetrain swerve, ShooterVisionAdjustment sva, DriverAssist da) {
+        return Commands.sequence(
+            Commands.race(
+                da.turnToTag(RobotContainer.IsRedSide() ? 4 : 7, null),
+                Commands.waitSeconds(2)
+            ),
+            Commands.runOnce(swerve::towModules),
+            shootSequenceAdjustable(sva)
+        );
     }
 
     public Command shootPodium() {

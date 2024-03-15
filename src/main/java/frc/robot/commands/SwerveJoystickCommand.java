@@ -132,7 +132,7 @@ public class SwerveJoystickCommand extends Command {
 
         if (turnToAngleSupplier.get()) {
             double tempAngle = desiredAngle.get();
-            if (tempAngle != 1000.0) {
+            if ((Math.abs(tempAngle - 1000.0) > 0.01)) {
                 targetAngle = tempAngle;
             } else {
                 targetAngle = ((targetAngle + turningSpdFunction.get() % 360) + 360) % 360;
