@@ -13,6 +13,7 @@ public class ColorSensor implements Reportable {
     private final ColorSensorV3 colorSensor;
 
     private int proximity;
+    private boolean noteDetected = false;
 
     public ColorSensor() {
         i2cPort = I2C.Port.kOnboard;
@@ -21,12 +22,12 @@ public class ColorSensor implements Reportable {
 
     public boolean noteIntook() {
         proximity = colorSensor.getProximity();
-        if (proximity > ColorSensorConstants.inProximity){
-            return true;
-        } 
-        else {
-            return false;
-        }
+        noteDetected = proximity > ColorSensorConstants.inProximity;
+        return noteDetected;
+    }
+
+    public boolean noteIntookWithoutPolling() {
+        return noteDetected;
     }
 
     @Override
@@ -35,8 +36,8 @@ public class ColorSensor implements Reportable {
     @Override
     public void initShuffleboard(LOG_LEVEL priority) {
         ShuffleboardTab tab = Shuffleboard.getTab("Indexer");
-        // tab.addBoolean("Note Detected", this::noteIntook);
-        // tab.addNu+mber("Distance Detected", () -> colorSensor.getProximity());
+        tab.addBoolean("Note Detected", this::noteIntookWithoutPolling);
+        tab.addNumber("Distance Detected (When last polled)", () -> proximity);
     }
     
 }

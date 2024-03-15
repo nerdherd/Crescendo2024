@@ -255,6 +255,7 @@ public final class Constants {
     public static final int kRightPivotMotorID = 54;
     public static final int kThroughBorePort = 3;
 
+    // In revolutions!
     public static final double kShooterNeutralDeadband = 0.01;
 
     // ************************************** SHOOTER CONSTANTS *************************************** //
@@ -295,24 +296,24 @@ public final class Constants {
 
     public static final PrefBool fullDisableShooter = new PrefBool("Full Disable Shooter Pivot", false, true);
 
-    // TODO: Set max and min pos
-    public static final double kPivotMaxPos = 0.5;
-    public static final double kPivotMinPos = -0.2;
+    public static final double kPivotMaxPos = 108;
+    public static final double kPivotMinPos = -72;
 
-    public static final PrefDouble kSpeakerPosition  = new PrefDouble("Pivot Speaker Position", -0.07);
-    public static final PrefDouble kSpeakerPositionAuto  = new PrefDouble("Pivot Speaker Position Auto", -0.07);
-    public static final PrefDouble kSpeakerPosition2 = new PrefDouble("Pivot Speaker Position 2", -0.02);
-    public static final PrefDouble kNeutralPosition  = new PrefDouble("Pivot Neutral Position", -0.1);
-    public static final PrefDouble kAmpPosition      = new PrefDouble("Pivot Amp Position"    , 0.173);
-    public static final PrefDouble kHandoffPosition  = new PrefDouble("Pivot Handoff Position", -0.04);
-    public static final PrefDouble kHandoffPosition2 = new PrefDouble("Pivot Handoff Position2", -0.04);   
+    public static final PrefDouble kSpeakerPosition  = new PrefDouble("Pivot Speaker Position", -51);
+    public static final PrefDouble kSpeakerPositionAuto  = new PrefDouble("Pivot Speaker Position Auto", -51);
+    public static final PrefDouble kSpeakerPosition2 = new PrefDouble("Pivot Speaker Position 2", -21.5);
+    public static final PrefDouble kNeutralPosition  = new PrefDouble("Pivot Neutral Position", 36);
+    public static final PrefDouble kAmpPosition      = new PrefDouble("Pivot Amp Position"    , 32);
+    public static final PrefDouble kHandoffPosition  = new PrefDouble("Pivot Handoff Position", -43);
+    public static final PrefDouble kEjectPosition  = new PrefDouble("Pivot Eject Position", -30);
+    public static final PrefDouble kHandoffPosition2 = new PrefDouble("Pivot Handoff Position2", -43);   
     
-    public static final PrefDouble k4PieceHandoffPosition1 = new PrefDouble("4 Piece Handoff Position 1", -0.03);
-    public static final PrefDouble k4PieceHandoffPosition2 = new PrefDouble("4 Piece Handoff Position 2", -0.03);
-    public static final PrefDouble k4PieceHandoffPosition3 = new PrefDouble("4 Piece Handoff Position 3", -0.03);   
-    public static final PrefDouble k6PieceHandoffPosition = new PrefDouble("6 Piece Handoff Position", -0.03); 
+    public static final PrefDouble k4PieceHandoffPosition1 = new PrefDouble("4 Piece Handoff Position 1", -43);
+    public static final PrefDouble k4PieceHandoffPosition2 = new PrefDouble("4 Piece Handoff Position 2", -43);
+    public static final PrefDouble k4PieceHandoffPosition3 = new PrefDouble("4 Piece Handoff Position 3", -43);   
+    public static final PrefDouble k6PieceHandoffPosition = new PrefDouble("6 Piece Handoff Position", -43); 
 
-    public static final PrefDouble kFullStowPosition = new PrefDouble("Pivot Full Stow Position", -0.1058);
+    public static final PrefDouble kFullStowPosition = new PrefDouble("Pivot Full Stow Position", -62);
 
     public static final PrefDouble kPPivotMotor = new PrefDouble("kP Shooter Pivot", 0.16);
     public static final PrefDouble kIPivotMotor = new PrefDouble("kI Shooter Pivot", 0);
@@ -324,9 +325,12 @@ public final class Constants {
   
     public static final PrefDouble kCruiseAcceleration = new PrefDouble("Shooter Pivot Cruise Acceleration", 0.85);
     public static final PrefDouble kCruiseVelocity = new PrefDouble("Shooter Pivot Cruise Velocity", 0.425);
-    public static final PrefDouble kPivotDeadband = new PrefDouble ("Shooter Pivot Deadband", 0.04); 
 
-    public static final PrefDouble kPivotOffset = new PrefDouble("Shooter Pivot Offset", 0.689990669749767, true);
+    // in degrees
+    public static final PrefDouble kPivotDeadband = new PrefDouble ("Shooter Pivot Deadband", 14.4); 
+
+    // in degrees
+    public static final PrefDouble kPivotOffset = new PrefDouble("Shooter Pivot Offset", 248.4, true);
   }
   
   public static final class IntakeConstants {
@@ -352,26 +356,23 @@ public final class Constants {
 
     // ************************************** PIVOT CONSTANTS *************************************** //
 
-    // TODO: Set max and min pos
-    public static final double kPivotMaxPos = 0.5;
-    public static final double kPivotMinPos = -0.2;
+    public static final double kPivotMaxPos = 145;
+    public static final double kPivotMinPos = -45;
 
     public static final PrefBool fullDisableIntake = new PrefBool("Full Disable Intake Pivot", false, true);
 
     public static final double kPivotGearRatio = 36;
     public static final boolean kPivotAbsoluteEncoderInverted = true;
 
-    public static final PrefDouble kPickupPosition   = new PrefDouble("Intake Pickup Position", -0.0864);
-    public static final PrefDouble kNeutralPosition  = new PrefDouble("Intake Neutral Position", 0.12);
-    public static final PrefDouble kStowPosition     = new PrefDouble("Intake Stow Position", 0.488);
-    public static final PrefDouble kVerticalPosition = new PrefDouble("Intake Vertical Position", 0.28);
-    // public static final PrefDouble kIntakeShootingPosition = new PrefDouble("Intake Shooting Position", 0);
+    public static final PrefDouble kPickupPosition   = new PrefDouble("Intake Pickup Position", -31.104);
+    public static final PrefDouble kNeutralPosition  = new PrefDouble("Intake Neutral Position", 43.2);
+    public static final PrefDouble kVerticalPosition = new PrefDouble("Intake Vertical Position", 100.8);
 
-    public static final PrefDouble kPivotOffset = new PrefDouble("Intake Pivot Offset", 0.535928515558213, true);
+    public static final PrefDouble kPivotOffset = new PrefDouble("Intake Pivot Offset", 192.93, true);
 
     public static final PrefDouble kIntakeCruiseAcceleration = new PrefDouble("Intake Pivot Cruise Acceleration", 10);
     public static final PrefDouble kIntakeCruiseVelocity = new PrefDouble("Intake Pivot Cruise Velocity", 8);
-    public static final PrefDouble kPivotDeadband = new PrefDouble("Intake Pivot Deadband", 0.04);
+    public static final PrefDouble kPivotDeadband = new PrefDouble("Intake Pivot Deadband", 14.4);
 
     public static final PrefDouble kPPivotMotor = new PrefDouble("kP Intake Pivot", 15); //16 as of 2/24
     public static final PrefDouble kIPivotMotor = new PrefDouble("kI Intake Pivot", 0);

@@ -7,10 +7,12 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
@@ -35,7 +37,7 @@ public class ShooterVisionAdjustment implements Reportable{
 
     //TODO: Test actual input and output data
     private double[] distances = {1.4257, 2.836, 3.5482, 3.6585}; // meters, from least to greatest
-    private double[] angles = {-0.064, -0.025, -0.003, 0.01}; // rotations
+    private double[] angles = {-23.04, -9, -1.08, 3.6}; // rotations
 
     public ShooterVisionAdjustment(String name, Limelight limelight) {
         this.name = name;
@@ -97,7 +99,14 @@ public class ShooterVisionAdjustment implements Reportable{
     public double getShooterAngle() {
         Pose3d currentPose = getRobotPose();
         if(currentPose == null) return -0.1;
-        Pose3d tagPose = getTagPose(limelight.getAprilTagID());
+        Pose3d tagPose;
+        
+        if(RobotContainer.IsRedSide()) {
+            tagPose = getTagPose(4);
+        }
+        else{
+            tagPose = getTagPose(7);
+        }
         if(tagPose == null) return -0.1;
 
         double distance = Math.sqrt(Math.pow(currentPose.getX() - tagPose.getX(), 2) + Math.pow(currentPose.getY() - tagPose.getY(), 2));
