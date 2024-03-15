@@ -223,7 +223,8 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
         tab.addBoolean("Intake Roller Enabled", () -> enabled);
         tab.addNumber("Intake Velocity", ()-> intake.getVelocity().getValueAsDouble());
         tab.addNumber("Intake Target Velocity", ()-> velocityRequest.Velocity);
-        tab.addNumber("Intake Roller Current", () -> intake.getSupplyCurrent().getValueAsDouble());
+        tab.addNumber("Intake Supply Current", () -> intake.getSupplyCurrent().getValueAsDouble());
+        tab.addNumber("Intake Stator Current", () -> intake.getStatorCurrent().getValueAsDouble());
         tab.addNumber("Intake Applied Voltage", () -> intake.getMotorVoltage().getValueAsDouble());
     }
 

@@ -268,8 +268,10 @@ public class IndexerV2 extends SubsystemBase implements Reportable {
         ShuffleboardTab tab = Shuffleboard.getTab("Indexer");
         tab.addNumber("Indexer Desired Velocity", () -> indexerVelocityRequest.Velocity);
         tab.addNumber("Indexer Velocity", () -> indexer.getVelocity().getValueAsDouble());
-        tab.addNumber("Trap Velocity", () -> trap.getVelocity().getValueAsDouble());
         tab.addNumber("Indexer Applied Voltage", () -> indexer.getMotorVoltage().getValueAsDouble());
+        tab.addNumber("Indexer Stator Current", () -> indexer.getStatorCurrent().getValueAsDouble());
+        tab.addNumber("Indexer Supply Current", () -> indexer.getSupplyCurrent().getValueAsDouble());
+        tab.addNumber("Trap Velocity", () -> trap.getVelocity().getValueAsDouble());
         tab.addNumber("Trap Applied Voltage", () -> trap.getMotorVoltage().getValueAsDouble());
     }
 }
