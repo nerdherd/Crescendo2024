@@ -502,23 +502,28 @@ public class SuperSystem {
     }
 
     public Command shootSequenceAdjustable(ShooterVisionAdjustment sva) {
-        Command command = Commands.sequence(
-            intakePivot.moveToIntake(),
-            Commands.waitUntil(intakePivot::hasReachedNeutral),
-            // Prepare to shoot
-            Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
-            shooterRoller.setEnabledCommand(true),
-            shooterRoller.shootSpeaker(),
-            Commands.waitSeconds(0.8),
-            
-            // Shoot
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
-            Commands.waitUntil(() -> false)
-        ).finallyDo(interrupted -> {
-            indexer.stop();
-            shooterRoller.stop();
-        });
+        Command command = 
+            Commands.either(
+                Commands.sequence(
+                intakePivot.moveToIntake(),
+                Commands.waitUntil(intakePivot::hasReachedNeutral),
+                // Prepare to shoot
+                Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
+                shooterRoller.setEnabledCommand(true),
+                shooterRoller.shootSpeaker(),
+                Commands.waitSeconds(0.8),
+                
+                // Shoot
+                indexer.setEnabledCommand(true),
+                indexer.indexCommand(),
+                Commands.waitUntil(() -> false)
+                ).finallyDo(interrupted -> {
+                    indexer.stop();
+                    shooterRoller.stop();
+                }),
+                Commands.none(),
+                sva::hasValidTarget
+            );
 
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
         return command;

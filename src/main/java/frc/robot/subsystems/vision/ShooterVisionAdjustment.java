@@ -51,6 +51,10 @@ public class ShooterVisionAdjustment implements Reportable{
         distanceEquation.create();
     }
 
+    public boolean hasValidTarget() {
+        return limelight.hasValidTarget();
+    }
+
     public Pose3d getRobotPose() {
         limelight.setPipeline(VisionConstants.kAprilTagPipeline);
         if(!limelight.hasValidTarget()) return null;
