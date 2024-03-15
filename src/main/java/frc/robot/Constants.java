@@ -417,6 +417,12 @@ public final class Constants {
     public static final int beamBreakPort = 5;
   }
 
+  public static final class BannerSensorConstants {
+    public static final int blackPort = 8;
+    public static final int whitePort = 9;
+  }
+
+
   public static final class ClimberConstants {
     public static final int kClimberMotorID = 60;
     public static final double kClimberNeutralDeadband = 0.05;

@@ -17,7 +17,8 @@ public class SuperSystem {
     public ShooterPivot shooterPivot;
     public ShooterRoller shooterRoller;
     public IndexerV2 indexer;
-    public ColorSensor noteSensor;
+    public ColorSensor colorSensor;
+    public BannerSensor bannerSensor;
     // public BeamBreak noteSensor;
     public ClimbActuator linearActuator;
     public Climber climber;
@@ -31,7 +32,8 @@ public class SuperSystem {
         this.shooterRoller = shooterRoller;
         this.indexer = indexer;
         this.linearActuator = new ClimbActuator();
-        this.noteSensor = new ColorSensor();
+        this.colorSensor = new ColorSensor();
+        this.bannerSensor = new BannerSensor();
         // this.noteSensor = new BeamBreak();
     }
 
@@ -165,8 +167,11 @@ public class SuperSystem {
             shooterRoller.setEnabledCommand(true),
             indexer.reverseIndexCommand(),
             shooterRoller.setReverseVelocityCommand(-10, -10), // TODO: Later
-            Commands.waitSeconds(1)
-        ).finallyDo(indexer::stop);
+            Commands.waitSeconds(0.2)
+        ).finallyDo(() -> {
+            indexer.stop();
+            shooterRoller.stop();
+        });
 
         command.addRequirements(shooterRoller, indexer);
         
@@ -191,7 +196,7 @@ public class SuperSystem {
 
             // Commands.deadline(
                 // Commands.waitSeconds(1), // testing - check wait time             
-                Commands.waitUntil(noteSensor::noteIntook),
+            Commands.waitUntil(() -> colorSensor.noteIntook() || bannerSensor.noteIntook()),
             // ),
             
             // Move note back
@@ -230,13 +235,13 @@ public class SuperSystem {
 
             Commands.deadline(
                 Commands.waitSeconds(timeout), // testing - check wait time             
-                Commands.waitUntil(noteSensor::noteIntook)
+                Commands.waitUntil(() -> colorSensor.noteIntook() || bannerSensor.noteIntook())
             ),
             
             // Move note back
             indexer.reverseIndexCommand(),
             shooterRoller.setVelocityCommand(-10, -10),
-            Commands.waitSeconds(1), // Was 0.6   3/3/24   Code Orange
+            Commands.waitSeconds(0.2), // Was 0.6   3/3/24   Code Orange
 
             intakeRoller.stopCommand(),
             indexer.stopCommand(),
@@ -269,7 +274,7 @@ public class SuperSystem {
 
             Commands.deadline(
                 Commands.waitSeconds(timeout), // testing - check wait time             
-                Commands.waitUntil(noteSensor::noteIntook)
+                Commands.waitUntil(() -> colorSensor.noteIntook() || bannerSensor.noteIntook())
             )
         ).finallyDo(() -> {
             intakeRoller.stop();
