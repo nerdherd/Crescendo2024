@@ -7,10 +7,12 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
@@ -96,7 +98,14 @@ public class ShooterVisionAdjustment implements Reportable{
     public double getShooterAngle() {
         Pose3d currentPose = getRobotPose();
         if(currentPose == null) return -0.1;
-        Pose3d tagPose = getTagPose(limelight.getAprilTagID());
+        Pose3d tagPose;
+        
+        if(RobotContainer.IsRedSide()) {
+            tagPose = getTagPose(4);
+        }
+        else{
+            tagPose = getTagPose(7);
+        }
         if(tagPose == null) return -0.1;
 
         double distance = Math.sqrt(Math.pow(currentPose.getX() - tagPose.getX(), 2) + Math.pow(currentPose.getY() - tagPose.getY(), 2));
