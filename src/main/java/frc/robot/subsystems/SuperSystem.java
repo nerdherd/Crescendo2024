@@ -518,21 +518,20 @@ public class SuperSystem {
             Commands.waitUntil(intakePivot::hasReachedNeutral),
             // Prepare to shoot
             shooterPivot.moveToSpeaker(),
-            Commands.waitUntil(shooterPivot::atTargetPosition),
-            // shooterRoller.setEnabledCommand(true),
-            // shooterRoller.shootSpeaker(),
-            // Commands.waitSeconds(0.8), // Was 0.2     3/3/24     But 0.8   @Code Orange
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker(),
+            Commands.waitSeconds(0.8), // Was 0.2     3/3/24     But 0.8   @Code Orange
             
             // Shoot
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
+            // indexer.setEnabledCommand(true),
+            // indexer.indexCommand(),
             Commands.waitUntil(() -> false)
         ).finallyDo(interrupted -> {
             indexer.stop();
             shooterRoller.stop();
         });
 
-        command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
+        command.addRequirements(shooterPivot, shooterRoller, intakePivot, intakeRoller);
         return command;
     }
 
@@ -625,23 +624,21 @@ public class SuperSystem {
     public Command shootPodium() {
         Command command = Commands.sequence(
             intakePivot.moveToNeutral(),
-            Commands.waitUntil(intakePivot::hasReachedNeutral),
             // Prepare to shoot
             shooterPivot.moveToSpeakerFar(),
-            Commands.waitUntil(shooterPivot::atTargetPosition),
-            // shooterRoller.setEnabledCommand(true),
-            // shooterRoller.shootSpeaker(),
-            // Commands.waitSeconds(0.8),
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker(),
+            Commands.waitSeconds(0.8),
             
             // Shoot
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
+            // indexer.setEnabledCommand(true),
+            // indexer.indexCommand(),
             Commands.waitUntil(() -> false)
         ).finallyDo(interrupted -> {
             indexer.stop();
             shooterRoller.stop();
         });
-        command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
+        command.addRequirements(shooterPivot, shooterRoller, intakePivot, intakeRoller);
         return command;
     }
 

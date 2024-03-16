@@ -341,7 +341,7 @@ public class RobotContainer {
 
     commandOperatorController.share().whileTrue(superSystem.backupIndexerManual());
     
-    commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
+    commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensedCurrentLimit().andThen(superSystem.stow()))
                                   .whileFalse(superSystem.stow());
 
     commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
@@ -354,9 +354,10 @@ public class RobotContainer {
     commandOperatorController.circle().whileTrue(superSystem.stow()); // TODO: Change this binding
     
     commandOperatorController.L1().whileTrue(Commands.sequence(
-      shooterRoller.setEnabledCommand(true),
-      shooterRoller.shootSpeaker()
-    )).whileFalse(shooterRoller.stopCommand());
+      // Shoot
+      indexer.setEnabledCommand(true),
+      indexer.indexCommand()
+    )).whileFalse(indexer.stopCommand());
 
     // commandOperatorController.share().whileTrue(superSystem.intakeDirectShoot());
     commandOperatorController.options().whileTrue(superSystem.shootSequenceAdjustable(adjustmentCamera)) //
