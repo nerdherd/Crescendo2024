@@ -296,6 +296,24 @@ public class RobotContainer {
       })
     ));
 
+    Trigger intakeJammed = new Trigger(superSystem.intakeRoller::intakeJammed);
+    intakeJammed.onTrue(Commands.sequence(
+      Commands.runOnce(() -> {
+        SmartDashboard.putBoolean("Intake Jammed", true);
+      }),
+      indexer.setEnabledCommand(true),
+      indexer.setVelocityCommand(-50),
+      intakeRoller.setEnabledCommand(true),
+      intakeRoller.setVelocityCommand(-100)
+    ));
+
+    intakeJammed.onFalse(Commands.sequence(
+      indexer.setEnabledCommand(true),
+      indexer.stopCommand(),
+      intakeRoller.setEnabledCommand(true),
+      intakeRoller.stopCommand()
+    ));
+
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()
       .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))

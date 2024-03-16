@@ -222,6 +222,43 @@ public class SuperSystem {
         return command;
     }
 
+    // Only difference is that it does not require the rollers
+    public Command intakeUntilSensedCurrentLimit() {
+        Command command = Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(() -> 
+                    intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+                handoff(),
+                Commands.waitSeconds(1)
+            ),
+            shooterRoller.setVelocityCommand(0, 0),
+            shooterRoller.setEnabledCommand(true),
+            intakeRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            intakeRoller.intakeCommand(),
+
+            Commands.waitUntil(this::noteIntook),
+            
+            // Move note back
+            indexer.reverseIndexCommand(),
+            shooterRoller.setVelocityCommand(0, 0),
+            Commands.waitSeconds(0.2), // Was 0.6   3/3/24   Code Orange
+
+            intakeRoller.stopCommand(),
+            indexer.stopCommand(),
+            shooterRoller.stopCommand()
+        ).finallyDo(() -> {
+            intakeRoller.stop();
+            indexer.stop();
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, indexer, intakePivot);
+        return command;
+    }
+
     public Command intakeUntilSensed(double timeout) {
         Command command = Commands.sequence(
             Commands.deadline(
@@ -425,7 +462,7 @@ public class SuperSystem {
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
         return command;
     }
-
+    
     public Command prepareShooter() {
         Command command = Commands.sequence(
             intakePivot.moveToNeutral(),

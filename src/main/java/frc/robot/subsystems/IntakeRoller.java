@@ -200,6 +200,10 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
             );
     }
 
+    public boolean intakeJammed() {
+        return intake.getStatorCurrent().getValueAsDouble() >= 35;
+    }
+
     public Command intakeCommand() {
         return setVelocityCommand(IntakeConstants.kIntakeVelocity.get());
     }
