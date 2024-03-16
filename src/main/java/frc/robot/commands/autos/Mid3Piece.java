@@ -116,6 +116,24 @@ public class Mid3Piece extends SequentialCommandGroup {
                 superSystem.shootSequenceAdjustable(sva)
             ),
 
+            // Commands.parallel(
+            //     Commands.sequence(
+            //         Commands.waitSeconds(0.1),
+            //         Commands.either(
+            //             driverAssist.aimToApriltagCommand(swerve, 4, 10, 20),
+            //             driverAssist.aimToApriltagCommand(swerve, 7, 10, 20),
+            //             // driverAssist.turnToTag(4, swerve),
+            //             // driverAssist.turnToTag(7, swerve),
+            //             RobotContainer::IsRedSide 
+            //         )
+            //     ),
+            //     Commands.deadline(
+            //         Commands.waitSeconds(2),
+            //         // superSystem.shootPodium()
+            //         superSystem.shootSequenceAdjustable(sva)
+            //     )
+            // ),
+
             Commands.runOnce(() -> SmartDashboard.putNumber("Mid3Piece", 5)),
 
             /************************************ NOTE TWO **************************************/
@@ -171,6 +189,24 @@ public class Mid3Piece extends SequentialCommandGroup {
                 // superSystem.shootPodium()
                 superSystem.shootSequenceAdjustable(sva)
             ),
+
+            // Commands.parallel(
+            //     Commands.sequence(
+            //         Commands.waitSeconds(0.1),
+            //         Commands.either(
+            //             driverAssist.aimToApriltagCommand(swerve, 4, 10, 20),
+            //             driverAssist.aimToApriltagCommand(swerve, 7, 10, 20),
+            //             // driverAssist.turnToTag(4, swerve),
+            //             // driverAssist.turnToTag(7, swerve),
+            //             RobotContainer::IsRedSide 
+            //         )
+            //     ),
+            //     Commands.deadline(
+            //         Commands.waitSeconds(2),
+            //         // superSystem.shootPodium()
+            //         superSystem.shootSequenceAdjustable(sva)
+            //     )
+            // ),
 
             /************************************ LEAVE **************************************/
 
