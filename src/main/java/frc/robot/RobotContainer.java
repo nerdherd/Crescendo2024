@@ -301,15 +301,21 @@ public class RobotContainer {
       Commands.runOnce(() -> {
         SmartDashboard.putBoolean("Intake Jammed", true);
       }),
-      indexer.setEnabledCommand(true),
-      indexer.setVelocityCommand(-50),
+      // indexer.setEnabledCommand(true),
+      // indexer.setVelocityCommand(-50),
       intakeRoller.setEnabledCommand(true),
-      intakeRoller.setVelocityCommand(-100)
+      intakeRoller.setVelocityCommand(-100),
+      Commands.waitSeconds(1), // Timeout
+      intakeRoller.setEnabledCommand(true),
+      intakeRoller.stopCommand()
     ));
 
     intakeJammed.onFalse(Commands.sequence(
-      indexer.setEnabledCommand(true),
-      indexer.stopCommand(),
+      Commands.runOnce(() -> {
+        SmartDashboard.putBoolean("Intake Jammed", false);
+      }),
+      // indexer.setEnabledCommand(true),
+      // indexer.stopCommand(),
       intakeRoller.setEnabledCommand(true),
       intakeRoller.stopCommand()
     ));
