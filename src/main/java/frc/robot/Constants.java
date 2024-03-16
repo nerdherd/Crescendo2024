@@ -303,7 +303,7 @@ public final class Constants {
     public static final PrefDouble kSpeakerPositionAuto  = new PrefDouble("Pivot Speaker Position Auto", -48);
     public static final PrefDouble kSpeakerPosition2 = new PrefDouble("Pivot Speaker Position 2", -28);
     public static final PrefDouble kNeutralPosition  = new PrefDouble("Pivot Neutral Position", 36);
-    public static final PrefDouble kAmpPosition      = new PrefDouble("Pivot Amp Position"    , 50);
+    public static final PrefDouble kAmpPosition      = new PrefDouble("Pivot Amp Position"    , 35);
     public static final PrefDouble kHandoffPosition  = new PrefDouble("Pivot Handoff Position", -37);
     public static final PrefDouble kEjectPosition  = new PrefDouble("Pivot Eject Position", -30);
     public static final PrefDouble kHandoffPosition2 = new PrefDouble("Pivot Handoff Position2", -37);   

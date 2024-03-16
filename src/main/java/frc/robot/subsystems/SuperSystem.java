@@ -529,6 +529,34 @@ public class SuperSystem {
         return command;
     }
 
+    public Command shootSequenceAdjustableAuto(ShooterVisionAdjustment sva) {
+        Command command = 
+            Commands.either(
+                Commands.sequence(
+                intakePivot.moveToIntake(),
+                Commands.waitUntil(intakePivot::hasReachedNeutral),
+                // Prepare to shoot
+                Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
+                shooterRoller.setEnabledCommand(true),
+                shooterRoller.shootSpeaker(),
+                Commands.waitSeconds(0.4),
+                
+                // Shoot
+                indexer.setEnabledCommand(true),
+                indexer.indexCommand(),
+                Commands.waitUntil(() -> false)
+                ).finallyDo(interrupted -> {
+                    indexer.stop();
+                    shooterRoller.stop();
+                }),
+                Commands.none(),
+                sva::hasValidTarget
+            );
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
+        return command;
+    }
+
     public Command turnAndShootWithVision(frc.robot.subsystems.swerve.SwerveDrivetrain swerve, ShooterVisionAdjustment sva, DriverAssist da) {
         return Commands.sequence(
             Commands.race(
