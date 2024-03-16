@@ -36,7 +36,7 @@ public class Mid3PiecePathOnly extends SequentialCommandGroup {
                 // Preload
                 Commands.deadline(
                     Commands.waitSeconds(1.5),
-                    superSystem.shootSubwoofer()
+                    superSystem.shootSubwooferSequence()
                 ),
                 // Grab Note
                 Commands.deadline(

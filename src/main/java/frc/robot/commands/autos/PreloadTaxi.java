@@ -24,7 +24,7 @@ public class PreloadTaxi extends SequentialCommandGroup {
             // Preload
             Commands.deadline(
                 Commands.waitSeconds(1.5),
-                superSystem.shootSubwoofer()
+                superSystem.shootSubwooferSequence()
             ),
 
             // Stop shooter and indexer

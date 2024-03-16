@@ -30,7 +30,7 @@ public class Mid3PieceDeadReckoning extends SequentialCommandGroup {
             // Preload
             Commands.deadline(
                 Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.2)),
-                superSystem.shootSubwoofer()
+                superSystem.shootSubwooferSequence()
             ),
 
             // Stop shooter and indexer
@@ -62,7 +62,7 @@ public class Mid3PieceDeadReckoning extends SequentialCommandGroup {
             // Shoot
             Commands.deadline(
                 Commands.waitSeconds(1.2),
-                superSystem.shootPodium()
+                superSystem.shootPodiumSequence()
             ),
             
             // Stop shooter and indexer
@@ -94,7 +94,7 @@ public class Mid3PieceDeadReckoning extends SequentialCommandGroup {
             // Shoot
             Commands.deadline(
                 Commands.waitSeconds(1.2),
-                superSystem.shootPodium()
+                superSystem.shootPodiumSequence()
             ),
 
             // Stop shooter and indexer

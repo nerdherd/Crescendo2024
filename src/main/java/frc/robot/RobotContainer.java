@@ -315,7 +315,7 @@ public class RobotContainer {
                                       .whileFalse(superSystem.stow()); // TODO: Can we try getting rid of this whileFalse line here **(field testing)**
     commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
 
-    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
+    commandOperatorController.share().whileTrue(superSystem.backupIndexerManual());
     
     commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
                                   .whileFalse(superSystem.stow());
@@ -328,7 +328,13 @@ public class RobotContainer {
     commandOperatorController.touchpad().whileTrue(superSystem.panicButton())
                                         .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
     commandOperatorController.circle().whileTrue(superSystem.stow()); // TODO: Change this binding
-    commandOperatorController.share().whileTrue(superSystem.intakeDirectShoot());
+    
+    commandOperatorController.L1().whileTrue(Commands.sequence(
+      shooterRoller.setEnabledCommand(true),
+      shooterRoller.shootSpeaker()
+    )).whileFalse(shooterRoller.stopCommand());
+
+    // commandOperatorController.share().whileTrue(superSystem.intakeDirectShoot());
     commandOperatorController.options().whileTrue(superSystem.shootSequenceAdjustable(adjustmentCamera)) //
                                   .whileFalse(superSystem.stow()); // TODO: Safety *Do nothing if April Tag is not seen*
   }
@@ -361,9 +367,9 @@ public class RobotContainer {
                                   .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
 
     commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
-    commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
+    commandOperatorController.R2().whileTrue(superSystem.shootSubwooferSequence())
                                   .whileFalse(superSystem.stow());
-    commandOperatorController.R1().whileTrue(superSystem.shootPodium())
+    commandOperatorController.R1().whileTrue(superSystem.shootPodiumSequence())
                                   .whileFalse(superSystem.stow());
 
     commandOperatorController.cross().whileTrue(superSystem.stow());

@@ -34,7 +34,7 @@ public class Reliable4Piece extends SequentialCommandGroup {
                     
                     // Color Sensor wait for preload didn't work at Code Orange: May need more testing
                     Commands.waitSeconds(1.5),
-                    superSystem.shootSubwoofer()
+                    superSystem.shootSubwooferSequence()
                 ),
                 Commands.sequence(
                     superSystem.indexer.stopCommand(),

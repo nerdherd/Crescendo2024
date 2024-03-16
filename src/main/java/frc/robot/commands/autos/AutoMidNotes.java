@@ -30,7 +30,7 @@ public class AutoMidNotes extends SequentialCommandGroup {
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
 
-            superSystem.shootSubwoofer(), // Preload shot
+            superSystem.shootSubwooferSequence(), // Preload shot
             AutoBuilder.followPath(pathGroup.get(0)), // First path to note 
             new ConditionalCommand(new TurnToAngle(0, swerve), Commands.none(), () -> noteAssistance.hasTarget()), // go to 0 angle
             // TODO: add conditional to scan area if not seen
@@ -43,7 +43,7 @@ public class AutoMidNotes extends SequentialCommandGroup {
                                 Commands.sequence(
                                     AutoBuilder.followPath(pathGroup.get(1)), // Go to speaker
                                     tagAssist.resetOdoPoseByVision(swerve, swerve.getPose(), 0, false), //TODO: change target tag
-                                    superSystem.shootSubwoofer(), // Shoot
+                                    superSystem.shootSubwooferSequence(), // Shoot
                                     AutoBuilder.followPath(pathGroup.get(0)) // Drive back to the middle(note1)
                                 )
                             , 
@@ -72,7 +72,7 @@ public class AutoMidNotes extends SequentialCommandGroup {
                                     AutoBuilder.followPath(pathGroup.get(5)), // Go back to note 1 to be clear of stage
                                     AutoBuilder.followPath(pathGroup.get(1)), // Go to speaker
                                     tagAssist.resetOdoPoseByVision(swerve, swerve.getPose(), 0, false), //TODO: change target tag
-                                    superSystem.shootSubwoofer(), // Shoot
+                                    superSystem.shootSubwooferSequence(), // Shoot
                                     AutoBuilder.followPath(pathGroup.get(0)) // Drive back to the middle(note1)
                                 )
                             , 
@@ -99,7 +99,7 @@ public class AutoMidNotes extends SequentialCommandGroup {
                             AutoBuilder.followPath(pathGroup.get(5)), // Go back to note 1 to be clear of stage
                             AutoBuilder.followPath(pathGroup.get(1)), // Go to speaker
                             tagAssist.resetOdoPoseByVision(swerve, swerve.getPose(), 0, false), //TODO: change target tag
-                            superSystem.shootSubwoofer(), // Shoot
+                            superSystem.shootSubwooferSequence(), // Shoot
                             AutoBuilder.followPath(pathGroup.get(0)) // Drive back to the middle(note1)
                         )
                     , 

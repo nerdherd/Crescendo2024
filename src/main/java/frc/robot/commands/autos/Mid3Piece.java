@@ -51,7 +51,7 @@ public class Mid3Piece extends SequentialCommandGroup {
                     Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.2)),
                     Commands.waitSeconds(1.5)
                 ),
-                superSystem.shootSubwoofer()
+                superSystem.shootSubwooferSequence()
             ),
 
             Commands.runOnce(() -> SmartDashboard.putNumber("Mid3Piece", 1)),

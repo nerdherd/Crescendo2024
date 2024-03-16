@@ -60,7 +60,7 @@ public class Mid3PieceAlternate extends SequentialCommandGroup {
             // Preload
             Commands.deadline(
                 Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.2)),
-                superSystem.shootSubwoofer()
+                superSystem.shootSubwooferSequence()
             ),
             Commands.sequence(
                 superSystem.indexer.stopCommand(),

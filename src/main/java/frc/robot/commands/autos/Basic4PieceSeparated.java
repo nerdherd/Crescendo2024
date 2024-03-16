@@ -28,7 +28,7 @@ public class Basic4PieceSeparated extends SequentialCommandGroup {
             Commands.sequence(
                 Commands.deadline(
                     Commands.waitSeconds(1.5),
-                    superSystem.shootSubwoofer()
+                    superSystem.shootSubwooferSequence()
                 ),
                 // Piece 1
                 Commands.deadline(
