@@ -54,8 +54,6 @@ public class Mid3Piece extends SequentialCommandGroup {
                 superSystem.shootSubwoofer()
             ),
 
-            Commands.runOnce(() -> SmartDashboard.putNumber("Mid3Piece", 1)),
-
             /************************************ NOTE ONE **************************************/
 
             // Grab First Note
@@ -69,14 +67,13 @@ public class Mid3Piece extends SequentialCommandGroup {
                 )
             ),
 
-            Commands.runOnce(() -> SmartDashboard.putNumber("Mid3Piece", 2)),
-
             // Come back
             Commands.deadline(
                 AutoBuilder.followPath(pathGroup.get(1)), 
                 Commands.sequence(
-                    superSystem.stow(),
-                    superSystem.backupIndexer()
+                    // superSystem.stow(),
+                    superSystem.backupIndexer(),
+                    superSystem.shooterPivot.moveToSpeakerFar()
                 ),                
                 Commands.waitSeconds(3.5)
             ),
@@ -92,8 +89,6 @@ public class Mid3Piece extends SequentialCommandGroup {
 
             // // Make sure swerve is in the right pos
             // driveToPose(podiumPoseBlue),  
-
-            Commands.runOnce(() -> SmartDashboard.putNumber("Mid3Piece", 3)),
 
             // // Turn towards tag                      
             // Commands.deadline(
@@ -128,13 +123,14 @@ public class Mid3Piece extends SequentialCommandGroup {
                     )
                 ),
                 Commands.deadline(
-                    Commands.waitSeconds(2),
+                    Commands.race(
+                        Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.01)),
+                        Commands.waitSeconds(1.4)
+                    ),
                     // superSystem.shootPodium()
-                    superSystem.shootSequenceAdjustable(sva)
+                    superSystem.shootSequenceAdjustableAuto(sva)
                 )
             ),
-
-            Commands.runOnce(() -> SmartDashboard.putNumber("Mid3Piece", 5)),
 
             /************************************ NOTE TWO **************************************/
 
@@ -153,18 +149,19 @@ public class Mid3Piece extends SequentialCommandGroup {
             Commands.deadline(
                 AutoBuilder.followPath(pathGroup.get(3)),
                 Commands.sequence(
-                    superSystem.stow(),
-                    superSystem.backupIndexer()
+                    // superSystem.stow(),
+                    superSystem.backupIndexer(),
+                    superSystem.shooterPivot.moveToSpeakerFar()
                 ),
                 Commands.waitSeconds(3.5)
             ),
 
             // Reset odometry
-            Commands.either(
-                driverAssist.resetOdoPoseByVision(swerve, GeometryUtil.flipFieldPose(podiumPoseBlue), 0, 8), //change april tag id ltr
-                driverAssist.resetOdoPoseByVision(swerve, podiumPoseBlue, 0, 8), //change april tag id ltr
-                RobotContainer::IsRedSide
-            ),
+            // Commands.either(
+            //     driverAssist.resetOdoPoseByVision(swerve, GeometryUtil.flipFieldPose(podiumPoseBlue), 0, 8), //change april tag id ltr
+            //     driverAssist.resetOdoPoseByVision(swerve, podiumPoseBlue, 0, 8), //change april tag id ltr
+            //     RobotContainer::IsRedSide
+            // ),
 
             // Commands.runOnce(() -> SmartDashboard.putNumber("Phase", 1)),
             
@@ -202,9 +199,11 @@ public class Mid3Piece extends SequentialCommandGroup {
                     )
                 ),
                 Commands.deadline(
-                    Commands.waitSeconds(2),
-                    // superSystem.shootPodium()
-                    superSystem.shootSequenceAdjustable(sva)
+                    Commands.race(
+                        Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.01)),
+                        Commands.waitSeconds(1.4)
+                    ),                    
+                    superSystem.shootSequenceAdjustableAuto(sva)
                 )
             ),
 
