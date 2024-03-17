@@ -83,11 +83,12 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
   // private NoteAssistance noteCamera; 
-  private DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
-  private ShooterVisionAdjustment adjustmentCamera;
+  public DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
+  public ShooterVisionAdjustment adjustmentCamera;
   
   /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
+   * The container for the robot. Contain
+   * s subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     try {
@@ -100,7 +101,7 @@ public class RobotContainer {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
 
-    apriltagCamera.toggleLight(false);
+    apriltagCamera.toggleLight(true);
 
     initAutoChoosers();
     initShuffleboard();

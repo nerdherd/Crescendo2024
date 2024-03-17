@@ -66,7 +66,7 @@ public class SuperSystem {
             shooterRoller.shootAmp(),
             Commands.waitSeconds(0.3), // Was 0.5    3/3/24    Code Orange
             indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
+            indexer.setVelocityCommand(30),
             Commands.waitSeconds(1)
         ).finallyDo(
             () -> {

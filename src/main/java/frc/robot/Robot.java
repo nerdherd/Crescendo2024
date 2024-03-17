@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,6 +29,7 @@ public class Robot extends TimedRobot {
     DataLogManager.logNetworkTables(true);
     enableLiveWindowInTest(false);
     robotContainer.swerveDrive.refreshModulePID();
+    robotContainer.apriltagCamera.toggleLight(true);
 
     // // One Peak Music 2
     // Orchestra orchestra = new Orchestra();
@@ -47,6 +49,7 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     CommandScheduler.getInstance().cancelAll();
     robotContainer.swerveDrive.setBreak(true);
+    robotContainer.apriltagCamera.toggleLight(true);
   }
 
   @Override
@@ -71,6 +74,8 @@ public class Robot extends TimedRobot {
     // robotContainer.indexer.configurePID();
     // robotContainer.swerveDrive.setVelocityControl(false);
     autoCommand = robotContainer.getAutonomousCommand();
+    robotContainer.apriltagCamera.toggleLight(false);
+
 
     if (autoCommand != null) {
       autoCommand.schedule();
@@ -91,6 +96,8 @@ public class Robot extends TimedRobot {
       autoCommand.cancel();
     }
     robotContainer.swerveDrive.setBreak(false);
+    robotContainer.swerveDrive.setChassisSpeeds(new ChassisSpeeds());
+    robotContainer.apriltagCamera.toggleLight(false);
     // robotContainer.swerveDrive.setVelocityControl(true);
     // robotContainer.swerveDrive.refreshModulePID();
     // ShooterConstants.kPivotDeadband.loadPreferences();
