@@ -438,4 +438,8 @@ public final class Constants {
     public static final int leftClimberActuatorChannelID = 1;
   }
 
+  public static final class CANdleConstants {
+    public static final int CANdleID = 0;
+  }
+
 }
