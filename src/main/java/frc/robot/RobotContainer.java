@@ -4,13 +4,11 @@
 
 package frc.robot;
 
+import java.sql.Driver;
 import java.util.List;
-
-import org.ejml.equation.Sequence;
+import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -24,37 +22,35 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
-import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
-import frc.robot.commands.autos.Mid3PiecePathOnly;
 import frc.robot.commands.autos.FivePieceEnd;
 import frc.robot.commands.autos.FivePieceSecond;
 import frc.robot.commands.autos.Mid2Piece;
 import frc.robot.commands.autos.Mid3Piece;
 import frc.robot.commands.autos.Mid3PieceDeadReckoning;
+import frc.robot.commands.autos.Mid3PiecePathOnly;
 import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
-import frc.robot.subsystems.ColorSensor;
+import frc.robot.subsystems.CANdleSubSystem;
+import frc.robot.subsystems.CANdleSubSystem.Status;
 import frc.robot.subsystems.IndexerV2;
 import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.IntakeRoller;
+import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.ShooterPivot;
 import frc.robot.subsystems.ShooterRoller;
 import frc.robot.subsystems.SuperSystem;
-import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.imu.PigeonV2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
+import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.NoteAssistance;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
-import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.util.NerdyMath;
 
 public class RobotContainer {
@@ -67,6 +63,7 @@ public class RobotContainer {
   public SuperSystem superSystem = new SuperSystem(intakePivot, intakeRoller, shooterPivot, shooterRoller, indexer);
   
   public Gyro imu = new PigeonV2(2);
+  public CANdleSubSystem CANdle = new CANdleSubSystem();
 
   public SwerveDrivetrain swerveDrive;
   public PowerDistribution pdp = new PowerDistribution(1, ModuleType.kRev);
@@ -279,6 +276,8 @@ public class RobotContainer {
 
   public void configureBindings_teleop() {
     // Driver bindings
+
+    // Note Trigger
     Trigger noteTrigger = new Trigger(superSystem::noteIntook);
     noteTrigger.onTrue(Commands.sequence(
       Commands.runOnce(() -> {
@@ -366,6 +365,36 @@ public class RobotContainer {
     commandOperatorController.cross().whileTrue(superSystem.stow());
 
     commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
+  }
+
+  public void configureLEDTriggers() {
+    // Note Trigger
+    Trigger noteTrigger = new Trigger(superSystem::noteIntook);
+    noteTrigger.onTrue(Commands.runOnce(
+      () -> {
+        CANdle.setStatus(Status.HASNOTE);
+      }));
+    noteTrigger.onFalse(Commands.runOnce(
+      () -> CANdle.setStatus(Status.TELEOP)
+    ));
+
+    // AprilTag Trigger
+    Trigger tagTrigger = new Trigger(apriltagCamera::hasValidTarget);
+    tagTrigger.onTrue(Commands.runOnce(
+      () -> CANdle.setStatus(Status.HASTARGET)
+    ));
+    tagTrigger.onFalse(Commands.runOnce(
+      () -> CANdle.setStatus(Status.TELEOP)
+    ));
+
+    // Lined up and ready to shoot Trigger
+    // Trigger shotReadyTriger = new Trigger();
+    // tagTrigger.onTrue(Commands.runOnce(
+    //   () -> CANdle.setStatus(Status.SHOTREADY)
+    // ));
+    // tagTrigger.onFalse(Commands.runOnce(
+    //   () -> CANdle.setStatus(Status.TELEOP)
+    // ));
   }
 
   private void initAutoChoosers() {

@@ -595,6 +595,10 @@ public class DriverAssist implements Reportable{
 
     // }
 
+    public boolean hasValidTarget() {
+        return limelight.hasValidTarget();
+    }
+    
     public double getForwardPower() {
         
         return NerdyMath.deadband(calculatedForwardPower, -0.25, 0.25);

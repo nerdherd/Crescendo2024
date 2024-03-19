@@ -22,7 +22,7 @@ import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class CANdleSystem extends SubsystemBase {
+public class CANdleSubSystem extends SubsystemBase {
     private final CANdle CANdle = new CANdle(Constants.CANdleConstants.CANdleID, "rio");
     private final int ledCout = 300;
     // private CommandPS4Controller joystick;
@@ -47,14 +47,14 @@ public class CANdleSystem extends SubsystemBase {
         TELEOP,
         AUTO,
         DISCONNECTED,
-        SEESTAG, // Apriltag detected
+        HASTARGET, // Apriltag detected
         HASNOTE, // Note is in indexer
-        SHOOTREADY // Ready to shoot
+        SHOTREADY // Ready to shoot
     }
 
     private AnimationTypes currentAnimation;
 
-    public CANdleSystem() {
+    public CANdleSubSystem() {
         // this.joystick = joy;
         changeAnimation(AnimationTypes.SetAll);
         CANdleConfiguration configAll = new CANdleConfiguration();
@@ -66,8 +66,9 @@ public class CANdleSystem extends SubsystemBase {
         CANdle.configAllSettings(configAll, 100);
     }
 
-    public void setColors() {
+    private void setColor(int r, int g, int b) {
         changeAnimation(AnimationTypes.SetAll);
+        CANdle.setLEDs(r, g, b);
     }
 
     /* Wrappers so we can access the CANdle from the subsystem */
@@ -84,28 +85,25 @@ public class CANdleSystem extends SubsystemBase {
         switch(status)
         {
             case DISABLED:
-                changeAnimation(AnimationTypes.SetAll);
-                CANdle.setLEDs(0, 0, 255);
+                setColor(0, 0, 255);
                 break;
             case TELEOP:
-                changeAnimation(AnimationTypes.Larson);
+                setColor(100, 65, 0);
                 break;
             case AUTO:
-                changeAnimation(AnimationTypes.Rainbow);
+                changeAnimation(AnimationTypes.Larson);
                 break;
             case DISCONNECTED:
                 changeAnimation(AnimationTypes.SingleFade);
                 break;
-            case SEESTAG:
-                changeAnimation(AnimationTypes.Rainbow);
+            case HASTARGET:
+                changeAnimation(AnimationTypes.Strobe);
                 break;
             case HASNOTE:
-                changeAnimation(AnimationTypes.SetAll);
-                CANdle.setLEDs(0, 255, 0);
+                setColor(0, 255, 0);
                 break;
-            case SHOOTREADY:
-                changeAnimation(AnimationTypes.Fire);
-                CANdle.setLEDs(0, 255, 0);
+            case SHOTREADY:
+                setColor(255, 255, 255);
                 break;
             }
     }
@@ -134,7 +132,7 @@ public class CANdleSystem extends SubsystemBase {
                 animation = new SingleFadeAnimation(50, 2, 200, 0, 0.5, ledCout);
                 break;
             case Strobe:
-                animation = new StrobeAnimation(240, 10, 180, 0, 98.0 / 256.0, ledCout);
+                animation = new StrobeAnimation(0, 255, 0, 0, 98.0 / 256.0, ledCout);
                 break;
             case Twinkle:
                 animation = new TwinkleAnimation(30, 70, 60, 0, 0.4, ledCout, TwinklePercent.Percent6);
@@ -156,10 +154,5 @@ public class CANdleSystem extends SubsystemBase {
         } else {
             CANdle.animate(animation);
         }
-    }
-
-    @Override
-    public void simulationPeriodic() {
-    
     }
 }

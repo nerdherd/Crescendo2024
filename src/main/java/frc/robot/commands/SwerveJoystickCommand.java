@@ -1,5 +1,13 @@
 package frc.robot.commands;
 
+import static frc.robot.Constants.SwerveDriveConstants.kDriveAlpha;
+import static frc.robot.Constants.SwerveDriveConstants.kDriveKinematics;
+import static frc.robot.Constants.SwerveDriveConstants.kMinimumMotorOutput;
+import static frc.robot.Constants.SwerveDriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
+import static frc.robot.Constants.SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+import static frc.robot.Constants.SwerveDriveConstants.kTeleMaxAcceleration;
+import static frc.robot.Constants.SwerveDriveConstants.kTeleMaxDeceleration;
+
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
@@ -11,15 +19,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.SwerveAutoConstants;
 import frc.robot.Constants.SwerveDriveConstants;
+import frc.robot.filters.OldDriverFilter2;
+import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.util.filters.DeadbandFilter;
 import frc.robot.util.filters.Filter;
 import frc.robot.util.filters.FilterSeries;
 import frc.robot.util.filters.ScaleFilter;
-import frc.robot.filters.OldDriverFilter2;
-import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
-
-import static frc.robot.Constants.SwerveDriveConstants.*;
 
 public class SwerveJoystickCommand extends Command {
     private final SwerveDrivetrain swerveDrive;

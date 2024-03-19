@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.CANdleSubSystem.Status;
 
 public class Robot extends TimedRobot {
   private Command autoCommand;
@@ -28,6 +29,7 @@ public class Robot extends TimedRobot {
     DataLogManager.logNetworkTables(true);
     enableLiveWindowInTest(false);
     robotContainer.swerveDrive.refreshModulePID();
+    robotContainer.configureLEDTriggers();
 
     // // One Peak Music 2
     // Orchestra orchestra = new Orchestra();
@@ -47,6 +49,7 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     CommandScheduler.getInstance().cancelAll();
     robotContainer.swerveDrive.setBreak(true);
+    robotContainer.CANdle.setStatus(Status.DISABLED);
   }
 
   @Override
@@ -59,6 +62,7 @@ public class Robot extends TimedRobot {
     robotContainer.swerveDrive.refreshModulePID();
     robotContainer.imu.zeroHeading();
     robotContainer.imu.zeroAll();
+    
 
     // ShooterConstants.kPivotDeadband.loadPreferences();
     // ShooterConstants.fullDisableShooter.loadPreferences();
@@ -79,7 +83,7 @@ public class Robot extends TimedRobot {
     orchestra.loadMusic(); //have to get chirp file
     orchestra.play();
      */
-
+    robotContainer.CANdle.setStatus(Status.AUTO);
   }
 
   @Override
@@ -104,6 +108,7 @@ public class Robot extends TimedRobot {
     // robotContainer.indexer.configurePID();
     robotContainer.configureBindings_teleop();
     robotContainer.initDefaultCommands_teleop();
+    robotContainer.CANdle.setStatus(Status.TELEOP);
   }
 
   @Override
