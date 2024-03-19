@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 import org.ejml.equation.Sequence;
@@ -50,6 +52,7 @@ import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.imu.PigeonV2;
+import frc.robot.subsystems.imu.PigeonV2Arm;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.vision.NoteAssistance;
@@ -67,6 +70,8 @@ public class RobotContainer {
   public SuperSystem superSystem = new SuperSystem(intakePivot, intakeRoller, shooterPivot, shooterRoller, indexer);
   
   public Gyro imu = new PigeonV2(2);
+
+  public Gyro armPositionGyro = new PigeonV2Arm(4);
 
   public SwerveDrivetrain swerveDrive;
   public PowerDistribution pdp = new PowerDistribution(1, ModuleType.kRev);
@@ -94,7 +99,7 @@ public class RobotContainer {
       noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
       apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
       swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
-      adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, apriltagCamera.getLimelight());
+      adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, apriltagCamera.getLimelight(), armPositionGyro);
 
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
@@ -244,37 +249,6 @@ public class RobotContainer {
   }
 
   public void initDefaultCommands_test() {
-    swerveDrive.setDefaultCommand(
-      new SwerveJoystickCommand(
-        swerveDrive,
-        () -> -commandDriverController.getLeftY(), // Horizontal translation
-        commandDriverController::getLeftX, // Vertical Translation
-        // () -> 0.0, // debug
-        commandDriverController::getRightX, // Rotationaq
-
-        // driverController::getSquareButton, // Field oriented
-        () -> true, // should be robot oriented now on true
-
-        driverController::getCrossButton, // Towing
-        // driverController::getR2Button, // Precision/"Sniper Button"
-        () -> driverController.getR2Button(), // Precision mode (disabled)
-        () -> {
-          return (driverController.getR1Button() || driverController.getL1Button()); // Turn to angle
-        }, 
-        // () -> false, // Turn to angle (disabled)
-        () -> { // Turn To angle Direction
-          if (driverController.getR1Button()) { //turn to amp
-            if (IsRedSide()){
-              return 270.0;
-            }
-            return 90.0;
-          }
-          else if (driverController.getL1Button()) { //turn to speaker
-            return 180.0;
-          }
-          return 0.0; 
-        }
-      ));
   }
 
   public void configureBindings_teleop() {
@@ -331,41 +305,6 @@ public class RobotContainer {
   }
 
   public void configureBindings_test() {
-    // Driver bindings
-    commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
-    commandDriverController.triangle()
-      .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
-      .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
-
-    //TODO: Make sure April Tag ID is matching
-    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 0.8, 0, 0, 7, 100)))
-      .whileFalse(Commands.run(() -> apriltagCamera.reset())); //1.8, 0, 0, 7
-    commandDriverController.L2().toggleOnTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100));
-    // commandDriverController.R1().whileTrue(Commands.run(() -> new TurnToAngle(apriltagCamera.getTurnToTagAngle(7), swerveDrive)));
-    commandDriverController.R2().whileTrue(noteCamera.turnToNoteCommand(swerveDrive, 0, 0, 0));
-
-
-    // Operator bindings
-    commandOperatorController.triangle().whileTrue(superSystem.eject());
-    commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
-                                      .whileFalse(superSystem.stow());
-    commandOperatorController.options().whileTrue(superSystem.shootAmp().andThen(superSystem.stow())); //change options to another button later
-
-    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
-    // commandOperatorController.L2().whileTrue(superSystem.intakeBasic());
-    
-    commandOperatorController.L2().whileTrue(superSystem.intakeBasic())
-                                  .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
-
-    commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
-    commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
-                                  .whileFalse(superSystem.stow());
-    commandOperatorController.R1().whileTrue(superSystem.shootPodium())
-                                  .whileFalse(superSystem.stow());
-
-    commandOperatorController.cross().whileTrue(superSystem.stow());
-
-    commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
   }
 
   private void initAutoChoosers() {
@@ -440,6 +379,7 @@ public class RobotContainer {
     apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
     noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
     adjustmentCamera.initShuffleboard(LOG_LEVEL.ALL);
+    armPositionGyro.initShuffleboard(LOG_LEVEL.ALL);
 
     shooterRoller.initShuffleboard(loggingLevel);
     shooterPivot.initShuffleboard(loggingLevel);
@@ -465,4 +405,28 @@ public class RobotContainer {
     swerveDrive.setDriveMode(DRIVE_MODE.AUTONOMOUS);
     return currentAuto;
   }
+
+  public void saveSensorDataToFile(int i) {
+    String filename = "sensor_data.csv";
+    saveToCSV(filename, i);
+  }
+
+  public void saveToCSV(String filename, int didGood) {
+        try (FileWriter writer = new FileWriter(filename)) {
+            writer.append("GoodOrBad, TagID, ArmAngle, RobotX, RobotY, RobotR\n");
+            String s = String.format("%d, %d, %.2f, %.2f, %.2f, %.2f\n", 
+              didGood,
+              apriltagCamera.getLimelight().getAprilTagID(),
+              armPositionGyro.getHeading(), 
+              apriltagCamera.getLimelight().getBotPose3D().getX(),
+              apriltagCamera.getLimelight().getBotPose3D().getY(),
+              apriltagCamera.getLimelight().getBotPose3D().getRotation().getAngle()
+            );
+            writer.append(s);
+            
+            System.out.println("Data saved: " + s);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

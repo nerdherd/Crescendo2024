@@ -7,6 +7,8 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,12 +16,14 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Reportable;
+import frc.robot.subsystems.imu.Gyro;
 import frc.robot.util.NerdyMath;
 import frc.robot.util.NerdySpline;
 
 public class ShooterVisionAdjustment implements Reportable{
     private Limelight limelight;
     private String name;
+    private Gyro armPositionGyro;
 
     private NerdySpline angleEquation;
     private NerdySpline distanceEquation;
@@ -32,12 +36,15 @@ public class ShooterVisionAdjustment implements Reportable{
     private GenericEntry poseTag;
     private GenericEntry goalDistance;
 
+
+
     private double[] distances = {1.33, 2.82, 4.00}; // meters, from least to greatest
     private double[] angles = {ShooterConstants.kSpeakerPosition.get(), ShooterConstants.kSpeakerPosition2.get(), -23.5}; // rotations // TODO: Convert to degrees
 
-    public ShooterVisionAdjustment(String name, Limelight limelight) {
+    public ShooterVisionAdjustment(String name, Limelight limelight, Gyro armPositionGyro) {
         this.name = name;
         this.limelight = limelight;
+        this.armPositionGyro = armPositionGyro;
 
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 

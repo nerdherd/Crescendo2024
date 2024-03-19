@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -85,6 +87,10 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {}
 
+  NetworkTableEntry highButtonEntry;
+  NetworkTableEntry lowButtonEntry;
+  NetworkTableEntry goodButtonEntry;
+
   @Override
   public void teleopInit() {
     if (autoCommand != null) {
@@ -104,10 +110,33 @@ public class Robot extends TimedRobot {
     // robotContainer.indexer.configurePID();
     robotContainer.configureBindings_teleop();
     robotContainer.initDefaultCommands_teleop();
+
+    highButtonEntry = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ArmCali").getEntry("High");
+    highButtonEntry.setBoolean(false);
+
+    lowButtonEntry = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ArmCali").getEntry("Low");
+    lowButtonEntry.setBoolean(false);
+
+    goodButtonEntry = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ArmCali").getEntry("Good");
+    goodButtonEntry.setBoolean(false);
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    
+    if(highButtonEntry.getBoolean(false)) {
+      robotContainer.saveSensorDataToFile(1);
+      highButtonEntry.setBoolean(false);
+    }
+    if(lowButtonEntry.getBoolean(false)) {
+      robotContainer.saveSensorDataToFile(-1);
+      lowButtonEntry.setBoolean(false);
+    }
+    if(goodButtonEntry.getBoolean(false)) {
+      robotContainer.saveSensorDataToFile(0);
+      goodButtonEntry.setBoolean(false);
+    }
+  }
 
   @Override
   public void testInit() {
