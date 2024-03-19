@@ -201,13 +201,30 @@ public class DriverAssist implements Reportable{
         return command;
     }
 
+    public Command aimToApriltagCommandAndReset(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples) {
+        Command command = Commands.sequence(
+            Commands.runOnce(() -> reset()),
+            Commands.run(
+                () -> TagAimingRotation(drivetrain, tagID, maxSamples)
+            ).until(() -> dataSampleCount >= minSamples && Math.abs(calculatedAngledPower) <= 0.1));
+
+            if (Math.abs(calculatedAngledPower) <= 0.01) {
+                Commands.runOnce(() -> reset());
+                resetOdoPoseByVision(drivetrain, tagID, maxSamples);
+            }
+
+        command.addRequirements(drivetrain);
+
+        return command;
+    }
+
 
 
     final double MaxTA = 5;
     final double MinTA = 1;
     final double MaxTxIn = 10;
     final double MinTxIn = 2;
-    private double TxTargetOffsetForCurrentTa(double currentTa )
+    private double TxTargetOffsetForCurrentTa(double currentTa)
     {
         // make sure to return positive value
         return ((MaxTxIn-MinTxIn)/(MaxTA-MinTA))*(currentTa-MinTA) + MinTxIn;
@@ -262,6 +279,69 @@ public class DriverAssist implements Reportable{
                     sidewaysSpeed.setDouble(0);
                 if(angularSpeed != null)
                     angularSpeed.setDouble(calculatedAngledPower);
+            }
+            else {
+                calculatedAngledPower = 0;
+            }
+        }
+
+        swerveDrive.drive(0, 0, calculatedAngledPower);
+    }
+
+    public void TagAimingRotationAndReset(SwerveDrivetrain swerveDrive, int tagID, int maxSamples) {
+        // make sure to reset before or after calling this function
+        // make sure the cross is at the center!!! for tx
+        // tagID == 0 means: don't care of tag's id, be careful for multi-tags location
+        double taOffset;
+        double txOffset;
+
+        dataSampleCount++;
+        if(maxSamples > 0 && dataSampleCount >= maxSamples)
+        {
+            calculatedAngledPower = 0;
+        }
+        else
+        {
+            int foundId = getAprilTagID();
+            if(targetId != null)
+                targetId.setInteger(foundId);
+
+            if(tagID == foundId || (tagID == 0 && foundId != -1)) {
+                
+                taOffset = limelight.getArea_avg();
+                txOffset = limelight.getXAngle_avg();
+                    
+                if(currentTaOffset != null)
+                    currentTaOffset.setDouble(taOffset);
+                if(currentTxOffset != null)
+                    currentTxOffset.setDouble(txOffset);
+                if(currentAngleOffset != null)
+                    currentAngleOffset.setDouble(0);
+
+                double txInRangeValue = Math.abs(TxTargetOffsetForCurrentTa(taOffset));
+                if( txOffset < txInRangeValue && txOffset > -1*txInRangeValue ) // todo, tuning pls!!!
+                {
+                    calculatedAngledPower = 0; // in good tx ranges. faster than the pid
+                } 
+                // else if(){} // out of range cases. todo 
+                else
+                {
+                    // pid based on tx, and adding ta/distance as the factor
+                    calculatedAngledPower = pidTxRotation.calculate(txOffset, 0)  * Math.sqrt(taOffset);
+                    calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.3, 0.3); // todo, tuning pls. Have to consider the Ta for all coeffs!!! Todo
+                }
+
+                if(forwardSpeed != null)
+                    forwardSpeed.setDouble(0);
+                if(sidewaysSpeed != null)
+                    sidewaysSpeed.setDouble(0);
+                if(angularSpeed != null)
+                    angularSpeed.setDouble(calculatedAngledPower);
+
+                if(calculatedAngledPower <= 0.1) {
+                    Commands.run(
+                    () -> resetOdoPose(swerveDrive, null, foundId, 0));
+                }
             }
             else {
                 calculatedAngledPower = 0;

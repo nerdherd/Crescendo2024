@@ -83,11 +83,12 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
   // private NoteAssistance noteCamera; 
-  private DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
-  private ShooterVisionAdjustment adjustmentCamera;
+  public DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
+  public ShooterVisionAdjustment adjustmentCamera;
   
   /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
+   * The container for the robot. Contain
+   * s subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     try {
@@ -100,7 +101,7 @@ public class RobotContainer {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
 
-    apriltagCamera.toggleLight(false);
+    apriltagCamera.toggleLight(true);
 
     initAutoChoosers();
     initShuffleboard();
@@ -152,7 +153,7 @@ public class RobotContainer {
                 -operatorController.getLeftY(), //0.5 rev/second 
                 -ControllerConstants.kDeadband, 
                 ControllerConstants.kDeadband)
-            ) * 0.1;
+            ) * 0.5;
           SmartDashboard.putNumber("Increment", increment);
           shooterPivot.incrementPosition(increment);
              // (20 * x) degrees per second
@@ -296,30 +297,6 @@ public class RobotContainer {
       })
     ));
 
-    Trigger intakeJammed = new Trigger(superSystem.intakeRoller::intakeJammed);
-    intakeJammed.onTrue(Commands.sequence(
-      Commands.runOnce(() -> {
-        SmartDashboard.putBoolean("Intake Jammed", true);
-      }),
-      // indexer.setEnabledCommand(true),
-      // indexer.setVelocityCommand(-50),
-      intakeRoller.setEnabledCommand(true),
-      intakeRoller.setVelocityCommand(-100),
-      Commands.waitSeconds(1), // Timeout
-      intakeRoller.setEnabledCommand(true),
-      intakeRoller.stopCommand()
-    ));
-
-    intakeJammed.onFalse(Commands.sequence(
-      Commands.runOnce(() -> {
-        SmartDashboard.putBoolean("Intake Jammed", false);
-      }),
-      // indexer.setEnabledCommand(true),
-      // indexer.stopCommand(),
-      intakeRoller.setEnabledCommand(true),
-      intakeRoller.stopCommand()
-    ));
-
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()
       .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
@@ -339,9 +316,9 @@ public class RobotContainer {
                                       .whileFalse(superSystem.stow()); // TODO: Can we try getting rid of this whileFalse line here **(field testing)**
     commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
 
-    commandOperatorController.share().whileTrue(superSystem.backupIndexerManual());
+    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     
-    commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensedCurrentLimit().andThen(superSystem.stow()))
+    commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
                                   .whileFalse(superSystem.stow());
 
     commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
@@ -352,14 +329,7 @@ public class RobotContainer {
     commandOperatorController.touchpad().whileTrue(superSystem.panicButton())
                                         .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
     commandOperatorController.circle().whileTrue(superSystem.stow()); // TODO: Change this binding
-    
-    commandOperatorController.L1().whileTrue(Commands.sequence(
-      // Shoot
-      indexer.setEnabledCommand(true),
-      indexer.indexCommand()
-    )).whileFalse(indexer.stopCommand());
-
-    // commandOperatorController.share().whileTrue(superSystem.intakeDirectShoot());
+    commandOperatorController.share().whileTrue(superSystem.intakeDirectShoot());
     commandOperatorController.options().whileTrue(superSystem.shootSequenceAdjustable(adjustmentCamera)) //
                                   .whileFalse(superSystem.stow()); // TODO: Safety *Do nothing if April Tag is not seen*
   }
@@ -392,9 +362,9 @@ public class RobotContainer {
                                   .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
 
     commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
-    commandOperatorController.R2().whileTrue(superSystem.shootSubwooferSequence())
+    commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
                                   .whileFalse(superSystem.stow());
-    commandOperatorController.R1().whileTrue(superSystem.shootPodiumSequence())
+    commandOperatorController.R1().whileTrue(superSystem.shootPodium())
                                   .whileFalse(superSystem.stow());
 
     commandOperatorController.cross().whileTrue(superSystem.stow());
