@@ -250,7 +250,7 @@ public class DriverAssist implements Reportable{
                 {
                     // pid based on tx, and adding ta/distance as the factor
                     calculatedAngledPower = pidTxRotation.calculate(txOffset, 0)  * Math.sqrt(taOffset);
-                    calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.3, 0.3); // todo, tuning pls. Have to consider the Ta for all coeffs!!! Todo
+                    calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.2, 0.2); // todo, tuning pls. Have to consider the Ta for all coeffs!!! Todo
                 }
 
                 if(forwardSpeed != null)

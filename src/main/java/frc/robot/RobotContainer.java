@@ -52,7 +52,7 @@ import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.imu.PigeonV2;
-import frc.robot.subsystems.imu.PigeonV2Arm;
+// import frc.robot.subsystems.imu.PigeonV2Arm;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.vision.NoteAssistance;
@@ -71,7 +71,7 @@ public class RobotContainer {
   
   public Gyro imu = new PigeonV2(2);
 
-  public Gyro armPositionGyro = new PigeonV2Arm(4);
+  // public Gyro armPositionGyro = new PigeonV2Arm(4);
 
   public SwerveDrivetrain swerveDrive;
   public PowerDistribution pdp = new PowerDistribution(1, ModuleType.kRev);
@@ -87,7 +87,7 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
-  private NoteAssistance noteCamera; 
+  // private NoteAssistance noteCamera; 
   private DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   private ShooterVisionAdjustment adjustmentCamera;
   
@@ -96,10 +96,12 @@ public class RobotContainer {
    */
   public RobotContainer() {
     try {
-      noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
-      apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
+      // noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
+      apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, VisionConstants.kAprilTagPipeline);
       swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
-      adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, apriltagCamera.getLimelight(), armPositionGyro);
+      adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, 
+      apriltagCamera.getLimelight(), null,
+      apriltagCamera, superSystem);
 
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
@@ -286,10 +288,12 @@ public class RobotContainer {
                                       .whileFalse(superSystem.stow()); // TODO: Can we try getting rid of this whileFalse line here **(field testing)**
     commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
 
-    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
+    commandOperatorController.L2().whileTrue(superSystem.backupIndexerManual());
     
-    commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
-                                  .whileFalse(superSystem.stow());
+    //commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
+     //                             .whileFalse(superSystem.stow());
+
+    commandOperatorController.L1().whileTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7 ,3,20));
 
     commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
                                   .whileFalse(superSystem.stow());
@@ -377,9 +381,9 @@ public class RobotContainer {
     swerveDrive.initShuffleboard(loggingLevel);
     swerveDrive.initModuleShuffleboard(loggingLevel);
     apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
-    noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+    // noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
     adjustmentCamera.initShuffleboard(LOG_LEVEL.ALL);
-    armPositionGyro.initShuffleboard(LOG_LEVEL.ALL);
+    // armPositionGyro.initShuffleboard(LOG_LEVEL.ALL);
 
     shooterRoller.initShuffleboard(loggingLevel);
     shooterPivot.initShuffleboard(loggingLevel);
@@ -417,7 +421,8 @@ public class RobotContainer {
             String s = String.format("%d, %d, %.2f, %.2f, %.2f, %.2f\n", 
               didGood,
               apriltagCamera.getLimelight().getAprilTagID(),
-              armPositionGyro.getHeading(), 
+              // armPositionGyro.getHeading(), 
+              shooterPivot.getPositionDegrees(),
               apriltagCamera.getLimelight().getBotPose3D().getX(),
               apriltagCamera.getLimelight().getBotPose3D().getY(),
               apriltagCamera.getLimelight().getBotPose3D().getRotation().getAngle()

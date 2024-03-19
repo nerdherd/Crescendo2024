@@ -111,32 +111,27 @@ public class Robot extends TimedRobot {
     robotContainer.configureBindings_teleop();
     robotContainer.initDefaultCommands_teleop();
 
-    highButtonEntry = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ArmCali").getEntry("High");
-    highButtonEntry.setBoolean(false);
+    
 
-    lowButtonEntry = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ArmCali").getEntry("Low");
-    lowButtonEntry.setBoolean(false);
-
-    goodButtonEntry = NetworkTableInstance.getDefault().getTable("Shuffleboard").getSubTable("ArmCali").getEntry("Good");
-    goodButtonEntry.setBoolean(false);
+    
   }
 
   @Override
   public void teleopPeriodic() {
     
-    if(highButtonEntry.getBoolean(false)) {
-      robotContainer.saveSensorDataToFile(1);
-      highButtonEntry.setBoolean(false);
-    }
-    if(lowButtonEntry.getBoolean(false)) {
-      robotContainer.saveSensorDataToFile(-1);
-      lowButtonEntry.setBoolean(false);
-    }
-    if(goodButtonEntry.getBoolean(false)) {
-      robotContainer.saveSensorDataToFile(0);
-      goodButtonEntry.setBoolean(false);
-    }
-  }
+  //   if(highButtonEntry.getBoolean(false)) {
+  //     robotContainer.saveSensorDataToFile(1);
+  //     highButtonEntry.setBoolean(false);
+  //   }
+  //   if(lowButtonEntry.getBoolean(false)) {
+  //     robotContainer.saveSensorDataToFile(-1);
+  //     lowButtonEntry.setBoolean(false);
+  //   }
+  //   if(goodButtonEntry.getBoolean(false)) {
+  //     robotContainer.saveSensorDataToFile(0);
+  //     goodButtonEntry.setBoolean(false);
+  //   }
+   }
 
   @Override
   public void testInit() {

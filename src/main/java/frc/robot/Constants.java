@@ -213,7 +213,7 @@ public final class Constants {
     public static final double kSunflowerP = 0.2;
     public static final double kSunflowerI = 0;
     public static final double kSunflowerD = 0;
-    public static final String kLimelightFrontName = "limelight-front"; // notes
+    // public static final String kLimelightFrontName = "limelight-front"; // notes
     public static final String kLimelightFrontIP = "10.6.87.25:5800";
     public static final int kNotePipeline = 0;
     public static final double fieldXOffset = 8.27; // Certified (Half field dimensions)
@@ -231,7 +231,7 @@ public final class Constants {
     ); // distance from camera to center of robot
     public static final String kLimelightBackName = "limelight-back"; // apriltag
     public static final String kLimelightBackIP = "10.6.87.71:5800";
-    public static final int kAprilTagPipeline = 4;
+    public static final int kAprilTagPipeline = 0;
 
     public static final PrefDouble kPNoteForward = new PrefDouble("P Note Forward", 0);
     public static final PrefDouble kINoteForward = new PrefDouble("I Note Forward", 0);

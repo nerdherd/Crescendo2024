@@ -28,7 +28,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     private final DutyCycleEncoder throughBore;
 
     // Whether the pivot is running
-    private boolean enabled = true;
+    private boolean enabled = false;
 
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
@@ -259,7 +259,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     }
 
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        this.enabled = false;
     }
     
     //****************************** POSITION METHODS ******************************//
