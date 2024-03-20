@@ -4,9 +4,7 @@
 
 package frc.robot;
 
-import java.sql.Driver;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -63,25 +61,29 @@ public class RobotContainer {
   public SuperSystem superSystem = new SuperSystem(intakePivot, intakeRoller, shooterPivot, shooterRoller, indexer);
   
   public Gyro imu = new PigeonV2(2);
-  public CANdleSubSystem CANdle = new CANdleSubSystem();
-
+  
   public SwerveDrivetrain swerveDrive;
   public PowerDistribution pdp = new PowerDistribution(1, ModuleType.kRev);
-
+  
   private final CommandPS4Controller commandDriverController = new CommandPS4Controller(
-      ControllerConstants.kDriverControllerPort);
+    ControllerConstants.kDriverControllerPort);
   private final PS4Controller driverController = commandDriverController.getHID();
   private final CommandPS4Controller commandOperatorController = new CommandPS4Controller(
-      ControllerConstants.kOperatorControllerPort);
-  private final PS4Controller operatorController = commandOperatorController.getHID();
-
-  private final LOG_LEVEL loggingLevel = LOG_LEVEL.ALL;
-
-  private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
-
-  private NoteAssistance noteCamera; 
+    ControllerConstants.kOperatorControllerPort);
+    private final PS4Controller operatorController = commandOperatorController.getHID();
+    
+    private final LOG_LEVEL loggingLevel = LOG_LEVEL.ALL;
+    
+    private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
+    
+    private NoteAssistance noteCamera; 
   private DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   private ShooterVisionAdjustment adjustmentCamera;
+  
+  public CANdleSubSystem CANdle = new CANdleSubSystem();
+  private double angleError = 5.0; // Only used for LED
+  private double heading; // Only used for LED
+
   
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -367,7 +369,7 @@ public class RobotContainer {
     commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
   }
 
-  public void configureLEDTriggers() {
+  public void configureLEDTriggers_teleop() {
     // Note Trigger
     Trigger noteTrigger = new Trigger(superSystem::noteIntook);
     noteTrigger.onTrue(Commands.runOnce(
@@ -387,7 +389,45 @@ public class RobotContainer {
       () -> CANdle.setStatus(Status.TELEOP)
     ));
 
+    // if (driverController.getCircleButton()) { //turn to amp
+    //         if (!IsRedSide()){
+    //           return 270.0;
+    //         }
+    //         return 90.0;
+    //       }
+    //       else if (driverController.getL1Button()) { //turn to speaker
+    //         return 0.0;
+    //       }
+
     // Lined up and ready to shoot Trigger
+    // Speaker
+    commandDriverController.L1().whileTrue(Commands.runOnce(
+      () -> {
+        heading = NerdyMath.posMod(imu.getHeading(), 360);
+        angleError = heading - 0; // Heading for speaker
+        if (Math.abs(angleError) <= 10) {
+          CANdle.setStatus(Status.SHOTREADY);
+        } else {
+          CANdle.setStatus(Status.LASTSTATUS);
+        }
+      }
+    ));
+    NerdyMath.posMod(angleError, angleError);
+    commandDriverController.R1().whileTrue(Commands.runOnce(
+      () -> {
+        heading = NerdyMath.posMod(imu.getHeading(), 360);
+        if (!IsRedSide()) {
+          angleError = heading - 270;
+        } else {
+          angleError = heading - 90;
+        }
+        if (Math.abs(angleError) <= 10) {
+          CANdle.setStatus(Status.SHOTREADY);
+        } else {
+          CANdle.setStatus(Status.LASTSTATUS);
+        }
+      }
+    ));
     // Trigger shotReadyTriger = new Trigger();
     // tagTrigger.onTrue(Commands.runOnce(
     //   () -> CANdle.setStatus(Status.SHOTREADY)

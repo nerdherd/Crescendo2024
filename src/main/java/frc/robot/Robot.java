@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.CANdleSubSystem.Status;
 
 public class Robot extends TimedRobot {
@@ -29,7 +27,6 @@ public class Robot extends TimedRobot {
     DataLogManager.logNetworkTables(true);
     enableLiveWindowInTest(false);
     robotContainer.swerveDrive.refreshModulePID();
-    robotContainer.configureLEDTriggers();
 
     // // One Peak Music 2
     // Orchestra orchestra = new Orchestra();
@@ -108,6 +105,7 @@ public class Robot extends TimedRobot {
     // robotContainer.indexer.configurePID();
     robotContainer.configureBindings_teleop();
     robotContainer.initDefaultCommands_teleop();
+    robotContainer.configureLEDTriggers_teleop();
     robotContainer.CANdle.setStatus(Status.TELEOP);
   }
 

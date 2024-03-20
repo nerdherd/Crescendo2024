@@ -26,9 +26,11 @@ public class CANdleSubSystem extends SubsystemBase {
     private final CANdle CANdle = new CANdle(Constants.CANdleConstants.CANdleID, "rio");
     private final int ledCout = 300;
     // private CommandPS4Controller joystick;
-
+    
     private Animation animation = null;
-
+    private AnimationTypes currentAnimation;
+    private AnimationTypes lastAnimation;
+    
     public enum AnimationTypes {
         ColorFlow,
         Fire,
@@ -49,10 +51,10 @@ public class CANdleSubSystem extends SubsystemBase {
         DISCONNECTED,
         HASTARGET, // Apriltag detected
         HASNOTE, // Note is in indexer
-        SHOTREADY // Ready to shoot
+        SHOTREADY, // Ready to shoot
+        LASTSTATUS // To go back to previous animation
     }
 
-    private AnimationTypes currentAnimation;
 
     public CANdleSubSystem() {
         // this.joystick = joy;
@@ -105,10 +107,14 @@ public class CANdleSubSystem extends SubsystemBase {
             case SHOTREADY:
                 setColor(255, 255, 255);
                 break;
+            case LASTSTATUS:
+                changeAnimation(lastAnimation);
+                break;
             }
     }
 
     public void changeAnimation(AnimationTypes newAnimation) {
+        lastAnimation = currentAnimation;
         currentAnimation = newAnimation;
         
         switch(newAnimation)
