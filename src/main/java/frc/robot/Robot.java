@@ -6,6 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,6 +23,8 @@ public class Robot extends TimedRobot {
   TalonFx talonFX;
   Orchestra orchestra;
    */
+
+   public static StringLogEntry armSensorCaliLog;
   
   @Override
   public void robotInit() {
@@ -37,7 +41,10 @@ public class Robot extends TimedRobot {
     // orchestra.addInstrument(musicMotor);
     // orchestra.loadMusic("happybirthdaykyle.chrp");
     // orchestra.play();
-  
+
+    DataLog log = DataLogManager.getLog();
+    armSensorCaliLog = new StringLogEntry(log, "arm_sensor_cali.csv");
+    armSensorCaliLog.append("GoodOrBad, TagID, ArmAngle, RobotX, RobotY, RobotR\n");
   }
 
   @Override

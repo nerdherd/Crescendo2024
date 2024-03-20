@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.ShooterPivot;
@@ -69,34 +70,24 @@ public class ShooterVisionAdjustment implements Reportable{
         distanceEquation.create();
     }
 
-    public void saveSensorDataToFile(int i) {
-        String filename = "sensor_data.csv";
-        saveToCSV(filename, i, superSystem.shooterPivot);
-    }
-
-
-    public void saveToCSV(String filename, int didGood, ShooterPivot shooterPivot) {
-    try (FileWriter writer = new FileWriter(filename)) {
-        writer.append("GoodOrBad, TagID, ArmAngle, RobotX, RobotY, RobotR\n");
+    public void saveSensorDataToFile(int isGreat) {
+        
         String s = String.format("%d, %d, %.2f, %.2f, %.2f, %.2f\n", 
-            didGood,
+            isGreat,
             tagCamera.getLimelight().getAprilTagID(),
             // armPositionGyro.getHeading(), 
-            shooterPivot.getPositionDegrees(),
+            superSystem.shooterPivot.getPositionDegrees(),
             tagCamera.getLimelight().getBotPose3D().getX(),
             tagCamera.getLimelight().getBotPose3D().getY(),
             tagCamera.getLimelight().getBotPose3D().getRotation().getAngle()
         );
-        writer.append(s);
+        Robot.armSensorCaliLog.append(s);
         
         System.out.println("Data saved: " + s);
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
     }
 
-    public Command armCalibrationTable(int button) {
-        return new InstantCommand(() -> saveSensorDataToFile(button));
+    public Command armCalibrationTable(int buttonId) {
+        return new InstantCommand(() -> saveSensorDataToFile(buttonId));
     }
 
     public Pose3d getRobotPose() {
