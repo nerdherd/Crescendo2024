@@ -94,9 +94,9 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {}
 
-  NetworkTableEntry highButtonEntry;
-  NetworkTableEntry lowButtonEntry;
-  NetworkTableEntry goodButtonEntry;
+  // NetworkTableEntry highButtonEntry;
+  // NetworkTableEntry lowButtonEntry;
+  // NetworkTableEntry goodButtonEntry;
 
   @Override
   public void teleopInit() {

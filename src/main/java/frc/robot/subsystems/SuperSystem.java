@@ -363,13 +363,13 @@ public class SuperSystem {
     public Command intakeDirectShoot(double shooterPosition, double topShooterVelocity, double bottomShooterVelocity) {
         Command command = Commands.sequence(
             Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", true)),
-            Commands.deadline(
-                Commands.waitUntil(() -> 
-                    // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
-                    shooterPivot.hasReachedPosition(shooterPosition)),
-                intakePivot.moveToIntake(),
-                shooterPivot.setPositionCommand(shooterPosition)
-                ),
+            // Commands.deadline(
+            //     Commands.waitUntil(() -> 
+            //         // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+            //         shooterPivot.hasReachedPosition(shooterPosition)),
+            //     intakePivot.moveToIntake(),
+            //     shooterPivot.setPositionCommand(shooterPosition)
+            //     ),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", false)),
             shooterRoller.setEnabledCommand(true),
             intakeRoller.setEnabledCommand(true),

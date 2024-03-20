@@ -58,17 +58,17 @@ public class DriverAssist implements Reportable{
      */
     public DriverAssist(String name, int pipeline) {
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-        limelightName = name;
-        ShuffleboardTab tab = Shuffleboard.getTab(limelightName);
+        limelightName = "limelight_backk";
+        ShuffleboardTab tab = Shuffleboard.getTab(limelightName+"data");
 
         try {
-            limelight = new Limelight(name);
+            limelight = new Limelight(limelightName);
             toggleLight(false);
             changePipeline(pipeline);
 
-            tab.add(name + " inited ", true);
+            tab.add(limelightName + " inited ", true);
         } catch (Exception e) {
-            tab.add(name + " inited ", false);
+            tab.add(limelightName + " inited ", false);
         }
         
     }
@@ -229,6 +229,9 @@ public class DriverAssist implements Reportable{
                 targetId.setInteger(foundId);
 
             if(tagID == foundId || (tagID == 0 && foundId != -1)) {
+
+                lastTagSeenId = foundId;
+                lastTagSeenPose3d = this.limelight.getBotPose3D();
                 
                 taOffset = limelight.getArea_avg();
                 txOffset = limelight.getXAngle_avg();
@@ -240,7 +243,7 @@ public class DriverAssist implements Reportable{
                 if(currentAngleOffset != null)
                     currentAngleOffset.setDouble(0);
 
-                double txInRangeValue = Math.abs(TxTargetOffsetForCurrentTa(taOffset));
+                double txInRangeValue = Math.abs(TxTargetOffsetForCurrentTa(taOffset));// todo, tuning pls!!!
                 if( txOffset < txInRangeValue && txOffset > -1*txInRangeValue ) // todo, tuning pls!!!
                 {
                     calculatedAngledPower = 0; // in good tx ranges. faster than the pid
@@ -266,6 +269,15 @@ public class DriverAssist implements Reportable{
         }
 
         swerveDrive.drive(0, 0, calculatedAngledPower);
+    }
+
+    Pose3d lastTagSeenPose3d;
+    int lastTagSeenId;
+    public int getLastSeenAprilTagID() {
+        return lastTagSeenId;
+    }
+    public Pose3d getLastSeenPose3d() {
+        return lastTagSeenPose3d;
     }
 
     // be careful to use this function!!! todo, not finished yet.....
@@ -674,13 +686,13 @@ public class DriverAssist implements Reportable{
         if (priority == LOG_LEVEL.OFF)  {
             return;
         }
-        ShuffleboardTab tab = Shuffleboard.getTab(limelightName);
+        ShuffleboardTab tab = Shuffleboard.getTab(limelightName +"data");
 
         //the lack of "break;"'s is intentional
         switch (priority) {
             case ALL:
                 try{
-                    tab.addCamera(limelightName + ": Stream", limelightName, VisionConstants.kLimelightBackIP);
+                    //tab.addCamera(limelightName + ": Stream", limelightName, VisionConstants.kLimelightBackIP);
                 }catch(Exception e){}
 
             case MEDIUM:

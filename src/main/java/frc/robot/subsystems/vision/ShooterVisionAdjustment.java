@@ -8,6 +8,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -28,10 +29,10 @@ import frc.robot.util.NerdyMath;
 import frc.robot.util.NerdySpline;
 
 public class ShooterVisionAdjustment implements Reportable{
-    private Limelight limelight;
+    //private Limelight limelight;
     private String name;
     private Gyro armPositionGyro;
-    DriverAssist tagCamera;
+    //DriverAssist tagCamera;
     SuperSystem superSystem;
 
 
@@ -51,12 +52,14 @@ public class ShooterVisionAdjustment implements Reportable{
     private double[] distances = {1.33, 2.82, 4.00}; // meters, from least to greatest
     private double[] angles = {ShooterConstants.kSpeakerPosition.get(), ShooterConstants.kSpeakerPosition2.get(), -23.5}; // rotations // TODO: Convert to degrees
 
-    public ShooterVisionAdjustment(String name, Limelight limelight, Gyro armPositionGyro,
-    DriverAssist tagCamera, SuperSystem superSystem) {
-        this.name = name;
-        this.limelight = limelight;
+    public ShooterVisionAdjustment( Gyro armPositionGyro,
+    //DriverAssist tagCamera, 
+    SuperSystem superSystem) {
+        this.name = "othr";
+        //this.limelight = limelight;
         this.armPositionGyro = armPositionGyro;
         this.superSystem = superSystem;
+        //this.tagCamera = tagCamera;
 
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
@@ -71,15 +74,16 @@ public class ShooterVisionAdjustment implements Reportable{
     }
 
     public void saveSensorDataToFile(int isGreat) {
-        
+
         String s = String.format("%d, %d, %.2f, %.2f, %.2f, %.2f\n", 
             isGreat,
-            tagCamera.getLimelight().getAprilTagID(),
+            //tagCamera.getLimelight().getAprilTagID(),
+            RobotContainer.apriltagCamera.getLastSeenAprilTagID(),
             // armPositionGyro.getHeading(), 
             superSystem.shooterPivot.getPositionDegrees(),
-            tagCamera.getLimelight().getBotPose3D().getX(),
-            tagCamera.getLimelight().getBotPose3D().getY(),
-            tagCamera.getLimelight().getBotPose3D().getRotation().getAngle()
+            RobotContainer.apriltagCamera.getLastSeenPose3d().getX(),
+            RobotContainer.apriltagCamera.getLastSeenPose3d().getY(),
+            Units.radiansToDegrees(RobotContainer.apriltagCamera.getLastSeenPose3d().getRotation().getZ())
         );
         Robot.armSensorCaliLog.append(s);
         
@@ -91,12 +95,12 @@ public class ShooterVisionAdjustment implements Reportable{
     }
 
     public Pose3d getRobotPose() {
-        limelight.setPipeline(VisionConstants.kAprilTagPipeline);
-        if(!limelight.hasValidTarget()) return null;
+        RobotContainer.apriltagCamera.getLimelight().setPipeline(VisionConstants.kAprilTagPipeline);
+        if(!RobotContainer.apriltagCamera.getLimelight().hasValidTarget()) return null;
         if(targetFound != null)
-            targetFound.setBoolean(limelight.hasValidTarget());
+            targetFound.setBoolean(RobotContainer.apriltagCamera.getLimelight().hasValidTarget());
 
-        Pose3d pose = limelight.getBotPose3D();
+        Pose3d pose = RobotContainer.apriltagCamera.getLimelight().getBotPose3D();
 
         if(poseRobot != null)
             poseRobot.setString(pose.toString());
@@ -179,15 +183,15 @@ public class ShooterVisionAdjustment implements Reportable{
             case ALL:
        
             try{
-                tab.addCamera(name + ": Stream", name, VisionConstants.kLimelightFrontIP);
+                //tab.addCamera(name + ": Stream", name, VisionConstants.kLimelightFrontIP);
             }catch(Exception e){};
 
             case MEDIUM:
 
             case MINIMAL:
-                tab.add("Too Low", armCalibrationTable(-1));
-                tab.add("Too High", armCalibrationTable(1));
-                tab.add("Great!", armCalibrationTable(0));
+                // tab.add("Too Low", armCalibrationTable(-1));
+                // tab.add("Too High", armCalibrationTable(1));
+                // tab.add("Great!", armCalibrationTable(0));
             
                 goalAngle = tab.add("Calculated Angle", 0)
                 .withPosition(2, 0)
