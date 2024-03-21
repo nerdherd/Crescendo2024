@@ -24,6 +24,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.TurnToAngleContinuous;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
+import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers;
 import frc.robot.util.NerdyMath;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -219,6 +220,7 @@ public class DriverAssist implements Reportable{
         double txOffset;
 
         dataSampleCount++;
+        SmartDashboard.putNumber("dataSampleCount", dataSampleCount);
         if(maxSamples > 0 && dataSampleCount >= maxSamples)
         {
             calculatedAngledPower = 0;
@@ -234,7 +236,10 @@ public class DriverAssist implements Reportable{
                 lastTagSeenId = foundId;
                 
                 SmartDashboard.putNumber("lastTagSeenId", lastTagSeenId);
-                lastTagSeenPose3d = this.limelight.getBotPose3D();
+                LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+                lastTagSeenDist = limelightMeasurement.avgTagDist;
+
+                lastTagSeenPose2d = limelightMeasurement.pose;
                 
                 taOffset = limelight.getArea_avg();
                 txOffset = limelight.getXAngle_avg();
@@ -274,13 +279,18 @@ public class DriverAssist implements Reportable{
         swerveDrive.drive(0, 0, calculatedAngledPower);
     }
 
-    Pose3d lastTagSeenPose3d;
+    Pose2d lastTagSeenPose2d;
     int lastTagSeenId;
+    double lastTagSeenDist;
     public int getLastSeenAprilTagID() {
         return lastTagSeenId;
     }
-    public Pose3d getLastSeenPose3d() {
-        return lastTagSeenPose3d;
+    public Pose2d getLastSeenPose2d() {
+        return lastTagSeenPose2d;
+    }
+    public double getLastTagSeenDist()
+    {
+        return lastTagSeenDist;
     }
 
     // be careful to use this function!!! todo, not finished yet.....

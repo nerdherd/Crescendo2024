@@ -43,8 +43,8 @@ public class Robot extends TimedRobot {
     // orchestra.play();
 
     DataLog log = DataLogManager.getLog();
-    armSensorCaliLog = new StringLogEntry(log, "arm_sensor_cali.csv");
-    armSensorCaliLog.append("GoodOrBad, TagID, ArmAngle, RobotX, RobotY, RobotR\n");
+    armSensorCaliLog = new StringLogEntry(log, "arm_sensor_cali");
+    armSensorCaliLog.append("GoodOrBad, TagID, RobotX, RobotY, RobotR, Distance, ArmAngle\n");
   }
 
   @Override

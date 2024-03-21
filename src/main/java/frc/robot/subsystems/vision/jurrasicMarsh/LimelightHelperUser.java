@@ -17,7 +17,7 @@ public class LimelightHelperUser extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
   public LimelightHelperUser(String limelightName) {
     this.limelightName = limelightName;
-    LimelightHelpers.initializeMapper();
+    LimelightHelpers1.initializeMapper();
   }
 
   /**
@@ -35,7 +35,7 @@ public class LimelightHelperUser extends SubsystemBase {
   }
 
   private Pose3d getRawPose3d() {
-    return LimelightHelpers.getLatestResults(limelightName).targetingResults.getBotPose3d();
+    return LimelightHelpers1.getLatestResults(limelightName).targetingResults.getBotPose3d();
   }
 
   private double getRawX() {

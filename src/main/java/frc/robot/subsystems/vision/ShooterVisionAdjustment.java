@@ -75,23 +75,25 @@ public class ShooterVisionAdjustment implements Reportable{
 
     public void saveSensorDataToFile(int isGreat) {
 
-        if(tagCamera.getLastSeenAprilTagID() == -1 || tagCamera.getLastSeenPose3d() == null)
+        if(tagCamera.getLastSeenAprilTagID() == -1 || tagCamera.getLastSeenPose2d() == null)
         {
-            System.out.println("No Data saved: " );
+            SmartDashboard.putString("saved", "no data");
             return;
         }
-        String s = String.format("%d, %d, %.2f, %.2f, %.2f, %.2f\n", 
+        String s = String.format("%d, %d, %.2f, %.2f, %.2f, %.2f, %.2f\n", 
             isGreat,
             tagCamera.getLastSeenAprilTagID(),
-            // armPositionGyro.getHeading(), 
-            superSystem.shooterPivot.getPositionDegrees(),
-            tagCamera.getLastSeenPose3d().getX(),
-            tagCamera.getLastSeenPose3d().getY(),
-            Units.radiansToDegrees(tagCamera.getLastSeenPose3d().getRotation().getZ())
+            tagCamera.getLastSeenPose2d().getX(),
+            tagCamera.getLastSeenPose2d().getY(),
+            tagCamera.getLastSeenPose2d().getRotation().getDegrees(),
+            tagCamera.getLastTagSeenDist(), 
+            superSystem.shooterPivot.getPositionDegrees()
+            // armPositionGyro.getHeading()
+            //superSystem.shooter.speed()
         );
         Robot.armSensorCaliLog.append(s);
         
-        System.out.println("Data saved: " + s);
+        SmartDashboard.putString("saved", s);
     }
 
     public Command armCalibrationTable(int buttonId) {
