@@ -16,6 +16,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
@@ -58,7 +59,7 @@ public class DriverAssist implements Reportable{
      */
     public DriverAssist(String name, int pipeline) {
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-        limelightName = "limelight_backk";
+        limelightName = name;
         ShuffleboardTab tab = Shuffleboard.getTab(limelightName+"data");
 
         try {
@@ -231,6 +232,8 @@ public class DriverAssist implements Reportable{
             if(tagID == foundId || (tagID == 0 && foundId != -1)) {
 
                 lastTagSeenId = foundId;
+                
+                SmartDashboard.putNumber("lastTagSeenId", lastTagSeenId);
                 lastTagSeenPose3d = this.limelight.getBotPose3D();
                 
                 taOffset = limelight.getArea_avg();

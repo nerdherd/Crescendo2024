@@ -88,7 +88,7 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
   // private NoteAssistance noteCamera; 
-  public static DriverAssist apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, VisionConstants.kAprilTagPipeline);
+  private DriverAssist apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, VisionConstants.kAprilTagPipeline);
   private ShooterVisionAdjustment adjustmentCamera;
   
   /**
@@ -99,7 +99,7 @@ public class RobotContainer {
       // noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
       //apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, VisionConstants.kAprilTagPipeline);
       swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
-      adjustmentCamera = new ShooterVisionAdjustment( null, superSystem);
+      adjustmentCamera = new ShooterVisionAdjustment( null, apriltagCamera, superSystem);
 
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
