@@ -375,21 +375,21 @@ public class RobotContainer {
   }
   
   public void initShuffleboard() {
-    imu.initShuffleboard(loggingLevel);
-    swerveDrive.initShuffleboard(loggingLevel);
-    swerveDrive.initModuleShuffleboard(loggingLevel);
+    imu.initShuffleboard(LOG_LEVEL.OFF);
+    swerveDrive.initShuffleboard(LOG_LEVEL.OFF);
+    swerveDrive.initModuleShuffleboard(LOG_LEVEL.OFF);
     apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
     // noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
     adjustmentCamera.initShuffleboard(LOG_LEVEL.ALL);
     // armPositionGyro.initShuffleboard(LOG_LEVEL.ALL);
 
-    shooterRoller.initShuffleboard(loggingLevel);
-    shooterPivot.initShuffleboard(loggingLevel);
-    intakePivot.initShuffleboard(loggingLevel);
-    intakeRoller.initShuffleboard(loggingLevel);
-    indexer.initShuffleboard(loggingLevel);
+    shooterRoller.initShuffleboard(LOG_LEVEL.OFF);
+    shooterPivot.initShuffleboard(LOG_LEVEL.OFF);
+    intakePivot.initShuffleboard(LOG_LEVEL.OFF);
+    intakeRoller.initShuffleboard(LOG_LEVEL.OFF);
+    indexer.initShuffleboard(LOG_LEVEL.OFF);
     // superSystem.colorSensor.initShuffleboard(loggingLevel);
-    superSystem.bannerSensor.initShuffleboard(loggingLevel);
+    superSystem.bannerSensor.initShuffleboard(LOG_LEVEL.OFF);
 
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
