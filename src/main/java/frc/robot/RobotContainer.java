@@ -25,19 +25,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
-import frc.robot.commands.autos.FivePieceEnd;
-import frc.robot.commands.autos.FivePieceSecond;
-import frc.robot.commands.autos.Mid2Piece;
-import frc.robot.commands.autos.Mid3Piece;
-import frc.robot.commands.autos.Mid3PieceDeadReckoning;
-import frc.robot.commands.autos.Mid3PiecePathOnly;
-import frc.robot.commands.autos.PreloadTaxi;
-import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.subsystems.CANdleSubSystem;
 import frc.robot.subsystems.CANdleSubSystem.Status;
 import frc.robot.subsystems.IndexerV2;
-import frc.robot.subsystems.IntakePivot;
-import frc.robot.subsystems.IntakeRoller;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.ShooterPivot;
 import frc.robot.subsystems.ShooterRoller;
@@ -54,11 +44,9 @@ import frc.robot.util.NerdyMath;
 public class RobotContainer {
   public ShooterRoller shooterRoller = new ShooterRoller();
   public ShooterPivot shooterPivot = new ShooterPivot();
-  public IntakeRoller intakeRoller = new IntakeRoller();
-  public IntakePivot intakePivot = new IntakePivot();
   public IndexerV2 indexer = new IndexerV2();
 
-  public SuperSystem superSystem = new SuperSystem(intakePivot, intakeRoller, shooterPivot, shooterRoller, indexer);
+  public SuperSystem superSystem = new SuperSystem(shooterPivot, shooterRoller, indexer);
   
   public Gyro imu = new PigeonV2(2);
   
@@ -126,23 +114,6 @@ public class RobotContainer {
   }
 
   public void initDefaultCommands_teleop() {
-
-    intakePivot.setDefaultCommand(
-      new RunCommand(
-        () -> 
-          intakePivot.incrementPosition(
-            Math.signum(
-              NerdyMath.deadband(
-              -operatorController.getRightY(), 
-              -ControllerConstants.kDeadband, 
-              ControllerConstants.kDeadband)
-            ) * 2
-            
-            ), // (20 * x) degrees per second
-                // If x = 2, then v = 40 degrees per second
-        intakePivot
-      ));
-    
     shooterPivot.setDefaultCommand(
       new RunCommand(
         () -> {
@@ -441,62 +412,6 @@ public class RobotContainer {
   	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands.none());
     
-    // Testing/characterization autos
-    if (paths.contains("Test2M")) {
-      // autoChooser.addOption("Test2M", new Test2M(swerveDrive));
-      autoChooser.addOption("Preload Taxi Straight", new PreloadTaxi(swerveDrive, "Test2M", superSystem));
-    }
-    // if (paths.contains("Test2MBack")) {
-    //   autoChooser.addOption("Test2MBack", new Test2MBack(swerveDrive));
-    // }
-    // if (paths.contains("OneMeterSquareAuto")) {
-    //   autoChooser.addOption("OneMeterSquareAuto", new OneMeterSquareAuto(swerveDrive, "OneMeterSquareAuto"));
-    // }
-    // if (paths.contains("TwoMeterSquareAuto")) {
-    //   autoChooser.addOption("TwoMeterSquareAuto", new TwoMeterSquareAuto(swerveDrive, "TwoMeterSquareAuto"));
-    // }
-    // if (paths.contains("ThreeMeterSquareAuto")) {
-    //   autoChooser.addOption("ThreeMeterSquareAuto", new ThreeMeterSquareAuto(swerveDrive, "ThreeMeterSquareAuto"));
-    // }
-    // if (paths.contains("RotateSquareAuto")) {
-    //   autoChooser.addOption("RotateSquareAuto", new RotateSquareAuto(swerveDrive, "RotateSquareAuto"));
-    // }
-
-    // Note to self: IMU may not be facing the right way at the end of the auto
-    if (paths.contains("Mid3Piece")) {
-      autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
-      autoChooser.addOption("Mid3Piece Path Only", new Mid3PiecePathOnly(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
-      autoChooser.addOption("Mid3Piece Dead Reckoning", new Mid3PieceDeadReckoning(swerveDrive, "Mid3Piece", superSystem));
-      autoChooser.addOption("Mid2Piece", new Mid2Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
-    }
-
-    if (paths.contains("PreloadTaxiSourceSide")) {
-      autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, "PreloadTaxiSourceSide", superSystem));
-    }
-
-    if (paths.contains("PreloadTaxiPodiumSide")) {
-      autoChooser.addOption("Preload Taxi Podium Side", new PreloadTaxi(swerveDrive, "PreloadTaxiPodiumSide", superSystem));
-    }
-
-    if (paths.contains("TaxiOnly")) {
-      autoChooser.addOption("Taxi Only", AutoBuilder.buildAuto("TaxiOnly"));
-    }
-    
-
-    if (paths.contains("Reliable4Piece")) {
-      autoChooser.setDefaultOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
-      // autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
-    }
-
-    if (paths.contains("5PieceMid")){
-      autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5PieceMid", superSystem));
-    }
-
-    if (paths.contains("5PieceMidSecond")){
-      autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem));
-    }
-    
-
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
     autosTab.add("Selected Auto", autoChooser);
@@ -512,8 +427,6 @@ public class RobotContainer {
 
     shooterRoller.initShuffleboard(loggingLevel);
     shooterPivot.initShuffleboard(loggingLevel);
-    intakePivot.initShuffleboard(loggingLevel);
-    intakeRoller.initShuffleboard(loggingLevel);
     indexer.initShuffleboard(loggingLevel);
     // superSystem.colorSensor.initShuffleboard(loggingLevel);
     superSystem.bannerSensor.initShuffleboard(loggingLevel);

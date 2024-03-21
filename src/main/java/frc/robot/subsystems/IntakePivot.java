@@ -1,348 +1,348 @@
-package frc.robot.subsystems;
+// package frc.robot.subsystems;
 
-import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.TalonFXConfigurator;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenix6.signals.GravityTypeValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
+// import com.ctre.phoenix6.StatusCode;
+// import com.ctre.phoenix6.configs.TalonFXConfiguration;
+// import com.ctre.phoenix6.configs.TalonFXConfigurator;
+// import com.ctre.phoenix6.controls.MotionMagicVoltage;
+// import com.ctre.phoenix6.controls.NeutralOut;
+// import com.ctre.phoenix6.hardware.TalonFX;
+// import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+// import com.ctre.phoenix6.signals.GravityTypeValue;
+// import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.SuperStructureConstants;
-import frc.robot.util.NerdyMath;
-import frc.robot.Constants.IntakeConstants;
+// import edu.wpi.first.wpilibj.DriverStation;
+// import edu.wpi.first.wpilibj.DutyCycleEncoder;
+// import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+// import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+// import edu.wpi.first.wpilibj2.command.Command;
+// import edu.wpi.first.wpilibj2.command.CommandScheduler;
+// import edu.wpi.first.wpilibj2.command.Commands;
+// import edu.wpi.first.wpilibj2.command.SubsystemBase;
+// import frc.robot.Constants.SuperStructureConstants;
+// import frc.robot.util.NerdyMath;
+// import frc.robot.Constants.IntakeConstants;
 
-public class IntakePivot extends SubsystemBase implements Reportable {
-    private final TalonFX pivot;
-    private final TalonFXConfigurator pivotConfigurator;
-    private final DutyCycleEncoder throughBore;
+// public class IntakePivot extends SubsystemBase implements Reportable {
+//     private final TalonFX pivot;
+//     private final TalonFXConfigurator pivotConfigurator;
+//     private final DutyCycleEncoder throughBore;
 
-    // Whether the pivot is running
-    private boolean enabled = true;
+//     // Whether the pivot is running
+//     private boolean enabled = true;
 
-    private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
-    private final NeutralOut brakeRequest = new NeutralOut();
+//     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0, true, 0, 0, false, false, false);
+//     private final NeutralOut brakeRequest = new NeutralOut();
 
-    public IntakePivot() {
-        pivot = new TalonFX(IntakeConstants.kPivotMotorID, SuperStructureConstants.kCANivoreBusName);
-        throughBore = new DutyCycleEncoder(IntakeConstants.kThroughBorePort);
-        pivotConfigurator = pivot.getConfigurator();
-        pivot.setInverted(IntakeConstants.kPivotInverted);
+//     public IntakePivot() {
+//         pivot = new TalonFX(IntakeConstants.kPivotMotorID, SuperStructureConstants.kCANivoreBusName);
+//         throughBore = new DutyCycleEncoder(IntakeConstants.kThroughBorePort);
+//         pivotConfigurator = pivot.getConfigurator();
+//         pivot.setInverted(IntakeConstants.kPivotInverted);
 
-        CommandScheduler.getInstance().registerSubsystem(this);
+//         CommandScheduler.getInstance().registerSubsystem(this);
 
-        configureMotor();
-        configurePID();
-        syncEncoder();
-    }
+//         configureMotor();
+//         configurePID();
+//         syncEncoder();
+//     }
     
-    //****************************** SETUP METHODS ******************************/
+//     //****************************** SETUP METHODS ******************************/
 
-    public void configureMotor() {
-        TalonFXConfiguration intakeConfigs = new TalonFXConfiguration();
-        pivotConfigurator.refresh(intakeConfigs);
-        intakeConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        intakeConfigs.Feedback.RotorToSensorRatio = 1;
-        intakeConfigs.Feedback.SensorToMechanismRatio = IntakeConstants.kPivotGearRatio;
+//     public void configureMotor() {
+//         TalonFXConfiguration intakeConfigs = new TalonFXConfiguration();
+//         pivotConfigurator.refresh(intakeConfigs);
+//         intakeConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+//         intakeConfigs.Feedback.RotorToSensorRatio = 1;
+//         intakeConfigs.Feedback.SensorToMechanismRatio = IntakeConstants.kPivotGearRatio;
         
-        intakeConfigs.Voltage.PeakForwardVoltage = 11.5;
-        intakeConfigs.Voltage.PeakReverseVoltage = -11.5;
+//         intakeConfigs.Voltage.PeakForwardVoltage = 11.5;
+//         intakeConfigs.Voltage.PeakReverseVoltage = -11.5;
 
-        intakeConfigs.ClosedLoopGeneral.ContinuousWrap = false;
+//         intakeConfigs.ClosedLoopGeneral.ContinuousWrap = false;
         
-        intakeConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        intakeConfigs.MotorOutput.DutyCycleNeutralDeadband = IntakeConstants.kIntakeNeutralDeadband;
+//         intakeConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+//         intakeConfigs.MotorOutput.DutyCycleNeutralDeadband = IntakeConstants.kIntakeNeutralDeadband;
 
-        intakeConfigs.CurrentLimits.SupplyCurrentLimit = 40;
-        intakeConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
-        intakeConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
-        intakeConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+//         intakeConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+//         intakeConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+//         intakeConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
+//         intakeConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
         
-        intakeConfigs.Audio.AllowMusicDurDisable = true;
+//         intakeConfigs.Audio.AllowMusicDurDisable = true;
 
-        StatusCode response = pivotConfigurator.apply(intakeConfigs);
-        if (!response.isOK()){
-            DriverStation.reportError("Could not apply pivot configs, error code:"+ response.toString(), new Error().getStackTrace());
-        }
-    }
+//         StatusCode response = pivotConfigurator.apply(intakeConfigs);
+//         if (!response.isOK()){
+//             DriverStation.reportError("Could not apply pivot configs, error code:"+ response.toString(), new Error().getStackTrace());
+//         }
+//     }
 
-    public void configurePID() {
-        IntakeConstants.kPickupPosition.loadPreferences();
-        IntakeConstants.kNeutralPosition.loadPreferences();
+//     public void configurePID() {
+//         IntakeConstants.kPickupPosition.loadPreferences();
+//         IntakeConstants.kNeutralPosition.loadPreferences();
 
-        TalonFXConfiguration pivotConfigs = new TalonFXConfiguration();
-        pivotConfigurator.refresh(pivotConfigs);
-        IntakeConstants.kPPivotMotor.loadPreferences();
-        IntakeConstants.kIPivotMotor.loadPreferences();
-        IntakeConstants.kDPivotMotor.loadPreferences();
-        IntakeConstants.kVPivotMotor.loadPreferences();
-        IntakeConstants.kSPivotMotor.loadPreferences();
-        IntakeConstants.kAPivotMotor.loadPreferences();
-        IntakeConstants.kGPivotMotor.loadPreferences();
-        IntakeConstants.kIntakeCruiseVelocity.loadPreferences();
-        IntakeConstants.kIntakeCruiseAcceleration.loadPreferences();
-        pivotConfigs.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-        pivotConfigs.Slot0.kP = IntakeConstants.kPPivotMotor.get();
-        pivotConfigs.Slot0.kI = IntakeConstants.kIPivotMotor.get();
-        pivotConfigs.Slot0.kD = IntakeConstants.kDPivotMotor.get();
-        pivotConfigs.Slot0.kV = IntakeConstants.kVPivotMotor.get();
-        pivotConfigs.Slot0.kS = IntakeConstants.kSPivotMotor.get();
-        pivotConfigs.Slot0.kA = IntakeConstants.kAPivotMotor.get();
-        pivotConfigs.Slot0.kG = IntakeConstants.kGPivotMotor.get();
-        pivotConfigs.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.kIntakeCruiseVelocity.get();
-        pivotConfigs.MotionMagic.MotionMagicAcceleration = IntakeConstants.kIntakeCruiseAcceleration.get();
+//         TalonFXConfiguration pivotConfigs = new TalonFXConfiguration();
+//         pivotConfigurator.refresh(pivotConfigs);
+//         IntakeConstants.kPPivotMotor.loadPreferences();
+//         IntakeConstants.kIPivotMotor.loadPreferences();
+//         IntakeConstants.kDPivotMotor.loadPreferences();
+//         IntakeConstants.kVPivotMotor.loadPreferences();
+//         IntakeConstants.kSPivotMotor.loadPreferences();
+//         IntakeConstants.kAPivotMotor.loadPreferences();
+//         IntakeConstants.kGPivotMotor.loadPreferences();
+//         IntakeConstants.kIntakeCruiseVelocity.loadPreferences();
+//         IntakeConstants.kIntakeCruiseAcceleration.loadPreferences();
+//         pivotConfigs.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+//         pivotConfigs.Slot0.kP = IntakeConstants.kPPivotMotor.get();
+//         pivotConfigs.Slot0.kI = IntakeConstants.kIPivotMotor.get();
+//         pivotConfigs.Slot0.kD = IntakeConstants.kDPivotMotor.get();
+//         pivotConfigs.Slot0.kV = IntakeConstants.kVPivotMotor.get();
+//         pivotConfigs.Slot0.kS = IntakeConstants.kSPivotMotor.get();
+//         pivotConfigs.Slot0.kA = IntakeConstants.kAPivotMotor.get();
+//         pivotConfigs.Slot0.kG = IntakeConstants.kGPivotMotor.get();
+//         pivotConfigs.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.kIntakeCruiseVelocity.get();
+//         pivotConfigs.MotionMagic.MotionMagicAcceleration = IntakeConstants.kIntakeCruiseAcceleration.get();
 
-        StatusCode response = pivotConfigurator.apply(pivotConfigs);
-        if (!response.isOK()){
-            DriverStation.reportError("Could not apply pivot configs, error code:"+ response.toString(), new Error().getStackTrace());
-        }
-    }
+//         StatusCode response = pivotConfigurator.apply(pivotConfigs);
+//         if (!response.isOK()){
+//             DriverStation.reportError("Could not apply pivot configs, error code:"+ response.toString(), new Error().getStackTrace());
+//         }
+//     }
 
-    public void syncEncoder() {
-        // Save a consistent position offset
-        IntakeConstants.kPivotOffset.loadPreferences();
+//     public void syncEncoder() {
+//         // Save a consistent position offset
+//         IntakeConstants.kPivotOffset.loadPreferences();
 
-        // ThroughBore reads in revolutions
-        throughBore.setPositionOffset(IntakeConstants.kPivotOffset.get() / 360);
+//         // ThroughBore reads in revolutions
+//         throughBore.setPositionOffset(IntakeConstants.kPivotOffset.get() / 360);
 
-        double position = getAbsolutePositionRev();
-        position = mapRev(position);
+//         double position = getAbsolutePositionRev();
+//         position = mapRev(position);
 
-        pivot.setPosition(position);
-        // pivot.setPosition(IntakeConstants.kPickupPosition.get());
-    }
+//         pivot.setPosition(position);
+//         // pivot.setPosition(IntakeConstants.kPickupPosition.get());
+//     }
 
-    /**
-     * Zero the through bore encoder and update the internal encoder
-     * ONLY RUN FOR DEBUGGING
-     */
-    public void zeroAbsoluteEncoder() {
-        throughBore.reset();
-        // Save the offset in degrees (for readability)
-        IntakeConstants.kPivotOffset.set(throughBore.getPositionOffset() * 360);
+//     /**
+//      * Zero the through bore encoder and update the internal encoder
+//      * ONLY RUN FOR DEBUGGING
+//      */
+//     public void zeroAbsoluteEncoder() {
+//         throughBore.reset();
+//         // Save the offset in degrees (for readability)
+//         IntakeConstants.kPivotOffset.set(throughBore.getPositionOffset() * 360);
 
-        // Save new offset to Preferences
-        IntakeConstants.kPivotOffset.uploadPreferences();
-        syncEncoder();
-    }
+//         // Save new offset to Preferences
+//         IntakeConstants.kPivotOffset.uploadPreferences();
+//         syncEncoder();
+//     }
 
-    public void zeroAbsoluteEncoderFullStow() {
-        throughBore.reset();
-        IntakeConstants.kPickupPosition.loadPreferences();
+//     public void zeroAbsoluteEncoderFullStow() {
+//         throughBore.reset();
+//         IntakeConstants.kPickupPosition.loadPreferences();
 
-        // Apply the pickup position to offset as revolutions
-        throughBore.setPositionOffset((throughBore.getPositionOffset() + (IntakeConstants.kPickupPosition.get() / 360)) % 1);
+//         // Apply the pickup position to offset as revolutions
+//         throughBore.setPositionOffset((throughBore.getPositionOffset() + (IntakeConstants.kPickupPosition.get() / 360)) % 1);
 
-        // Save the new offset as degrees
-        IntakeConstants.kPivotOffset.set(throughBore.getPositionOffset() * 360);
-        IntakeConstants.kPivotOffset.uploadPreferences();
+//         // Save the new offset as degrees
+//         IntakeConstants.kPivotOffset.set(throughBore.getPositionOffset() * 360);
+//         IntakeConstants.kPivotOffset.uploadPreferences();
 
-        syncEncoder();
-    }
+//         syncEncoder();
+//     }
 
-    private int count = 0;
+//     private int count = 0;
 
-    @Override
-    public void periodic() {
-        count++;
-        // SmartDashboard.putNumber("Intake Count", count);
-        if (count > 10) {
-            syncEncoder();
-            count = 0;
-            // SmartDashboard.putBoolean("Intake Reset", true);
-        } else {
-            // SmartDashboard.putBoolean("Intake Reset", false);
-        }
+//     @Override
+//     public void periodic() {
+//         count++;
+//         // SmartDashboard.putNumber("Intake Count", count);
+//         if (count > 10) {
+//             syncEncoder();
+//             count = 0;
+//             // SmartDashboard.putBoolean("Intake Reset", true);
+//         } else {
+//             // SmartDashboard.putBoolean("Intake Reset", false);
+//         }
 
-        if (IntakeConstants.fullDisableIntake.get()) {
-            pivot.setControl(brakeRequest);
-            enabled = false;
-            return;
-        }
+//         if (IntakeConstants.fullDisableIntake.get()) {
+//             pivot.setControl(brakeRequest);
+//             enabled = false;
+//             return;
+//         }
         
-        // pivot.setControl(brakeRequest);
+//         // pivot.setControl(brakeRequest);
 
-        if (enabled) {
-            pivot.setControl(motionMagicRequest);
-        } else {
-            pivot.setControl(brakeRequest);
-        }
-    }
+//         if (enabled) {
+//             pivot.setControl(motionMagicRequest);
+//         } else {
+//             pivot.setControl(brakeRequest);
+//         }
+//     }
 
-    /**
-     * Maps the value to the range [-0.25, 0.75]
-     */
-    public double mapRev(double rev) {
-        return NerdyMath.posMod(rev + 0.25, 1) - 0.25;
-    }
+//     /**
+//      * Maps the value to the range [-0.25, 0.75]
+//      */
+//     public double mapRev(double rev) {
+//         return NerdyMath.posMod(rev + 0.25, 1) - 0.25;
+//     }
 
-    /**
-     * Maps the value to the range [-90, 270]
-     */
-    public double mapDegrees(double deg) {
-        return NerdyMath.posMod(deg + 90, 360) - 90;
-    }
+//     /**
+//      * Maps the value to the range [-90, 270]
+//      */
+//     public double mapDegrees(double deg) {
+//         return NerdyMath.posMod(deg + 90, 360) - 90;
+//     }
 
-    //****************************** STATE METHODS ******************************/
+//     //****************************** STATE METHODS ******************************/
 
-    public double getTargetPositionRev() {
-        return motionMagicRequest.Position;
-    }
+//     public double getTargetPositionRev() {
+//         return motionMagicRequest.Position;
+//     }
 
-    public double getTargetPositionDegrees() {
-        return getTargetPositionRev() * 360;
-    }
+//     public double getTargetPositionDegrees() {
+//         return getTargetPositionRev() * 360;
+//     }
 
-    public double getPositionRev() {
-        return pivot.getPosition().getValueAsDouble();
-    }
+//     public double getPositionRev() {
+//         return pivot.getPosition().getValueAsDouble();
+//     }
 
-    public double getPositionDegrees() {
-        return getPositionRev() * 360;
-    }
+//     public double getPositionDegrees() {
+//         return getPositionRev() * 360;
+//     }
 
-    public double getAbsolutePositionRev() {
-        if (IntakeConstants.kPivotAbsoluteEncoderInverted) {
-            return mapRev(throughBore.getPositionOffset() - throughBore.getAbsolutePosition());
-        }
-        return mapRev(throughBore.getAbsolutePosition() - throughBore.getPositionOffset());
-    }
+//     public double getAbsolutePositionRev() {
+//         if (IntakeConstants.kPivotAbsoluteEncoderInverted) {
+//             return mapRev(throughBore.getPositionOffset() - throughBore.getAbsolutePosition());
+//         }
+//         return mapRev(throughBore.getAbsolutePosition() - throughBore.getPositionOffset());
+//     }
 
-    public double getAbsolutePositionDegrees() {
-        return getAbsolutePositionRev() * 360;
-    }
+//     public double getAbsolutePositionDegrees() {
+//         return getAbsolutePositionRev() * 360;
+//     }
 
-    // Checks whether the pivot is within the deadband for a position
-    public boolean hasReachedPosition(double position) {
-        return NerdyMath.inRange(
-            getPositionDegrees(),
-            position - IntakeConstants.kPivotDeadband.get(), 
-            position + IntakeConstants.kPivotDeadband.get()
-        ) && NerdyMath.inRange(
-            getTargetPositionDegrees(),
-            position - IntakeConstants.kPivotDeadband.get(), 
-            position + IntakeConstants.kPivotDeadband.get()
-        );
-    }
+//     // Checks whether the pivot is within the deadband for a position
+//     public boolean hasReachedPosition(double position) {
+//         return NerdyMath.inRange(
+//             getPositionDegrees(),
+//             position - IntakeConstants.kPivotDeadband.get(), 
+//             position + IntakeConstants.kPivotDeadband.get()
+//         ) && NerdyMath.inRange(
+//             getTargetPositionDegrees(),
+//             position - IntakeConstants.kPivotDeadband.get(), 
+//             position + IntakeConstants.kPivotDeadband.get()
+//         );
+//     }
 
-    // Check if the intake is in a safe position for the shooter to move
-    public boolean hasReachedNeutral() {
-        return (getPositionDegrees() <= IntakeConstants.kNeutralPosition.get() + IntakeConstants.kPivotDeadband.get()
-            && getTargetPositionDegrees() <= IntakeConstants.kNeutralPosition.get() + IntakeConstants.kPivotDeadband.get());
-    }
+//     // Check if the intake is in a safe position for the shooter to move
+//     public boolean hasReachedNeutral() {
+//         return (getPositionDegrees() <= IntakeConstants.kNeutralPosition.get() + IntakeConstants.kPivotDeadband.get()
+//             && getTargetPositionDegrees() <= IntakeConstants.kNeutralPosition.get() + IntakeConstants.kPivotDeadband.get());
+//     }
 
-    // public boolean hasReachedIntakeShootingPosition() {
-    //     return (getPosition() <= IntakeConstants.kIntakeShootingPosition.get() + IntakeConstants.kPivotDeadband.get()
-    //         && getTargetPosition() <= IntakeConstants.kIntakeShootingPosition.get() + IntakeConstants.kPivotDeadband.get());
-    // }
+//     // public boolean hasReachedIntakeShootingPosition() {
+//     //     return (getPosition() <= IntakeConstants.kIntakeShootingPosition.get() + IntakeConstants.kPivotDeadband.get()
+//     //         && getTargetPosition() <= IntakeConstants.kIntakeShootingPosition.get() + IntakeConstants.kPivotDeadband.get());
+//     // }
 
 
-    // Checks if the pivot is within deadband of the target pos
-    public boolean atTargetPosition() {
-        return hasReachedPosition(motionMagicRequest.Position * 360);
-    }
+//     // Checks if the pivot is within deadband of the target pos
+//     public boolean atTargetPosition() {
+//         return hasReachedPosition(motionMagicRequest.Position * 360);
+//     }
 
-    public void stop() {
-        motionMagicRequest.Position = getPositionRev();
-        enabled = false;
-        pivot.setControl(brakeRequest);
-    }
+//     public void stop() {
+//         motionMagicRequest.Position = getPositionRev();
+//         enabled = false;
+//         pivot.setControl(brakeRequest);
+//     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+//     public void setEnabled(boolean enabled) {
+//         this.enabled = enabled;
+//     }
     
-    //****************************** POSITION METHODS ******************************//
+//     //****************************** POSITION METHODS ******************************//
 
-    public void setPosition(double position) {
-        motionMagicRequest.Position = 
-            NerdyMath.clamp(
-                mapDegrees(position),
-                IntakeConstants.kPivotMinPos,
-                IntakeConstants.kPivotMaxPos) / 360;  
-    }
+//     public void setPosition(double position) {
+//         motionMagicRequest.Position = 
+//             NerdyMath.clamp(
+//                 mapDegrees(position),
+//                 IntakeConstants.kPivotMinPos,
+//                 IntakeConstants.kPivotMaxPos) / 360;  
+//     }
 
-    public void incrementPosition(double increment) {
-        if (Math.abs(increment) <= 0.1) {
-            return;
-        } 
-        setPosition(getTargetPositionDegrees() + increment);
-    }
+//     public void incrementPosition(double increment) {
+//         if (Math.abs(increment) <= 0.1) {
+//             return;
+//         } 
+//         setPosition(getTargetPositionDegrees() + increment);
+//     }
 
-    //****************************** POSITION COMMANDS *****************************//
+//     //****************************** POSITION COMMANDS *****************************//
 
-    public Command stopCommand() {
-        return Commands.runOnce(() -> stop());
-    }
+//     public Command stopCommand() {
+//         return Commands.runOnce(() -> stop());
+//     }
 
-    public Command setEnabledCommand(boolean enabled) {
-        return Commands.runOnce(() -> setEnabled(enabled));
-    }
+//     public Command setEnabledCommand(boolean enabled) {
+//         return Commands.runOnce(() -> setEnabled(enabled));
+//     }
 
-    public Command setPositionCommand(double position) {
-        return Commands.runOnce(() -> setPosition(position));
-    }
+//     public Command setPositionCommand(double position) {
+//         return Commands.runOnce(() -> setPosition(position));
+//     }
 
-    public Command incrementPositionCommand(double increment) {
-        return Commands.runOnce(() -> incrementPosition(increment));
-    }
+//     public Command incrementPositionCommand(double increment) {
+//         return Commands.runOnce(() -> incrementPosition(increment));
+//     }
 
-    public Command moveToIntake() {
-        return setPositionCommand(IntakeConstants.kPickupPosition.get());
-    }
+//     public Command moveToIntake() {
+//         return setPositionCommand(IntakeConstants.kPickupPosition.get());
+//     }
 
-    public Command moveToNeutral() {
-        return setPositionCommand(IntakeConstants.kNeutralPosition.get());
-    }
+//     public Command moveToNeutral() {
+//         return setPositionCommand(IntakeConstants.kNeutralPosition.get());
+//     }
 
-    public Command moveToVertical() {
-        return setPositionCommand(IntakeConstants.kVerticalPosition.get());
-    }
+//     public Command moveToVertical() {
+//         return setPositionCommand(IntakeConstants.kVerticalPosition.get());
+//     }
 
-    //****************************** LOGGING METHODS ******************************//
+//     //****************************** LOGGING METHODS ******************************//
 
-    @Override
-    public void reportToSmartDashboard(LOG_LEVEL priority) {}
+//     @Override
+//     public void reportToSmartDashboard(LOG_LEVEL priority) {}
 
-    @Override
-    public void initShuffleboard(LOG_LEVEL level) {
-        ShuffleboardTab tab;
-        if (level == LOG_LEVEL.MINIMAL) {
-            tab = Shuffleboard.getTab("Main");
-        } else {
-            tab = Shuffleboard.getTab("Intake");
-        }
+//     @Override
+//     public void initShuffleboard(LOG_LEVEL level) {
+//         ShuffleboardTab tab;
+//         if (level == LOG_LEVEL.MINIMAL) {
+//             tab = Shuffleboard.getTab("Main");
+//         } else {
+//             tab = Shuffleboard.getTab("Intake");
+//         }
 
-        switch (level) {
-            case OFF:
-                break;
-            case ALL:
-            case MEDIUM:
-            case MINIMAL:
-                tab.addBoolean("Intake Enabled", () -> this.enabled);
-                tab.addBoolean("At Neutral", this::hasReachedNeutral);
+//         switch (level) {
+//             case OFF:
+//                 break;
+//             case ALL:
+//             case MEDIUM:
+//             case MINIMAL:
+//                 tab.addBoolean("Intake Enabled", () -> this.enabled);
+//                 tab.addBoolean("At Neutral", this::hasReachedNeutral);
 
-                tab.addDouble("Pivot Desired Position", this::getTargetPositionDegrees);
-                tab.addDouble("Pivot Position", this::getPositionDegrees);
-                tab.addDouble("Pivot Absolute Position", this::getAbsolutePositionDegrees);
-                tab.addDouble("Pivot Velocity (DPS)", () -> pivot.getVelocity().getValueAsDouble() * 360);
-                tab.addDouble("Pivot Supply Current", () -> pivot.getSupplyCurrent().getValueAsDouble());
-                tab.addDouble("Pivot Stator Current", () -> pivot.getStatorCurrent().getValueAsDouble());
-                tab.addNumber("Pivot Applied Voltage", () -> pivot.getMotorVoltage().getValueAsDouble());
+//                 tab.addDouble("Pivot Desired Position", this::getTargetPositionDegrees);
+//                 tab.addDouble("Pivot Position", this::getPositionDegrees);
+//                 tab.addDouble("Pivot Absolute Position", this::getAbsolutePositionDegrees);
+//                 tab.addDouble("Pivot Velocity (DPS)", () -> pivot.getVelocity().getValueAsDouble() * 360);
+//                 tab.addDouble("Pivot Supply Current", () -> pivot.getSupplyCurrent().getValueAsDouble());
+//                 tab.addDouble("Pivot Stator Current", () -> pivot.getStatorCurrent().getValueAsDouble());
+//                 tab.addNumber("Pivot Applied Voltage", () -> pivot.getMotorVoltage().getValueAsDouble());
 
-                tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));
-                tab.add("Zero Full Stow Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoderFullStow));
-                break;
-        }
-    }
-}
+//                 tab.add("Zero Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoder));
+//                 tab.add("Zero Full Stow Absolute Encoder", Commands.runOnce(this::zeroAbsoluteEncoderFullStow));
+//                 break;
+//         }
+//     }
+// }
