@@ -135,7 +135,7 @@ public class CANdleSubSystem extends SubsystemBase {
                 animation = new RgbFadeAnimation(0.7, 0.4, ledCout);
                 break;
             case SingleFade:
-                animation = new SingleFadeAnimation(50, 2, 200, 0, 0.5, ledCout);
+                animation = new SingleFadeAnimation(255, 0, 0, 0, 0.5, ledCout);
                 break;
             case Strobe:
                 animation = new StrobeAnimation(0, 255, 0, 0, 98.0 / 256.0, ledCout);
@@ -156,7 +156,7 @@ public class CANdleSubSystem extends SubsystemBase {
     @Override
     public void periodic() {
         if(animation == null) {
-            CANdle.setLEDs(255, 255, 255);
+            changeAnimation(AnimationTypes.SingleFade);
         } else {
             CANdle.animate(animation);
         }
