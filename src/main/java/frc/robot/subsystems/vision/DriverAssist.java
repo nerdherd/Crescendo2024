@@ -25,6 +25,8 @@ import frc.robot.commands.TurnToAngleContinuous;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers;
+import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers.LimelightResults;
+import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers.Results;
 import frc.robot.util.NerdyMath;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -211,7 +213,7 @@ public class DriverAssist implements Reportable{
         // make sure to return positive value
         return ((MaxTxIn-MinTxIn)/(MaxTA-MinTA))*(currentTa-MinTA) + MinTxIn;
     }
-    PIDController pidTxRotation = new PIDController(0.1, 0, 0); // todo, tuning pls.
+    PIDController pidTxRotation = new PIDController(0.01, 0, 0); // todo, tuning pls.
     public void TagAimingRotation(SwerveDrivetrain swerveDrive, int tagID, int maxSamples) {
         // make sure to reset before or after calling this function
         // make sure the cross is at the center!!! for tx
@@ -240,7 +242,14 @@ public class DriverAssist implements Reportable{
                 lastTagSeenDist = limelightMeasurement.avgTagDist;
 
                 lastTagSeenPose2d = limelightMeasurement.pose;
+                //double currentAngle = lastTagSeenPose2d.getRotation().getDegrees();
+                //SmartDashboard.putNumber("currentAngle", currentAngle);
                 
+                //Results a = LimelightHelpers.getLatestResults(limelightName).targetingResults;
+                double currentAngle;// = a.getBotPose2d().getRotation().getDegrees();
+                currentAngle = LimelightHelpers.getBotPose3d_TargetSpace(limelightName).toPose2d().getRotation().getDegrees();
+                SmartDashboard.putNumber("currentAngle", currentAngle);
+
                 taOffset = limelight.getArea_avg();
                 txOffset = limelight.getXAngle_avg();
                     
@@ -251,23 +260,25 @@ public class DriverAssist implements Reportable{
                 if(currentAngleOffset != null)
                     currentAngleOffset.setDouble(0);
 
-                double txInRangeValue = Math.abs(TxTargetOffsetForCurrentTa(taOffset));// todo, tuning pls!!!
-                if( txOffset < txInRangeValue && txOffset > -1*txInRangeValue ) // todo, tuning pls!!!
-                {
-                    calculatedAngledPower = 0; // in good tx ranges. faster than the pid
-                } 
-                // else if(){} // out of range cases. todo 
-                else
+                // double txInRangeValue = Math.abs(TxTargetOffsetForCurrentTa(taOffset));// todo, tuning pls!!!
+                // if( txOffset < txInRangeValue && txOffset > -1*txInRangeValue ) // todo, tuning pls!!!
+                // {
+                //     calculatedAngledPower = 0; // in good tx ranges. faster than the pid
+                // } 
+                // // else if(){} // out of range cases. todo 
+                // else
                 {
                     // pid based on tx, and adding ta/distance as the factor
-                    calculatedAngledPower = pidTxRotation.calculate(txOffset, 0)  * Math.sqrt(taOffset);
+                    //calculatedAngledPower = pidTxRotation.calculate(txOffset, 0)  * Math.sqrt(taOffset);
+                    
+                    calculatedAngledPower = 0;//pidTxRotation.calculate(currentAngle * -1, 0);//  * Math.sqrt(taOffset);
                     calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.2, 0.2); // todo, tuning pls. Have to consider the Ta for all coeffs!!! Todo
                 }
 
-                if(forwardSpeed != null)
-                    forwardSpeed.setDouble(0);
-                if(sidewaysSpeed != null)
-                    sidewaysSpeed.setDouble(0);
+                // if(forwardSpeed != null)
+                //     forwardSpeed.setDouble(0);
+                // if(sidewaysSpeed != null)
+                //     sidewaysSpeed.setDouble(0);
                 if(angularSpeed != null)
                     angularSpeed.setDouble(calculatedAngledPower);
             }
