@@ -259,7 +259,7 @@ public class IntakePivot extends SubsystemBase implements Reportable {
     }
 
     public void setEnabled(boolean enabled) {
-        this.enabled = false;
+        this.enabled = false; //testing
     }
     
     //****************************** POSITION METHODS ******************************//

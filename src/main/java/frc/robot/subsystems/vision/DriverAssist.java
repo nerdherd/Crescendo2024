@@ -293,6 +293,12 @@ public class DriverAssist implements Reportable{
         return lastTagSeenDist;
     }
 
+    public Pose2d getLatestPose2dBlue()
+    {
+        LimelightHelpers.LimelightResults limelightResults = LimelightHelpers.getLatestResults(limelightName);
+        return limelightResults.targetingResults.getBotPose2d_wpiBlue();
+    }
+
     // be careful to use this function!!! todo, not finished yet.....
     public void rotationSeekApriltag(SwerveDrivetrain swerveDrive)
     {

@@ -198,6 +198,7 @@ public class ShooterVisionAdjustment implements Reportable{
                 tab.add("Too Low", armCalibrationTable(-1));
                 tab.add("Too High", armCalibrationTable(1));
                 tab.add("Great!", armCalibrationTable(0));
+                //tab.add("CurrentVisionPose", tagCamera.getLatestPose2dBlue());
             
                 goalAngle = tab.add("Calculated Angle", 0)
                 .withPosition(2, 0)
