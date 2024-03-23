@@ -91,10 +91,15 @@ public class ShooterVisionAdjustment implements Reportable{
         SmartDashboard.putNumberArray("Spline Test Outputs", outputs);
     }
     
- 
+    private double lastAngle = 0;
+
     public double getShooterAngle() {
+        return getShooterAngle(false);
+    }
+ 
+    public double getShooterAngle(boolean preserveOldValue) {
         Pose3d currentPose = getRobotPose();
-        if(currentPose == null) return -0.1;
+        if(currentPose == null) return (preserveOldValue ? lastAngle : 0);
         Pose3d tagPose;
         
         if(RobotContainer.IsRedSide()) {
@@ -103,18 +108,18 @@ public class ShooterVisionAdjustment implements Reportable{
         else{
             tagPose = getTagPose(7);
         }
-        if(tagPose == null) return 0;
+        if(tagPose == null) return (preserveOldValue ? lastAngle : -0.1);
 
         double distance = Math.sqrt(Math.pow(currentPose.getX() - tagPose.getX(), 2) + Math.pow(currentPose.getY() - tagPose.getY(), 2));
         if(distanceOffset != null) distanceOffset.setDouble(distance);
         SmartDashboard.putNumber("Distance", distance);
         if(distance < distances[0]) {
             SmartDashboard.putBoolean("Vision failed", true);
-            return 0;
+            return (preserveOldValue ? lastAngle : -0.2);
         }
         if (distance > distances[distances.length - 1]) {
             SmartDashboard.putBoolean("Vision failed", true);
-            return 0;
+            return (preserveOldValue ? lastAngle : -0.3);
         }
 
         SmartDashboard.putBoolean("Vision failed", false);
@@ -124,6 +129,7 @@ public class ShooterVisionAdjustment implements Reportable{
         SmartDashboard.putNumber("Vision Distance", distance);
         if(goalAngle != null) 
             goalAngle.setDouble(output);
+        lastAngle = output;
         return output;
     }
 

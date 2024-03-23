@@ -426,7 +426,7 @@ public class SuperSystem {
         return command;
     }
 
-    public Command prepareShooter() {
+    public Command prepareShooterSpeaker() {
         Command command = Commands.sequence(
             intakePivot.moveToNeutral(),
             Commands.waitUntil(intakePivot::hasReachedNeutral),
@@ -435,6 +435,46 @@ public class SuperSystem {
             shooterRoller.shootSpeaker()
         );
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot);
+        return command;
+    }
+
+    public Command prepareShooterPodium() {
+        Command command = Commands.sequence(
+            intakePivot.moveToNeutral(),
+            Commands.waitUntil(intakePivot::hasReachedNeutral),
+            shooterPivot.moveToSpeakerFar(),
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker()
+        );
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot);
+        return command;
+    }
+
+    public Command prepareShooterVision(ShooterVisionAdjustment sva) {
+        Command command = Commands.sequence(
+            intakePivot.moveToNeutral(),
+            Commands.waitUntil(intakePivot::hasReachedNeutral),
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker(),
+            Commands.repeatingSequence(
+                Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle(true))),
+                Commands.waitSeconds(0.02)
+            )
+        );
+
+        command.addRequirements(shooterPivot, shooterRoller, intakePivot);
+
+        return command;
+    }
+
+    public Command shoot() {
+        Command command = Commands.sequence(
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand()
+        );
+
+        command.addRequirements(indexer);
+
         return command;
     }
 
