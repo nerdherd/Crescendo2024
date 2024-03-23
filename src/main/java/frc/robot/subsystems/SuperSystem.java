@@ -290,6 +290,10 @@ public class SuperSystem {
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
         return command;
     }
+    
+    public Command climbSequence(){
+        return shooterPivot.climbSequence();
+    }
 
     public Command intakeBasic() {
         Command command = Commands.sequence(
@@ -589,13 +593,4 @@ public class SuperSystem {
         return command;
     }
 
-    public Command climbSequence() {
-        return Commands.sequence(
-            linearActuator.retractCommand(),
-            Commands.waitSeconds(1),
-            Commands.runOnce(() -> climber.climb())
-        
-        );
-            
-    }
 }
