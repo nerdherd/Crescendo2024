@@ -321,28 +321,30 @@ public class RobotContainer {
         Commands.runOnce(() -> adjustmentCamera.getShooterAngle())
       )
     );
+    commandDriverController.touchpad().whileTrue(superSystem.shoot())
+                                      .whileFalse(superSystem.stow());
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
     commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
                                       .whileFalse(superSystem.stow()); // TODO: Can we try getting rid of this whileFalse line here **(field testing)**
-    commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
+    // commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
 
     commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     
     commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
                                   .whileFalse(superSystem.stow());
 
-    commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
+    commandOperatorController.R2().whileTrue(superSystem.prepareShooterSpeaker())
                                   .whileFalse(superSystem.stow());
-    commandOperatorController.R1().whileTrue(superSystem.shootPodium())
+    commandOperatorController.R1().whileTrue(superSystem.prepareShooterPodium())
                                   .whileFalse(superSystem.stow());
 
     commandOperatorController.touchpad().whileTrue(superSystem.panicButton())
                                         .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
     commandOperatorController.circle().whileTrue(superSystem.stow()); // TODO: Change this binding
     commandOperatorController.share().whileTrue(superSystem.intakeDirectShoot());
-    commandOperatorController.options().whileTrue(superSystem.shootSequenceAdjustable(adjustmentCamera)) //
+    commandOperatorController.options().whileTrue(superSystem.prepareShooterVision(adjustmentCamera)) //
                                   .whileFalse(superSystem.stow()); // TODO: Safety *Do nothing if April Tag is not seen*
   }
 
