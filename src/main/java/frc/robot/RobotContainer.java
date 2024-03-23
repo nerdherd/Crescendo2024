@@ -179,15 +179,15 @@ public class RobotContainer {
         () -> driverController.getR2Button(), // Precision mode (disabled)
         () -> {
           return (driverController.getR1Button() || driverController.getL1Button() || 
-          // driverController.getL2Button() || 
+          driverController.getL2Button() || 
           driverController.getCircleButton()); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          // if (driverController.getL2Button()) {
-          //   // 4 if red side, 7 if blue
-          //   return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
-          // }
+          if (driverController.getL2Button()) {
+            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
+            // 4 if red side, 7 if blue
+          }
           if (driverController.getCircleButton()) { //turn to amp
             if (!IsRedSide()){
               return 270.0;
@@ -302,13 +302,17 @@ public class RobotContainer {
       .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
       .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
-    commandDriverController.L2().whileTrue(
-      // Commands.repeatingSequence(
-        // apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive::getPose, 0, 3),
-        // Commands.waitSeconds(0.2)
-        apriltagCamera.aimToApriltagCommand(swerveDrive, 4, 4, 8)
-      // )
-    );
+    // commandDriverController.L2().whileTrue(
+    //   // Commands.repeatingSequence(
+    //     // apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive::getPose, 0, 3),
+    //     // Commands.waitSeconds(0.2)
+    //     Commands.either(
+    //       apriltagCamera.aimToApriltagCommand(swerveDrive, 4, 4, 8),
+    //       apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 4, 8),
+    //       RobotContainer::IsRedSide  
+    //     )
+    //   // )
+    // );
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
@@ -456,6 +460,7 @@ public class RobotContainer {
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
     tab.addNumber("Voltage", () -> Math.abs(pdp.getVoltage()));
+    tab.addNumber("apriltag angle", () -> apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7));
   }
   
   /**
