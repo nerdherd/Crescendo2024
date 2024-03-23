@@ -303,7 +303,7 @@ public class RobotContainer {
     commandDriverController.triangle()
       .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
       .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
-    commandDriverController.square().whileTrue(superSystem.climbSequence());
+    // commandDriverController.square().whileTrue(superSystem.climbSequence());
     // commandDriverController.L2().whileTrue(
     //   // Commands.repeatingSequence(
     //     // apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive::getPose, 0, 3),
