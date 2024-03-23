@@ -18,10 +18,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.vision.DriverAssist;
+import frc.robot.subsystems.vision.Limelight;
 import frc.robot.subsystems.Reportable;
 
 import static frc.robot.Constants.PathPlannerConstants.kPPMaxVelocity;
@@ -51,6 +53,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
 
     private Field2d field;
 
+    Limelight limelight;
+
     public enum DRIVE_MODE {
         FIELD_ORIENTED,
         ROBOT_ORIENTED,
@@ -60,7 +64,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     /**
      * Construct a new {@link SwerveDrivetrain}
      */
-    public SwerveDrivetrain(Gyro gyro, DriverAssist vision) throws IllegalArgumentException {
+    public SwerveDrivetrain(Gyro gyro, DriverAssist vision, Limelight adjustmentCamera) throws IllegalArgumentException {
         frontLeft = new SwerveModule(
             kFLDriveID,
             kFLTurningID,
@@ -127,6 +131,9 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
                 return false;
             }, 
             this);
+
+            this.limelight = adjustmentCamera;
+            
     }
 
     boolean initPoseByVisionDone = false;
@@ -138,6 +145,14 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     public void periodic() {
         if (!isTest) {
             runModules();
+        }
+        if (limelight.hasValidTarget()) {
+            limelight.updateAvgPose();
+        }
+        else {
+            limelight.filterPoseX.reset(0);
+            limelight.filterPoseY.reset(0);
+            limelight.filterPoseZ.reset(0);
         }
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
         /*counter = (counter + 1) % visionFrequency;
