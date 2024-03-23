@@ -42,7 +42,6 @@ import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.IndexerV2;
-import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.IntakeRoller;
 import frc.robot.subsystems.ShooterPivot;
 import frc.robot.subsystems.ShooterRoller;
@@ -61,10 +60,9 @@ public class RobotContainer {
   public ShooterRoller shooterRoller = new ShooterRoller();
   public ShooterPivot shooterPivot = new ShooterPivot();
   public IntakeRoller intakeRoller = new IntakeRoller();
-  public IntakePivot intakePivot = new IntakePivot();
   public IndexerV2 indexer = new IndexerV2();
 
-  public SuperSystem superSystem = new SuperSystem(intakePivot, intakeRoller, shooterPivot, shooterRoller, indexer);
+  public SuperSystem superSystem = new SuperSystem(intakeRoller, shooterPivot, shooterRoller, indexer);
   
   public Gyro imu = new PigeonV2(2);
 
@@ -128,22 +126,6 @@ public class RobotContainer {
   }
 
   public void initDefaultCommands_teleop() {
-
-    intakePivot.setDefaultCommand(
-      new RunCommand(
-        () -> 
-          intakePivot.incrementPosition(
-            Math.signum(
-              NerdyMath.deadband(
-              -operatorController.getRightY(), 
-              -ControllerConstants.kDeadband, 
-              ControllerConstants.kDeadband)
-            ) * 2
-            
-            ), // (20 * x) degrees per second
-                // If x = 2, then v = 40 degrees per second
-        intakePivot
-      ));
     
     shooterPivot.setDefaultCommand(
       new RunCommand(
@@ -447,7 +429,6 @@ public class RobotContainer {
 
     shooterRoller.initShuffleboard(loggingLevel);
     shooterPivot.initShuffleboard(loggingLevel);
-    intakePivot.initShuffleboard(loggingLevel);
     intakeRoller.initShuffleboard(loggingLevel);
     indexer.initShuffleboard(loggingLevel);
     // superSystem.colorSensor.initShuffleboard(loggingLevel);

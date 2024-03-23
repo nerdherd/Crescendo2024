@@ -43,8 +43,6 @@ public class Reliable4PieceWithVision extends SequentialCommandGroup {
             ),
 
             Commands.sequence(
-                superSystem.intakePivot.setEnabledCommand(true),
-                superSystem.intakePivot.moveToIntake(),
                 
                 // Preload 
                 Commands.deadline(

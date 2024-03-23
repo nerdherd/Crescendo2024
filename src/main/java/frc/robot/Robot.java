@@ -67,7 +67,6 @@ public class Robot extends TimedRobot {
     // ShooterConstants.fullDisableShooter.loadPreferences();
     // IntakeConstants.fullDisableIntake.loadPreferences();
     
-    // robotContainer.intakePivot.configurePID();
     // robotContainer.shooterPivot.configurePID();
     // robotContainer.intakeRoller.configurePID();
     // robotContainer.shooterRoller.configurePID();
@@ -104,7 +103,6 @@ public class Robot extends TimedRobot {
     // ShooterConstants.fullDisableShooter.loadPreferences();
     // IntakeConstants.fullDisableIntake.loadPreferences();
     
-    // robotContainer.intakePivot.configurePID();
     // robotContainer.shooterPivot.configurePID();
     // robotContainer.intakeRoller.configurePID();
     // robotContainer.shooterRoller.configurePID();
@@ -123,7 +121,6 @@ public class Robot extends TimedRobot {
     // ShooterConstants.fullDisableShooter.loadPreferences();
     // IntakeConstants.fullDisableIntake.loadPreferences();
     
-    // robotContainer.intakePivot.configurePID();
     // robotContainer.shooterPivot.configurePID();
     // robotContainer.intakeRoller.configurePID();
     // robotContainer.shooterRoller.configurePID();
