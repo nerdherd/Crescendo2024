@@ -69,16 +69,16 @@ public class RobotContainer {
     ControllerConstants.kDriverControllerPort);
   private final PS4Controller driverController = commandDriverController.getHID();
   private final CommandPS4Controller commandOperatorController = new CommandPS4Controller(
-    ControllerConstants.kOperatorControllerPort);
-    private final PS4Controller operatorController = commandOperatorController.getHID();
-    
-    private final LOG_LEVEL loggingLevel = LOG_LEVEL.ALL;
-    
-    private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
-    
-    private NoteAssistance noteCamera; 
-  private DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
-  private ShooterVisionAdjustment adjustmentCamera;
+      ControllerConstants.kOperatorControllerPort);
+  private final PS4Controller operatorController = commandOperatorController.getHID();
+
+  private final LOG_LEVEL loggingLevel = LOG_LEVEL.ALL;
+
+  private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
+
+  // private NoteAssistance noteCamera; 
+  public DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
+  public ShooterVisionAdjustment adjustmentCamera;
   
   public CANdleSubSystem CANdle = new CANdleSubSystem();
   private double angleError = 5.0; // Only used for LED
@@ -86,11 +86,12 @@ public class RobotContainer {
 
   
   /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
+   * The container for the robot. Contain
+   * s subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     try {
-      noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
+      // noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
       apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
       swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
       adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, apriltagCamera.getLimelight());
@@ -99,7 +100,7 @@ public class RobotContainer {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
 
-    apriltagCamera.toggleLight(false);
+    apriltagCamera.toggleLight(true);
 
     initAutoChoosers();
     initShuffleboard();
@@ -176,14 +177,16 @@ public class RobotContainer {
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
         () -> {
-          return (driverController.getR1Button() || driverController.getL1Button() || driverController.getL2Button() || driverController.getCircleButton()); // Turn to angle
+          return (driverController.getR1Button() || driverController.getL1Button() || 
+          // driverController.getL2Button() || 
+          driverController.getCircleButton()); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          if (driverController.getL2Button()) {
-            // 4 if red side, 7 if blue
-            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
-          }
+          // if (driverController.getL2Button()) {
+          //   // 4 if red side, 7 if blue
+          //   return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
+          // }
           if (driverController.getCircleButton()) { //turn to amp
             if (!IsRedSide()){
               return 270.0;
@@ -301,10 +304,11 @@ public class RobotContainer {
       .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
     commandDriverController.L2().whileTrue(
-      Commands.repeatingSequence(
-        apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive::getPose, 0, 3),
-        Commands.waitSeconds(0.2)
-      )
+      // Commands.repeatingSequence(
+        // apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive::getPose, 0, 3),
+        // Commands.waitSeconds(0.2)
+        apriltagCamera.aimToApriltagCommand(swerveDrive, 4, 4, 8)
+      // )
     );
 
     // Operator bindings
@@ -343,7 +347,7 @@ public class RobotContainer {
       .whileFalse(Commands.run(() -> apriltagCamera.reset())); //1.8, 0, 0, 7
     commandDriverController.L2().toggleOnTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100));
     // commandDriverController.R1().whileTrue(Commands.run(() -> new TurnToAngle(apriltagCamera.getTurnToTagAngle(7), swerveDrive)));
-    commandDriverController.R2().whileTrue(noteCamera.turnToNoteCommand(swerveDrive, 0, 0, 0));
+    // commandDriverController.R2().whileTrue(noteCamera.turnToNoteCommand(swerveDrive, 0, 0, 0));
 
 
     // Operator bindings
@@ -489,11 +493,11 @@ public class RobotContainer {
     }
 
     if (paths.contains("5PieceMid")){
-      autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5PieceMid", superSystem));
+      autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5PieceMid", superSystem, adjustmentCamera));
     }
 
     if (paths.contains("5PieceMidSecond")){
-      autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem));
+      autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem, adjustmentCamera));
     }
     
 
@@ -507,7 +511,7 @@ public class RobotContainer {
     swerveDrive.initShuffleboard(loggingLevel);
     swerveDrive.initModuleShuffleboard(loggingLevel);
     apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
-    noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+    // noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
     adjustmentCamera.initShuffleboard(LOG_LEVEL.ALL);
 
     shooterRoller.initShuffleboard(loggingLevel);

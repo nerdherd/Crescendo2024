@@ -37,11 +37,11 @@ public class Mid3Piece extends SequentialCommandGroup {
 
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
-            // Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
+            Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
             // Commands.runOnce(() -> swerve.resetInitPoseByVision()),
             Commands.either(
-                driverAssist.InitPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPose), 0, 10),
-                driverAssist.InitPoseByVision(swerve, startingPose, 0, 10),
+                driverAssist.resetOdoPoseByVision(swerve, GeometryUtil.flipFieldPose(startingPose), 0, 10),
+                driverAssist.resetOdoPoseByVision(swerve, startingPose, 0, 10),
                 RobotContainer::IsRedSide
             ),
             
@@ -63,9 +63,9 @@ public class Mid3Piece extends SequentialCommandGroup {
                 AutoBuilder.followPath(pathGroup.get(0)),
                 Commands.waitSeconds(4.5),
                 Commands.sequence(
-                    // superSystem.stow(),
-                    Commands.waitSeconds(2),
-                    superSystem.intakeUntilSensed()
+                    superSystem.stow(),
+                    Commands.waitSeconds(1),
+                    superSystem.intakeUntilSensedAuto(3)
                 )
             ),
 
@@ -74,8 +74,11 @@ public class Mid3Piece extends SequentialCommandGroup {
             // Come back
             Commands.deadline(
                 AutoBuilder.followPath(pathGroup.get(1)), 
-                // superSystem.stow(),
-                Commands.waitSeconds(4)
+                Commands.sequence(
+                    superSystem.stow(),
+                    superSystem.backupIndexer()
+                ),                
+                Commands.waitSeconds(3.5)
             ),
 
             // Reset odometry
@@ -92,25 +95,43 @@ public class Mid3Piece extends SequentialCommandGroup {
 
             Commands.runOnce(() -> SmartDashboard.putNumber("Mid3Piece", 3)),
 
-            // Turn towards tag                      
-            Commands.deadline(
-                Commands.waitSeconds(2),
-                Commands.either(
-                    // driverAssist.aimToApriltagCommand(swerve, 4, 10, 20),
-                    // driverAssist.aimToApriltagCommand(swerve, 7, 10, 20),
-                    driverAssist.turnToTag(4, swerve),
-                    driverAssist.turnToTag(7, swerve),
-                    RobotContainer::IsRedSide 
+            // // Turn towards tag                      
+            // Commands.deadline(
+            //     Commands.waitSeconds(0.5),
+            //     Commands.either(
+            //         driverAssist.aimToApriltagCommand(swerve, 4, 10, 20),
+            //         driverAssist.aimToApriltagCommand(swerve, 7, 10, 20),
+            //         // driverAssist.turnToTag(4, swerve),
+            //         // driverAssist.turnToTag(7, swerve),
+            //         RobotContainer::IsRedSide 
+            //     )
+            // ),
+
+            // Commands.runOnce(() -> SmartDashboard.putNumber("Mid3Piece", 4)),
+
+            // // Shoot
+            // Commands.deadline(
+            //     Commands.waitSeconds(2),
+            //     // superSystem.shootPodium()
+            //     superSystem.shootSequenceAdjustable(sva)
+            // ),
+
+            Commands.parallel(
+                Commands.sequence(
+                    Commands.waitSeconds(0.1),
+                    Commands.either(
+                        driverAssist.aimToApriltagCommand(swerve, 4, 10, 20),
+                        driverAssist.aimToApriltagCommand(swerve, 7, 10, 20),
+                        // driverAssist.turnToTag(4, swerve),
+                        // driverAssist.turnToTag(7, swerve),
+                        RobotContainer::IsRedSide 
+                    )
+                ),
+                Commands.deadline(
+                    Commands.waitSeconds(2),
+                    // superSystem.shootPodium()
+                    superSystem.shootSequenceAdjustable(sva)
                 )
-            ),
-
-            Commands.runOnce(() -> SmartDashboard.putNumber("Mid3Piece", 4)),
-
-            // Shoot
-            Commands.deadline(
-                Commands.waitSeconds(1.2),
-                superSystem.shootPodium()
-                // superSystem.shootSequenceAdjustable(sva)
             ),
 
             Commands.runOnce(() -> SmartDashboard.putNumber("Mid3Piece", 5)),
@@ -122,17 +143,20 @@ public class Mid3Piece extends SequentialCommandGroup {
                 AutoBuilder.followPath(pathGroup.get(2)),
                 Commands.waitSeconds(4.5),
                 Commands.sequence(
-                    // superSystem.stow(),
-                    Commands.waitSeconds(2),
-                    superSystem.intakeUntilSensed()
+                    superSystem.stow(),
+                    Commands.waitSeconds(1),
+                    superSystem.intakeUntilSensedAuto(3)
                 )
             ),
             
             // Come back
             Commands.deadline(
                 AutoBuilder.followPath(pathGroup.get(3)),
-                // superSystem.stow(),
-                Commands.waitSeconds(4)
+                Commands.sequence(
+                    superSystem.stow(),
+                    superSystem.backupIndexer()
+                ),
+                Commands.waitSeconds(3.5)
             ),
 
             // Reset odometry
@@ -148,22 +172,40 @@ public class Mid3Piece extends SequentialCommandGroup {
             // driveToPose(podiumPoseBlue),  
 
             // Turn towards tag                      
-            Commands.deadline(
-                Commands.waitSeconds(2),
-                Commands.either(
-                    // driverAssist.aimToApriltagCommand(swerve, 4, 10, 20),
-                    // driverAssist.aimToApriltagCommand(swerve, 7, 10, 20),
-                    driverAssist.turnToTag(4, swerve),
-                    driverAssist.turnToTag(7, swerve),
-                    RobotContainer::IsRedSide 
-                )
-            ),
+            // Commands.deadline(
+            //     Commands.waitSeconds(0.5),
+            //     Commands.either(
+            //         driverAssist.aimToApriltagCommand(swerve, 4, 10, 20),
+            //         driverAssist.aimToApriltagCommand(swerve, 7, 10, 20),
+            //         // driverAssist.turnToTag(4, swerve),
+            //         // driverAssist.turnToTag(7, swerve),
+            //         RobotContainer::IsRedSide 
+            //     )
+            // ),
 
-            // Shoot
-            Commands.deadline(
-                Commands.waitSeconds(1.2),
-                superSystem.shootPodium()
-                // superSystem.shootSequenceAdjustable(sva)
+            // // Shoot
+            // Commands.deadline(
+            //     Commands.waitSeconds(2),
+            //     // superSystem.shootPodium()
+            //     superSystem.shootSequenceAdjustable(sva)
+            // ),
+
+            Commands.parallel(
+                Commands.sequence(
+                    Commands.waitSeconds(0.1),
+                    Commands.either(
+                        driverAssist.aimToApriltagCommand(swerve, 4, 10, 20),
+                        driverAssist.aimToApriltagCommand(swerve, 7, 10, 20),
+                        // driverAssist.turnToTag(4, swerve),
+                        // driverAssist.turnToTag(7, swerve),
+                        RobotContainer::IsRedSide 
+                    )
+                ),
+                Commands.deadline(
+                    Commands.waitSeconds(2),
+                    // superSystem.shootPodium()
+                    superSystem.shootSequenceAdjustable(sva)
+                )
             ),
 
             /************************************ LEAVE **************************************/

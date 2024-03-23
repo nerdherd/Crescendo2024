@@ -186,7 +186,7 @@ public class DriverAssist implements Reportable{
 
     int dataSampleCount = 0;
     public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples) {
-        return Commands.sequence(
+        Command command = Commands.sequence(
             Commands.runOnce(() -> reset()),
             Commands.run(
                 () -> TagAimingRotation(drivetrain, tagID, maxSamples)
@@ -196,6 +196,9 @@ public class DriverAssist implements Reportable{
             // ,
             // resetOdoPoseByVision(drivetrain, tagID, maxSamples)
         );
+        command.addRequirements(drivetrain);
+
+        return command;
     }
 
 
@@ -554,11 +557,7 @@ public class DriverAssist implements Reportable{
         // this command should be called by other parallel structure commands with 2s at least
         return Commands.sequence(
             Commands.runOnce(()->limelight.turnLightOn()),
-            Commands.waitSeconds(0.5),
-            Commands.runOnce(()->limelight.turnLightOff()),
-            Commands.waitSeconds(0.5),
-            Commands.runOnce(()->limelight.turnLightOn()),
-            Commands.waitSeconds(0.5),
+            Commands.waitSeconds(3),
             Commands.runOnce(()->limelight.turnLightOff())
         ).finallyDo(()->limelight.turnLightOff());
     }

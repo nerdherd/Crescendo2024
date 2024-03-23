@@ -66,7 +66,7 @@ public class SuperSystem {
             shooterRoller.shootAmp(),
             Commands.waitSeconds(0.3), // Was 0.5    3/3/24    Code Orange
             indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
+            indexer.setVelocityCommand(30),
             Commands.waitSeconds(1)
         ).finallyDo(
             () -> {
@@ -502,23 +502,56 @@ public class SuperSystem {
     }
 
     public Command shootSequenceAdjustable(ShooterVisionAdjustment sva) {
-        Command command = Commands.sequence(
-            intakePivot.moveToIntake(),
-            Commands.waitUntil(intakePivot::hasReachedNeutral),
-            // Prepare to shoot
-            Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
-            shooterRoller.setEnabledCommand(true),
-            shooterRoller.shootSpeaker(),
-            Commands.waitSeconds(0.8),
-            
-            // Shoot
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
-            Commands.waitUntil(() -> false)
-        ).finallyDo(interrupted -> {
-            indexer.stop();
-            shooterRoller.stop();
-        });
+        Command command = 
+            Commands.either(
+                Commands.sequence(
+                intakePivot.moveToIntake(),
+                Commands.waitUntil(intakePivot::hasReachedNeutral),
+                // Prepare to shoot
+                Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
+                shooterRoller.setEnabledCommand(true),
+                shooterRoller.shootSpeaker(),
+                Commands.waitSeconds(0.8),
+                
+                // Shoot
+                indexer.setEnabledCommand(true),
+                indexer.indexCommand(),
+                Commands.waitUntil(() -> false)
+                ).finallyDo(interrupted -> {
+                    indexer.stop();
+                    shooterRoller.stop();
+                }),
+                Commands.none(),
+                sva::hasValidTarget
+            );
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
+        return command;
+    }
+
+    public Command shootSequenceAdjustableAuto(ShooterVisionAdjustment sva) {
+        Command command = 
+            Commands.either(
+                Commands.sequence(
+                intakePivot.moveToIntake(),
+                Commands.waitUntil(intakePivot::hasReachedNeutral),
+                // Prepare to shoot
+                Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
+                shooterRoller.setEnabledCommand(true),
+                shooterRoller.shootSpeaker(),
+                Commands.waitSeconds(0.4),
+                
+                // Shoot
+                indexer.setEnabledCommand(true),
+                indexer.indexCommand(),
+                Commands.waitUntil(() -> false)
+                ).finallyDo(interrupted -> {
+                    indexer.stop();
+                    shooterRoller.stop();
+                }),
+                Commands.none(),
+                sva::hasValidTarget
+            );
 
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakePivot, intakeRoller);
         return command;

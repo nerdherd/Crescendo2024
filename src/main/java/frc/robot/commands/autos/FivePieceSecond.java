@@ -10,9 +10,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class FivePieceSecond extends SequentialCommandGroup {
-    public FivePieceSecond(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem) {     
+    public FivePieceSecond(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem, ShooterVisionAdjustment sva) {     
         // Use the PathPlannerAuto class to get a path group from an auto
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
 
@@ -111,7 +112,7 @@ public class FivePieceSecond extends SequentialCommandGroup {
                         Commands.waitSeconds(0.85),
                         Commands.deadline(
                             Commands.waitSeconds(1.2),
-                            superSystem.shootSubwooferAuto()  
+                            superSystem.shootSequenceAdjustable(sva)  
                         ),
                         superSystem.indexer.stopCommand(),
                         superSystem.shooterRoller.setVelocityCommand(0, 0)
