@@ -56,9 +56,9 @@ public class RobotContainer {
   private final CommandPS4Controller commandDriverController = new CommandPS4Controller(
     ControllerConstants.kDriverControllerPort);
   private final PS4Controller driverController = commandDriverController.getHID();
-  private final CommandPS4Controller commandOperatorController = new CommandPS4Controller(
+  public final CommandPS4Controller commandOperatorController = new CommandPS4Controller(
     ControllerConstants.kOperatorControllerPort);
-    private final PS4Controller operatorController = commandOperatorController.getHID();
+    public final PS4Controller operatorController = commandOperatorController.getHID();
     
     private final LOG_LEVEL loggingLevel = LOG_LEVEL.ALL;
     
@@ -429,7 +429,7 @@ public class RobotContainer {
     shooterPivot.initShuffleboard(loggingLevel);
     indexer.initShuffleboard(loggingLevel);
     // superSystem.colorSensor.initShuffleboard(loggingLevel);
-    superSystem.bannerSensor.initShuffleboard(loggingLevel);
+    // superSystem.bannerSensor.initShuffleboard(loggingLevel);
 
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);

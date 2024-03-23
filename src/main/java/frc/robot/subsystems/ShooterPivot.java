@@ -26,8 +26,8 @@ import frc.robot.util.NerdyMath;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterPivot extends SubsystemBase implements Reportable {
-    private final TalonFX leftPivot;
-    private final TalonFX rightPivot;
+    public final TalonFX leftPivot;
+    public final TalonFX rightPivot;
     private final TalonFXConfigurator leftPivotConfigurator;
     private final TalonFXConfigurator rightPivotConfigurator;
     private final DutyCycleEncoder throughBore;
@@ -197,33 +197,33 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     
     @Override
     public void periodic() {
-        count++;
-        // SmartDashboard.putNumber("Shooter Count", count);
-        if (count > 40) {
-            syncEncoder();
-            count = 0;
-            // SmartDashboard.putBoolean("Shooter Reset", true);
-        } else {
-            // SmartDashboard.putBoolean("Shooter Reset", false);
-        }
+        // count++;
+        // // SmartDashboard.putNumber("Shooter Count", count);
+        // if (count > 40) {
+        //     syncEncoder();
+        //     count = 0;
+        //     // SmartDashboard.putBoolean("Shooter Reset", true);
+        // } else {
+        //     // SmartDashboard.putBoolean("Shooter Reset", false);
+        // }
 
-        if (ShooterConstants.fullDisableShooter.get()) {
-            leftPivot.setControl(brakeRequest);
-            rightPivot.setControl(brakeRequest);
-            enabled = false;
-            return;
-        }
+        // if (ShooterConstants.fullDisableShooter.get()) {
+        //     leftPivot.setControl(brakeRequest);
+        //     rightPivot.setControl(brakeRequest);
+        //     enabled = false;
+        //     return;
+        // }
         
-        // rightPivot.setControl(brakeRequest);
-        // leftPivot.setControl(brakeRequest);
+        // // rightPivot.setControl(brakeRequest);
+        // // leftPivot.setControl(brakeRequest);
 
-        if (enabled) {
-            leftPivot.setControl(motionMagicRequest);
-            rightPivot.setControl(followRequest);
-        } else {
-            rightPivot.setControl(brakeRequest);
-            leftPivot.setControl(brakeRequest);
-        }
+        // if (enabled) {
+        //     leftPivot.setControl(motionMagicRequest);
+        //     rightPivot.setControl(followRequest);
+        // } else {
+        //     rightPivot.setControl(brakeRequest);
+        //     leftPivot.setControl(brakeRequest);
+        // }
     }
 
     /**

@@ -18,7 +18,7 @@ public class SuperSystem {
     public ShooterRoller shooterRoller;
     public IndexerV2 indexer;
     // public ColorSensor colorSensor;
-    public BannerSensor bannerSensor;
+    // public BannerSensor bannerSensor;
     // public BeamBreak noteSensor;
     public ClimbActuator linearActuator;
     public Climber climber;
@@ -33,13 +33,14 @@ public class SuperSystem {
         this.indexer = indexer;
         this.linearActuator = new ClimbActuator();
         // this.colorSensor = new ColorSensor();
-        this.bannerSensor = new BannerSensor();
+        // this.bannerSensor = new BannerSensor();
         // this.noteSensor = new BeamBreak();
     }
 
     public boolean noteIntook() {
         // return colorSensor.noteIntook() || bannerSensor.noteIntook();
-        return bannerSensor.noteIntook();
+        // return bannerSensor.noteIntook();
+        return false;
     }
 
     public Command getReadyForAmp() {

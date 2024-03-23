@@ -4,8 +4,11 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.controls.DutyCycleOut;
+
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.CANdleSubSystem.Status;
@@ -109,8 +112,20 @@ public class Robot extends TimedRobot {
     robotContainer.CANdle.setStatus(Status.TELEOP);
   }
 
+  DutyCycleOut control = new DutyCycleOut(0);
+
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    double value = robotContainer.operatorController.getLeftY();
+    SmartDashboard.putNumber("Output", value);
+    if (Math.abs(value) > 0.05) {
+      control.Output = value * 0.5;
+    } else {
+      control.Output = 0.0;
+    }
+    robotContainer.shooterPivot.leftPivot.setControl(control);
+    robotContainer.shooterPivot.rightPivot.setControl(control);
+  }
 
   @Override
   public void testInit() {
