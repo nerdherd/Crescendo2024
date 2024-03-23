@@ -50,6 +50,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     private DRIVE_MODE driveMode = DRIVE_MODE.FIELD_ORIENTED;
     private int counter = 0;
     private int visionFrequency = 1;
+    
 
     private Field2d field;
 
@@ -147,12 +148,19 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             runModules();
         }
         if (limelight.hasValidTarget()) {
-            limelight.updateAvgPose();
+            if (counter < 50) {
+                limelight.updateAvgPose();
+
+            }
+            else {
+                counter = 0;
+                limelight.filterPoseX.reset(limelight.getBotPose3D().getX());
+                limelight.filterPoseY.reset(limelight.getBotPose3D().getY());
+                limelight.filterPoseZ.reset(limelight.getBotPose3D().getZ());
+            }
         }
         else {
-            limelight.filterPoseX.reset(0);
-            limelight.filterPoseY.reset(0);
-            limelight.filterPoseZ.reset(0);
+            counter += 1;
         }
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
         /*counter = (counter + 1) % visionFrequency;
