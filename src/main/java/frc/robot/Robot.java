@@ -48,7 +48,7 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     CommandScheduler.getInstance().cancelAll();
     robotContainer.swerveDrive.setBreak(true);
-    robotContainer.CANdle.setStatus(Status.DISABLED);
+    // robotContainer.CANdle.setStatus(Status.DISABLED);
     robotContainer.apriltagCamera.toggleLight(true);
   }
 
@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
     // robotContainer.indexer.configurePID();
     // robotContainer.swerveDrive.setVelocityControl(false);
     autoCommand = robotContainer.getAutonomousCommand();
-    robotContainer.apriltagCamera.toggleLight(false);
+    // robotContainer.apriltagCamera.toggleLight(false);
 
 
     if (autoCommand != null) {
@@ -85,7 +85,7 @@ public class Robot extends TimedRobot {
     orchestra.loadMusic(); //have to get chirp file
     orchestra.play();
      */
-    robotContainer.CANdle.setStatus(Status.AUTO);
+    // robotContainer.CANdle.setStatus(Status.AUTO);
   }
 
   @Override
@@ -112,8 +112,8 @@ public class Robot extends TimedRobot {
     // robotContainer.indexer.configurePID();
     robotContainer.configureBindings_teleop();
     robotContainer.initDefaultCommands_teleop();
-    robotContainer.configureLEDTriggers_teleop();
-    robotContainer.CANdle.setStatus(Status.TELEOP);
+    // robotContainer.configureLEDTriggers_teleop();
+    // robotContainer.CANdle.setStatus(Status.TELEOP);
   }
 
   @Override

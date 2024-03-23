@@ -80,7 +80,8 @@ public class RobotContainer {
   public DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   public ShooterVisionAdjustment adjustmentCamera;
   
-  public CANdleSubSystem CANdle = new CANdleSubSystem();
+  public CANdleSubSystem CANdle;
+  //  = new CANdleSubSystem();
   private double angleError = 5.0; // Only used for LED
   private double heading; // Only used for LED
 
@@ -91,7 +92,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     try {
-      // noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
+      // noteCamera = new NoteAssistance(VisnConstants.kLimelightFrontName);
       apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
       swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
       adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, apriltagCamera.getLimelight());
@@ -314,6 +315,12 @@ public class RobotContainer {
     //     )
     //   // )
     // );
+
+    commandOperatorController.povLeft().whileTrue(
+      Commands.repeatingSequence(
+        Commands.runOnce(() -> adjustmentCamera.getShooterAngle())
+      )
+    );
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());

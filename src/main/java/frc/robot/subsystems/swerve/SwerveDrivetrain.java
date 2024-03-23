@@ -65,7 +65,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     /**
      * Construct a new {@link SwerveDrivetrain}
      */
-    public SwerveDrivetrain(Gyro gyro, DriverAssist vision, Limelight adjustmentCamera) throws IllegalArgumentException {
+    public SwerveDrivetrain(Gyro gyro, DriverAssist vision) throws IllegalArgumentException {
         frontLeft = new SwerveModule(
             kFLDriveID,
             kFLTurningID,
@@ -133,7 +133,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             }, 
             this);
 
-            this.limelight = adjustmentCamera;
+            this.limelight = vision.getLimelight();
             
     }
 
@@ -154,9 +154,12 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             }
             else {
                 counter = 0;
-                limelight.filterPoseX.reset(limelight.getBotPose3D().getX());
-                limelight.filterPoseY.reset(limelight.getBotPose3D().getY());
-                limelight.filterPoseZ.reset(limelight.getBotPose3D().getZ());
+                Pose3d pose = limelight.getBotPose3D();
+                if (pose != null) {
+                    limelight.filterPoseX.reset(pose.getX());
+                    limelight.filterPoseY.reset(pose.getY());
+                    limelight.filterPoseZ.reset(pose.getZ());
+                } 
             }
         }
         else {

@@ -32,8 +32,8 @@ public class ShooterVisionAdjustment implements Reportable{
     private GenericEntry poseTag;
     private GenericEntry goalDistance;
 
-    private double[] distances = {1.33, 2.82, 3.5, 4.00, 5.00}; // meters, from least to greatest
-    private double[] angles = {ShooterConstants.kSpeakerPosition.get(), ShooterConstants.kSpeakerPosition2.get(), -21.5, -20, -18}; // rotations // TODO: Convert to degrees
+    private double[] distances = {1.1, 1.286, 1.8796, 2.637, 3.0}; // meters, from least to greatest
+    private double[] angles = {-51, -44.4, -39.8, -32.999, -31.099}; // rotations // TODO: Convert to degrees
 
     public ShooterVisionAdjustment(String name, Limelight limelight) {
         this.name = name;
@@ -61,7 +61,7 @@ public class ShooterVisionAdjustment implements Reportable{
         if(targetFound != null)
             targetFound.setBoolean(limelight.hasValidTarget());
 
-        Pose3d pose = limelight.getBotPose3D();
+        Pose3d pose = limelight.getBotPose3D_avg();
 
         if(poseRobot != null)
             poseRobot.setString(pose.toString());

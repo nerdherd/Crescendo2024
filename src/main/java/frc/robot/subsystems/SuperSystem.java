@@ -89,7 +89,7 @@ public class SuperSystem {
             shooterPivot.setPositionCommand(ShooterConstants.kFullStowPosition.get()),
             Commands.deadline(
                 Commands.waitUntil(shooterPivot::atTargetPosition),
-                Commands.waitSeconds(2)
+                Commands.waitSeconds(4)
             ),
             intakePivot.moveToVertical()
         );

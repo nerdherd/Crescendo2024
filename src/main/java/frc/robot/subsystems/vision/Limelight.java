@@ -272,18 +272,18 @@ public class Limelight implements Reportable{
                     Units.degreesToRadians(botPose[5])));
     }
 
-    public ExponentialSmoothingFilter filterPoseX = new ExponentialSmoothingFilter(2.0 / 11);
-    public ExponentialSmoothingFilter filterPoseY = new ExponentialSmoothingFilter(2.0 / 11);
-    public ExponentialSmoothingFilter filterPoseZ = new ExponentialSmoothingFilter(2.0 / 11);
+    public ExponentialSmoothingFilter filterPoseX = new ExponentialSmoothingFilter(1.0 / 40);
+    public ExponentialSmoothingFilter filterPoseY = new ExponentialSmoothingFilter(1.0 / 40);
+    public ExponentialSmoothingFilter filterPoseZ = new ExponentialSmoothingFilter(1.0 / 40);
     private Pose3d currentPoseAvg = null;
     public void updateAvgPose() {
         Pose3d pose = getBotPose3D();
         if(!hasValidTarget()) return;
         if(currentPoseAvg == null) currentPoseAvg = pose;
-        else currentPoseAvg = new Pose3d(filterPoseX.calculate(pose.getX()), filterPoseY.calculate(pose.getX()), filterPoseZ.calculate(pose.getX()), pose.getRotation());
+        else currentPoseAvg = new Pose3d(filterPoseX.calculate(pose.getX()), filterPoseY.calculate(pose.getY()), filterPoseZ.calculate(pose.getZ()), pose.getRotation());
     }
     public Pose3d getBotPose3D_avg() {
-        updateAvgPose();
+        // updateAvgPose();
         return currentPoseAvg;
     }
 
