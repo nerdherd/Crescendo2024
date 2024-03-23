@@ -231,7 +231,7 @@ public final class Constants {
     ); // distance from camera to center of robot
     public static final String kLimelightBackName = "limelight-back"; // apriltag
     public static final String kLimelightBackIP = "10.6.87.71:5800";
-    public static final int kAprilTagPipeline = 4;
+    public static final int kAprilTagPipeline = 0;
 
     public static final PrefDouble kPNoteForward = new PrefDouble("P Note Forward", 0);
     public static final PrefDouble kINoteForward = new PrefDouble("I Note Forward", 0);
@@ -254,6 +254,7 @@ public final class Constants {
     public static final int kLeftPivotMotorID = 53;
     public static final int kRightPivotMotorID = 54;
     public static final int kThroughBorePort = 3;
+    public static final int kShooterPigeonID = 9;
 
     // In revolutions!
     public static final double kShooterNeutralDeadband = 0.01;
