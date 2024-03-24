@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.util.NerdyMath;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterPivot extends SubsystemBase implements Reportable {
@@ -59,7 +58,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         // syncEncoder();
         pigeon = new Pigeon2(ShooterConstants.kShooterPigeonID);
         // syncEncoder();
-        pigeon = new Pigeon2(ShooterConstants.kShooterPigeonID);
+        // pigeon = new Pigeon2(ShooterConstants.kShooterPigeonID);
     }
     
     //****************************** SETUP METHODS ******************************/
@@ -451,10 +450,6 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
                 tab.addDouble("Absolute Encoder Position", this::getAbsolutePositionDegrees);
                 tab.addBoolean("Shooter Enabled", () -> enabled);
-                tab.addDouble("Pigeon Yaw", () -> pigeon.getYaw().getValueAsDouble());
-                tab.addDouble("Pigeon Pitch",() ->  pigeon.getPitch().getValueAsDouble());
-                tab.addDouble("Pigeon Roll", () -> pigeon.getRoll().getValueAsDouble());
-
                 tab.addDouble("Pigeon Yaw", () -> pigeon.getYaw().getValueAsDouble());
                 tab.addDouble("Pigeon Pitch",() ->  pigeon.getPitch().getValueAsDouble());
                 tab.addDouble("Pigeon Roll", () -> pigeon.getRoll().getValueAsDouble());

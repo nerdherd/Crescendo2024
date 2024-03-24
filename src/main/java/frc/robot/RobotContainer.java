@@ -305,6 +305,7 @@ public class RobotContainer {
     );
     commandDriverController.touchpad().whileTrue(superSystem.shoot())
                                       .whileFalse(superSystem.stow());
+    commandDriverController.options().whileTrue(superSystem.shootAmp().andThen(superSystem.stow()));
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
