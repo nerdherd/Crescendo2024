@@ -46,11 +46,11 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
 
     public IntakeRoller() {
         rightIntake = new TalonFX(IntakeConstants.kRightIntakeMotorID, SuperStructureConstants.kCANivoreBusName);
-        rightIntake.setInverted(false);
+        rightIntake.setInverted(true);
         rightIntakeConfigurator = rightIntake.getConfigurator();
 
         leftIntake = new TalonFX(IntakeConstants.kLeftIntakeMotorID, SuperStructureConstants.kCANivoreBusName);
-        leftIntake.setInverted(true); //check later
+        leftIntake.setInverted(false); //check later
         leftIntakeConfigurator = leftIntake.getConfigurator();
 
         rightIntake.setControl(followRequest);
