@@ -36,7 +36,6 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     private final TalonFXConfigurator rightPivotConfigurator;
     private final DutyCycleEncoder throughBore;
     private Pigeon2 pigeon;
-    private Pigeon2 pigeon;
 
     // Whether the pivot is running
     private boolean enabled = true;

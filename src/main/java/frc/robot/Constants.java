@@ -255,7 +255,6 @@ public final class Constants {
     public static final int kLeftPivotMotorID = 53;
     public static final int kRightPivotMotorID = 54;
     public static final int kThroughBorePort = 3;
-    public static final int kShooterPigeonID = 9;
 
     // In revolutions!
     public static final double kShooterNeutralDeadband = 0.01;

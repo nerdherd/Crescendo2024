@@ -423,6 +423,26 @@ public class SuperSystem {
         return command;
     }
 
+    public Command prepareShooterSpeaker() {
+        Command command = Commands.sequence(
+            shooterPivot.moveToSpeaker(),
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker()
+        );
+        command.addRequirements(shooterPivot, shooterRoller, indexer);
+        return command;
+    }
+
+    public Command prepareShooterPodium() {
+        Command command = Commands.sequence(
+            shooterPivot.moveToSpeakerFar(),
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker()
+        );
+        command.addRequirements(shooterPivot, shooterRoller, indexer);
+        return command;
+    }
+
     public Command shoot() {
         Command command = Commands.sequence(
             indexer.setEnabledCommand(true),
