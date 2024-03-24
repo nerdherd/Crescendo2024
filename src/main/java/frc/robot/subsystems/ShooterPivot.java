@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.util.NerdyMath;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterPivot extends SubsystemBase implements Reportable {
@@ -33,6 +35,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     private final TalonFXConfigurator leftPivotConfigurator;
     private final TalonFXConfigurator rightPivotConfigurator;
     private final DutyCycleEncoder throughBore;
+    private Pigeon2 pigeon;
     private Pigeon2 pigeon;
 
     // Whether the pivot is running
@@ -56,6 +59,8 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         configurePID();
         // syncEncoder();
         pigeon = new Pigeon2(ShooterConstants.kShooterPigeonID);
+        // syncEncoder();
+        pigeon = new Pigeon2(ShooterConstants.kShooterPigeonID);
     }
     
     //****************************** SETUP METHODS ******************************/
@@ -63,6 +68,10 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     public void configureMotor() {
         TalonFXConfiguration pivotConfigs = new TalonFXConfiguration();
         leftPivotConfigurator.refresh(pivotConfigs);
+        pivotConfigs.Feedback.FeedbackRemoteSensorID = ShooterConstants.kShooterPigeonID;
+        pivotConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemotePigeon2_Roll;
+        pivotConfigs.Feedback.RotorToSensorRatio = -ShooterConstants.kPivotGearRatio / 360;
+        pivotConfigs.Feedback.SensorToMechanismRatio = -1;
         pivotConfigs.Feedback.FeedbackRemoteSensorID = ShooterConstants.kShooterPigeonID;
         pivotConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemotePigeon2_Roll;
         pivotConfigs.Feedback.RotorToSensorRatio = -ShooterConstants.kPivotGearRatio / 360;
@@ -203,7 +212,15 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     @Override
     public void periodic() {
         // count++;
+        // count++;
         // SmartDashboard.putNumber("Shooter Count", count);
+        // if (count > 120) {
+        //     syncEncoder();
+        //     count = 0;
+        //     SmartDashboard.putBoolean("Shooter Reset", true);
+        // } else {
+        //     SmartDashboard.putBoolean("Shooter Reset", false);
+        // }
         // if (count > 120) {
         //     syncEncoder();
         //     count = 0;
@@ -345,27 +362,27 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     //****************************** POSITION COMMANDS *****************************//
 
-    public Command climbSequence(){
-        TalonFXConfiguration climbConfigs = new TalonFXConfiguration();
-        climbConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        climbConfigs.Feedback.RotorToSensorRatio = 1;
-        climbConfigs.Feedback.SensorToMechanismRatio = IntakeConstants.kPivotGearRatio;
+    // public Command climbSequence(){
+    //     TalonFXConfiguration climbConfigs = new TalonFXConfiguration();
+    //     climbConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    //     climbConfigs.Feedback.RotorToSensorRatio = 1;
+    //     climbConfigs.Feedback.SensorToMechanismRatio = IntakeConstants.kPivotGearRatio;
         
-        StatusCode leftStatusPivot = leftPivotConfigurator.apply(climbConfigs);
-        if (!leftStatusPivot.isOK()){
-            DriverStation.reportError("Could not apply climb configs, error code:"+ leftStatusPivot.toString(), new Error().getStackTrace());
-        }
+    //     StatusCode leftStatusPivot = leftPivotConfigurator.apply(climbConfigs);
+    //     if (!leftStatusPivot.isOK()){
+    //         DriverStation.reportError("Could not apply climb configs, error code:"+ leftStatusPivot.toString(), new Error().getStackTrace());
+    //     }
 
-        StatusCode rightStatusPivot = rightPivotConfigurator.apply(climbConfigs);
-        if (!rightStatusPivot.isOK()){
-            DriverStation.reportError("Could not apply climb configs, error code:"+ rightStatusPivot.toString(), new Error().getStackTrace());
-        }
+    //     StatusCode rightStatusPivot = rightPivotConfigurator.apply(climbConfigs);
+    //     if (!rightStatusPivot.isOK()){
+    //         DriverStation.reportError("Could not apply climb configs, error code:"+ rightStatusPivot.toString(), new Error().getStackTrace());
+    //     }
 
-        rightPivotConfigurator.refresh(climbConfigs);
-        leftPivotConfigurator.refresh(climbConfigs);
+    //     rightPivotConfigurator.refresh(climbConfigs);
+    //     leftPivotConfigurator.refresh(climbConfigs);
 
-        return Commands.runOnce(() -> setPosition(ShooterConstants.kFullStowPosition.get()));
-    }
+    //     return Commands.runOnce(() -> setPosition(ShooterConstants.kFullStowPosition.get()));
+    // }
 
     public Command moveToNeutral() {
         return Commands.runOnce(() -> setPosition(ShooterConstants.kNeutralPosition.get()));
@@ -435,6 +452,10 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
                 tab.addDouble("Absolute Encoder Position", this::getAbsolutePositionDegrees);
                 tab.addBoolean("Shooter Enabled", () -> enabled);
+                tab.addDouble("Pigeon Yaw", () -> pigeon.getYaw().getValueAsDouble());
+                tab.addDouble("Pigeon Pitch",() ->  pigeon.getPitch().getValueAsDouble());
+                tab.addDouble("Pigeon Roll", () -> pigeon.getRoll().getValueAsDouble());
+
                 tab.addDouble("Pigeon Yaw", () -> pigeon.getYaw().getValueAsDouble());
                 tab.addDouble("Pigeon Pitch",() ->  pigeon.getPitch().getValueAsDouble());
                 tab.addDouble("Pigeon Roll", () -> pigeon.getRoll().getValueAsDouble());

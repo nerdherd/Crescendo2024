@@ -26,8 +26,6 @@ public class FivePieceEnd extends SequentialCommandGroup {
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
             // Commands.runOnce(() -> swerve.resetInitPoseByVision()),
             Commands.sequence(
-                superSystem.intakePivot.setEnabledCommand(true),
-                superSystem.intakePivot.moveToIntake(),
 
                 // Preload 
                 Commands.deadline(

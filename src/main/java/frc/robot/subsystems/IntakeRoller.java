@@ -4,6 +4,7 @@ import java.util.function.BooleanSupplier;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -25,19 +26,34 @@ import frc.robot.Constants.ShooterConstants;
 
 public class IntakeRoller extends SubsystemBase implements Reportable {
     
-    private final TalonFX intake;
-    private final TalonFXConfigurator intakeConfigurator;
-    private final VelocityVoltage velocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
-    private final VoltageOut voltageRequest = new VoltageOut(0, true, false, false, false);
+    private final TalonFX rightIntake;
+    private final TalonFXConfigurator rightIntakeConfigurator;
+    private final VelocityVoltage rightVelocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
+    private final VoltageOut rightVoltageRequest = new VoltageOut(0, true, false, false, false);
+    
+    private final TalonFX leftIntake;
+    private final TalonFXConfigurator leftIntakeConfigurator;
+    private final VelocityVoltage leftVelocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
+    private final VoltageOut leftVoltageRequest = new VoltageOut(0, true, false, false, false);
+
     private final NeutralOut brakeRequest = new NeutralOut();
     
     private boolean enabled = true;
     public boolean velocityControl = true;
 
+    private final Follower followRequest = new Follower(IntakeConstants.kLeftIntakeMotorID, false);
+
+
     public IntakeRoller() {
-        intake = new TalonFX(IntakeConstants.kIntakeMotorID, SuperStructureConstants.kCANivoreBusName);
-        intake.setInverted(false);
-        intakeConfigurator = intake.getConfigurator();
+        rightIntake = new TalonFX(IntakeConstants.kRightIntakeMotorID, SuperStructureConstants.kCANivoreBusName);
+        rightIntake.setInverted(false);
+        rightIntakeConfigurator = rightIntake.getConfigurator();
+
+        leftIntake = new TalonFX(IntakeConstants.kLeftIntakeMotorID, SuperStructureConstants.kCANivoreBusName);
+        leftIntake.setInverted(true); //check later
+        leftIntakeConfigurator = leftIntake.getConfigurator();
+
+        rightIntake.setControl(followRequest);
 
         CommandScheduler.getInstance().registerSubsystem(this);
 
@@ -48,81 +64,125 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     //****************************** SETUP METHODS ******************************/
 
     public void configureMotor() {
-        TalonFXConfiguration intakeConfigs = new TalonFXConfiguration();
-        intakeConfigurator.refresh(intakeConfigs);
+        TalonFXConfiguration leftIntakeConfigs = new TalonFXConfiguration();
+        leftIntakeConfigurator.refresh(leftIntakeConfigs);
 
-        intakeConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        intakeConfigs.Feedback.RotorToSensorRatio = 1;
-        intakeConfigs.Feedback.SensorToMechanismRatio = 1;
+        leftIntakeConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        leftIntakeConfigs.Feedback.RotorToSensorRatio = 1;
+        leftIntakeConfigs.Feedback.SensorToMechanismRatio = 1;
 
-        intakeConfigs.Voltage.PeakForwardVoltage = 11.5;
-        intakeConfigs.Voltage.PeakReverseVoltage = -11.5;
+        leftIntakeConfigs.Voltage.PeakForwardVoltage = 11.5;
+        leftIntakeConfigs.Voltage.PeakReverseVoltage = -11.5;
 
-        intakeConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        intakeConfigs.MotorOutput.DutyCycleNeutralDeadband = IntakeConstants.kIntakeNeutralDeadband;
-        intakeConfigs.CurrentLimits.SupplyCurrentLimit = 40;
-        intakeConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        leftIntakeConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        leftIntakeConfigs.MotorOutput.DutyCycleNeutralDeadband = IntakeConstants.kIntakeNeutralDeadband;
+        leftIntakeConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        leftIntakeConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
         // intakeConfigs.CurrentLimits.StatorCurrentLimit = 50;
         // intakeConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
-        intakeConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
-        intakeConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
-        intakeConfigs.Audio.AllowMusicDurDisable = true;
+        leftIntakeConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
+        leftIntakeConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        leftIntakeConfigs.Audio.AllowMusicDurDisable = true;
 
-        StatusCode result = intakeConfigurator.apply(intakeConfigs);
-        if (!result.isOK()) {
-            DriverStation.reportError("Could not apply intake configs, error code: "+ result.toString(), new Error().getStackTrace());
+        TalonFXConfiguration rightIntakeConfigs = new TalonFXConfiguration();
+        rightIntakeConfigurator.refresh(rightIntakeConfigs);
+
+        rightIntakeConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        rightIntakeConfigs.Feedback.RotorToSensorRatio = 1;
+        rightIntakeConfigs.Feedback.SensorToMechanismRatio = 1;
+
+        rightIntakeConfigs.Voltage.PeakForwardVoltage = 11.5;
+        rightIntakeConfigs.Voltage.PeakReverseVoltage = -11.5;
+
+        rightIntakeConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        rightIntakeConfigs.MotorOutput.DutyCycleNeutralDeadband = IntakeConstants.kIntakeNeutralDeadband;
+        rightIntakeConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        rightIntakeConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        // intakeConfigs.CurrentLimits.StatorCurrentLimit = 50;
+        // intakeConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
+        rightIntakeConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
+        rightIntakeConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        rightIntakeConfigs.Audio.AllowMusicDurDisable = true;
+
+        StatusCode rightResult = rightIntakeConfigurator.apply(rightIntakeConfigs);
+        if (!rightResult.isOK()) {
+            DriverStation.reportError("Could not apply right intake configs, error code: "+ rightResult.toString(), new Error().getStackTrace());
+        }
+
+        StatusCode leftResult = leftIntakeConfigurator.apply(leftIntakeConfigs);
+        if (!leftResult.isOK()) {
+            DriverStation.reportError("Could not apply left intake configs, error code: "+ leftResult.toString(), new Error().getStackTrace());
         }
     }
 
     public void configurePID() {
         IntakeConstants.kIntakeVelocity.loadPreferences();
-        TalonFXConfiguration intakeMotorConfigs = new TalonFXConfiguration();
+
+        TalonFXConfiguration rightIntakeMotorConfigs = new TalonFXConfiguration();
         
-        intake.getConfigurator().refresh(intakeMotorConfigs);
-        IntakeConstants.kPIntakeMotor.loadPreferences();
-        IntakeConstants.kIIntakeMotor.loadPreferences();
-        IntakeConstants.kDIntakeMotor.loadPreferences();
-        IntakeConstants.kVIntakeMotor.loadPreferences();
-        intakeMotorConfigs.Slot0.kP = IntakeConstants.kPIntakeMotor.get();
-        intakeMotorConfigs.Slot0.kI = IntakeConstants.kIIntakeMotor.get();
-        intakeMotorConfigs.Slot0.kD = IntakeConstants.kDIntakeMotor.get();
-        intakeMotorConfigs.Slot0.kV = IntakeConstants.kVIntakeMotor.get();
+        rightIntake.getConfigurator().refresh(rightIntakeMotorConfigs);
+        IntakeConstants.kPRightIntakeMotor.loadPreferences();
+        IntakeConstants.kIRightIntakeMotor.loadPreferences();
+        IntakeConstants.kDRightIntakeMotor.loadPreferences();
+        IntakeConstants.kVRightIntakeMotor.loadPreferences();
+        rightIntakeMotorConfigs.Slot0.kP = IntakeConstants.kPRightIntakeMotor.get();
+        rightIntakeMotorConfigs.Slot0.kI = IntakeConstants.kIRightIntakeMotor.get();
+        rightIntakeMotorConfigs.Slot0.kD = IntakeConstants.kDRightIntakeMotor.get();
+        rightIntakeMotorConfigs.Slot0.kV = IntakeConstants.kVRightIntakeMotor.get();
 
-        StatusCode result = intake.getConfigurator().apply(intakeMotorConfigs);
+        StatusCode rightResult = rightIntake.getConfigurator().apply(rightIntakeMotorConfigs);
 
-        if (!result.isOK()){
-            DriverStation.reportError("Could not apply intake configs, error code:"+ result.toString(), new Error().getStackTrace());
+        if (!rightResult.isOK()){
+            DriverStation.reportError("Could not apply right intake configs, error code:"+ rightResult.toString(), new Error().getStackTrace());
+        }
+
+        TalonFXConfiguration leftIntakeMotorConfigs = new TalonFXConfiguration();
+        
+        leftIntake.getConfigurator().refresh(leftIntakeMotorConfigs);
+        IntakeConstants.kPLeftIntakeMotor.loadPreferences();
+        IntakeConstants.kILeftIntakeMotor.loadPreferences();
+        IntakeConstants.kDLeftIntakeMotor.loadPreferences();
+        IntakeConstants.kVLeftIntakeMotor.loadPreferences();
+        leftIntakeMotorConfigs.Slot0.kP = IntakeConstants.kPLeftIntakeMotor.get();
+        leftIntakeMotorConfigs.Slot0.kI = IntakeConstants.kILeftIntakeMotor.get();
+        leftIntakeMotorConfigs.Slot0.kD = IntakeConstants.kDLeftIntakeMotor.get();
+        leftIntakeMotorConfigs.Slot0.kV = IntakeConstants.kVLeftIntakeMotor.get();
+
+        StatusCode leftResult = leftIntake.getConfigurator().apply(leftIntakeMotorConfigs);
+
+        if (!leftResult.isOK()){
+            DriverStation.reportError("Could not apply left intake configs, error code:"+ leftResult.toString(), new Error().getStackTrace());
         }
     }
 
     @Override
     public void periodic() {
         if (!enabled) {
-            intake.setControl(brakeRequest);
+            leftIntake.setControl(brakeRequest);
             return;
         }
 
-        if (Math.abs(velocityRequest.Velocity) < 0.5) {
-            velocityRequest.Velocity = 0;
-            intake.setControl(brakeRequest);
+        if (Math.abs(leftVelocityRequest.Velocity) < 0.5) {
+            leftVelocityRequest.Velocity = 0;
+            leftIntake.setControl(brakeRequest);
             return;
         }
 
         if (velocityControl) {
-            intake.setControl(velocityRequest);
+            leftIntake.setControl(leftVelocityRequest);
             return;
         }
         
-        voltageRequest.Output = velocityRequest.Velocity * 12 / 100;
-        intake.setControl(voltageRequest);
+        leftVoltageRequest.Output = leftVelocityRequest.Velocity * 12 / 100;
+        leftIntake.setControl(leftVoltageRequest);
     }
 
     //****************************** VELOCITY METHODS ******************************//
 
     public void stop() {
         this.enabled = false;
-        velocityRequest.Velocity = 0;
-        intake.setControl(brakeRequest);
+        leftVelocityRequest.Velocity = 0;
+        leftIntake.setControl(brakeRequest);
     }
 
     public void setEnabled(boolean enabled) {
@@ -130,7 +190,7 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     }
 
     public void setVelocity(double velocity) {
-        velocityRequest.Velocity = velocity;
+        leftVelocityRequest.Velocity = velocity;
     }
 
     /**
@@ -138,11 +198,11 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
      * @param increment
      */
     public void incrementVelocity(double increment) {
-        double newVelocity = velocityRequest.Velocity + increment;
+        double newVelocity = leftVelocityRequest.Velocity + increment;
         if ((increment > 0 && newVelocity < IntakeConstants.kIntakeMaxVelocity) ||
             (increment < 0 && newVelocity > IntakeConstants.kIntakeMinVelocity)
             ) {
-            velocityRequest.Velocity = newVelocity;
+            leftVelocityRequest.Velocity = newVelocity;
         }
     }
 
@@ -183,8 +243,8 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
         // Check whether the current velocity is over/under final velocity
         BooleanSupplier rampFinished = 
             finalVel > initialVel ? 
-                () -> velocityRequest.Velocity >= finalVel : 
-                () -> velocityRequest.Velocity <= finalVel;
+                () -> rightVelocityRequest.Velocity >= finalVel : 
+                () -> rightVelocityRequest.Velocity <= finalVel;
 
         if (initialVel == finalVel) {
             return setVelocityCommand(finalVel);
@@ -221,11 +281,11 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     public void initShuffleboard(LOG_LEVEL priority) {
         ShuffleboardTab tab = Shuffleboard.getTab("Intake");
         tab.addBoolean("Intake Roller Enabled", () -> enabled);
-        tab.addNumber("Intake Velocity", ()-> intake.getVelocity().getValueAsDouble());
-        tab.addNumber("Intake Target Velocity", ()-> velocityRequest.Velocity);
-        tab.addNumber("Intake Supply Current", () -> intake.getSupplyCurrent().getValueAsDouble());
-        tab.addNumber("Intake Stator Current", () -> intake.getStatorCurrent().getValueAsDouble());
-        tab.addNumber("Intake Applied Voltage", () -> intake.getMotorVoltage().getValueAsDouble());
+        tab.addNumber("Intake Velocity", ()-> leftIntake.getVelocity().getValueAsDouble());
+        tab.addNumber("Intake Target Velocity", ()-> leftVelocityRequest.Velocity);
+        tab.addNumber("Intake Supply Current", () -> leftIntake.getSupplyCurrent().getValueAsDouble());
+        tab.addNumber("Intake Stator Current", () -> leftIntake.getStatorCurrent().getValueAsDouble());
+        tab.addNumber("Intake Applied Voltage", () -> leftIntake.getMotorVoltage().getValueAsDouble());
     }
 
 }
