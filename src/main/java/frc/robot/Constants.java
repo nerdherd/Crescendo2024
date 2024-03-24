@@ -251,6 +251,7 @@ public final class Constants {
   public static final class ShooterConstants {
     public static final int kLeftMotorID = 51;
     public static final int kRightMotorID = 52;
+    public static final int kShooterPigeonID = 9;
     public static final int kLeftPivotMotorID = 53;
     public static final int kRightPivotMotorID = 54;
     public static final int kThroughBorePort = 3;
@@ -265,7 +266,7 @@ public final class Constants {
 
     public static final PrefDouble kTopOuttakeHigh  = new PrefDouble("Top Shooter Outtake High", 70); // Was 50    3/3/24 Code Orange
     public static final PrefDouble kTopOuttakeLow   = new PrefDouble("Top Shooter Outtake Low", 20);
-    public static final PrefDouble kTopOuttakeAuto1 = new PrefDouble("Top Shooter Outtake Auto 1", 100);
+    public static final PrefDouble kTopOuttakeAuto1 = new PrefDouble("Top Shooter Outtake Auto 1", 5);
     public static final PrefDouble kTopOuttakeAuto2 = new PrefDouble("Top Shooter Outtake Auto 2", 100);
     public static final PrefDouble kTopOuttakeAuto3 = new PrefDouble("Top Shooter Outtake Auto 3", 100);
     public static final PrefDouble kTopOuttakeAmp   = new PrefDouble("Top Shooter Outtake Amp", 10);
@@ -273,7 +274,7 @@ public final class Constants {
 
     public static final PrefDouble kBottomOuttakeHigh  = new PrefDouble("Bottom Shooter Outtake High", 80);
     public static final PrefDouble kBottomOuttakeLow   = new PrefDouble("Bottom Shooter Outtake Low", 20);
-    public static final PrefDouble kBottomOuttakeAuto1 = new PrefDouble("Bottom Shooter Outtake Auto 1", 60);
+    public static final PrefDouble kBottomOuttakeAuto1 = new PrefDouble("Bottom Shooter Outtake Auto 1", 5);
     public static final PrefDouble kBottomOuttakeAuto2 = new PrefDouble("Bottom Shooter Outtake Auto 2", 60);
     public static final PrefDouble kBottomOuttakeAuto3 = new PrefDouble("Bottom Shooter Outtake Auto 3", 60);
     public static final PrefDouble kBottomOuttakeAmp   = new PrefDouble("Bottom Shooter Outtake Amp", 10);
@@ -304,7 +305,7 @@ public final class Constants {
     public static final PrefDouble kSpeakerPosition2 = new PrefDouble("Pivot Speaker Position 2", -28);
     public static final PrefDouble kNeutralPosition  = new PrefDouble("Pivot Neutral Position", 36);
     public static final PrefDouble kAmpPosition      = new PrefDouble("Pivot Amp Position"    , 41.6);
-    public static final PrefDouble kHandoffPosition  = new PrefDouble("Pivot Handoff Position", -37);
+    public static final PrefDouble kHandoffPosition  = new PrefDouble("Pivot Handoff Position", -48);
     public static final PrefDouble kEjectPosition  = new PrefDouble("Pivot Eject Position", -30);
     public static final PrefDouble kHandoffPosition2 = new PrefDouble("Pivot Handoff Position2", -37);   
     
