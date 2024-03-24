@@ -406,7 +406,7 @@ public class LimelightHelpers {
         }
     }
 
-    private static ObjectMapper mapper;
+    private static ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     /**
      * Print JSON Parse time to the console in milliseconds
