@@ -509,7 +509,13 @@ public class SuperSystem {
                 Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
                 shooterRoller.setEnabledCommand(true),
                 shooterRoller.shootSpeaker(),
-                Commands.waitSeconds(0.8),
+                Commands.race(
+                    Commands.sequence(
+                        Commands.waitUntil(() -> shooterPivot.atTargetPosition()),
+                        Commands.waitSeconds(0.2)
+                    ),
+                    Commands.waitSeconds(0.8)
+                ),
                 
                 // Shoot
                 indexer.setEnabledCommand(true),
@@ -535,7 +541,13 @@ public class SuperSystem {
                 Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
                 shooterRoller.setEnabledCommand(true),
                 shooterRoller.shootSpeaker(),
-                Commands.waitSeconds(0.4),
+                Commands.race(
+                    Commands.sequence(
+                        Commands.waitUntil(() -> shooterPivot.atTargetPosition()),
+                        Commands.waitSeconds(0.2)
+                    ),
+                    Commands.waitSeconds(0.4)
+                ),
                 
                 // Shoot
                 indexer.setEnabledCommand(true),

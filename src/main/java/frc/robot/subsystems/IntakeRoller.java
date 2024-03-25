@@ -281,11 +281,15 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     public void initShuffleboard(LOG_LEVEL priority) {
         ShuffleboardTab tab = Shuffleboard.getTab("Intake");
         tab.addBoolean("Intake Roller Enabled", () -> enabled);
-        tab.addNumber("Intake Velocity", ()-> leftIntake.getVelocity().getValueAsDouble());
-        tab.addNumber("Intake Target Velocity", ()-> leftVelocityRequest.Velocity);
-        tab.addNumber("Intake Supply Current", () -> leftIntake.getSupplyCurrent().getValueAsDouble());
-        tab.addNumber("Intake Stator Current", () -> leftIntake.getStatorCurrent().getValueAsDouble());
-        tab.addNumber("Intake Applied Voltage", () -> leftIntake.getMotorVoltage().getValueAsDouble());
+        tab.addNumber("Left Intake Velocity", ()-> leftIntake.getVelocity().getValueAsDouble());
+        tab.addNumber("Left Intake Target Velocity", ()-> leftVelocityRequest.Velocity);
+        tab.addNumber("Left Intake Supply Current", () -> leftIntake.getSupplyCurrent().getValueAsDouble());
+        tab.addNumber("Left Intake Stator Current", () -> leftIntake.getStatorCurrent().getValueAsDouble());
+        tab.addNumber("Left Intake Applied Voltage", () -> leftIntake.getMotorVoltage().getValueAsDouble());
+        tab.addNumber("Right Intake Velocity", ()-> rightIntake.getVelocity().getValueAsDouble());
+        tab.addNumber("Right Intake Supply Current", () -> rightIntake.getSupplyCurrent().getValueAsDouble());
+        tab.addNumber("Right Intake Stator Current", () -> rightIntake.getStatorCurrent().getValueAsDouble());
+        tab.addNumber("Right Intake Applied Voltage", () -> rightIntake.getMotorVoltage().getValueAsDouble());
     }
 
 }

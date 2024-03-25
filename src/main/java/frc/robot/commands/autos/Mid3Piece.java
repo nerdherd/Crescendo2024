@@ -76,7 +76,8 @@ public class Mid3Piece extends SequentialCommandGroup {
                 AutoBuilder.followPath(pathGroup.get(1)), 
                 Commands.sequence(
                     superSystem.stow(),
-                    superSystem.backupIndexer()
+                    superSystem.backupIndexer(),
+                    superSystem.prepareShooterPodium()
                 ),                
                 Commands.waitSeconds(3.5)
             ),
@@ -130,7 +131,7 @@ public class Mid3Piece extends SequentialCommandGroup {
                 Commands.deadline(
                     Commands.waitSeconds(2),
                     // superSystem.shootPodium()
-                    superSystem.shootSequenceAdjustable(sva)
+                    superSystem.shootSequenceAdjustableAuto(sva)
                 )
             ),
 
@@ -204,7 +205,7 @@ public class Mid3Piece extends SequentialCommandGroup {
                 Commands.deadline(
                     Commands.waitSeconds(2),
                     // superSystem.shootPodium()
-                    superSystem.shootSequenceAdjustable(sva)
+                    superSystem.shootSequenceAdjustableAuto(sva)
                 )
             ),
 

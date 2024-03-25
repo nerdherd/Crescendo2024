@@ -213,6 +213,9 @@ public class DriverAssist implements Reportable{
         return ((MaxTxIn-MinTxIn)/(MaxTA-MinTA))*(currentTa-MinTA) + MinTxIn;
     }
     PIDController pidTxRotation = new PIDController(0.1, 0, 0); // todo, tuning pls.
+
+    private double lastAnglePower = 0;
+
     public void TagAimingRotation(SwerveDrivetrain swerveDrive, int tagID, int maxSamples) {
         // make sure to reset before or after calling this function
         // make sure the cross is at the center!!! for tx
@@ -224,6 +227,7 @@ public class DriverAssist implements Reportable{
         if(maxSamples > 0 && dataSampleCount >= maxSamples)
         {
             calculatedAngledPower = 0;
+            lastAnglePower = 0;
         }
         else
         {
@@ -256,6 +260,8 @@ public class DriverAssist implements Reportable{
                     calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.3, 0.3); // todo, tuning pls. Have to consider the Ta for all coeffs!!! Todo
                 }
 
+                lastAnglePower = calculatedAngledPower;
+
                 if(forwardSpeed != null)
                     forwardSpeed.setDouble(0);
                 if(sidewaysSpeed != null)
@@ -264,7 +270,7 @@ public class DriverAssist implements Reportable{
                     angularSpeed.setDouble(calculatedAngledPower);
             }
             else {
-                calculatedAngledPower = 0;
+                calculatedAngledPower = lastAnglePower;
             }
         }
 

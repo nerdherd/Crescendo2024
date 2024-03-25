@@ -305,7 +305,7 @@ public class RobotContainer {
     );
     commandDriverController.touchpad().whileTrue(superSystem.shoot())
                                       .whileFalse(superSystem.stow());
-    commandDriverController.options().whileTrue(superSystem.shootAmp().andThen(superSystem.stow()));
+    commandDriverController.square().whileTrue(superSystem.shootAmp().andThen(superSystem.stow()));
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
@@ -331,44 +331,7 @@ public class RobotContainer {
                                   .whileFalse(superSystem.stow()); // TODO: Safety *Do nothing if April Tag is not seen*
   }
 
-  public void configureBindings_test() {
-    // Driver bindings
-    commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
-    commandDriverController.triangle()
-      .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
-      .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
-
-    //TODO: Make sure April Tag ID is matching
-    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 0.8, 0, 0, 7, 100)))
-      .whileFalse(Commands.run(() -> apriltagCamera.reset())); //1.8, 0, 0, 7
-    commandDriverController.L2().toggleOnTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100));
-    // commandDriverController.R1().whileTrue(Commands.run(() -> new TurnToAngle(apriltagCamera.getTurnToTagAngle(7), swerveDrive)));
-    // commandDriverController.R2().whileTrue(noteCamera.turnToNoteCommand(swerveDrive, 0, 0, 0));
-
-
-
-    // Operator bindings
-    commandOperatorController.triangle().whileTrue(superSystem.eject());
-    commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
-                                      .whileFalse(superSystem.stow());
-    commandOperatorController.options().whileTrue(superSystem.shootAmp().andThen(superSystem.stow())); //change options to another button later
-
-    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
-    // commandOperatorController.L2().whileTrue(superSystem.intakeBasic());
-    
-    commandOperatorController.L2().whileTrue(superSystem.intakeBasic())
-                                  .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
-
-    commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
-    commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
-                                  .whileFalse(superSystem.stow());
-    commandOperatorController.R1().whileTrue(superSystem.shootPodium())
-                                  .whileFalse(superSystem.stow());
-
-    commandOperatorController.cross().whileTrue(superSystem.stow());
-
-    commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
-  }
+  public void configureBindings_test() {}
 
   public void configureLEDTriggers_teleop() {
     // Note Trigger
