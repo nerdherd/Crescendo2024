@@ -444,9 +444,20 @@ public class SuperSystem {
     }
 
     public Command shoot() {
-        Command command = Commands.sequence(
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand()
+        Command command = Commands.either(
+            Commands.sequence(
+                shooterPivot.setPositionCommand(ShooterConstants.kSpeakerPosition.get()),
+                shooterRoller.setEnabledCommand(true),
+                shooterRoller.setVelocityCommand(60),
+                Commands.waitSeconds(0.5),
+                indexer.setEnabledCommand(true),
+                indexer.indexCommand()
+            ),
+            Commands.sequence(
+                indexer.setEnabledCommand(true),
+                indexer.indexCommand()
+            ),
+            () -> shooterRoller.getTargetVelocity() == 0
         );
 
         command.addRequirements(indexer);
