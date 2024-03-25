@@ -94,6 +94,25 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         if (!leftStatusPivot.isOK()){
             DriverStation.reportError("Could not apply pivot configs, error code:"+ leftStatusPivot.toString(), new Error().getStackTrace());
         }
+    
+        rightPivotConfigurator.refresh(pivotConfigs);
+        pivotConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        pivotConfigs.Feedback.RotorToSensorRatio = 1;
+        pivotConfigs.Feedback.SensorToMechanismRatio = 225;
+        
+        pivotConfigs.Voltage.PeakForwardVoltage = 11.5;
+        pivotConfigs.Voltage.PeakReverseVoltage = -11.5;
+        
+        pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        pivotConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
+
+        pivotConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        pivotConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        pivotConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
+        pivotConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        pivotConfigs.CurrentLimits.StatorCurrentLimit = 100;
+        pivotConfigs.CurrentLimits.StatorCurrentLimitEnable = false;
+        pivotConfigs.Audio.AllowMusicDurDisable = true;
 
         pivotConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
