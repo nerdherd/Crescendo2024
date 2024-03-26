@@ -92,6 +92,7 @@ public class ShooterVisionAdjustment implements Reportable{
     }
     
     private double lastAngle = 0;
+    private double lastDistance = 0;
 
     public double getShooterAngle() {
         return getShooterAngle(false);
@@ -99,7 +100,7 @@ public class ShooterVisionAdjustment implements Reportable{
 
     public double getDistanceFromTag(boolean preserveOldValue) {
         Pose3d currentPose = getRobotPose();
-        if(currentPose == null) return (preserveOldValue ? lastAngle : 0);
+        if(currentPose == null) return (preserveOldValue ? lastDistance : 0.01);
         Pose3d tagPose;
         
         if(RobotContainer.IsRedSide()) {
@@ -108,13 +109,13 @@ public class ShooterVisionAdjustment implements Reportable{
         else{
             tagPose = getTagPose(7);
         }
-        if(tagPose == null) return (preserveOldValue ? lastAngle : -0.1);
+        if(tagPose == null) return (preserveOldValue ? lastDistance : -0.1);
 
-        double distance = Math.sqrt(Math.pow(currentPose.getX() - tagPose.getX(), 2) + Math.pow(currentPose.getY() - tagPose.getY(), 2));
-        if(distanceOffset != null) distanceOffset.setDouble(distance);
-        SmartDashboard.putNumber("Distance", distance);
+        lastDistance = Math.sqrt(Math.pow(currentPose.getX() - tagPose.getX(), 2) + Math.pow(currentPose.getY() - tagPose.getY(), 2));
+        if(distanceOffset != null) distanceOffset.setDouble(lastDistance);
+        SmartDashboard.putNumber("Distance", lastDistance);
 
-        return distance;
+        return lastDistance;
     }
  
     public double getShooterAngle(boolean preserveOldValue) {

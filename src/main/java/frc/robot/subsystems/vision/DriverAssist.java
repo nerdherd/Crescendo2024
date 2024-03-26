@@ -137,25 +137,35 @@ public class DriverAssist implements Reportable{
         );
     }
 
-    public void TurnToTag(SwerveDrivetrain swerveDrive, double targetTX, int tagID, ShooterVisionAdjustment sva) {
+
+    private final double turnToAngleScale = 1;
+
+    public double getTurnToTagPower(SwerveDrivetrain swerveDrive, double targetTX, int tagID, ShooterVisionAdjustment sva) {
         calculateTagTurning(targetTX, tagID);
 
         double distance = sva.getDistanceFromTag(true);
+        if (distance < 0.01) {
+            return 0;
+        }
 
         // TODO: Tune getAngledPower to allow for higher range of speeds *TESTING NEEDED*
         double power = getAngledPower();
-        power = power / distance;
+        power = turnToAngleScale * power / distance;
 
-        swerveDrive.drive(0, 0, power); //TODO: What should Sideways and Angled Speed be based on? Pose? TX?
+        return power;
     }
-    
-    // public Command TurnToTagCommand(SwerveDrivetrain drivetrain, double targetSkew, int tagID) {
-    //     return Commands.sequence(
-    //         Commands.run(
-    //             () -> TurnToTag(drivetrain, targetSkew, tagID)
-    //         ).until(() -> Math.abs(Math.abs(getAngledPower())) <= 0.1)
-    //     );
-    // }
+
+    public void TurnToTag(SwerveDrivetrain swerveDrive, double targetTX, int tagID, ShooterVisionAdjustment sva) {
+        swerveDrive.drive(0, 0, getTurnToTagPower(swerveDrive, targetTX, tagID, sva)); //TODO: What should Sideways and Angled Speed be based on? Pose? TX?
+    }
+
+    public Command TurnToTagCommand(SwerveDrivetrain drivetrain, double targetSkew, int tagID, ShooterVisionAdjustment sva) {
+        return Commands.sequence(
+            Commands.run(
+                () -> TurnToTag(drivetrain, targetSkew, tagID, sva)
+            ).until(() -> Math.abs(Math.abs(getAngledPower())) <= 0.05)
+        );
+    }
 
     public int convertTagToAlliance(int tagID) {
         var alliance = DriverStation.getAlliance();

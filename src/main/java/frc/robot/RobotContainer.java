@@ -160,7 +160,13 @@ public class RobotContainer {
         () -> -commandDriverController.getLeftY(), // Horizontal translation
         commandDriverController::getLeftX, // Vertical Translation
         // () -> 0.0, // debug
-        commandDriverController::getRightX, // Rotationaq
+        () -> {
+          if (driverController.getL2Button()) {
+            return apriltagCamera.getTurnToTagPower(swerveDrive, angleError, IsRedSide() ? 4 : 7, adjustmentCamera);
+          }
+          return commandDriverController.getRightX(); // Rotationaq
+
+        },
 
         // driverController::getSquareButton, // Field oriented
         () -> false, // should be robot oriented now on true
@@ -169,25 +175,27 @@ public class RobotContainer {
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
         () -> {
-          return (driverController.getR1Button() || driverController.getL1Button() || 
-          driverController.getL2Button() 
-          // || 
-          // driverController.getCircleButton()
+          return (
+            driverController.getR1Button() 
+            || driverController.getL1Button() 
+            // || driverController.getL2Button() 
+            // || driverController.getCircleButton()
           ); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          if (driverController.getL2Button()) {
-            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
-            // 4 if red side, 7 if blue
-          }
+          // if (driverController.getL2Button()) {
+          //   return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
+          //   // 4 if red side, 7 if blue
+          // }
           // if (driverController.getCircleButton()) { //turn to amp
           //   if (!IsRedSide()){
           //     return 270.0;
           //   }
           //   return 90.0;
           // }
-          else if (driverController.getL1Button()) { //turn to speaker
+          // else 
+          if (driverController.getL1Button()) { //turn to speaker
             return 0.0;
           }
           else if (driverController.getR1Button()) {
