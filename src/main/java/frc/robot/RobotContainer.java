@@ -388,7 +388,8 @@ public class RobotContainer {
 
     // Lined up and ready to shoot Trigger
     // Speaker
-    commandDriverController.L1().whileTrue(Commands.runOnce(
+    Trigger L1Trigger = new Trigger(commandDriverController.L1());
+    L1Trigger.whileTrue(Commands.runOnce(
       () -> {
         heading = NerdyMath.posMod(imu.getHeading(), 360);
         angleError = heading - 0; // Heading for speaker
@@ -399,7 +400,7 @@ public class RobotContainer {
         }
       }
     ));
-    NerdyMath.posMod(angleError, angleError);
+    Trigger R1Trigger = commandDriverController.R1(); // At this point Zach realized that he was about to change the code to the exact same as it was before but with extra variables
     commandDriverController.R1().whileTrue(Commands.runOnce(
       () -> {
         heading = NerdyMath.posMod(imu.getHeading(), 360);
