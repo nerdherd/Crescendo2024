@@ -58,6 +58,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    RobotContainer.refreshAlliance();
     robotContainer.swerveDrive.setBreak(false);
     robotContainer.swerveDrive.refreshModulePID();
     robotContainer.imu.zeroHeading();
@@ -92,6 +93,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    RobotContainer.refreshAlliance();
     if (autoCommand != null) {
       autoCommand.cancel();
     }
@@ -119,6 +121,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
+    RobotContainer.refreshAlliance();
     CommandScheduler.getInstance().cancelAll();
     // ShooterConstants.kPivotDeadband.loadPreferences();
     // ShooterConstants.fullDisableShooter.loadPreferences();

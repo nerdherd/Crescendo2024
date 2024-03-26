@@ -32,6 +32,7 @@ import static frc.robot.Constants.PathPlannerConstants.kPPTranslationPIDConstant
 import static frc.robot.Constants.SwerveDriveConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.GeometryUtil;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -309,6 +310,18 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
 
     public void driveFieldOriented(double xSpeed, double ySpeed) {
         driveFieldOriented(xSpeed, ySpeed, 0);
+    }
+
+    public Command driveToPose(Pose2d destPoseInBlue, double maxVelocityMps, double maxAccelerationMpsSq) {
+        PathConstraints pathcons = new PathConstraints(
+            maxVelocityMps, maxAccelerationMpsSq, 
+            Units.degreesToRadians(180), Units.degreesToRadians(360)
+        );
+        return Commands.either(
+            AutoBuilder.pathfindToPose(GeometryUtil.flipFieldPose(destPoseInBlue), pathcons),
+            AutoBuilder.pathfindToPose(destPoseInBlue, pathcons),
+            RobotContainer::IsRedSide  
+        );
     }
     
     public void setChassisSpeeds(ChassisSpeeds speeds) {

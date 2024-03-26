@@ -116,13 +116,22 @@ public class RobotContainer {
 
   }
 
-  public static boolean IsRedSide()
-  {
-      var alliance = DriverStation.getAlliance();
-      if (alliance.isPresent()) {
-          return alliance.get() == DriverStation.Alliance.Red;
-      }
-      return false;
+  static boolean isRedSide = false;
+
+  public static void refreshAlliance() {
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      isRedSide = (alliance.get() == DriverStation.Alliance.Red);
+    }
+  }
+
+  public static boolean IsRedSide() {
+    return isRedSide;
+      // var alliance = DriverStation.getAlliance();
+      // if (alliance.isPresent()) {
+      //     return alliance.get() == DriverStation.Alliance.Red;
+      // }
+      // return false;
   }
 
   public void initDefaultCommands_teleop() {
@@ -161,8 +170,10 @@ public class RobotContainer {
         () -> driverController.getR2Button(), // Precision mode (disabled)
         () -> {
           return (driverController.getR1Button() || driverController.getL1Button() || 
-          driverController.getL2Button() || 
-          driverController.getCircleButton()); // Turn to angle
+          driverController.getL2Button() 
+          // || 
+          // driverController.getCircleButton()
+          ); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
@@ -170,12 +181,12 @@ public class RobotContainer {
             return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
             // 4 if red side, 7 if blue
           }
-          if (driverController.getCircleButton()) { //turn to amp
-            if (!IsRedSide()){
-              return 270.0;
-            }
-            return 90.0;
-          }
+          // if (driverController.getCircleButton()) { //turn to amp
+          //   if (!IsRedSide()){
+          //     return 270.0;
+          //   }
+          //   return 90.0;
+          // }
           else if (driverController.getL1Button()) { //turn to speaker
             return 0.0;
           }
@@ -305,7 +316,11 @@ public class RobotContainer {
     );
     commandDriverController.touchpad().whileTrue(superSystem.shoot())
                                       .whileFalse(superSystem.stow());
-    commandDriverController.square().whileTrue(superSystem.shootAmp().andThen(superSystem.stow()));
+    // commandDriverController.square().whileTrue(superSystem.shootAmp().andThen(superSystem.stow()));
+    commandDriverController.square().whileTrue(Commands.sequence(
+      apriltagCamera.driveToAmpCommand(swerveDrive, 3, 3),
+      superSystem.shootAmp().andThen(superSystem.stow())
+    ));// TODO: test this command
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());

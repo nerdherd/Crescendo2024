@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.TurnToAngle;
 import frc.robot.commands.TurnToAngleContinuous;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
@@ -124,6 +126,14 @@ public class DriverAssist implements Reportable{
             Commands.run(
                 () -> TagDriving(drivetrain, targetTA, targetTX, targetSkew, tagID, maxSamples)
             ).until(() -> (dataSampleCount >= minSamples && Math.abs(getForwardPower()) <= 0.1 && Math.abs(getSidewaysPower()) <= 0.1 && Math.abs(getAngledPower()) <= 0.1))
+        );
+    }
+
+    Pose2d blueAmpPose = new Pose2d(new Translation2d(1.85, 7.5), Rotation2d.fromDegrees(90));
+    public Command driveToAmpCommand(SwerveDrivetrain drivetrain, double maxVelocityMps, double maxAccelerationMpsSq) {
+        return Commands.sequence(
+            Commands.runOnce(() -> resetOdoPoseByVision(drivetrain, 0, 10)),
+            drivetrain.driveToPose(blueAmpPose, maxVelocityMps, maxAccelerationMpsSq)
         );
     }
 
