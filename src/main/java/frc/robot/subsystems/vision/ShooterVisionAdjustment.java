@@ -96,8 +96,8 @@ public class ShooterVisionAdjustment implements Reportable{
     public double getShooterAngle() {
         return getShooterAngle(false);
     }
- 
-    public double getShooterAngle(boolean preserveOldValue) {
+
+    public double getDistanceFromTag(boolean preserveOldValue) {
         Pose3d currentPose = getRobotPose();
         if(currentPose == null) return (preserveOldValue ? lastAngle : 0);
         Pose3d tagPose;
@@ -113,6 +113,12 @@ public class ShooterVisionAdjustment implements Reportable{
         double distance = Math.sqrt(Math.pow(currentPose.getX() - tagPose.getX(), 2) + Math.pow(currentPose.getY() - tagPose.getY(), 2));
         if(distanceOffset != null) distanceOffset.setDouble(distance);
         SmartDashboard.putNumber("Distance", distance);
+
+        return distance;
+    }
+ 
+    public double getShooterAngle(boolean preserveOldValue) {
+        double distance = getDistanceFromTag(preserveOldValue);
         if(distance < distances[0]) {
             SmartDashboard.putBoolean("Vision failed", true);
             return (preserveOldValue ? lastAngle : -0.2);

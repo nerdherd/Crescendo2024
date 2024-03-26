@@ -137,11 +137,18 @@ public class DriverAssist implements Reportable{
         );
     }
 
-    public void TurnToTag(SwerveDrivetrain swerveDrive, double targetTX, int tagID) {
+    public void TurnToTag(SwerveDrivetrain swerveDrive, double targetTX, int tagID, ShooterVisionAdjustment sva) {
         calculateTagTurning(targetTX, tagID);
 
-        swerveDrive.drive(0, 0, getAngledPower()); //TODO: What should Sideways and Angled Speed be based on? Pose? TX?
+        double distance = sva.getDistanceFromTag(true);
+
+        // TODO: Tune getAngledPower to allow for higher range of speeds *TESTING NEEDED*
+        double power = getAngledPower();
+        power = power / distance;
+
+        swerveDrive.drive(0, 0, power); //TODO: What should Sideways and Angled Speed be based on? Pose? TX?
     }
+    
     // public Command TurnToTagCommand(SwerveDrivetrain drivetrain, double targetSkew, int tagID) {
     //     return Commands.sequence(
     //         Commands.run(

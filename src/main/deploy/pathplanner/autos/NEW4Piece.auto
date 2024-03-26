@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3725738150477713,
+      "y": 5.55
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NEWPiece1Grab"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NEWPiece1Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NEWPiece2Grab"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NEWPiece2Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NEWPiece3Grab"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NEWPiece3Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NEWLeave"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Comp Autos",
+  "choreoAuto": false
+}

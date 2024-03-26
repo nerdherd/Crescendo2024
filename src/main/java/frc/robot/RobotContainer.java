@@ -467,6 +467,10 @@ public class RobotContainer {
       // autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
     }
 
+    if (paths.contains("NEW4Piece")) {
+      autoChooser.addOption("New 4 Piece", new Reliable4Piece(swerveDrive, "NEW4Piece", superSystem));
+    }
+
     if (paths.contains("5PieceMid")){
       autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5PieceMid", superSystem, adjustmentCamera));
     }
