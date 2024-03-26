@@ -247,39 +247,7 @@ public class RobotContainer {
       //   ));
   }
 
-  public void initDefaultCommands_test() {
-    swerveDrive.setDefaultCommand(
-      new SwerveJoystickCommand(
-        swerveDrive,
-        () -> -commandDriverController.getLeftY(), // Horizontal translation
-        commandDriverController::getLeftX, // Vertical Translation
-        // () -> 0.0, // debug
-        commandDriverController::getRightX, // Rotationaq
-
-        // driverController::getSquareButton, // Field oriented
-        () -> true, // should be robot oriented now on true
-
-        driverController::getCrossButton, // Towing
-        // driverController::getR2Button, // Precision/"Sniper Button"
-        () -> driverController.getR2Button(), // Precision mode (disabled)
-        () -> {
-          return (driverController.getR1Button() || driverController.getL1Button()); // Turn to angle
-        }, 
-        // () -> false, // Turn to angle (disabled)
-        () -> { // Turn To angle Direction
-          if (driverController.getR1Button()) { //turn to amp
-            if (IsRedSide()){
-              return 270.0;
-            }
-            return 90.0;
-          }
-          else if (driverController.getL1Button()) { //turn to speaker
-            return 180.0;
-          }
-          return 0.0; 
-        }
-      ));
-  }
+  public void initDefaultCommands_test() {}
 
   public void configureBindings_teleop() {
     // Driver bindings
