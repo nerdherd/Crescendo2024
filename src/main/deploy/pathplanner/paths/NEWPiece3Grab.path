@@ -4,24 +4,24 @@
     {
       "anchor": {
         "x": 1.55,
-        "y": 5.5
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.426549104168107,
-        "y": 5.913972455619661
+        "x": 1.5574413054104268,
+        "y": 6.476092609817173
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.818112808836172,
-        "y": 6.827417706190619
+        "x": 2.39,
+        "y": 6.99
       },
       "prevControl": {
-        "x": 2.789585037087334,
-        "y": 6.792285196553275
+        "x": 1.8410072768790318,
+        "y": 7.108477783289376
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "Reliable4Piece",
+  "folder": "NEW4Piece",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
