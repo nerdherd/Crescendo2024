@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.CANdleSubSystem.AnimationTypes;
 import frc.robot.subsystems.CANdleSubSystem.Status;
 
 public class Robot extends TimedRobot {
@@ -29,14 +30,7 @@ public class Robot extends TimedRobot {
     enableLiveWindowInTest(false);
     robotContainer.swerveDrive.refreshModulePID();
     robotContainer.apriltagCamera.toggleLight(true);
-
-    // // One Peak Music 2
-    // Orchestra orchestra = new Orchestra();
-    // TalonFX musicMotor = new TalonFX(12);
-    // orchestra.addInstrument(musicMotor);
-    // orchestra.loadMusic("happybirthdaykyle.chrp");
-    // orchestra.play();
-  
+    robotContainer.configureLEDTriggers();
   }
 
   @Override
@@ -48,7 +42,7 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     CommandScheduler.getInstance().cancelAll();
     robotContainer.swerveDrive.setBreak(true);
-    // robotContainer.CANdle.setStatus(Status.DISABLED);
+    robotContainer.CANdle.setStatus(Status.DISABLED);
     robotContainer.apriltagCamera.toggleLight(true);
   }
 
@@ -85,7 +79,7 @@ public class Robot extends TimedRobot {
     orchestra.loadMusic(); //have to get chirp file
     orchestra.play();
      */
-    // robotContainer.CANdle.setStatus(Status.AUTO);
+    robotContainer.CANdle.setStatus(Status.AUTO);
   }
 
   @Override
@@ -113,7 +107,8 @@ public class Robot extends TimedRobot {
     robotContainer.configureBindings_teleop();
     robotContainer.initDefaultCommands_teleop();
     // robotContainer.configureLEDTriggers_teleop();
-    // robotContainer.CANdle.setStatus(Status.TELEOP);
+    robotContainer.CANdle.setStatus(Status.TELEOP);
+    // robotContainer.CANdle.changeAnimation(AnimationTypes.Fire);
   }
 
   @Override

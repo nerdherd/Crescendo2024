@@ -415,7 +415,7 @@ public final class Constants {
   }
 
   public static final class CANdleConstants {
-    public static final int CANdleID = 0;
+    public static final int CANdleID = 10;
   }
 
 }

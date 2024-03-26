@@ -155,6 +155,22 @@ public class DriverAssist implements Reportable{
         return power;
     }
 
+    double lastTX = 0;
+
+    public boolean apriltagInRange(int tagID, double targetTX, double tolerance) {
+        int foundId = -1;
+
+        foundId = getAprilTagID();
+        if(targetId != null)
+            targetId.setInteger(foundId);
+        if(tagID == foundId) {
+            lastTX = targetTX - limelight.getXAngle_avg();
+        }
+
+        return Math.abs(lastTX) < tolerance;
+    }
+
+
     public void TurnToTag(SwerveDrivetrain swerveDrive, double targetTX, int tagID, ShooterVisionAdjustment sva) {
         swerveDrive.drive(0, 0, getTurnToTagPower(swerveDrive, targetTX, tagID, sva)); //TODO: What should Sideways and Angled Speed be based on? Pose? TX?
     }

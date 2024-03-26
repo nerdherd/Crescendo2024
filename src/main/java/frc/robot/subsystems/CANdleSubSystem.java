@@ -19,6 +19,7 @@ import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.TwinkleOffAnimation;
 import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -55,22 +56,27 @@ public class CANdleSubSystem extends SubsystemBase {
         LASTSTATUS // To go back to previous animation
     }
 
+    private boolean isSolidColor = false;
+
 
     public CANdleSubSystem() {
         // this.joystick = joy;
-        changeAnimation(AnimationTypes.SetAll);
+        // changeAnimation(AnimationTypes.SetAll);
+        CANdle.clearAnimation(0);
         CANdleConfiguration configAll = new CANdleConfiguration();
         configAll.statusLedOffWhenActive = false;
         configAll.disableWhenLOS = false;
         configAll.stripType = LEDStripType.GRB;
-        configAll.brightnessScalar = 0.1;
+        configAll.brightnessScalar = 1;
         configAll.vBatOutputMode = VBatOutputMode.Modulated;
         CANdle.configAllSettings(configAll, 100);
     }
 
     private void setColor(int r, int g, int b) {
-        changeAnimation(AnimationTypes.SetAll);
+        CANdle.clearAnimation(0);
+        // changeAnimation(AnimationTypes.SetAll);
         CANdle.setLEDs(r, g, b);
+        isSolidColor = true;
     }
 
     /* Wrappers so we can access the CANdle from the subsystem */
@@ -102,7 +108,7 @@ public class CANdleSubSystem extends SubsystemBase {
                 changeAnimation(AnimationTypes.Strobe);
                 break;
             case HASNOTE:
-                setColor(0, 255, 0);
+                setColor(0, 255,    0);
                 break;
             case SHOTREADY:
                 setColor(255, 255, 255);
@@ -117,6 +123,9 @@ public class CANdleSubSystem extends SubsystemBase {
         lastAnimation = currentAnimation;
         currentAnimation = newAnimation;
         
+        CANdle.clearAnimation(0);
+        isSolidColor = false;
+
         switch(newAnimation)
         {
             case ColorFlow:
@@ -155,6 +164,10 @@ public class CANdleSubSystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (isSolidColor) {
+            return;
+        }
+
         if(animation == null) {
             changeAnimation(AnimationTypes.SingleFade);
         } else {

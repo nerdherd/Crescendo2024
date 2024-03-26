@@ -78,8 +78,7 @@ public class RobotContainer {
   public DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   public ShooterVisionAdjustment adjustmentCamera;
   
-  public CANdleSubSystem CANdle;
-  //  = new CANdleSubSystem();
+  public CANdleSubSystem CANdle = new CANdleSubSystem();
   private double angleError = 5.0; // Only used for LED
   private double heading; // Only used for LED
 
@@ -253,20 +252,20 @@ public class RobotContainer {
     // Driver bindings
 
     // Note Trigger
-    Trigger noteTrigger = new Trigger(superSystem::noteIntook);
-    noteTrigger.onTrue(Commands.sequence(
-      Commands.runOnce(() -> {
-        SmartDashboard.putBoolean("Note Detected", true);
-        operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
-        operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
-      }),
-      (apriltagCamera.noteOnHoldConfirmSignal()),
-      Commands.runOnce(() -> {
-        SmartDashboard.putBoolean("Note Detected", false);
-        operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-        operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-      })
-    ));
+    // Trigger noteTrigger = new Trigger(superSystem::noteIntook);
+    // noteTrigger.onTrue(Commands.sequence(
+    //   Commands.runOnce(() -> {
+    //     SmartDashboard.putBoolean("Note Detected", true);
+    //     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
+    //     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
+    //   }),
+    //   (apriltagCamera.noteOnHoldConfirmSignal()),
+    //   Commands.runOnce(() -> {
+    //     SmartDashboard.putBoolean("Note Detected", false);
+    //     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+    //     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+    //   })
+    // ));
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()
@@ -324,24 +323,38 @@ public class RobotContainer {
 
   public void configureBindings_test() {}
 
-  public void configureLEDTriggers_teleop() {
+  public void configureLEDTriggers() {
     // Note Trigger
     Trigger noteTrigger = new Trigger(superSystem::noteIntook);
     noteTrigger.onTrue(Commands.runOnce(
       () -> {
         CANdle.setStatus(Status.HASNOTE);
+        SmartDashboard.putBoolean("Has Note", true);
       }));
     noteTrigger.onFalse(Commands.runOnce(
-      () -> CANdle.setStatus(Status.TELEOP)
+      () -> {
+        SmartDashboard.putBoolean("Has Note", false); 
+        CANdle.setStatus(Status.TELEOP);
+      }
     ));
 
     // AprilTag Trigger
-    Trigger tagTrigger = new Trigger(apriltagCamera::hasValidTarget);
+    Trigger tagTrigger = new Trigger(() -> {
+      return apriltagCamera.hasValidTarget() && 
+             apriltagCamera.apriltagInRange(IsRedSide() ? 4 : 7, 0, 3);
+    });
+    
     tagTrigger.onTrue(Commands.runOnce(
-      () -> CANdle.setStatus(Status.HASTARGET)
+      () -> {
+        CANdle.setStatus(Status.HASTARGET);
+        SmartDashboard.putBoolean("Tag aimed", true); 
+      }
     ));
     tagTrigger.onFalse(Commands.runOnce(
-      () -> CANdle.setStatus(Status.TELEOP)
+      () -> {
+        CANdle.setStatus(Status.TELEOP);
+        SmartDashboard.putBoolean("Tag aimed", false); 
+      }
     ));
 
     // if (driverController.getCircleButton()) { //turn to amp
@@ -356,19 +369,20 @@ public class RobotContainer {
 
     // Lined up and ready to shoot Trigger
     // Speaker
-    Trigger L1Trigger = new Trigger(commandDriverController.L1());
-    L1Trigger.whileTrue(Commands.runOnce(
-      () -> {
-        heading = NerdyMath.posMod(imu.getHeading(), 360);
-        angleError = heading - 0; // Heading for speaker
-        if (Math.abs(angleError) <= 10) {
-          CANdle.setStatus(Status.SHOTREADY);
-        } else {
-          CANdle.setStatus(Status.LASTSTATUS);
-        }
-      }
-    ));
-    Trigger R1Trigger = commandDriverController.R1(); // At this point Zach realized that he was about to change the code to the exact same as it was before but with extra variables
+    // Trigger L1Trigger = new Trigger(commandDriverController.L1());
+    // L1Trigger.whileTrue(Commands.runOnce(
+    //   () -> {
+    //     heading = NerdyMath.posMod(imu.getHeading(), 360);
+    //     angleError = heading - 0; // Heading for speaker
+    //     if (Math.abs(angleError) <= 10) {
+    //       CANdle.setStatus(Status.SHOTREADY);
+    //     } else {
+    //       CANdle.setStatus(Status.LASTSTATUS);
+    //     }
+    //   }
+    // ));
+
+    Trigger shootTrigger = commandDriverController.R1(); // At this point Zach realized that he was about to change the code to the exact same as it was before but with extra variables
     commandDriverController.R1().whileTrue(Commands.runOnce(
       () -> {
         heading = NerdyMath.posMod(imu.getHeading(), 360);
