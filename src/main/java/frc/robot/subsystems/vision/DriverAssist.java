@@ -17,6 +17,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
@@ -63,7 +64,8 @@ public class DriverAssist implements Reportable{
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
         limelightName = name;
         ShuffleboardTab tab = Shuffleboard.getTab(limelightName);
-
+        toleranceSpline.create();
+        angleToleranceSpline.create();
         try {
             limelight = new Limelight(name);
             toggleLight(false);
@@ -82,6 +84,40 @@ public class DriverAssist implements Reportable{
     {
         limelight.reinitBuffer();
         dataSampleCount = 0;
+    }
+
+    private double[] distances = new double[] {0, 1, 1.72, 2, 3, 3.5, 4, 5};
+    private double[] tolerances = new double[] {10, 9, 8, 7, 4, 3, 1, 1};
+    private NerdySpline toleranceSpline = new NerdySpline(distances, tolerances);
+
+    public double getTurnToAngleTolerance(double distance) {
+        if (distance > 5) {
+            return 0;
+        }
+        if (distance > 4) {
+            return 1;
+        }
+        double tolerance = toleranceSpline.getOutput(distance);
+        if (tolerance < 0) {
+            return 0;
+        }
+        return tolerance;
+    }
+
+    private double[] angles          = new double[] {0, 10, 30, 45, 90};
+    private double[] toleranceScales = new double[] {1, 0.95, 0.75, 0.4, 0};
+    private NerdySpline angleToleranceSpline = new NerdySpline(angles, toleranceScales);
+
+    public double getTurnToAngleToleranceScale(double targetAngle) {
+        double angleToSpeaker = 10000;
+        targetAngle = NerdyMath.posMod(targetAngle, 360);
+        if (targetAngle > 180) {
+            angleToSpeaker = Math.abs(360 - targetAngle);
+        }
+        else if (targetAngle < 180) {
+            angleToSpeaker = targetAngle;
+        }
+        return angleToleranceSpline.getOutput(angleToSpeaker);
     }
 
     /**
@@ -670,7 +706,7 @@ public class DriverAssist implements Reportable{
 
     public Pose3d getCurrentPose3DVision()
     {
-        currentPose = limelight.getBotPose3D();
+        currentPose = limelight.getBotPose3D_avg();
         if(botPoseByVisionX != null)
         {
             botPoseByVisionX.setDouble(currentPose.getX());

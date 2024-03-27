@@ -4,6 +4,7 @@ public class NerdySpline {
     private double[] inputs;
     private double[] outputs;
     private double[] mM;
+    private boolean initialized = false;
 
     
     /**
@@ -70,9 +71,11 @@ public class NerdySpline {
         inputs = x;
         outputs = y;
         mM = m;
+        initialized = true;
     }
 
     public double getOutput(double input) {
+        if (!initialized) return -1;
         if(input < inputs[0] || input > inputs[inputs.length - 1]) return -1;
 
         // Find the index of the last point with smaller X

@@ -275,7 +275,7 @@ public class Limelight implements Reportable{
     public ExponentialSmoothingFilter filterPoseX = new ExponentialSmoothingFilter(1.0 / 40);
     public ExponentialSmoothingFilter filterPoseY = new ExponentialSmoothingFilter(1.0 / 40);
     public ExponentialSmoothingFilter filterPoseZ = new ExponentialSmoothingFilter(1.0 / 40);
-    private Pose3d currentPoseAvg = null;
+    private Pose3d currentPoseAvg = new Pose3d();
     public void updateAvgPose() {
         Pose3d pose = getBotPose3D();
         if(!hasValidTarget()) return;

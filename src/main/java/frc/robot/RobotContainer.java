@@ -80,6 +80,7 @@ public class RobotContainer {
   
   public CANdleSubSystem CANdle = new CANdleSubSystem();
   private double angleError = 5.0; // Only used for LED
+  private SwerveJoystickCommand swerveJoystickCommand;
 
   
   /**
@@ -151,8 +152,8 @@ public class RobotContainer {
         },
         shooterPivot
       ));
-
-      swerveDrive.setDefaultCommand(
+      
+      swerveJoystickCommand = 
       new SwerveJoystickCommand(
         swerveDrive,
         () -> -commandDriverController.getLeftY(), // Horizontal translation
@@ -204,7 +205,9 @@ public class RobotContainer {
           }
           return 0.0; 
         }
-      ));
+      );
+
+      swerveDrive.setDefaultCommand(swerveJoystickCommand);
 
       // Point to angle
       // swerveDrive.setDefaultCommand(
@@ -365,7 +368,22 @@ public class RobotContainer {
 
     // AprilTag Trigger
     Trigger aimTrigger = new Trigger(() -> {
-      return apriltagCamera.apriltagInRange(IsRedSide() ? 4 : 7, 0, 0);
+      double desiredAngle = apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
+      SmartDashboard.putNumber("Desired Angle", desiredAngle);
+      double angleToleranceScale = apriltagCamera.getTurnToAngleToleranceScale(desiredAngle);
+      SmartDashboard.putNumber("Angle Tolerance Scale", angleToleranceScale);
+      double angleTolerance = angleToleranceScale * apriltagCamera.getTurnToAngleTolerance(adjustmentCamera.getDistanceFromTag(true));
+      SmartDashboard.putNumber("Angle Tolerance", angleTolerance);
+      double angleDifference = Math.abs(swerveDrive.getImu().getHeading() - desiredAngle);
+      angleDifference = NerdyMath.posMod(angleDifference, 360);
+      SmartDashboard.putNumber("Angle Difference", angleDifference);
+      if (angleDifference > 360 - angleTolerance && angleDifference < 360 + angleTolerance) {
+        return true;
+      } else if (angleDifference > -angleTolerance && angleDifference < angleTolerance) {
+        return true;
+      }
+      return false;
+      // return apriltagCamera.apriltagInRange(IsRedSide() ? 4 : 7, 0, 0);
     });
 
     tagTrigger.and(aimTrigger.negate()).onTrue(
