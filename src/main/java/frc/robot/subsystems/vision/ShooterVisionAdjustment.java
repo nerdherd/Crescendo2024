@@ -7,6 +7,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,8 +33,8 @@ public class ShooterVisionAdjustment implements Reportable{
     private GenericEntry poseTag;
     private GenericEntry goalDistance;
 
-    private double[] distances = {1.356, 2.554, 2.95, 3.5, 4.214, 5.548}; // meters, from least to greatest
-    private double[] angles = {-49.6, -31, -30, -23.115, -21, -16.875}; // rotations // TODO: Convert to degrees
+    private double[] distances = {1.356, 2.554, 2.95, 3.5, 3.828, 4.214, 5.548}; // meters, from least to greatest
+    private double[] angles = {-49.6, -31, -30, -23.115, -22, -21, -16.875}; // rotations // TODO: Convert to degrees
 
     public ShooterVisionAdjustment(String name, Limelight limelight) {
         this.name = name;
@@ -62,6 +63,11 @@ public class ShooterVisionAdjustment implements Reportable{
             targetFound.setBoolean(limelight.hasValidTarget());
 
         Pose3d pose = limelight.getBotPose3D_avg();
+
+        if (pose == null) {
+            DriverStation.reportWarning("Robot pose is null!", true);
+            return new Pose3d();
+        }
 
         if(poseRobot != null)
             poseRobot.setString(pose.toString());
@@ -117,6 +123,17 @@ public class ShooterVisionAdjustment implements Reportable{
 
         return lastDistance;
     }
+
+    private double angleoffset = 0;
+
+    public void incrementOffset(double increment) {
+        angleoffset += increment;
+        angleoffset = NerdyMath.clamp(angleoffset, -10, 10);
+    }
+
+    public void resetOffset() {
+        angleoffset = 0;
+    }
  
     public double getShooterAngle(boolean preserveOldValue) {
         double distance = getDistanceFromTag(preserveOldValue);
@@ -136,6 +153,9 @@ public class ShooterVisionAdjustment implements Reportable{
         SmartDashboard.putNumber("Vision Distance", distance);
         if(goalAngle != null) 
             goalAngle.setDouble(output);
+        output += angleoffset;
+        SmartDashboard.putNumber("Angle with Offset", output);
+        SmartDashboard.putNumber("Angle Offset", angleoffset);
         lastAngle = output;
         return output;
     }
@@ -163,6 +183,8 @@ public class ShooterVisionAdjustment implements Reportable{
             case MEDIUM:
 
             case MINIMAL:   
+                tab.addNumber("Angle offset", () -> angleoffset);
+
                 goalAngle = tab.add("Calculated Angle", 0)
                 .withPosition(2, 0)
                 .withSize(2, 1)

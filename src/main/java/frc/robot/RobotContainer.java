@@ -80,7 +80,6 @@ public class RobotContainer {
   
   public CANdleSubSystem CANdle = new CANdleSubSystem();
   private double angleError = 5.0; // Only used for LED
-  private double heading; // Only used for LED
 
   
   /**
@@ -160,11 +159,14 @@ public class RobotContainer {
         commandDriverController::getLeftX, // Vertical Translation
         // () -> 0.0, // debug
         () -> {
-          if (driverController.getL2Button()) {
-            return apriltagCamera.getTurnToTagPower(swerveDrive, angleError, IsRedSide() ? 4 : 7, adjustmentCamera);
-          }
-          return commandDriverController.getRightX(); // Rotationaq
-
+          // if (driverController.getL2Button()) {
+          //   SmartDashboard.putBoolean("Turn to angle 2", true);
+          //   double turnPower = apriltagCamera.getTurnToTagPower(swerveDrive, angleError, IsRedSide() ? 4 : 7, adjustmentCamera); 
+          //   SmartDashboard.putNumber("Turn Power", turnPower);
+          //   return turnPower;
+          // }
+          // SmartDashboard.putBoolean("Turn to angle 2", false);
+          return commandDriverController.getRightX(); // Rotation
         },
 
         // driverController::getSquareButton, // Field oriented
@@ -177,23 +179,23 @@ public class RobotContainer {
           return (
             driverController.getR1Button() 
             || driverController.getL1Button() 
-            // || driverController.getL2Button() 
-            // || driverController.getCircleButton()
+            || driverController.getL2Button() 
+            || driverController.getCircleButton()
           ); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          // if (driverController.getL2Button()) {
-          //   return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
-          //   // 4 if red side, 7 if blue
-          // }
-          // if (driverController.getCircleButton()) { //turn to amp
-          //   if (!IsRedSide()){
-          //     return 270.0;
-          //   }
-          //   return 90.0;
-          // }
-          // else 
+          if (driverController.getL2Button()) {
+            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
+            // 4 if red side, 7 if blue
+          }
+          if (driverController.getCircleButton()) { //turn to amp
+            if (!IsRedSide()){
+              return 270.0;
+            }
+            return 90.0;
+          }
+          else 
           if (driverController.getL1Button()) { //turn to speaker
             return 0.0;
           }
@@ -289,13 +291,29 @@ public class RobotContainer {
         Commands.runOnce(() -> adjustmentCamera.getShooterAngle())
       )
     );
+
+    commandOperatorController.povUp().onTrue(
+      Commands.runOnce(() -> adjustmentCamera.incrementOffset(0.5))
+    );
+    commandOperatorController.povDown().onTrue(
+      Commands.runOnce(() -> adjustmentCamera.incrementOffset(-0.5))
+    );
+    commandOperatorController.povRight().onTrue(
+      Commands.runOnce(() -> adjustmentCamera.resetOffset())
+    );
     commandDriverController.touchpad().whileTrue(superSystem.shoot())
                                       .whileFalse(superSystem.stow());
     // commandDriverController.square().whileTrue(superSystem.shootAmp().andThen(superSystem.stow()));
-    commandDriverController.square().whileTrue(Commands.sequence(
-      apriltagCamera.driveToAmpCommand(swerveDrive, 3, 3),
-      superSystem.shootAmp().andThen(superSystem.stow())
-    ));// TODO: test this command
+    // commandDriverController.square().whileTrue(
+    //   Commands.either(
+    //     Commands.sequence(
+    //       apriltagCamera.driveToAmpCommand(swerveDrive, 3, 3),
+    //       superSystem.shootAmp().andThen(superSystem.stow())
+    //     ),
+    //     Commands.none(),
+    //     apriltagCamera::hasValidTarget
+    //   )
+    // );// TODO: test this command
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
@@ -338,19 +356,37 @@ public class RobotContainer {
       }
     ));
 
-    // AprilTag Trigger
-    Trigger tagTrigger = new Trigger(() -> {
-      return apriltagCamera.hasValidTarget() && 
-             apriltagCamera.apriltagInRange(IsRedSide() ? 4 : 7, 0, 3);
-    });
-    
-    tagTrigger.onTrue(Commands.runOnce(
+    Trigger tagTrigger = new Trigger(
       () -> {
-        CANdle.setStatus(Status.HASTARGET);
-        SmartDashboard.putBoolean("Tag aimed", true); 
+        return superSystem.noteIntook() 
+            && apriltagCamera.hasValidTarget(); 
       }
-    ));
-    tagTrigger.onFalse(Commands.runOnce(
+    );
+
+    // AprilTag Trigger
+    Trigger aimTrigger = new Trigger(() -> {
+      return apriltagCamera.apriltagInRange(IsRedSide() ? 4 : 7, 0, 0);
+    });
+
+    tagTrigger.and(aimTrigger.negate()).onTrue(
+      Commands.runOnce(
+        () -> {
+          CANdle.setStatus(Status.HAS_TARGET);
+          SmartDashboard.putBoolean("Tag aimed", false); 
+        }
+      )
+    );
+
+    tagTrigger.and(aimTrigger).onTrue(
+      Commands.runOnce(
+        () -> {
+          CANdle.setStatus(Status.SHOTREADY);
+          SmartDashboard.putBoolean("Tag aimed", true); 
+        }
+      )
+    );
+    
+    noteTrigger.negate().and(tagTrigger.negate().and(aimTrigger.negate())).onTrue(Commands.runOnce(
       () -> {
         CANdle.setStatus(Status.TELEOP);
         SmartDashboard.putBoolean("Tag aimed", false); 
@@ -382,22 +418,22 @@ public class RobotContainer {
     //   }
     // ));
 
-    Trigger shootTrigger = commandDriverController.R1(); // At this point Zach realized that he was about to change the code to the exact same as it was before but with extra variables
-    commandDriverController.R1().whileTrue(Commands.runOnce(
-      () -> {
-        heading = NerdyMath.posMod(imu.getHeading(), 360);
-        if (!IsRedSide()) {
-          angleError = heading - 270;
-        } else {
-          angleError = heading - 90;
-        }
-        if (Math.abs(angleError) <= 10) {
-          CANdle.setStatus(Status.SHOTREADY);
-        } else {
-          CANdle.setStatus(Status.LASTSTATUS);
-        }
-      }
-    ));
+    // Trigger shootTrigger = commandDriverController.R1(); // At this point Zach realized that he was about to change the code to the exact same as it was before but with extra variables
+    // commandDriverController.R1().whileTrue(Commands.runOnce(
+    //   () -> {
+    //     heading = NerdyMath.posMod(imu.getHeading(), 360);
+    //     if (!IsRedSide()) {
+    //       angleError = heading - 270;
+    //     } else {
+    //       angleError = heading - 90;
+    //     }
+    //     if (Math.abs(angleError) <= 10) {
+    //       CANdle.setStatus(Status.SHOTREADY);
+    //     } else {
+    //       CANdle.setStatus(Status.LASTSTATUS);
+    //     }
+    //   }
+    // ));
     // Trigger shotReadyTriger = new Trigger();
     // tagTrigger.onTrue(Commands.runOnce(
     //   () -> CANdle.setStatus(Status.SHOTREADY)

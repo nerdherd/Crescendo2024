@@ -26,6 +26,7 @@ import frc.robot.commands.TurnToAngleContinuous;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.util.NerdyMath;
+import frc.robot.util.NerdySpline;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -129,7 +130,7 @@ public class DriverAssist implements Reportable{
         );
     }
 
-    Pose2d blueAmpPose = new Pose2d(new Translation2d(1.85, 7.5), Rotation2d.fromDegrees(90));
+    Pose2d blueAmpPose = new Pose2d(new Translation2d(1.85, 7.5), Rotation2d.fromDegrees(270));
     public Command driveToAmpCommand(SwerveDrivetrain drivetrain, double maxVelocityMps, double maxAccelerationMpsSq) {
         return Commands.sequence(
             Commands.runOnce(() -> resetOdoPoseByVision(drivetrain, 0, 10)),
@@ -161,15 +162,12 @@ public class DriverAssist implements Reportable{
         int foundId = -1;
 
         foundId = getAprilTagID();
-        if(targetId != null)
-            targetId.setInteger(foundId);
         if(tagID == foundId) {
             lastTX = targetTX - limelight.getXAngle_avg();
         }
 
         return Math.abs(lastTX) < tolerance;
     }
-
 
     public void TurnToTag(SwerveDrivetrain swerveDrive, double targetTX, int tagID, ShooterVisionAdjustment sva) {
         swerveDrive.drive(0, 0, getTurnToTagPower(swerveDrive, targetTX, tagID, sva)); //TODO: What should Sideways and Angled Speed be based on? Pose? TX?

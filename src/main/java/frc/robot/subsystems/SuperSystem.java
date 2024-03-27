@@ -374,15 +374,16 @@ public class SuperSystem {
         Command command = Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(() -> 
-                    shooterPivot.hasReachedPosition(ShooterConstants.kEjectPosition.get())),
-                shooterPivot.setPositionCommand(ShooterConstants.kEjectPosition.get())
-                ),
+                shooterPivot.hasReachedPosition(ShooterConstants.kEjectPosition.get())),
+                shooterPivot.setPositionCommand(ShooterConstants.kEjectPosition.get()),
+                Commands.waitSeconds(0.5)
+            ),
+            intakeRoller.setEnabledCommand(true),
+            intakeRoller.setVelocityCommand(-100),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Outtaking", true)),
             Commands.waitSeconds(0.25),
             indexer.setEnabledCommand(true),
             indexer.setVelocityCommand(-50),
-            intakeRoller.setEnabledCommand(true),
-            intakeRoller.setVelocityCommand(-100),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Intake roller", true)),
             Commands.waitUntil(() -> false)
         ).finallyDo(

@@ -25,12 +25,12 @@ import frc.robot.Constants;
 
 public class CANdleSubSystem extends SubsystemBase {
     private final CANdle CANdle = new CANdle(Constants.CANdleConstants.CANdleID, "rio");
-    private final int ledCout = 300;
+    private final int ledCount = 100;
     // private CommandPS4Controller joystick;
     
     private Animation animation = null;
-    private AnimationTypes currentAnimation;
-    private AnimationTypes lastAnimation;
+    private AnimationTypes currentAnimation = AnimationTypes.Rainbow;
+    private AnimationTypes lastAnimation = AnimationTypes.Rainbow;
     
     public enum AnimationTypes {
         ColorFlow,
@@ -39,7 +39,9 @@ public class CANdleSubSystem extends SubsystemBase {
         Rainbow,
         RgbFade,
         SingleFade,
-        Strobe,
+        StrobeYellow,
+        StrobeGreen,
+        StrobeRed,
         Twinkle,
         TwinkleOff,
         SetAll
@@ -50,7 +52,7 @@ public class CANdleSubSystem extends SubsystemBase {
         TELEOP,
         AUTO,
         DISCONNECTED,
-        HASTARGET, // Apriltag detected
+        HAS_TARGET,// Apriltag detected
         HASNOTE, // Note is in indexer
         SHOTREADY, // Ready to shoot
         LASTSTATUS // To go back to previous animation
@@ -93,7 +95,7 @@ public class CANdleSubSystem extends SubsystemBase {
         switch(status)
         {
             case DISABLED:
-                setColor(0, 0, 255);
+                changeAnimation(AnimationTypes.Rainbow);
                 break;
             case TELEOP:
                 setColor(100, 65, 0);
@@ -104,19 +106,20 @@ public class CANdleSubSystem extends SubsystemBase {
             case DISCONNECTED:
                 changeAnimation(AnimationTypes.SingleFade);
                 break;
-            case HASTARGET:
-                changeAnimation(AnimationTypes.Strobe);
+            case HAS_TARGET:
+                changeAnimation(AnimationTypes.StrobeYellow);
                 break;
             case HASNOTE:
-                setColor(0, 255,    0);
+                changeAnimation(AnimationTypes.StrobeRed);
+                // setColor(0, 255,    0);
                 break;
             case SHOTREADY:
-                setColor(255, 255, 255);
+                changeAnimation(AnimationTypes.StrobeGreen);
                 break;
             case LASTSTATUS:
                 changeAnimation(lastAnimation);
                 break;
-            }
+        }
     }
 
     public void changeAnimation(AnimationTypes newAnimation) {
@@ -129,31 +132,37 @@ public class CANdleSubSystem extends SubsystemBase {
         switch(newAnimation)
         {
             case ColorFlow:
-                animation = new ColorFlowAnimation(128, 20, 70, 0, 0.7, ledCout, Direction.Forward);
+                animation = new ColorFlowAnimation(128, 20, 70, 0, 0.7, ledCount, Direction.Forward);
                 break;
             case Fire:
-                animation = new FireAnimation(0.5, 0.7, ledCout, 0.7, 0.5);
+                animation = new FireAnimation(0.5, 0.7, ledCount, 0.7, 0.5);
                 break;
             case Larson:
-                animation = new LarsonAnimation(0, 255, 46, 0, 1, ledCout, BounceMode.Front, 3);
+                animation = new LarsonAnimation(0, 255, 46, 0, 1, ledCount, BounceMode.Front, 3);
                 break;
             case Rainbow:
-                animation = new RainbowAnimation(1, 0.1, ledCout);
+                animation = new RainbowAnimation(1, 0.7, ledCount);
                 break;
             case RgbFade:
-                animation = new RgbFadeAnimation(0.7, 0.4, ledCout);
+                animation = new RgbFadeAnimation(0.7, 0.4, ledCount);
                 break;
             case SingleFade:
-                animation = new SingleFadeAnimation(255, 0, 0, 0, 0.5, ledCout);
+                animation = new SingleFadeAnimation(255, 0, 0, 0, 0.5, ledCount);
                 break;
-            case Strobe:
-                animation = new StrobeAnimation(0, 255, 0, 0, 98.0 / 256.0, ledCout);
+            case StrobeYellow:
+                animation = new StrobeAnimation(100, 65, 0, 0, 0.5, ledCount);
+                break;
+            case StrobeGreen:
+                animation = new StrobeAnimation(0, 255, 0, 0, 0.25, ledCount);
+                break;
+            case StrobeRed:
+                animation = new StrobeAnimation(255, 0, 0, 0, 0.25, ledCount);
                 break;
             case Twinkle:
-                animation = new TwinkleAnimation(30, 70, 60, 0, 0.4, ledCout, TwinklePercent.Percent6);
+                animation = new TwinkleAnimation(30, 70, 60, 0, 0.4, ledCount, TwinklePercent.Percent6);
                 break;
             case TwinkleOff:
-                animation = new TwinkleOffAnimation(70, 90, 175, 0, 0.8, ledCout, TwinkleOffPercent.Percent100);
+                animation = new TwinkleOffAnimation(70, 90, 175, 0, 0.8, ledCount, TwinkleOffPercent.Percent100);
                 break;
             case SetAll:
                 animation = null;
