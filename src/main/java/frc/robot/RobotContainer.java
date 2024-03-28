@@ -34,6 +34,7 @@ import frc.robot.commands.autos.Mid3PiecePathOnly;
 import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.subsystems.CANdleSubSystem;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CANdleSubSystem.Status;
 import frc.robot.subsystems.IndexerV2;
 import frc.robot.subsystems.IntakeRoller;
@@ -55,8 +56,9 @@ public class RobotContainer {
   public ShooterPivot shooterPivot = new ShooterPivot();
   public IntakeRoller intakeRoller = new IntakeRoller();
   public IndexerV2 indexer = new IndexerV2();
+  public Climber climb = new Climber();
 
-  public SuperSystem superSystem = new SuperSystem(intakeRoller, shooterPivot, shooterRoller, indexer);
+  public SuperSystem superSystem = new SuperSystem(intakeRoller, shooterPivot, shooterRoller, indexer, climb);
   
   public Gyro imu = new PigeonV2(2);
   
@@ -273,9 +275,9 @@ public class RobotContainer {
     // ));
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
-    commandDriverController.triangle()
-      .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
-      .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
+    // commandDriverController.triangle()
+    //   .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
+    //   .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
     // commandDriverController.square().whileTrue(superSystem.climbSequence());
     // commandDriverController.L2().whileTrue(
     //   // Commands.repeatingSequence(
@@ -288,6 +290,8 @@ public class RobotContainer {
     //     )
     //   // )
     // );
+    
+    commandDriverController.PS().whileTrue(superSystem.climbSequence());
 
     commandOperatorController.povLeft().whileTrue(
       Commands.repeatingSequence(

@@ -24,6 +24,7 @@ import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.Limelight;
+import frc.robot.util.NerdyMath;
 import frc.robot.subsystems.Reportable;
 
 import static frc.robot.Constants.PathPlannerConstants.kPPMaxVelocity;
@@ -212,11 +213,20 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     }
 
     public void resetOdometryWithAlliance(Pose2d pose){
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent() && alliance.get().equals(Alliance.Red)) {
+        if (RobotContainer.IsRedSide()) {
             resetOdometry(GeometryUtil.flipFieldPose(pose));
         } else {
             resetOdometry(pose);
+        }
+    }
+
+    public void resetGyroFromPoseWithAlliance(Pose2d pose) {
+        if (RobotContainer.IsRedSide()) {
+            double angle = GeometryUtil.flipFieldPose(pose).getRotation().getDegrees() - 180;
+            angle = NerdyMath.posMod(angle, 360);
+            gyro.resetHeading(angle);
+        } else {
+            gyro.resetHeading(NerdyMath.posMod(pose.getRotation().getDegrees(), 360));
         }
     }
 

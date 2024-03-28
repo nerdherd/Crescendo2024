@@ -598,21 +598,21 @@ public class DriverAssist implements Reportable{
         );
     }
 
-    public Command resetOdoPoseByVision(SwerveDrivetrain swerveDrive, Supplier<Pose2d> defaultPose, int apriltagId, 
-        int maxSamples) {
-        return Commands.sequence(
-            Commands.runOnce(() -> TagFound=false),
-            Commands.runOnce(() -> reset()),
-            Commands.run(
-                () -> resetOdoPose(swerveDrive, defaultPose.get(), apriltagId, maxSamples)
-            ).until(() -> dataSampleCount >= maxSamples)
+    // public Command resetOdoPoseByVision(SwerveDrivetrain swerveDrive, Supplier<Pose2d> defaultPose, int apriltagId, 
+    //     int maxSamples) {
+    //     return Commands.sequence(
+    //         Commands.runOnce(() -> TagFound=false),
+    //         Commands.runOnce(() -> reset()),
+    //         Commands.run(
+    //             () -> resetOdoPose(swerveDrive, defaultPose.get(), apriltagId, maxSamples)
+    //         ).until(() -> dataSampleCount >= maxSamples)
 
-            // Commands.runOnce(() -> reset()),
-            // Commands.run(
-            //     () -> setRobotPoseByApriltag(drivetrain, tagID, resetToCurrentPose)
-            // ).until(() -> dataSampleCount >= minSamples )
-        );
-    }
+    //         // Commands.runOnce(() -> reset()),
+    //         // Commands.run(
+    //         //     () -> setRobotPoseByApriltag(drivetrain, tagID, resetToCurrentPose)
+    //         // ).until(() -> dataSampleCount >= minSamples )
+    //     );
+    // }
 
     public Command resetOdoPoseByVision(SwerveDrivetrain swerveDrive, int apriltagId, 
         int maxSamples) {
