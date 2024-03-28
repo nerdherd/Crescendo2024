@@ -446,14 +446,16 @@ public class SuperSystem {
 
     public Command shoot() {
         Command command = Commands.either(
+            // Pass
             Commands.sequence(
                 shooterPivot.setPositionCommand(ShooterConstants.kSpeakerPosition.get()),
                 shooterRoller.setEnabledCommand(true),
-                shooterRoller.setVelocityCommand(60),
-                Commands.waitSeconds(0.5),
+                shooterRoller.setVelocityCommand(40),
+                Commands.waitSeconds(0.3),
                 indexer.setEnabledCommand(true),
                 indexer.indexCommand()
             ),
+            // Shoot
             Commands.sequence(
                 indexer.setEnabledCommand(true),
                 indexer.indexCommand()

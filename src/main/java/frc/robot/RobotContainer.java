@@ -322,7 +322,7 @@ public class RobotContainer {
     commandOperatorController.triangle().whileTrue(superSystem.eject());
     commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
                                       .whileFalse(superSystem.stow()); // TODO: Can we try getting rid of this whileFalse line here **(field testing)**
-    // commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
+    commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
 
     commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     

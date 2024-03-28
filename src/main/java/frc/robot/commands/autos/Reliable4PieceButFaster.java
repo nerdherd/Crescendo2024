@@ -10,10 +10,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
-public class FivePieceEnd extends SequentialCommandGroup {
-    public FivePieceEnd(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem, ShooterVisionAdjustment sva) {     
+public class Reliable4PieceButFaster extends SequentialCommandGroup {
+    public Reliable4PieceButFaster(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem) {     
         // Use the PathPlannerAuto class to get a path group from an auto
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
 
@@ -123,26 +122,11 @@ public class FivePieceEnd extends SequentialCommandGroup {
                     )
                 ),
 
-                // Piece 4
-                Commands.deadline(
-                    Commands.waitSeconds(1.75),
-                    AutoBuilder.followPath(pathGroup.get(6)),
-                    superSystem.intakeUntilSensed()
-                ),
+                // Leave towards mid
                 Commands.parallel(
-                    AutoBuilder.followPath(pathGroup.get(7)),
-                    Commands.sequence(
-                        Commands.waitSeconds(0.85),
-                        Commands.deadline(
-                            Commands.waitSeconds(1.2),
-                            superSystem.shootSequenceAdjustable(sva)  
-                        ),
-                        superSystem.indexer.stopCommand(),
-                        superSystem.shooterRoller.setVelocityCommand(0, 0)
-                    )
+                    AutoBuilder.followPath(pathGroup.get(6)),
+                    superSystem.stow()
                 ),
-
-                
 
                 Commands.none()
             )

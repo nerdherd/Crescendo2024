@@ -95,7 +95,7 @@ public class CANdleSubSystem extends SubsystemBase {
         switch(status)
         {
             case DISABLED:
-                changeAnimation(AnimationTypes.Rainbow);
+                changeAnimation(AnimationTypes.ColorFlow);
                 break;
             case TELEOP:
                 setColor(100, 65, 0);
@@ -132,7 +132,7 @@ public class CANdleSubSystem extends SubsystemBase {
         switch(newAnimation)
         {
             case ColorFlow:
-                animation = new ColorFlowAnimation(128, 20, 70, 0, 0.7, ledCount, Direction.Forward);
+                animation = new ColorFlowAnimation(0, 0, 255, 0, 0.3, ledCount, Direction.Forward);
                 break;
             case Fire:
                 animation = new FireAnimation(0.5, 0.7, ledCount, 0.7, 0.5);
@@ -159,7 +159,7 @@ public class CANdleSubSystem extends SubsystemBase {
                 animation = new StrobeAnimation(255, 0, 0, 0, 0.25, ledCount);
                 break;
             case Twinkle:
-                animation = new TwinkleAnimation(30, 70, 60, 0, 0.4, ledCount, TwinklePercent.Percent6);
+                animation = new TwinkleAnimation(0, 0, 255, 0, 0.4, ledCount, TwinklePercent.Percent6);
                 break;
             case TwinkleOff:
                 animation = new TwinkleOffAnimation(70, 90, 175, 0, 0.8, ledCount, TwinkleOffPercent.Percent100);
