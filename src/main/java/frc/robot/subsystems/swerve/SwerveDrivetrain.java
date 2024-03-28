@@ -213,8 +213,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     }
 
     public void resetOdometryWithAlliance(Pose2d pose){
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent() && alliance.get().equals(Alliance.Red)) {
+        if (RobotContainer.IsRedSide()) {
             resetOdometry(GeometryUtil.flipFieldPose(pose));
         } else {
             resetOdometry(pose);

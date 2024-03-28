@@ -38,6 +38,7 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     // Whether the pivot is running
     private boolean enabled = true;
+    private boolean usingAbsoluteEncoder = false;
 
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(ShooterConstants.kFullStowPosition.get() / 360, true, 0, 0, false, false, false);
     private final NeutralOut brakeRequest = new NeutralOut();
@@ -198,6 +199,13 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         rightPivot.setPosition(position);
     }
 
+    public void syncAbsoluteEncoderToPigeon() {
+        throughBore.reset();
+        throughBore.setPositionOffset(throughBore.getPositionOffset() + getPositionRev());
+
+        ShooterConstants.kPivotOffset.set(throughBore.getPositionOffset() * 360);
+    }
+
     /**
      * Zero the through bore encoder and update the internal encoder
      * ONLY RUN FOR DEBUGGING
@@ -228,16 +236,17 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     
     @Override
     public void periodic() {
-        // count++;
-        // count++;
-        // SmartDashboard.putNumber("Shooter Count", count);
-        // if (count > 120) {
-        //     syncEncoder();
-        //     count = 0;
-        //     SmartDashboard.putBoolean("Shooter Reset", true);
-        // } else {
-        //     SmartDashboard.putBoolean("Shooter Reset", false);
-        // }
+        if (usingAbsoluteEncoder) {
+            count++;
+            // SmartDashboard.putNumber("Shooter Count", count);
+            if (count > 200) {
+                syncEncoder();
+                count = 0;
+                SmartDashboard.putBoolean("Shooter Reset", true);
+            } else {
+                SmartDashboard.putBoolean("Shooter Reset", false);
+            }
+        }
         // if (count > 120) {
         //     syncEncoder();
         //     count = 0;
@@ -379,27 +388,26 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     //****************************** POSITION COMMANDS *****************************//
 
-    // public Command climbSequence(){
-    //     TalonFXConfiguration climbConfigs = new TalonFXConfiguration();
-    //     climbConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    //     climbConfigs.Feedback.RotorToSensorRatio = 1;
-    //     climbConfigs.Feedback.SensorToMechanismRatio = IntakeConstants.kPivotGearRatio;
-        
-    //     StatusCode leftStatusPivot = leftPivotConfigurator.apply(climbConfigs);
-    //     if (!leftStatusPivot.isOK()){
-    //         DriverStation.reportError("Could not apply climb configs, error code:"+ leftStatusPivot.toString(), new Error().getStackTrace());
-    //     }
+    public void configureClimb() {
+        TalonFXConfiguration climbConfigs = new TalonFXConfiguration();
+        leftPivotConfigurator.refresh(climbConfigs);
+        climbConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        climbConfigs.Feedback.RotorToSensorRatio = 1;
+        climbConfigs.Feedback.SensorToMechanismRatio = ShooterConstants.kPivotGearRatio;
 
-    //     StatusCode rightStatusPivot = rightPivotConfigurator.apply(climbConfigs);
-    //     if (!rightStatusPivot.isOK()){
-    //         DriverStation.reportError("Could not apply climb configs, error code:"+ rightStatusPivot.toString(), new Error().getStackTrace());
-    //     }
+        StatusCode leftStatusPivot = leftPivotConfigurator.apply(climbConfigs);
+        if (!leftStatusPivot.isOK()){
+            DriverStation.reportError("Could not apply climb configs, error code:"+ leftStatusPivot.toString(), true);
+        }
 
-    //     rightPivotConfigurator.refresh(climbConfigs);
-    //     leftPivotConfigurator.refresh(climbConfigs);
+        StatusCode rightStatusPivot = rightPivotConfigurator.apply(climbConfigs);
+        if (!rightStatusPivot.isOK()){
+            DriverStation.reportError("Could not apply climb configs, error code:"+ rightStatusPivot.toString(), true);
+        }
 
-    //     return Commands.runOnce(() -> setPosition(ShooterConstants.kFullStowPosition.get()));
-    // }
+        rightPivotConfigurator.refresh(climbConfigs);
+        leftPivotConfigurator.refresh(climbConfigs);
+    }
 
     public Command moveToNeutral() {
         return Commands.runOnce(() -> setPosition(ShooterConstants.kNeutralPosition.get()));

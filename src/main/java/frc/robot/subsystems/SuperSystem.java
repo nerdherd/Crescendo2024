@@ -24,11 +24,12 @@ public class SuperSystem {
 
     public SuperSystem(IntakeRoller intakeRoller, 
                         ShooterPivot shooterPivot, ShooterRoller shooterRoller,
-                        IndexerV2 indexer) {
+                        IndexerV2 indexer, Climber climber) {
         this.intakeRoller = intakeRoller;
         this.shooterPivot = shooterPivot;
         this.shooterRoller = shooterRoller;
         this.indexer = indexer;
+        this.climber = climber;
         this.linearActuator = new ClimbActuator();
         // this.colorSensor = new ColorSensor();
         this.bannerSensor = new BannerSensor();
@@ -608,6 +609,17 @@ public class SuperSystem {
         });
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
         return command;
+    }
+
+    public Command climbSequence(){
+        return Commands.sequence(
+            Commands.runOnce(() -> shooterPivot.configureClimb()),
+            shooterPivot.setPositionCommand(ShooterConstants.kFullStowPosition.get()),
+            climber.setOutputCommand(20),
+            Commands.waitUntil(() -> false)
+        ).finallyDo(() -> {
+            climber.stop();
+        });
     }
 
 }

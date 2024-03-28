@@ -64,6 +64,14 @@ public class Climber extends SubsystemBase{
         voltageRequest.Output = ClimberConstants.kClimberOutput; 
     }
 
+    public void setOutput(double output) {
+        voltageRequest.Output = output;
+    }
+
+    public Command setOutputCommand(double output) {
+        return Commands.runOnce(() -> setOutput(output));
+    }
+
     public Command climbCommand() {
         return Commands.runOnce(this::climb);
     }
