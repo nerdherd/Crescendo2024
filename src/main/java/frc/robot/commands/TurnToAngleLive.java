@@ -11,7 +11,7 @@ import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.util.NerdyMath;
 
-public class TurnToAngleContinuous extends Command {
+public class TurnToAngleLive extends Command {
     private Supplier<Double> targetAngle;
     private SwerveDrivetrain swerveDrive;
     private PIDController pidController;
@@ -24,7 +24,7 @@ public class TurnToAngleContinuous extends Command {
      * @param swerveDrive   Swerve drivetrain to rotate
      * @param period        Time between each calculation (default 20ms)
      */
-    public TurnToAngleContinuous(Supplier<Double> targetAngle, SwerveDrivetrain swerveDrive, double period) {
+    public TurnToAngleLive(Supplier<Double> targetAngle, SwerveDrivetrain swerveDrive, double period) {
         this.targetAngle = targetAngle;
         this.swerveDrive = swerveDrive;
 
@@ -45,7 +45,7 @@ public class TurnToAngleContinuous extends Command {
         addRequirements(swerveDrive);
     }
 
-    public TurnToAngleContinuous(Supplier<Double> targetAngle, SwerveDrivetrain swerveDrive) {
+    public TurnToAngleLive(Supplier<Double> targetAngle, SwerveDrivetrain swerveDrive) {
         // Default period is 20 ms
         this(targetAngle, swerveDrive, 0.02);
     }

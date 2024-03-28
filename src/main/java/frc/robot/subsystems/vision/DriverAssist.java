@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.TurnToAngle;
-import frc.robot.commands.TurnToAngleContinuous;
+import frc.robot.commands.TurnToAngleLive;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.util.NerdyMath;
@@ -148,7 +148,7 @@ public class DriverAssist implements Reportable{
 
     public Command turnToTag(int ID, SwerveDrivetrain swerve) {
         return Commands.sequence(
-            new TurnToAngleContinuous(() -> getTurnToSpecificTagAngle(ID), swerve)
+            new TurnToAngleLive(() -> getTurnToSpecificTagAngle(ID), swerve)
         );
     }
 
@@ -589,22 +589,6 @@ public class DriverAssist implements Reportable{
             Commands.runOnce(() -> reset()),
             Commands.run(
                 () -> resetOdoPose(swerveDrive, defaultPose, apriltagId, maxSamples)
-            ).until(() -> dataSampleCount >= maxSamples)
-
-            // Commands.runOnce(() -> reset()),
-            // Commands.run(
-            //     () -> setRobotPoseByApriltag(drivetrain, tagID, resetToCurrentPose)
-            // ).until(() -> dataSampleCount >= minSamples )
-        );
-    }
-
-    public Command resetOdoPoseByVision(SwerveDrivetrain swerveDrive, Supplier<Pose2d> defaultPose, int apriltagId, 
-        int maxSamples) {
-        return Commands.sequence(
-            Commands.runOnce(() -> TagFound=false),
-            Commands.runOnce(() -> reset()),
-            Commands.run(
-                () -> resetOdoPose(swerveDrive, defaultPose.get(), apriltagId, maxSamples)
             ).until(() -> dataSampleCount >= maxSamples)
 
             // Commands.runOnce(() -> reset()),

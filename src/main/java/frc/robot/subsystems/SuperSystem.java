@@ -476,7 +476,7 @@ public class SuperSystem {
             shooterPivot.moveToSpeaker(),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
-            Commands.waitSeconds(0.8), // Was 0.2     3/3/24     But 0.8   @Code Orange
+            Commands.waitSeconds(0.4), // Was 0.2     3/3/24     But 0.8   @Code Orange
             
             // Shoot
             indexer.setEnabledCommand(true),
