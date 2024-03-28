@@ -31,6 +31,7 @@ public class Robot extends TimedRobot {
     robotContainer.swerveDrive.refreshModulePID();
     robotContainer.apriltagCamera.toggleLight(true);
     robotContainer.configureLEDTriggers();
+    robotContainer.shooterPivot.syncAbsoluteEncoderToPigeon();
   }
 
   @Override
