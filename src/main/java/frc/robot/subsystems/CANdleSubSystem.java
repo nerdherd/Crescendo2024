@@ -168,7 +168,7 @@ public class CANdleSubSystem extends SubsystemBase {
                 animation = null;
                 break;
         }
-        System.out.println("Changed to " + currentAnimation.toString());
+        SmartDashboard.putString("Animation", currentAnimation.toString());
     }
 
     @Override
