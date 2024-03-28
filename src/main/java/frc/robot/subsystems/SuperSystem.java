@@ -29,6 +29,7 @@ public class SuperSystem {
         this.shooterPivot = shooterPivot;
         this.shooterRoller = shooterRoller;
         this.indexer = indexer;
+        this.climber = climber;
         this.linearActuator = new ClimbActuator();
         // this.colorSensor = new ColorSensor();
         this.bannerSensor = new BannerSensor();
