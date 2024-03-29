@@ -355,12 +355,12 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     public boolean hasReachedPositionAccurate(double positionDegrees) {
         return NerdyMath.inRange(
             getPositionDegrees(),
-            positionDegrees - ShooterConstants.kPivotDeadband.get(), 
-            positionDegrees + ShooterConstants.kPivotDeadband.get()
+            positionDegrees - ShooterConstants.kPivotDeadbandClose.get(), 
+            positionDegrees + ShooterConstants.kPivotDeadbandClose.get()
         ) && NerdyMath.inRange(
             getTargetPositionDegrees(),
-            positionDegrees - ShooterConstants.kPivotDeadband.get(), 
-            positionDegrees + ShooterConstants.kPivotDeadband.get()
+            positionDegrees - ShooterConstants.kPivotDeadbandClose.get(), 
+            positionDegrees + ShooterConstants.kPivotDeadbandClose.get()
         );
     }
 

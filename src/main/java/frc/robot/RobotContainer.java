@@ -330,7 +330,10 @@ public class RobotContainer {
 
     Trigger armTrigger = new Trigger(
       () -> superSystem.shooterPivot.atTargetPositionAccurate() 
-         && superSystem.shooterPivot.getTargetPositionDegrees() > ShooterConstants.kFullStowPosition.get());
+         && superSystem.shooterPivot.getTargetPositionDegrees() > ShooterConstants.kFullStowPosition.get()
+         && superSystem.shooterRoller.getVelocity() > (superSystem.shooterRoller.getTargetVelocity() * 0.6) 
+         && superSystem.shooterRoller.getTargetVelocity() > 0
+      );
 
     Trigger tagTrigger = new Trigger(
       () -> {

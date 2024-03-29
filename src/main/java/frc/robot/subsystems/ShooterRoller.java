@@ -237,6 +237,10 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         return leftVelocityRequest.Velocity;
     }
 
+    public double getVelocity() {
+        return leftShooter.getVelocity().getValueAsDouble();
+    }
+
     public Command setLeftVelocityCommand(double velocity) {
         return Commands.runOnce(() -> setLeftVelocity(velocity));
     }
