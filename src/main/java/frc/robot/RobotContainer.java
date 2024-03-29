@@ -296,7 +296,7 @@ public class RobotContainer {
     commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     
     commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
-                                  .whileFalse(superSystem.stow());
+                                  .whileFalse(superSystem.stow()); // Get rid of both stows
 
     commandOperatorController.R2().whileTrue(superSystem.prepareShooterSpeaker())
                                   .whileFalse(superSystem.stow());
@@ -375,6 +375,10 @@ public class RobotContainer {
         }  
       )
     );
+
+    ShuffleboardTab tab = Shuffleboard.getTab("Main");
+    tab.addBoolean("Arm aimed", armTrigger);    
+    tab.addBoolean("Drivebase aimed", aimTrigger);
 
     armTrigger.negate().and(aimTrigger.negate()).and(tagTrigger.negate()).and(noteTrigger).onTrue(
       Commands.runOnce(

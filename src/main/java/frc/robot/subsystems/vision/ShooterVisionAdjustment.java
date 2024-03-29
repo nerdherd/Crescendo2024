@@ -33,9 +33,9 @@ public class ShooterVisionAdjustment implements Reportable{
     private GenericEntry poseTag;
     private GenericEntry goalDistance;
 
-    private double[] distances = {1.0, 1.356, 2.554, 2.95, 3.5, 3.828, 4.214, 5.548}; // meters, from least to greatest
-    private double[] angles = {-50, -49.6, -31, -30, -23.115, -22, -21, -16.875}; // rotations // TODO: Convert to degrees
-
+    private double[] distances = {1.0, 1.356, 2.554, 2.95, 3.10, 3.5,  3.828,     4.15,     5.548}; // meters, from least to greatest
+    private double[] angles    = {-50, -49.6,   -31,  -30,  -27, -24.5, -23.25,  -22.375, -16.875}; // rotations // TODO: Convert to degrees
+                              //  -50, -49.6,   -31,  -30,  -27, -23,   -22.5,   -22,    -16.875
     public ShooterVisionAdjustment(String name, Limelight limelight) {
         this.name = name;
         this.limelight = limelight;
