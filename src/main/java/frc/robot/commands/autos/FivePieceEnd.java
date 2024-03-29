@@ -22,8 +22,8 @@ public class FivePieceEnd extends SequentialCommandGroup {
 
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
-            Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
+            Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
             // Commands.runOnce(() -> swerve.resetInitPoseByVision()),
             Commands.sequence(
 
@@ -124,10 +124,11 @@ public class FivePieceEnd extends SequentialCommandGroup {
                 ),
 
                 // Piece 4
-                Commands.deadline(
+                Commands.race(
                     Commands.waitSeconds(1.75),
-                    AutoBuilder.followPath(pathGroup.get(6)),
-                    superSystem.intakeUntilSensed()
+                    AutoBuilder.followPath(pathGroup.get(6)).andThen(Commands.waitSeconds(0.2)),
+                    superSystem.intakeUntilSensed(),
+                    Commands.waitUntil(() -> superSystem.noteIntook())
                 ),
                 Commands.parallel(
                     AutoBuilder.followPath(pathGroup.get(7)),
@@ -137,8 +138,7 @@ public class FivePieceEnd extends SequentialCommandGroup {
                             Commands.waitSeconds(1.2),
                             superSystem.shootSequenceAdjustable(sva)  
                         ),
-                        superSystem.indexer.stopCommand(),
-                        superSystem.shooterRoller.setVelocityCommand(0, 0)
+                        superSystem.stow()
                     )
                 ),
 

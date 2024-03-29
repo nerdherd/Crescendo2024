@@ -1,5 +1,8 @@
 package frc.robot.util;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+
 public class NerdyMath {
     /**
      * Re-maps a number from one range to another.
@@ -104,5 +107,18 @@ public class NerdyMath {
             return 180 + offset;
         }
         return angle;
+    }
+
+    public static boolean validatePose(Pose3d pose) {
+        if (pose.getX() < 0 || pose.getX() > 16.52) return false;
+        if (pose.getY() < 0 || pose.getY() > 8.5) return false;
+        if (pose.getZ() < -0.2 || pose.getZ() > 0.5) return false;
+        return true;
+    }
+
+    public static boolean validatePose(Pose2d pose) {
+        if (pose.getX() < 0 || pose.getX() > 16.52) return false;
+        if (pose.getY() < 0 || pose.getY() > 8.5) return false;
+        return true;
     }
 }

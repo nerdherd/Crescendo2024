@@ -20,16 +20,16 @@ public class SuperSystem {
     public BannerSensor bannerSensor;
     // public BeamBreak noteSensor;
     public ClimbActuator linearActuator;
-    public Climber climber;
+    // public Climber climber;
 
     public SuperSystem(IntakeRoller intakeRoller, 
                         ShooterPivot shooterPivot, ShooterRoller shooterRoller,
-                        IndexerV2 indexer, Climber climber) {
+                        IndexerV2 indexer) {
         this.intakeRoller = intakeRoller;
         this.shooterPivot = shooterPivot;
         this.shooterRoller = shooterRoller;
         this.indexer = indexer;
-        this.climber = climber;
+        // this.climber = climber;
         this.linearActuator = new ClimbActuator();
         // this.colorSensor = new ColorSensor();
         this.bannerSensor = new BannerSensor();
@@ -182,11 +182,11 @@ public class SuperSystem {
             // ),
             
             // Move note back
+            intakeRoller.stopCommand(),
             indexer.reverseIndexCommand(),
             shooterRoller.setVelocityCommand(0, 0),
             Commands.waitSeconds(0.2), // Was 0.6   3/3/24   Code Orange
 
-            intakeRoller.stopCommand(),
             indexer.stopCommand(),
             shooterRoller.stopCommand()
         ).finallyDo(() -> {
@@ -612,14 +612,20 @@ public class SuperSystem {
     }
 
     public Command climbSequence(){
-        return Commands.sequence(
-            Commands.runOnce(() -> shooterPivot.configureClimb()),
+        Command command = Commands.sequence(
+            // Commands.runOnce(() -> shooterPivot.configureClimb()),
             shooterPivot.setPositionCommand(ShooterConstants.kFullStowPosition.get()),
-            climber.setOutputCommand(20),
+            Commands.waitSeconds(2),
+            Commands.runOnce(() -> shooterPivot.setBreakMode(true)),
+            // climber.setOutputCommand(30),
             Commands.waitUntil(() -> false)
         ).finallyDo(() -> {
-            climber.stop();
+            // climber.stop();
         });
+
+        command.addRequirements(shooterPivot);
+
+        return command;
     }
 
 }

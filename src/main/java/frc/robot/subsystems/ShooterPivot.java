@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
@@ -236,17 +237,17 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
     
     @Override
     public void periodic() {
-        if (usingAbsoluteEncoder) {
-            count++;
-            // SmartDashboard.putNumber("Shooter Count", count);
-            if (count > 200) {
-                syncEncoder();
-                count = 0;
-                SmartDashboard.putBoolean("Shooter Reset", true);
-            } else {
-                SmartDashboard.putBoolean("Shooter Reset", false);
-            }
-        }
+        // if (usingAbsoluteEncoder) {
+        //     count++;
+        //     // SmartDashboard.putNumber("Shooter Count", count);
+        //     if (count > 200) {
+        //         syncEncoder();
+        //         count = 0;
+        //         SmartDashboard.putBoolean("Shooter Reset", true);
+        //     } else {
+        //         SmartDashboard.putBoolean("Shooter Reset", false);
+        //     }
+        // }
         // if (count > 120) {
         //     syncEncoder();
         //     count = 0;
@@ -286,6 +287,17 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
      */
     public double mapDegrees(double deg) {
         return NerdyMath.posMod(deg + 180, 360) - 180;
+    }
+
+    public void setBreakMode(boolean breaking) {
+        TalonFXConfiguration pivotConfigs = new TalonFXConfiguration();
+        leftPivotConfigurator.refresh(pivotConfigs);
+        pivotConfigs.MotorOutput.NeutralMode = (breaking ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+        leftPivotConfigurator.apply(pivotConfigs);
+
+        rightPivotConfigurator.refresh(pivotConfigs);
+        pivotConfigs.MotorOutput.NeutralMode = (breaking ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+        rightPivotConfigurator.apply(pivotConfigs);
     }
 
     //****************************** STATE METHODS ******************************/
@@ -340,6 +352,23 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         return hasReachedPosition(getTargetPositionDegrees());
     }
 
+    public boolean hasReachedPositionAccurate(double positionDegrees) {
+        return NerdyMath.inRange(
+            getPositionDegrees(),
+            positionDegrees - ShooterConstants.kPivotDeadband.get(), 
+            positionDegrees + ShooterConstants.kPivotDeadband.get()
+        ) && NerdyMath.inRange(
+            getTargetPositionDegrees(),
+            positionDegrees - ShooterConstants.kPivotDeadband.get(), 
+            positionDegrees + ShooterConstants.kPivotDeadband.get()
+        );
+    }
+
+    // Checks if the pivot is within deadband of the target pos
+    public boolean atTargetPositionAccurate() {
+        return hasReachedPositionAccurate(getTargetPositionDegrees());
+    }
+
     public void stop() {
         motionMagicRequest.Position = getPositionRev();
         enabled = false;
@@ -388,26 +417,27 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     //****************************** POSITION COMMANDS *****************************//
 
-    public void configureClimb() {
-        TalonFXConfiguration climbConfigs = new TalonFXConfiguration();
-        leftPivotConfigurator.refresh(climbConfigs);
-        climbConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        climbConfigs.Feedback.RotorToSensorRatio = 1;
-        climbConfigs.Feedback.SensorToMechanismRatio = ShooterConstants.kPivotGearRatio;
+    // public void configureClimb() {
+    //     TalonFXConfiguration climbConfigs = new TalonFXConfiguration();
+    //     leftPivotConfigurator.refresh(climbConfigs);
+    //     climbConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    //     climbConfigs.Feedback.RotorToSensorRatio = 1;
+    //     climbConfigs.Feedback.SensorToMechanismRatio = ShooterConstants.kPivotGearRatio;
+    //     climbConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    //     climbConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        StatusCode leftStatusPivot = leftPivotConfigurator.apply(climbConfigs);
-        if (!leftStatusPivot.isOK()){
-            DriverStation.reportError("Could not apply climb configs, error code:"+ leftStatusPivot.toString(), true);
-        }
+    //     StatusCode leftStatusPivot = leftPivotConfigurator.apply(climbConfigs);
+    //     if (!leftStatusPivot.isOK()){
+    //         DriverStation.reportError("Could not apply left climb configs, error code:"+ leftStatusPivot.toString(), true);
+    //     }
 
-        StatusCode rightStatusPivot = rightPivotConfigurator.apply(climbConfigs);
-        if (!rightStatusPivot.isOK()){
-            DriverStation.reportError("Could not apply climb configs, error code:"+ rightStatusPivot.toString(), true);
-        }
+    //     climbConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
-        rightPivotConfigurator.refresh(climbConfigs);
-        leftPivotConfigurator.refresh(climbConfigs);
-    }
+    //     StatusCode rightStatusPivot = rightPivotConfigurator.apply(climbConfigs);
+    //     if (!rightStatusPivot.isOK()){
+    //         DriverStation.reportError("Could not apply right climb configs, error code:"+ rightStatusPivot.toString(), true);
+    //     }
+    // }
 
     public Command moveToNeutral() {
         return Commands.runOnce(() -> setPosition(ShooterConstants.kNeutralPosition.get()));

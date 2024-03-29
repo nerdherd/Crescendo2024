@@ -560,7 +560,7 @@ public class DriverAssist implements Reportable{
 
     public void resetOdoPose(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId, int maxSamples)
     {
-        
+        SmartDashboard.putBoolean("Vision reset successful", false);
         if(limelight != null && limelight.getAprilTagID() != -1)
         {
             // 7 is blue side, 4 is red side, center of speaker
@@ -570,6 +570,7 @@ public class DriverAssist implements Reportable{
                 swerveDrive.resetOdometry(p.toPose2d());
                 dataSampleCount = maxSamples;
                 TagFound = true;
+                SmartDashboard.putBoolean("Vision reset successful", true);
                 return;
             }
             // to be done: else if, don't care
@@ -577,6 +578,7 @@ public class DriverAssist implements Reportable{
 
         dataSampleCount++;
         if(dataSampleCount >= maxSamples)
+            SmartDashboard.putBoolean("Vision reset successful", false);
             if(defaultPose != null)
                 swerveDrive.resetOdometry(defaultPose);
             else{} // nothing to reset, use whatever drive has currently. Protection may be needed!!!
@@ -811,5 +813,5 @@ public class DriverAssist implements Reportable{
             
         }
     }
-    
+
 }

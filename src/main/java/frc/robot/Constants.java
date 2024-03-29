@@ -329,6 +329,7 @@ public final class Constants {
 
     // in degrees
     public static final PrefDouble kPivotDeadband = new PrefDouble ("Shooter Pivot Deadband", 14.4); 
+    public static final PrefDouble kPivotDeadbandClose = new PrefDouble ("Shooter Pivot Deadband Close", 2); 
 
     // in degrees
     public static final PrefDouble kPivotOffset = new PrefDouble("Shooter Pivot Offset", 248.4, true);

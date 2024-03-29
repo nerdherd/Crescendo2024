@@ -22,14 +22,14 @@ public class FivePieceSecond extends SequentialCommandGroup {
 
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
-            Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
+            Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
             // Commands.runOnce(() -> swerve.resetInitPoseByVision()),
             Commands.sequence(
 
                 // Preload 
                 Commands.deadline(
-                    // Commands.waitUntil(() -> !superSystem.colorSensor.noteIntook()).andThen(Commands.waitSeconds(0.2)),
+                    Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.2)),
                     
                     // Color Sensor wait for preload didn't work at Code Orange: May need more testing
                     Commands.waitSeconds(1.5),
@@ -37,72 +37,98 @@ public class FivePieceSecond extends SequentialCommandGroup {
                 ),
                 Commands.sequence(
                     superSystem.indexer.stopCommand(),
-                    superSystem.shooterRoller.setVelocityCommand(0, 0)
+                    superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                    superSystem.shooterRoller.setEnabledCommand(true)
                 ), 
 
-                // Piece 1
-                Commands.deadline(
-                    Commands.waitSeconds(1.75),
-                    AutoBuilder.followPath(pathGroup.get(0)),
-                    superSystem.intakeUntilSensed()
+                // Piece 1 intake
+                Commands.race(
+                    Commands.waitSeconds(2),
+                    AutoBuilder.followPath(pathGroup.get(0)).andThen(Commands.waitSeconds(0.75)),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.125),
+                        superSystem.intakeUntilSensedAuto(1.75)
+                    ),
+                    Commands.waitUntil(superSystem::noteIntook)
                 ),
-
+                // Piece 1 shot
                 Commands.parallel(
+                    Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.2)),
                     AutoBuilder.followPath(pathGroup.get(1)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.85),
+                        superSystem.backupIndexerAndShooter(),
+                        Commands.waitSeconds(0.45),
                         Commands.deadline(
                             Commands.waitSeconds(1.2),
                             superSystem.shootSubwooferAuto()  
                         ),
                         superSystem.indexer.stopCommand(),
-                        superSystem.shooterRoller.setVelocityCommand(0, 0)
+                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                        superSystem.shooterRoller.setEnabledCommand(true)
                     )
                 ),
 
-                // Piece 2
-                Commands.deadline(
-                    Commands.waitSeconds(1.75),
-                    AutoBuilder.followPath(pathGroup.get(2)),
-                    superSystem.intakeUntilSensed()
+                // Piece 2 intake
+                Commands.race(
+                    Commands.waitSeconds(2),
+                    AutoBuilder.followPath(pathGroup.get(2)).andThen(Commands.waitSeconds(0.75)),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.125),
+                        superSystem.intakeUntilSensedAuto(1.75)
+                    ),
+                    Commands.waitUntil(superSystem::noteIntook)     
                 ),
-                Commands.parallel(
+                // Piece 2 shot
+                Commands.deadline(
+                    Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.2)),
                     AutoBuilder.followPath(pathGroup.get(3)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.85),
+                        superSystem.backupIndexerAndShooter(),
+                        Commands.waitSeconds(0.45),
                         Commands.deadline(
-                            Commands.waitSeconds(1.2),
+                            Commands.waitSeconds(1.4),
                             superSystem.shootSubwooferAuto()  
                         ),
                         superSystem.indexer.stopCommand(),
-                        superSystem.shooterRoller.setVelocityCommand(0, 0)
+                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                        superSystem.shooterRoller.setEnabledCommand(true)
                     )
                 ),
 
-                // Piece 3
-                Commands.deadline(
+                // Piece 3 intake
+                Commands.race(
                     Commands.waitSeconds(1.75),
-                    AutoBuilder.followPath(pathGroup.get(4)),
-                    superSystem.intakeUntilSensed()
+                    AutoBuilder.followPath(pathGroup.get(4)).andThen(Commands.waitSeconds(0.5)),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.125),
+                        superSystem.intakeUntilSensedAuto(1.75)
+                    ),
+                    Commands.waitUntil(superSystem::noteIntook)
                 ),
+
+                // Piece 3 shot
                 Commands.parallel(
+                    Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.2)),
                     AutoBuilder.followPath(pathGroup.get(5)),
                     Commands.sequence(
-                        Commands.waitSeconds(0.85),
+                        superSystem.backupIndexerAndShooter(),
+                        Commands.waitSeconds(0.45),
                         Commands.deadline(
                             Commands.waitSeconds(1.2),
                             superSystem.shootSubwooferAuto()  
                         ),
                         superSystem.indexer.stopCommand(),
-                        superSystem.shooterRoller.setVelocityCommand(0, 0)
+                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                        superSystem.shooterRoller.setEnabledCommand(true)
                     )
                 ),
 
                 // Piece 4
-                Commands.deadline(
+                Commands.race(
                     Commands.waitSeconds(1.75),
-                    AutoBuilder.followPath(pathGroup.get(6)),
-                    superSystem.intakeUntilSensed()
+                    AutoBuilder.followPath(pathGroup.get(6)).andThen(Commands.waitSeconds(0.2)),
+                    superSystem.intakeUntilSensed(),
+                    Commands.waitUntil(() -> superSystem.noteIntook())
                 ),
                 Commands.parallel(
                     AutoBuilder.followPath(pathGroup.get(7)),
@@ -112,8 +138,7 @@ public class FivePieceSecond extends SequentialCommandGroup {
                             Commands.waitSeconds(1.2),
                             superSystem.shootSequenceAdjustable(sva)  
                         ),
-                        superSystem.indexer.stopCommand(),
-                        superSystem.shooterRoller.setVelocityCommand(0, 0)
+                        superSystem.stow()
                     )
                 ),
 

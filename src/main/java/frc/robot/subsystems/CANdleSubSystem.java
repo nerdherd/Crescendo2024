@@ -42,6 +42,7 @@ public class CANdleSubSystem extends SubsystemBase {
         StrobeYellow,
         StrobeGreen,
         StrobeRed,
+        StrobeWhite,
         Twinkle,
         TwinkleOff,
         SetAll
@@ -54,6 +55,7 @@ public class CANdleSubSystem extends SubsystemBase {
         DISCONNECTED,
         HAS_TARGET,// Apriltag detected
         HASNOTE, // Note is in indexer
+        SHOOTER_READY,
         SHOTREADY, // Ready to shoot
         LASTSTATUS // To go back to previous animation
     }
@@ -113,6 +115,9 @@ public class CANdleSubSystem extends SubsystemBase {
                 changeAnimation(AnimationTypes.StrobeRed);
                 // setColor(0, 255,    0);
                 break;
+            case SHOOTER_READY:
+                changeAnimation(AnimationTypes.StrobeWhite);
+                break;
             case SHOTREADY:
                 changeAnimation(AnimationTypes.StrobeGreen);
                 break;
@@ -157,6 +162,9 @@ public class CANdleSubSystem extends SubsystemBase {
                 break;
             case StrobeRed:
                 animation = new StrobeAnimation(255, 0, 0, 0, 0.25, ledCount);
+                break;
+            case StrobeWhite:
+                animation = new StrobeAnimation(0, 0, 255, 0, 0.25, ledCount);
                 break;
             case Twinkle:
                 animation = new TwinkleAnimation(0, 0, 255, 0, 0.4, ledCount, TwinklePercent.Percent6);

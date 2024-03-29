@@ -157,14 +157,17 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             else {
                 counter = 0;
                 Pose3d pose = limelight.getBotPose3D();
-                if (pose != null) {
+                if (pose != null && NerdyMath.validatePose(pose)) {
                     limelight.filterPoseX.reset(pose.getX());
                     limelight.filterPoseY.reset(pose.getY());
                     limelight.filterPoseZ.reset(pose.getZ());
-                } 
+                } else {
+                    SmartDashboard.putBoolean("Invalid pose", true);
+                }
             }
         }
         else {
+            SmartDashboard.putBoolean("Invalid pose", true);
             counter += 1;
         }
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());

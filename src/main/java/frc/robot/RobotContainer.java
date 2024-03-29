@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.autos.FivePieceEnd;
@@ -56,9 +57,9 @@ public class RobotContainer {
   public ShooterPivot shooterPivot = new ShooterPivot();
   public IntakeRoller intakeRoller = new IntakeRoller();
   public IndexerV2 indexer = new IndexerV2();
-  public Climber climb = new Climber();
+  // public Climber climb = new Climber();
 
-  public SuperSystem superSystem = new SuperSystem(intakeRoller, shooterPivot, shooterRoller, indexer, climb);
+  public SuperSystem superSystem = new SuperSystem(intakeRoller, shooterPivot, shooterRoller, indexer);
   
   public Gyro imu = new PigeonV2(2);
   
@@ -81,7 +82,6 @@ public class RobotContainer {
   public ShooterVisionAdjustment adjustmentCamera;
   
   public CANdleSubSystem CANdle = new CANdleSubSystem();
-  private double angleError = 5.0; // Only used for LED
   private SwerveJoystickCommand swerveJoystickCommand;
 
   
@@ -184,10 +184,18 @@ public class RobotContainer {
             || driverController.getL1Button() 
             || driverController.getL2Button() 
             || driverController.getCircleButton()
+            || driverController.getTriangleButton()
           ); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
+          if (driverController.getTriangleButton()) {
+            if (!IsRedSide()) {
+              return 135.0;
+            } else {
+              return 225.0;
+            }
+          }
           if (driverController.getL2Button()) {
             return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
             // 4 if red side, 7 if blue
@@ -258,40 +266,7 @@ public class RobotContainer {
   public void configureBindings_teleop() {
     // Driver bindings
 
-    // Note Trigger
-    // Trigger noteTrigger = new Trigger(superSystem::noteIntook);
-    // noteTrigger.onTrue(Commands.sequence(
-    //   Commands.runOnce(() -> {
-    //     SmartDashboard.putBoolean("Note Detected", true);
-    //     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
-    //     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
-    //   }),
-    //   (apriltagCamera.noteOnHoldConfirmSignal()),
-    //   Commands.runOnce(() -> {
-    //     SmartDashboard.putBoolean("Note Detected", false);
-    //     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-    //     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-    //   })
-    // ));
-
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
-    // commandDriverController.triangle()
-    //   .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
-    //   .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
-    // commandDriverController.square().whileTrue(superSystem.climbSequence());
-    // commandDriverController.L2().whileTrue(
-    //   // Commands.repeatingSequence(
-    //     // apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive::getPose, 0, 3),
-    //     // Commands.waitSeconds(0.2)
-    //     Commands.either(
-    //       apriltagCamera.aimToApriltagCommand(swerveDrive, 4, 4, 8),
-    //       apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 4, 8),
-    //       RobotContainer::IsRedSide  
-    //     )
-    //   // )
-    // );
-    
-    commandDriverController.PS().whileTrue(superSystem.climbSequence());
 
     commandOperatorController.povLeft().whileTrue(
       Commands.repeatingSequence(
@@ -310,23 +285,13 @@ public class RobotContainer {
     );
     commandDriverController.touchpad().whileTrue(superSystem.shoot())
                                       .whileFalse(superSystem.stow());
-    // commandDriverController.square().whileTrue(superSystem.shootAmp().andThen(superSystem.stow()));
-    // commandDriverController.square().whileTrue(
-    //   Commands.either(
-    //     Commands.sequence(
-    //       apriltagCamera.driveToAmpCommand(swerveDrive, 3, 3),
-    //       superSystem.shootAmp().andThen(superSystem.stow())
-    //     ),
-    //     Commands.none(),
-    //     apriltagCamera::hasValidTarget
-    //   )
-    // );// TODO: test this command
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
     commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
                                       .whileFalse(superSystem.stow()); // TODO: Can we try getting rid of this whileFalse line here **(field testing)**
     commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
+    commandOperatorController.PS().whileTrue(superSystem.climbSequence());
 
     commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     
@@ -363,6 +328,10 @@ public class RobotContainer {
       }
     ));
 
+    Trigger armTrigger = new Trigger(
+      () -> superSystem.shooterPivot.atTargetPositionAccurate() 
+         && superSystem.shooterPivot.getTargetPositionDegrees() > ShooterConstants.kFullStowPosition.get());
+
     Trigger tagTrigger = new Trigger(
       () -> {
         return superSystem.noteIntook() 
@@ -390,7 +359,7 @@ public class RobotContainer {
       // return apriltagCamera.apriltagInRange(IsRedSide() ? 4 : 7, 0, 0);
     });
 
-    tagTrigger.and(aimTrigger.negate()).onTrue(
+    noteTrigger.and(tagTrigger.and(aimTrigger.negate()).and(armTrigger.negate())).onTrue(
       Commands.runOnce(
         () -> {
           CANdle.setStatus(Status.HAS_TARGET);
@@ -399,7 +368,23 @@ public class RobotContainer {
       )
     );
 
-    tagTrigger.and(aimTrigger).onTrue(
+    armTrigger.and(aimTrigger.negate()).onTrue(
+      Commands.runOnce(
+        () -> {
+          CANdle.setStatus(Status.SHOOTER_READY);
+        }  
+      )
+    );
+
+    armTrigger.negate().and(aimTrigger.negate()).and(tagTrigger.negate()).and(noteTrigger).onTrue(
+      Commands.runOnce(
+        () -> {
+          CANdle.setStatus(Status.HASNOTE);
+        }  
+      )
+    );
+
+    tagTrigger.and(aimTrigger).and(armTrigger).onTrue(
       Commands.runOnce(
         () -> {
           CANdle.setStatus(Status.SHOTREADY);
@@ -407,8 +392,8 @@ public class RobotContainer {
         }
       )
     );
-    
-    noteTrigger.negate().and(tagTrigger.negate().and(aimTrigger.negate())).onTrue(Commands.runOnce(
+
+    noteTrigger.negate().onTrue(Commands.runOnce(
       () -> {
         CANdle.setStatus(Status.TELEOP);
         SmartDashboard.putBoolean("Tag aimed", false); 
@@ -474,21 +459,6 @@ public class RobotContainer {
       // autoChooser.addOption("Test2M", new Test2M(swerveDrive));
       autoChooser.addOption("Preload Taxi Straight", new PreloadTaxi(swerveDrive, "Test2M", superSystem));
     }
-    // if (paths.contains("Test2MBack")) {
-    //   autoChooser.addOption("Test2MBack", new Test2MBack(swerveDrive));
-    // }
-    // if (paths.contains("OneMeterSquareAuto")) {
-    //   autoChooser.addOption("OneMeterSquareAuto", new OneMeterSquareAuto(swerveDrive, "OneMeterSquareAuto"));
-    // }
-    // if (paths.contains("TwoMeterSquareAuto")) {
-    //   autoChooser.addOption("TwoMeterSquareAuto", new TwoMeterSquareAuto(swerveDrive, "TwoMeterSquareAuto"));
-    // }
-    // if (paths.contains("ThreeMeterSquareAuto")) {
-    //   autoChooser.addOption("ThreeMeterSquareAuto", new ThreeMeterSquareAuto(swerveDrive, "ThreeMeterSquareAuto"));
-    // }
-    // if (paths.contains("RotateSquareAuto")) {
-    //   autoChooser.addOption("RotateSquareAuto", new RotateSquareAuto(swerveDrive, "RotateSquareAuto"));
-    // }
 
     // Note to self: IMU may not be facing the right way at the end of the auto
     if (paths.contains("Mid3Piece")) {

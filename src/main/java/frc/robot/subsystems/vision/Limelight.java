@@ -278,6 +278,10 @@ public class Limelight implements Reportable{
     private Pose3d currentPoseAvg = new Pose3d();
     public void updateAvgPose() {
         Pose3d pose = getBotPose3D();
+        if(!NerdyMath.validatePose(pose)) {
+            SmartDashboard.putBoolean("Invalid pose", true);
+            return;
+        }
         if(!hasValidTarget()) return;
         if(currentPoseAvg == null) currentPoseAvg = pose;
         else currentPoseAvg = new Pose3d(filterPoseX.calculate(pose.getX()), filterPoseY.calculate(pose.getY()), filterPoseZ.calculate(pose.getZ()), pose.getRotation());
