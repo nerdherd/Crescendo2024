@@ -300,7 +300,7 @@ public final class Constants {
     public static final double kPivotMaxPos = 108;
     public static final double kPivotMinPos = -72;
 
-    public static final PrefDouble kSpeakerPosition  = new PrefDouble("Pivot Speaker Position", -48);
+    public static final PrefDouble kSpeakerPosition  = new PrefDouble("Pivot Speaker Position", -52.5);
     public static final PrefDouble kSpeakerPositionAuto  = new PrefDouble("Pivot Speaker Position Auto", -48);
     public static final PrefDouble kSpeakerPosition2 = new PrefDouble("Pivot Speaker Position 2", -28);
     public static final PrefDouble kNeutralPosition  = new PrefDouble("Pivot Neutral Position", 36);
