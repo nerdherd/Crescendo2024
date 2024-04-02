@@ -94,7 +94,7 @@ public class RobotContainer {
       // noteCamera = new NoteAssistance(VisnConstants.kLimelightFrontName);
       apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
       swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
-      adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, apriltagCamera.getLimelight());
+      adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, apriltagCamera.getLimelight(), () -> swerveDrive.getPose());
 
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());

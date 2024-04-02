@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -20,10 +21,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.SwerveDriveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.Limelight;
+import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers;
+import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers.PoseEstimate;
 import frc.robot.util.NerdyMath;
 import frc.robot.subsystems.Reportable;
 
@@ -150,47 +154,88 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             runModules();
         }
         if (limelight.hasValidTarget()) {
-            if (counter < 50) {
-                limelight.updateAvgPose();
+            updatePoseEstimatorWithVisionBotPose();
+            // if (counter < 50) {
+            //     limelight.updateAvgPose();
 
-            }
-            else {
-                counter = 0;
-                Pose3d pose = limelight.getBotPose3D();
-                if (pose != null && NerdyMath.validatePose(pose)) {
-                    limelight.filterPoseX.reset(pose.getX());
-                    limelight.filterPoseY.reset(pose.getY());
-                    limelight.filterPoseZ.reset(pose.getZ());
-                } else {
-                    SmartDashboard.putBoolean("Invalid pose", true);
-                }
-            }
+            // }
+            // else {
+            //     counter = 0;
+            //     Pose3d pose = limelight.getBotPose3D();
+            //     if (pose != null && NerdyMath.validatePose(pose)) {
+            //         limelight.filterPoseX.reset(pose.getX());
+            //         limelight.filterPoseY.reset(pose.getY());
+            //         limelight.filterPoseZ.reset(pose.getZ());
+            //     } else {
+            //         SmartDashboard.putBoolean("Invalid pose", true);
+            //     }
+            // }
         }
         else {
             SmartDashboard.putBoolean("Invalid pose", true);
             counter += 1;
         }
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
-        /*counter = (counter + 1) % visionFrequency;
+        // counter = (counter + 1) % visionFrequency;
 
-        if(vision != null && vision.getAprilTagID() != -1)
-        {
-            if(vision.getTA() > 0.5) { // TODO: vision distance limitation, to be calibrated.
-                SmartDashboard.putBoolean("Vision Used", true);
-                poseEstimator.addVisionMeasurement(vision.getCurrentPose3DVision().toPose2d(), 
-                vision.getVisionFrameTimestamp());
-            }
+        // if(vision != null && vision.getAprilTagID() != -1)
+        // {
+        //     if(vision.getTA() > 0.5) {
+        //         PoseEstimate visionPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.kLimelightBackName);
+        //         poseEstimator.addVisionMeasurement(visionPoseEstimate.pose, visionPoseEstimate.timestampSeconds);
+        //     }
             
-        }
-        else
-        {
-            SmartDashboard.putBoolean("Vision Used", false);
-        }*/
+        // }
+        // else
+        // {
+        //     SmartDashboard.putBoolean("Vision Used", false);
+        // }
         
         field.setRobotPose(poseEstimator.getEstimatedPosition());
     }
     
     //****************************** RESETTERS ******************************/
+
+    public void updatePoseEstimatorWithVisionBotPose() {
+        PoseEstimate visionPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.kLimelightBackName);
+        // invalid LL data
+        if (visionPoseEstimate.pose.getX() == 0.0) {
+          return;
+        }
+    
+        // distance from current pose to vision estimated pose
+        double poseDifference = poseEstimator.getEstimatedPosition().getTranslation()
+            .getDistance(visionPoseEstimate.pose.getTranslation());
+    
+        if (visionPoseEstimate.tagCount > 0) {
+          double xyStds;
+          double degStds;
+          // multiple targets detected
+          if (visionPoseEstimate.tagCount >= 2) {
+            xyStds = 0.5;
+            degStds = 6;
+          }
+          // 1 target with large area and close to estimated pose
+          else if (visionPoseEstimate.avgTagArea > 0.8 && poseDifference < 0.5) {
+            xyStds = 1.0;
+            degStds = 12;
+          }
+          // 1 target farther away and estimated pose is close
+          else if (visionPoseEstimate.avgTagArea > 0.1 && poseDifference < 0.3) {
+            xyStds = 2.0;
+            degStds = 30;
+          }
+          // conditions don't match to add a vision measurement
+          else {
+            return;
+          }
+    
+          poseEstimator.setVisionMeasurementStdDevs(
+              VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
+          poseEstimator.addVisionMeasurement(visionPoseEstimate.pose,
+              Timer.getFPGATimestamp() - visionPoseEstimate.latency);
+        }
+      }
 
     public void resetInitPoseByVision()
     {

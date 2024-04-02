@@ -1,9 +1,11 @@
 package frc.robot.subsystems.vision;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.GenericEntry;
@@ -32,11 +34,12 @@ public class ShooterVisionAdjustment implements Reportable{
     private GenericEntry poseRobot;
     private GenericEntry poseTag;
     private GenericEntry goalDistance;
+    private Supplier<Pose2d> poseSupplier;
 
     private double[] distances = {1.0, 1.356, 2.554, 2.95, 3.10, 3.5,  3.828,     4.15,     5.548}; // meters, from least to greatest
     private double[] angles    = {-50, -49.6,   -31,  -30,  -27, -24.5, -23.25,  -22.375, -16.875}; // rotations // TODO: Convert to degrees
                               //  -50, -49.6,   -31,  -30,  -27, -23,   -22.5,   -22,    -16.875
-    public ShooterVisionAdjustment(String name, Limelight limelight) {
+    public ShooterVisionAdjustment(String name, Limelight limelight, Supplier<Pose2d> poseSupplier) {
         this.name = name;
         this.limelight = limelight;
 
@@ -56,17 +59,17 @@ public class ShooterVisionAdjustment implements Reportable{
         return limelight.hasValidTarget();
     }
 
-    public Pose3d getRobotPose() {
+    public Pose2d getRobotPose() {
         limelight.setPipeline(VisionConstants.kAprilTagPipeline);
         if(!limelight.hasValidTarget()) return null;
         if(targetFound != null)
             targetFound.setBoolean(limelight.hasValidTarget());
 
-        Pose3d pose = limelight.getBotPose3D_avg();
+        Pose2d pose = poseSupplier.get();
 
         if (pose == null) {
             DriverStation.reportWarning("Robot pose is null!", true);
-            return new Pose3d();
+            return new Pose2d();
         }
 
         if(poseRobot != null)
@@ -105,7 +108,7 @@ public class ShooterVisionAdjustment implements Reportable{
     }
 
     public double getDistanceFromTag(boolean preserveOldValue) {
-        Pose3d currentPose = getRobotPose();
+        Pose2d currentPose = getRobotPose();
         if(currentPose == null) return (preserveOldValue ? lastDistance : 0.01);
         Pose3d tagPose;
         
@@ -116,6 +119,8 @@ public class ShooterVisionAdjustment implements Reportable{
             tagPose = getTagPose(7);
         }
         if(tagPose == null) return (preserveOldValue ? lastDistance : -0.1);
+
+        // lastDistance = currentPose.getTranslation().getDistance(tagPose.getTranslation().toTranslation2d());
 
         lastDistance = Math.sqrt(Math.pow(currentPose.getX() - tagPose.getX(), 2) + Math.pow(currentPose.getY() - tagPose.getY(), 2));
         if(distanceOffset != null) distanceOffset.setDouble(lastDistance);
