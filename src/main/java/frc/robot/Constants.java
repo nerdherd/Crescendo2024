@@ -65,10 +65,11 @@ public final class Constants {
     public static final double kDriveMotorDeadband = 0.02;
     public static final double kTurnMotorDeadband = 0.001;
 
-    public static final PrefDouble kPTurning = new PrefDouble("kPTurning",0.55); // 0.6
+    public static final PrefDouble kPTurning = new PrefDouble("kPTurning",1); // 0.6
     public static final PrefDouble kITurning = new PrefDouble("kITurning",0);
-    public static final PrefDouble kDTurning = new PrefDouble("kDTurning",0.015); 
-    public static final PrefDouble kFTurning = new PrefDouble("kFTurning",0.015); 
+    public static final PrefDouble kDTurning = new PrefDouble("kDTurning",0.03); 
+    public static final PrefDouble kSTurning = new PrefDouble("kSTurning",0.24); 
+    public static final PrefDouble kVTurning = new PrefDouble("kVTurning",0.5); 
 
     public static final PrefDouble kPDrive = new PrefDouble("kPDrive",0.4); // 0.6
     public static final PrefDouble kIDrive = new PrefDouble("kIDrive",0);

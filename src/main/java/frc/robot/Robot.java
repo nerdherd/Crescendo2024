@@ -97,6 +97,7 @@ public class Robot extends TimedRobot {
     }
     robotContainer.swerveDrive.setBreak(false);
     robotContainer.swerveDrive.setChassisSpeeds(new ChassisSpeeds());
+    robotContainer.swerveDrive.stopModules();
     robotContainer.apriltagCamera.toggleLight(false);
     SmartDashboard.putString("Phase", "Teleop");
     // robotContainer.swerveDrive.setVelocityControl(true);

@@ -15,6 +15,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -32,7 +33,7 @@ public class SwerveModule implements Reportable {
     private final TalonFXConfigurator turnConfigurator;
 
     private final DutyCycleOut driveRequest; 
-    private final DutyCycleOut turnRequest;
+    private final PositionVoltage turnRequest;
     private final VelocityVoltage driveVelocityRequest;
     private final NeutralOut brakeRequest;
 
@@ -77,7 +78,7 @@ public class SwerveModule implements Reportable {
         this.turnConfigurator = turnMotor.getConfigurator();
         
         this.driveRequest = new DutyCycleOut(0);
-        this.turnRequest = new DutyCycleOut(0);
+        this.turnRequest = new PositionVoltage(0);
         this.driveRequest.EnableFOC = true;
         this.turnRequest.EnableFOC = true;
         
@@ -144,10 +145,18 @@ public class SwerveModule implements Reportable {
     }
 
     public void refreshPID() {
+        Slot0Configs turnPIDConfigs = new Slot0Configs();
+        turnConfigurator.refresh(turnPIDConfigs);
         ModuleConstants.kPTurning.loadPreferences();
         ModuleConstants.kITurning.loadPreferences();
         ModuleConstants.kDTurning.loadPreferences();
-        turningController.setPID(ModuleConstants.kPTurning.get(), ModuleConstants.kITurning.get(), ModuleConstants.kDTurning.get());
+        ModuleConstants.kSTurning.loadPreferences();
+        ModuleConstants.kVTurning.loadPreferences();
+        turnPIDConfigs.kP = ModuleConstants.kPTurning.get();
+        turnPIDConfigs.kI = ModuleConstants.kITurning.get();
+        turnPIDConfigs.kD = ModuleConstants.kDTurning.get();
+        turnPIDConfigs.kS = ModuleConstants.kSTurning.get();
+        turnPIDConfigs.kV = ModuleConstants.kVTurning.get();
         
         driveConfigurator.refresh(drivePIDConfigs);
         ModuleConstants.kPDrive.loadPreferences();
@@ -181,7 +190,7 @@ public class SwerveModule implements Reportable {
         // double velocity = desiredState.speedMetersPerSecond / ModuleConstants.kDriveTicksPer100MsToMetersPerSec / ModuleConstants.kDriveMotorGearRatio;
         this.desiredVelocity = velocity;
         
-    if (Math.abs(velocity) < 0.001) {
+        if (Math.abs(velocity) < 0.001) {
             driveMotor.setControl(brakeRequest);
         }
         else if (this.velocityControl) {
@@ -194,9 +203,10 @@ public class SwerveModule implements Reportable {
             driveMotor.setControl(this.driveRequest);
         }
         
-        double turnPower = turningController.calculate(getTurningPosition(), desiredState.angle.getRadians());
-        currentTurnPercent = turnPower;
-        this.turnRequest.Output = currentTurnPercent;
+        turnRequest.Slot = 0;
+        turnRequest.Position = desiredState.angle.getRotations();
+        turnRequest.LimitForwardMotion = false;
+        turnRequest.LimitReverseMotion = false;
         turnMotor.setControl(this.turnRequest);
     }
 
