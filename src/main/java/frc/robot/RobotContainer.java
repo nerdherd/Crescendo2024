@@ -186,6 +186,7 @@ public class RobotContainer {
             || driverController.getL2Button() 
             || driverController.getCircleButton()
             || driverController.getTriangleButton()
+            // || driverController.getPSButton()
           ); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
@@ -214,6 +215,9 @@ public class RobotContainer {
           else if (driverController.getR1Button()) {
             return 180.0;
           }
+          // if (driverController.getPSButton()) { // Turn to shuffleboard angle
+          //   return SmartDashboard.getNumber("Test Desired Angle", 0);
+          // }
           return 0.0; 
         }
       );

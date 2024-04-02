@@ -169,8 +169,9 @@ public final class Constants {
   }
 
   public static final class SwerveAutoConstants {
-    public static final double kTurnToAnglePositionToleranceAngle = 5;
+    public static final double kTurnToAnglePositionToleranceAngle = 0.25;
     public static final double kTurnToAngleVelocityToleranceAnglesPerSec = 2;
+    public static final double kTurnToAngleFeedForwardDegreesPerSecond = 6;
 
     // public static final double kPXController = new PrefDouble("kPXSpeed", 0.5).get();
     // public static final double kIXController = new PrefDouble("kIXSpeed", 0).get();
