@@ -186,7 +186,7 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
     }
 
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        this.enabled = false; //testing
     }
 
     public void setVelocity(double velocity) {

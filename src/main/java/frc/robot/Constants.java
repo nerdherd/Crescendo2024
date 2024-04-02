@@ -213,7 +213,7 @@ public final class Constants {
     public static final double kSunflowerP = 0.2;
     public static final double kSunflowerI = 0;
     public static final double kSunflowerD = 0;
-    public static final String kLimelightFrontName = "limelight-front"; // notes
+    // public static final String kLimelightFrontName = "limelight-front"; // notes
     public static final String kLimelightFrontIP = "10.6.87.25:5800";
     public static final int kNotePipeline = 0;
     public static final double fieldXOffset = 8.27; // Certified (Half field dimensions)

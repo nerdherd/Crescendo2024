@@ -5,6 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -22,6 +26,8 @@ public class Robot extends TimedRobot {
   TalonFx talonFX;
   Orchestra orchestra;
    */
+
+   public static StringLogEntry armSensorCaliLog;
   
   @Override
   public void robotInit() {
@@ -34,6 +40,17 @@ public class Robot extends TimedRobot {
     robotContainer.apriltagCamera.toggleLight(true);
     robotContainer.configureLEDTriggers();
     robotContainer.shooterPivot.syncAbsoluteEncoderToPigeon();
+
+    // // One Peak Music 2
+    // Orchestra orchestra = new Orchestra();
+    // TalonFX musicMotor = new TalonFX(12);
+    // orchestra.addInstrument(musicMotor);
+    // orchestra.loadMusic("happybirthdaykyle.chrp");
+    // orchestra.play();
+
+    DataLog log = DataLogManager.getLog();
+    armSensorCaliLog = new StringLogEntry(log, "arm_sensor_cali");
+    armSensorCaliLog.append("GoodOrBad, TagID, RobotX, RobotY, RobotR, Distance, ArmAngle\n");
   }
 
   @Override
@@ -89,6 +106,10 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {}
 
+  // NetworkTableEntry highButtonEntry;
+  // NetworkTableEntry lowButtonEntry;
+  // NetworkTableEntry goodButtonEntry;
+
   @Override
   public void teleopInit() {
     RobotContainer.refreshAlliance();
@@ -117,7 +138,21 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    
+  //   if(highButtonEntry.getBoolean(false)) {
+  //     robotContainer.saveSensorDataToFile(1);
+  //     highButtonEntry.setBoolean(false);
+  //   }
+  //   if(lowButtonEntry.getBoolean(false)) {
+  //     robotContainer.saveSensorDataToFile(-1);
+  //     lowButtonEntry.setBoolean(false);
+  //   }
+  //   if(goodButtonEntry.getBoolean(false)) {
+  //     robotContainer.saveSensorDataToFile(0);
+  //     goodButtonEntry.setBoolean(false);
+  //   }
+   }
 
   @Override
   public void testInit() {

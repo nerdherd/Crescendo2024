@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -45,10 +47,11 @@ import frc.robot.subsystems.ShooterRoller;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.imu.PigeonV2;
+// import frc.robot.subsystems.imu.PigeonV2Arm;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.vision.DriverAssist;
-import frc.robot.subsystems.vision.NoteAssistance;
+//import frc.robot.subsystems.vision.NoteAssistance;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 import frc.robot.util.NerdyMath;
 
@@ -78,7 +81,7 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
   // private NoteAssistance noteCamera; 
-  public DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
+  public DriverAssist apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, VisionConstants.kAprilTagPipeline);
   public ShooterVisionAdjustment adjustmentCamera;
   
   public CANdleSubSystem CANdle = new CANdleSubSystem();
@@ -91,10 +94,10 @@ public class RobotContainer {
    */
   public RobotContainer() {
     try {
-      // noteCamera = new NoteAssistance(VisnConstants.kLimelightFrontName);
-      apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
+      // noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
+      //apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, VisionConstants.kAprilTagPipeline);
       swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
-      adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, apriltagCamera.getLimelight());
+      adjustmentCamera = new ShooterVisionAdjustment( null, apriltagCamera, superSystem);
 
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
@@ -293,10 +296,12 @@ public class RobotContainer {
     commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
     commandOperatorController.PS().whileTrue(superSystem.climbSequence());
 
-    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
+    commandOperatorController.L2().whileTrue(superSystem.backupIndexerManual());
     
     commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
                                   .whileFalse(superSystem.stow()); // Get rid of both stows
+
+    commandOperatorController.L1().whileTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7 ,20,200));
 
     commandOperatorController.R2().whileTrue(superSystem.prepareShooterSpeaker())
                                   .whileFalse(superSystem.stow());
@@ -512,19 +517,21 @@ public class RobotContainer {
   }
   
   public void initShuffleboard() {
-    imu.initShuffleboard(loggingLevel);
-    swerveDrive.initShuffleboard(loggingLevel);
-    swerveDrive.initModuleShuffleboard(loggingLevel);
+    imu.initShuffleboard(LOG_LEVEL.OFF);
+    swerveDrive.initShuffleboard(LOG_LEVEL.OFF);
+    swerveDrive.initModuleShuffleboard(LOG_LEVEL.OFF);
     apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
     // noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
     adjustmentCamera.initShuffleboard(LOG_LEVEL.ALL);
+    // armPositionGyro.initShuffleboard(LOG_LEVEL.ALL);
 
-    shooterRoller.initShuffleboard(loggingLevel);
-    shooterPivot.initShuffleboard(loggingLevel);
-    intakeRoller.initShuffleboard(loggingLevel);
-    indexer.initShuffleboard(loggingLevel);
+    shooterRoller.initShuffleboard(LOG_LEVEL.OFF);
+    shooterPivot.initShuffleboard(LOG_LEVEL.OFF);
+    // intakePivot.initShuffleboard(LOG_LEVEL.OFF);
+    intakeRoller.initShuffleboard(LOG_LEVEL.OFF);
+    indexer.initShuffleboard(LOG_LEVEL.OFF);
     // superSystem.colorSensor.initShuffleboard(loggingLevel);
-    superSystem.bannerSensor.initShuffleboard(loggingLevel);
+    superSystem.bannerSensor.initShuffleboard(LOG_LEVEL.OFF);
 
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);

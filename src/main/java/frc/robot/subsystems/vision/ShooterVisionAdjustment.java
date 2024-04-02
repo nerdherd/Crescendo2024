@@ -1,26 +1,41 @@
 package frc.robot.subsystems.vision;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Optional;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Reportable;
+import frc.robot.subsystems.ShooterPivot;
+import frc.robot.subsystems.SuperSystem;
+import frc.robot.subsystems.imu.Gyro;
 import frc.robot.util.NerdyMath;
 import frc.robot.util.NerdySpline;
 
 public class ShooterVisionAdjustment implements Reportable{
-    private Limelight limelight;
+    //private Limelight limelight;
     private String name;
+    private Gyro armPositionGyro;
+    DriverAssist tagCamera;
+    SuperSystem superSystem;
+
 
     private NerdySpline angleEquation;
     private NerdySpline distanceEquation;
@@ -33,12 +48,20 @@ public class ShooterVisionAdjustment implements Reportable{
     private GenericEntry poseTag;
     private GenericEntry goalDistance;
 
+
+
     private double[] distances = {1.0, 1.356, 2.554, 2.95, 3.10, 3.5,  3.828,     4.15,     5.548}; // meters, from least to greatest
     private double[] angles    = {-50, -49.6,   -31,  -30,  -27, -24.5, -23.25,  -22.375, -16.875}; // rotations // TODO: Convert to degrees
                               //  -50, -49.6,   -31,  -30,  -27, -23,   -22.5,   -22,    -16.875
-    public ShooterVisionAdjustment(String name, Limelight limelight) {
-        this.name = name;
-        this.limelight = limelight;
+
+    public ShooterVisionAdjustment( Gyro armPositionGyro,
+    DriverAssist tagCamera, 
+    SuperSystem superSystem) {
+        this.name = "othr";
+        //this.limelight = limelight;
+        this.armPositionGyro = armPositionGyro;
+        this.superSystem = superSystem;
+        this.tagCamera = tagCamera;
 
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
@@ -53,21 +76,43 @@ public class ShooterVisionAdjustment implements Reportable{
     }
 
     public boolean hasValidTarget() {
-        return limelight.hasValidTarget();
+        return tagCamera.hasValidTarget();
+    }
+
+    public void saveSensorDataToFile(int isGreat) {
+
+        if(tagCamera.getLastSeenAprilTagID() == -1 || tagCamera.getLastSeenPose2d() == null)
+        {
+            SmartDashboard.putString("saved", "no data");
+            return;
+        }
+        String s = String.format("%d, %d, %.2f, %.2f, %.2f, %.2f, %.2f\n", 
+            isGreat,
+            tagCamera.getLastSeenAprilTagID(),
+            tagCamera.getLastSeenPose2d().getX(),
+            tagCamera.getLastSeenPose2d().getY(),
+            tagCamera.getLastSeenPose2d().getRotation().getDegrees(),
+            tagCamera.getLastTagSeenDist(), 
+            superSystem.shooterPivot.getPositionDegrees()
+            // armPositionGyro.getHeading()
+            //superSystem.shooter.speed()
+        );
+        Robot.armSensorCaliLog.append(s);
+        
+        SmartDashboard.putString("saved", s);
+    }
+
+    public Command armCalibrationTable(int buttonId) {
+        return new InstantCommand(() -> saveSensorDataToFile(buttonId));
     }
 
     public Pose3d getRobotPose() {
-        limelight.setPipeline(VisionConstants.kAprilTagPipeline);
-        if(!limelight.hasValidTarget()) return null;
+        tagCamera.getLimelight().setPipeline(VisionConstants.kAprilTagPipeline);
+        if(!tagCamera.getLimelight().hasValidTarget()) return null;
         if(targetFound != null)
-            targetFound.setBoolean(limelight.hasValidTarget());
+            targetFound.setBoolean(tagCamera.getLimelight().hasValidTarget());
 
-        Pose3d pose = limelight.getBotPose3D_avg();
-
-        if (pose == null) {
-            DriverStation.reportWarning("Robot pose is null!", true);
-            return new Pose3d();
-        }
+        Pose3d pose = tagCamera.getLimelight().getBotPose3D();
 
         if(poseRobot != null)
             poseRobot.setString(pose.toString());
@@ -176,15 +221,18 @@ public class ShooterVisionAdjustment implements Reportable{
         switch (priority) {
             case ALL:
        
-            try{
-                tab.addCamera(name + ": Stream", name, VisionConstants.kLimelightFrontIP);
-            }catch(Exception e){};
+            // try{
+            //     //tab.addCamera(name + ": Stream", name, VisionConstants.kLimelightFrontIP);
+            // }catch(Exception e){};
 
             case MEDIUM:
 
-            case MINIMAL:   
-                tab.addNumber("Angle offset", () -> angleoffset);
-
+            case MINIMAL:
+                tab.add("Too Low", armCalibrationTable(-1));
+                tab.add("Too High", armCalibrationTable(1));
+                tab.add("Great!", armCalibrationTable(0));
+                //tab.add("CurrentVisionPose", tagCamera.getLatestPose2dBlue());
+            
                 goalAngle = tab.add("Calculated Angle", 0)
                 .withPosition(2, 0)
                 .withSize(2, 1)

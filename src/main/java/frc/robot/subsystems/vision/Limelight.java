@@ -670,13 +670,13 @@ public class Limelight implements Reportable{
      * 
      * @return The Lime Light instance
      */
-    public static Limelight getInstance(String keyN) {
-        if (m_Instance == null) {
-            m_Instance = new Limelight(keyN);
-        }
+    // public static Limelight getInstance(String keyN) {
+    //     if (m_Instance == null) {
+    //         m_Instance = new Limelight(keyN);
+    //     }
 
-        return m_Instance;
-    }
+    //     return m_Instance;
+    // }
 
     /**
      * Get the distance of the limelight target
