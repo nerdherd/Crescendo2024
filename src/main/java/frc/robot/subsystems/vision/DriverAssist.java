@@ -787,7 +787,7 @@ public class DriverAssist implements Reportable{
         if (priority == LOG_LEVEL.OFF)  {
             return;
         }
-        ShuffleboardTab tab = Shuffleboard.getTab(limelightName +"data");
+        ShuffleboardTab tab = Shuffleboard.getTab(limelightName);
 
         //the lack of "break;"'s is intentional
         switch (priority) {

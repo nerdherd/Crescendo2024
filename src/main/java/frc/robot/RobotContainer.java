@@ -81,7 +81,7 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
   // private NoteAssistance noteCamera; 
-  public DriverAssist apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, VisionConstants.kAprilTagPipeline);
+  public DriverAssist apriltagCamera;
   public ShooterVisionAdjustment adjustmentCamera;
   
   public CANdleSubSystem CANdle = new CANdleSubSystem();
@@ -95,7 +95,7 @@ public class RobotContainer {
   public RobotContainer() {
     try {
       // noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
-      //apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, VisionConstants.kAprilTagPipeline);
+      apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, VisionConstants.kAprilTagPipeline);
       swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
       adjustmentCamera = new ShooterVisionAdjustment( null, apriltagCamera, superSystem);
 
@@ -139,7 +139,8 @@ public class RobotContainer {
   }
 
   public void initDefaultCommands_teleop() {
-    
+    SmartDashboard.putNumber("Test Desired Angle", 0);
+
     shooterPivot.setDefaultCommand(
       new RunCommand(
         () -> {
@@ -215,6 +216,9 @@ public class RobotContainer {
           }
           else if (driverController.getR1Button()) {
             return 180.0;
+          }
+          if (driverController.getCrossButton()) { // Turn to shuffleboard angle
+            return SmartDashboard.getNumber("Test Desired Angle", 0);
           }
           return 0.0; 
         }
