@@ -17,11 +17,7 @@ public class LimelightHelperUser extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
   public LimelightHelperUser(String limelightName) {
     this.limelightName = limelightName;
-<<<<<<< HEAD
     LimelightHelpers21.initializeMapper();
-=======
-    LimelightHelpers1.initializeMapper();
->>>>>>> armcali0320
   }
 
   /**
