@@ -458,6 +458,7 @@ public class SuperSystem {
             ),
             // Shoot
             Commands.sequence(
+                Commands.waitUntil(shooterPivot::atTargetPosition),
                 indexer.setEnabledCommand(true),
                 indexer.indexCommand()
             ),
