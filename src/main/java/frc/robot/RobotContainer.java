@@ -97,7 +97,7 @@ public class RobotContainer {
       // noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
       apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, VisionConstants.kAprilTagPipeline);
       swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
-      adjustmentCamera = new ShooterVisionAdjustment( null, apriltagCamera, superSystem);
+      adjustmentCamera = new ShooterVisionAdjustment(null, apriltagCamera, swerveDrive.getImu(), superSystem);
 
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
@@ -283,10 +283,12 @@ public class RobotContainer {
     );
 
     commandOperatorController.povUp().onTrue(
-      Commands.runOnce(() -> adjustmentCamera.incrementOffset(0.5))
+      shooterPivot.incrementPositionCommand(0.5)
+      // Commands.runOnce(() -> adjustmentCamera.incrementOffset(0.5))
     );
     commandOperatorController.povDown().onTrue(
-      Commands.runOnce(() -> adjustmentCamera.incrementOffset(-0.5))
+      shooterPivot.incrementPositionCommand(-0.5)
+      // Commands.runOnce(() -> adjustmentCamera.incrementOffset(-0.5))
     );
     commandOperatorController.povRight().onTrue(
       Commands.runOnce(() -> adjustmentCamera.resetOffset())
@@ -531,7 +533,7 @@ public class RobotContainer {
     // armPositionGyro.initShuffleboard(LOG_LEVEL.ALL);
 
     shooterRoller.initShuffleboard(LOG_LEVEL.OFF);
-    shooterPivot.initShuffleboard(LOG_LEVEL.OFF);
+    shooterPivot.initShuffleboard(LOG_LEVEL.MINIMAL);
     // intakePivot.initShuffleboard(LOG_LEVEL.OFF);
     intakeRoller.initShuffleboard(LOG_LEVEL.OFF);
     indexer.initShuffleboard(LOG_LEVEL.OFF);

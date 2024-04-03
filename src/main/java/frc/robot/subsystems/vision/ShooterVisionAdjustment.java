@@ -36,6 +36,8 @@ public class ShooterVisionAdjustment implements Reportable{
     DriverAssist tagCamera;
     SuperSystem superSystem;
 
+    private Gyro swerveGyro;
+
 
     private NerdySpline angleEquation;
     private NerdySpline distanceEquation;
@@ -56,12 +58,14 @@ public class ShooterVisionAdjustment implements Reportable{
 
     public ShooterVisionAdjustment( Gyro armPositionGyro,
     DriverAssist tagCamera, 
+    Gyro swerveGyro,
     SuperSystem superSystem) {
         this.name = "othr";
         //this.limelight = limelight;
         this.armPositionGyro = armPositionGyro;
         this.superSystem = superSystem;
         this.tagCamera = tagCamera;
+        this.swerveGyro = swerveGyro;
 
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
@@ -80,20 +84,21 @@ public class ShooterVisionAdjustment implements Reportable{
     }
 
     public void saveSensorDataToFile(int isGreat) {
-
-        if(tagCamera.getLastSeenAprilTagID() == -1 || tagCamera.getLastSeenPose2d() == null)
+        Pose3d pose = getRobotPose();
+        if(pose == null)
         {
             SmartDashboard.putString("saved", "no data");
             return;
         }
-        String s = String.format("%d, %d, %.2f, %.2f, %.2f, %.2f, %.2f\n", 
+        String s = String.format("%d, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f\n", 
             isGreat,
-            tagCamera.getLastSeenAprilTagID(),
-            tagCamera.getLastSeenPose2d().getX(),
-            tagCamera.getLastSeenPose2d().getY(),
-            tagCamera.getLastSeenPose2d().getRotation().getDegrees(),
-            tagCamera.getLastTagSeenDist(), 
-            superSystem.shooterPivot.getPositionDegrees()
+            pose.getX(),
+            pose.getY(),
+            Math.toDegrees(pose.getRotation().getZ()),
+            lastDistance, 
+            superSystem.shooterPivot.getPositionDegrees(),
+            superSystem.shooterPivot.getTargetPositionDegrees(),
+            swerveGyro.getPitch()
             // armPositionGyro.getHeading()
             //superSystem.shooter.speed()
         );

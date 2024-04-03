@@ -50,7 +50,7 @@ public class Robot extends TimedRobot {
 
     DataLog log = DataLogManager.getLog();
     armSensorCaliLog = new StringLogEntry(log, "arm_sensor_cali");
-    armSensorCaliLog.append("GoodOrBad, TagID, RobotX, RobotY, RobotR, Distance, ArmAngle\n");
+    armSensorCaliLog.append("GoodOrBad, TagID, RobotX, RobotY, RobotR, Distance, ArmAngle, TargetArmAngle, SwervePitch\n");
   }
 
   @Override
