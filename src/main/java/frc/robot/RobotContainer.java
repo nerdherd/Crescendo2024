@@ -32,6 +32,7 @@ import frc.robot.commands.autos.Mid2Piece;
 import frc.robot.commands.autos.Mid3Piece;
 import frc.robot.commands.autos.Mid3PieceDeadReckoning;
 import frc.robot.commands.autos.Mid3PiecePathOnly;
+import frc.robot.commands.autos.PoseEstimatorTest;
 import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.subsystems.CANdleSubSystem;
@@ -460,12 +461,15 @@ public class RobotContainer {
   private void initAutoChoosers() {
   	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands.none());
+    if (paths.contains("PoseEstimatorTest")) 
+    autoChooser.addOption("Pose Estimator Test Auto", new PoseEstimatorTest(swerveDrive,"PoseEstimatorTest", superSystem ));
     
     // Testing/characterization autos
     if (paths.contains("Test2M")) {
       // autoChooser.addOption("Test2M", new Test2M(swerveDrive));
       autoChooser.addOption("Preload Taxi Straight", new PreloadTaxi(swerveDrive, "Test2M", superSystem));
     }
+
 
     // Note to self: IMU may not be facing the right way at the end of the auto
     if (paths.contains("Mid3Piece")) {
@@ -504,6 +508,7 @@ public class RobotContainer {
     if (paths.contains("5PieceMidSecond")){
       autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem, adjustmentCamera));
     }
+
     
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
