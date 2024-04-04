@@ -270,6 +270,7 @@ public class SuperSystem {
     //     return shooterPivot.climbSequence();
     // }
 
+    // REMOVED ALL INDEXING
     public Command intakeBasic() {
         Command command = Commands.sequence(
             Commands.deadline(
@@ -279,16 +280,16 @@ public class SuperSystem {
                 Commands.waitSeconds(1)
                 ),
             intakeRoller.setEnabledCommand(true),
-            indexer.setEnabledCommand(true),
+            // indexer.setEnabledCommand(true),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
-            indexer.indexCommand(),
+            // indexer.indexCommand(),
             intakeRoller.intakeCommand(),
             Commands.waitUntil(() -> false)
         ).finallyDo(
             () -> {
                 SmartDashboard.putBoolean("Intaking", false);
                 intakeRoller.stop();
-                indexer.stop();
+                // indexer.stop();
             }
         );
 

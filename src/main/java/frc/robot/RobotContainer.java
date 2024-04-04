@@ -37,6 +37,7 @@ import frc.robot.commands.autos.Mid3PiecePathOnly;
 import frc.robot.commands.autos.PoseEstimatorTest;
 import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
+import frc.robot.commands.autos.TestPathAuto;
 import frc.robot.subsystems.CANdleSubSystem;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CANdleSubSystem.Status;
@@ -482,6 +483,10 @@ public class RobotContainer {
 
     if (paths.contains("PoseEstimatorTest")) {
       autoChooser.addOption("Pose Estimator Test Auto", new PoseEstimatorTest(swerveDrive,"PoseEstimatorTest", superSystem));
+    }
+
+    if (paths.contains("TestPathAuto")) {
+      autoChooser.addOption("TestPathAuto", new TestPathAuto(swerveDrive,"TestPathAuto", superSystem, apriltagCamera));
     }
 
     // Note to self: IMU may not be facing the right way at the end of the auto
