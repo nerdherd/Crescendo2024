@@ -140,10 +140,10 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             this);
 
             this.limelight = vision.getLimelight();
-            
+            enableVisionPE = true;
     }
 
-    public void visionupdateOdometry() {
+    private void visionupdateOdometry() {
         boolean doRejectUpdate = false;
 
         LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.kLimelightBackName);
@@ -181,13 +181,19 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         if(!doRejectUpdate)
         {
             poseEstimator.setVisionMeasurementStdDevs(
-              VecBuilder.fill(xyStds, xyStds, degStds));
+              VecBuilder.fill(0.8, 0.8, 9999999));
 
             //poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
             poseEstimator.addVisionMeasurement(
                 mt1.pose,
                 mt1.timestampSeconds);
         }
+    }
+
+    private boolean enableVisionPE;
+    public void enableVisionPoseEstm(Boolean enable)
+    {
+        enableVisionPE = enable;
     }
 
 
@@ -225,7 +231,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         }
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
 
-        visionupdateOdometry();
+        if (enableVisionPE)
+            visionupdateOdometry();
 
         // counter = (counter + 1) % visionFrequency;
 
