@@ -26,10 +26,10 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     robotContainer = new RobotContainer();
 	
-    DataLogManager.start("/media/sda1/logs");
-    DataLogManager.logNetworkTables(true);
-    enableLiveWindowInTest(false);
-    robotContainer.swerveDrive.refreshModulePID();
+    // DataLogManager.start("/media/sda1/logs");
+    // DataLogManager.logNetworkTables(true);
+    // enableLiveWindowInTest(false);
+    // robotContainer.swerveDrive.refreshModulePID();
 
     // // One Peak Music 2
     // Orchestra orchestra = new Orchestra();
@@ -48,8 +48,8 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     CommandScheduler.getInstance().cancelAll();
-    robotContainer.swerveDrive.setBreak(true);
-    robotContainer.CANdle.setStatus(Status.DISABLED);
+    // robotContainer.swerveDrive.setBreak(true);
+    // robotContainer.CANdle.setStatus(Status.DISABLED);
   }
 
   @Override
@@ -58,10 +58,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    robotContainer.swerveDrive.setBreak(false);
-    robotContainer.swerveDrive.refreshModulePID();
-    robotContainer.imu.zeroHeading();
-    robotContainer.imu.zeroAll();
+    // robotContainer.swerveDrive.setBreak(false);
+    // robotContainer.swerveDrive.refreshModulePID();
+    // robotContainer.imu.zeroHeading();
+    // robotContainer.imu.zeroAll();
     
 
     // ShooterConstants.kPivotDeadband.loadPreferences();
@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
     orchestra.loadMusic(); //have to get chirp file
     orchestra.play();
      */
-    robotContainer.CANdle.setStatus(Status.AUTO);
+    // robotContainer.CANdle.setStatus(Status.AUTO);
   }
 
   @Override
@@ -94,7 +94,7 @@ public class Robot extends TimedRobot {
     if (autoCommand != null) {
       autoCommand.cancel();
     }
-    robotContainer.swerveDrive.setBreak(false);
+    // robotContainer.swerveDrive.setBreak(false);
     // robotContainer.swerveDrive.setVelocityControl(true);
     // robotContainer.swerveDrive.refreshModulePID();
     // ShooterConstants.kPivotDeadband.loadPreferences();
@@ -109,7 +109,7 @@ public class Robot extends TimedRobot {
     robotContainer.configureBindings_teleop();
     robotContainer.initDefaultCommands_teleop();
     robotContainer.configureLEDTriggers_teleop();
-    robotContainer.CANdle.setStatus(Status.TELEOP);
+    // robotContainer.CANdle.setStatus(Status.TELEOP);
   }
 
   DutyCycleOut control = new DutyCycleOut(0);

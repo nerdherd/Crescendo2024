@@ -44,13 +44,13 @@ import frc.robot.util.NerdyMath;
 public class RobotContainer {
   public ShooterRoller shooterRoller = new ShooterRoller();
   public ShooterPivot shooterPivot = new ShooterPivot();
-  public IndexerV2 indexer = new IndexerV2();
+  // public IndexerV2 indexer = new IndexerV2();
 
-  public SuperSystem superSystem = new SuperSystem(shooterPivot, shooterRoller, indexer);
+  public SuperSystem superSystem = new SuperSystem(shooterPivot, shooterRoller);
   
-  public Gyro imu = new PigeonV2(2);
+  // public Gyro imu = new PigeonV2(2);
   
-  public SwerveDrivetrain swerveDrive;
+  // public SwerveDrivetrain swerveDrive;
   public PowerDistribution pdp = new PowerDistribution(1, ModuleType.kRev);
   
   private final CommandPS4Controller commandDriverController = new CommandPS4Controller(
@@ -64,11 +64,11 @@ public class RobotContainer {
     
     private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
     
-    private NoteAssistance noteCamera; 
-  private DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
-  private ShooterVisionAdjustment adjustmentCamera;
+  //   private NoteAssistance noteCamera; 
+  // private DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
+  // private ShooterVisionAdjustment adjustmentCamera;
   
-  public CANdleSubSystem CANdle = new CANdleSubSystem();
+  // public CANdleSubSystem CANdle = new CANdleSubSystem();
   private double angleError = 5.0; // Only used for LED
   private double heading; // Only used for LED
 
@@ -77,17 +77,17 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    try {
-      noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
-      apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
-      swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
-      adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, apriltagCamera.getLimelight());
+  //   try {
+  //     noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
+  //     apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
+  //     swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
+  //     adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, apriltagCamera.getLimelight());
 
-    } catch (IllegalArgumentException e) {
-      DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
-    }
+  //   } catch (IllegalArgumentException e) {
+  //     DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
+  //   }
 
-    apriltagCamera.toggleLight(false);
+    // apriltagCamera.toggleLight(false);
 
     initAutoChoosers();
     initShuffleboard();
@@ -132,44 +132,44 @@ public class RobotContainer {
         shooterPivot
       ));
 
-      swerveDrive.setDefaultCommand(
-      new SwerveJoystickCommand(
-        swerveDrive,
-        () -> -commandDriverController.getLeftY(), // Horizontal translation
-        commandDriverController::getLeftX, // Vertical Translation
-        // () -> 0.0, // debug
-        commandDriverController::getRightX, // Rotationaq
+      // swerveDrive.setDefaultCommand(
+      // new SwerveJoystickCommand(
+      //   swerveDrive,
+      //   () -> -commandDriverController.getLeftY(), // Horizontal translation
+      //   commandDriverController::getLeftX, // Vertical Translation
+      //   // () -> 0.0, // debug
+      //   commandDriverController::getRightX, // Rotationaq
 
-        // driverController::getSquareButton, // Field oriented
-        () -> false, // should be robot oriented now on true
+      //   // driverController::getSquareButton, // Field oriented
+      //   () -> false, // should be robot oriented now on true
 
-        driverController::getCrossButton, // Towing
-        // driverController::getR2Button, // Precision/"Sniper Button"
-        () -> driverController.getR2Button(), // Precision mode (disabled)
-        () -> {
-          return (driverController.getR1Button() || driverController.getL1Button() || driverController.getL2Button() || driverController.getCircleButton()); // Turn to angle
-        }, 
-        // () -> false, // Turn to angle (disabled)
-        () -> { // Turn To angle Direction
-          if (driverController.getL2Button()) {
-            // 4 if red side, 7 if blue
-            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
-          }
-          if (driverController.getCircleButton()) { //turn to amp
-            if (!IsRedSide()){
-              return 270.0;
-            }
-            return 90.0;
-          }
-          else if (driverController.getL1Button()) { //turn to speaker
-            return 0.0;
-          }
-          else if (driverController.getR1Button()) {
-            return 180.0;
-          }
-          return 0.0; 
-        }
-      ));
+      //   driverController::getCrossButton, // Towing
+      //   // driverController::getR2Button, // Precision/"Sniper Button"
+      //   () -> driverController.getR2Button(), // Precision mode (disabled)
+      //   () -> {
+      //     return (driverController.getR1Button() || driverController.getL1Button() || driverController.getL2Button() || driverController.getCircleButton()); // Turn to angle
+      //   }, 
+      //   // () -> false, // Turn to angle (disabled)
+      //   () -> { // Turn To angle Direction
+      //     if (driverController.getL2Button()) {
+      //       // 4 if red side, 7 if blue
+      //       return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
+      //     }
+      //     if (driverController.getCircleButton()) { //turn to amp
+      //       if (!IsRedSide()){
+      //         return 270.0;
+      //       }
+      //       return 90.0;
+      //     }
+      //     else if (driverController.getL1Button()) { //turn to speaker
+      //       return 0.0;
+      //     }
+      //     else if (driverController.getR1Button()) {
+      //       return 180.0;
+      //     }
+      //     return 0.0; 
+      //   }
+      // ));
 
       // Point to angle
       // swerveDrive.setDefaultCommand(
@@ -214,151 +214,151 @@ public class RobotContainer {
   }
 
   public void initDefaultCommands_test() {
-    swerveDrive.setDefaultCommand(
-      new SwerveJoystickCommand(
-        swerveDrive,
-        () -> -commandDriverController.getLeftY(), // Horizontal translation
-        commandDriverController::getLeftX, // Vertical Translation
-        // () -> 0.0, // debug
-        commandDriverController::getRightX, // Rotationaq
+    // swerveDrive.setDefaultCommand(
+    //   new SwerveJoystickCommand(
+    //     swerveDrive,
+    //     () -> -commandDriverController.getLeftY(), // Horizontal translation
+    //     commandDriverController::getLeftX, // Vertical Translation
+    //     // () -> 0.0, // debug
+    //     commandDriverController::getRightX, // Rotationaq
 
-        // driverController::getSquareButton, // Field oriented
-        () -> true, // should be robot oriented now on true
+    //     // driverController::getSquareButton, // Field oriented
+    //     () -> true, // should be robot oriented now on true
 
-        driverController::getCrossButton, // Towing
-        // driverController::getR2Button, // Precision/"Sniper Button"
-        () -> driverController.getR2Button(), // Precision mode (disabled)
-        () -> {
-          return (driverController.getR1Button() || driverController.getL1Button()); // Turn to angle
-        }, 
-        // () -> false, // Turn to angle (disabled)
-        () -> { // Turn To angle Direction
-          if (driverController.getR1Button()) { //turn to amp
-            if (IsRedSide()){
-              return 270.0;
-            }
-            return 90.0;
-          }
-          else if (driverController.getL1Button()) { //turn to speaker
-            return 180.0;
-          }
-          return 0.0; 
-        }
-      ));
+    //     driverController::getCrossButton, // Towing
+    //     // driverController::getR2Button, // Precision/"Sniper Button"
+    //     () -> driverController.getR2Button(), // Precision mode (disabled)
+    //     () -> {
+    //       return (driverController.getR1Button() || driverController.getL1Button()); // Turn to angle
+    //     }, 
+    //     // () -> false, // Turn to angle (disabled)
+    //     () -> { // Turn To angle Direction
+    //       if (driverController.getR1Button()) { //turn to amp
+    //         if (IsRedSide()){
+    //           return 270.0;
+    //         }
+    //         return 90.0;
+    //       }
+    //       else if (driverController.getL1Button()) { //turn to speaker
+    //         return 180.0;
+    //       }
+    //       return 0.0; 
+    //     }
+    //   ));
   }
 
   public void configureBindings_teleop() {
     // Driver bindings
 
     // Note Trigger
-    Trigger noteTrigger = new Trigger(superSystem::noteIntook);
-    noteTrigger.onTrue(Commands.sequence(
-      Commands.runOnce(() -> {
-        SmartDashboard.putBoolean("Note Detected", true);
-        operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
-        operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
-      }),
-      (apriltagCamera.noteOnHoldConfirmSignal()),
-      Commands.runOnce(() -> {
-        SmartDashboard.putBoolean("Note Detected", false);
-        operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-        operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-      })
-    ));
+    // Trigger noteTrigger = new Trigger(superSystem::noteIntook);
+    // noteTrigger.onTrue(Commands.sequence(
+    //   Commands.runOnce(() -> {
+    //     SmartDashboard.putBoolean("Note Detected", true);
+    //     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
+    //     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.75);
+    //   }),
+    //   (apriltagCamera.noteOnHoldConfirmSignal()),
+    //   Commands.runOnce(() -> {
+    //     SmartDashboard.putBoolean("Note Detected", false);
+    //     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+    //     operatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+    //   })
+    // ));
 
-    commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
-    commandDriverController.triangle()
-      .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
-      .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
+    // commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
+    // commandDriverController.triangle()
+    //   .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
+    //   .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
-    commandDriverController.L2().whileTrue(
-      Commands.repeatingSequence(
-        apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive::getPose, 0, 3),
-        Commands.waitSeconds(0.2)
-      )
-    );
+    // commandDriverController.L2().whileTrue(
+    //   Commands.repeatingSequence(
+    //     apriltagCamera.resetOdoPoseByVision(swerveDrive, swerveDrive::getPose, 0, 3),
+    //     Commands.waitSeconds(0.2)
+    //   )
+    // );
 
     // Operator bindings
-    commandOperatorController.triangle().whileTrue(superSystem.eject());
-    commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
-                                      .whileFalse(superSystem.stow()); // TODO: Can we try getting rid of this whileFalse line here **(field testing)**
-    commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
+    // commandOperatorController.triangle().whileTrue(superSystem.eject());
+    // commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
+    //                                   .whileFalse(superSystem.stow()); // TODO: Can we try getting rid of this whileFalse line here **(field testing)**
+    // commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
 
-    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
+    // commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     
-    commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
-                                  .whileFalse(superSystem.stow());
+    // commandOperatorController.L2().whileTrue(superSystem.intakeUntilSensed().andThen(superSystem.stow()))
+    //                               .whileFalse(superSystem.stow());
 
-    commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
-                                  .whileFalse(superSystem.stow());
-    commandOperatorController.R1().whileTrue(superSystem.shootPodium())
-                                  .whileFalse(superSystem.stow());
+    // commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
+    //                               .whileFalse(superSystem.stow());
+    // commandOperatorController.R1().whileTrue(superSystem.shootPodium())
+    //                               .whileFalse(superSystem.stow());
 
-    commandOperatorController.touchpad().whileTrue(superSystem.panicButton())
-                                        .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
-    commandOperatorController.circle().whileTrue(superSystem.stow()); // TODO: Change this binding
-    commandOperatorController.share().whileTrue(superSystem.intakeDirectShoot());
-    commandOperatorController.options().whileTrue(superSystem.shootSequenceAdjustable(adjustmentCamera)) //
-                                  .whileFalse(superSystem.stow()); // TODO: Safety *Do nothing if April Tag is not seen*
+    // commandOperatorController.touchpad().whileTrue(superSystem.panicButton())
+    //                                     .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
+    // commandOperatorController.circle().whileTrue(superSystem.stow()); // TODO: Change this binding
+    // commandOperatorController.share().whileTrue(superSystem.intakeDirectShoot());
+    // commandOperatorController.options().whileTrue(superSystem.shootSequenceAdjustable(adjustmentCamera)) //
+    //                               .whileFalse(superSystem.stow()); // TODO: Safety *Do nothing if April Tag is not seen*
   }
 
   public void configureBindings_test() {
     // Driver bindings
-    commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
-    commandDriverController.triangle()
-      .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
-      .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
+    // commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
+    // commandDriverController.triangle()
+    //   .whileTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
+    //   .whileFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
     //TODO: Make sure April Tag ID is matching
-    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 0.8, 0, 0, 7, 100)))
-      .whileFalse(Commands.run(() -> apriltagCamera.reset())); //1.8, 0, 0, 7
-    commandDriverController.L2().toggleOnTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100));
-    // commandDriverController.R1().whileTrue(Commands.run(() -> new TurnToAngle(apriltagCamera.getTurnToTagAngle(7), swerveDrive)));
-    commandDriverController.R2().whileTrue(noteCamera.turnToNoteCommand(swerveDrive, 0, 0, 0));
+    // commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 0.8, 0, 0, 7, 100)))
+    //   .whileFalse(Commands.run(() -> apriltagCamera.reset())); //1.8, 0, 0, 7
+    // commandDriverController.L2().toggleOnTrue(apriltagCamera.aimToApriltagCommand(swerveDrive, 7, 5, 100));
+    // // commandDriverController.R1().whileTrue(Commands.run(() -> new TurnToAngle(apriltagCamera.getTurnToTagAngle(7), swerveDrive)));
+    // commandDriverController.R2().whileTrue(noteCamera.turnToNoteCommand(swerveDrive, 0, 0, 0));
 
 
     // Operator bindings
-    commandOperatorController.triangle().whileTrue(superSystem.eject());
-    commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
-                                      .whileFalse(superSystem.stow());
-    commandOperatorController.options().whileTrue(superSystem.shootAmp().andThen(superSystem.stow())); //change options to another button later
+    // commandOperatorController.triangle().whileTrue(superSystem.eject());
+    // commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
+    //                                   .whileFalse(superSystem.stow());
+    // commandOperatorController.options().whileTrue(superSystem.shootAmp().andThen(superSystem.stow())); //change options to another button later
 
-    commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
-    // commandOperatorController.L2().whileTrue(superSystem.intakeBasic());
+    // commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
+    // // commandOperatorController.L2().whileTrue(superSystem.intakeBasic());
     
-    commandOperatorController.L2().whileTrue(superSystem.intakeBasic())
-                                  .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
+    // commandOperatorController.L2().whileTrue(superSystem.intakeBasic())
+    //                               .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
 
-    commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
-    commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
-                                  .whileFalse(superSystem.stow());
-    commandOperatorController.R1().whileTrue(superSystem.shootPodium())
-                                  .whileFalse(superSystem.stow());
+    // commandOperatorController.circle().whileTrue(superSystem.intakeDirectShoot());
+    // commandOperatorController.R2().whileTrue(superSystem.shootSubwoofer())
+    //                               .whileFalse(superSystem.stow());
+    // commandOperatorController.R1().whileTrue(superSystem.shootPodium())
+    //                               .whileFalse(superSystem.stow());
 
-    commandOperatorController.cross().whileTrue(superSystem.stow());
+    // commandOperatorController.cross().whileTrue(superSystem.stow());
 
-    commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
+    // commandOperatorController.share().whileTrue(superSystem.linearActuator.retractCommand());
   }
 
   public void configureLEDTriggers_teleop() {
-    // Note Trigger
-    Trigger noteTrigger = new Trigger(superSystem::noteIntook);
-    noteTrigger.onTrue(Commands.runOnce(
-      () -> {
-        CANdle.setStatus(Status.HASNOTE);
-      }));
-    noteTrigger.onFalse(Commands.runOnce(
-      () -> CANdle.setStatus(Status.TELEOP)
-    ));
+    // // Note Trigger
+    // Trigger noteTrigger = new Trigger(superSystem::noteIntook);
+    // noteTrigger.onTrue(Commands.runOnce(
+    //   () -> {
+    //     CANdle.setStatus(Status.HASNOTE);
+    //   }));
+    // noteTrigger.onFalse(Commands.runOnce(
+    //   () -> CANdle.setStatus(Status.TELEOP)
+    // ));
 
     // AprilTag Trigger
-    Trigger tagTrigger = new Trigger(apriltagCamera::hasValidTarget);
-    tagTrigger.onTrue(Commands.runOnce(
-      () -> CANdle.setStatus(Status.HASTARGET)
-    ));
-    tagTrigger.onFalse(Commands.runOnce(
-      () -> CANdle.setStatus(Status.TELEOP)
-    ));
+    // Trigger tagTrigger = new Trigger(apriltagCamera::hasValidTarget);
+    // tagTrigger.onTrue(Commands.runOnce(
+    //   () -> CANdle.setStatus(Status.HASTARGET)
+    // ));
+    // tagTrigger.onFalse(Commands.runOnce(
+    //   () -> CANdle.setStatus(Status.TELEOP)
+    // ));
 
     // if (driverController.getCircleButton()) { //turn to amp
     //         if (!IsRedSide()){
@@ -372,33 +372,33 @@ public class RobotContainer {
 
     // Lined up and ready to shoot Trigger
     // Speaker
-    commandDriverController.L1().whileTrue(Commands.runOnce(
-      () -> {
-        heading = NerdyMath.posMod(imu.getHeading(), 360);
-        angleError = heading - 0; // Heading for speaker
-        if (Math.abs(angleError) <= 10) {
-          CANdle.setStatus(Status.SHOTREADY);
-        } else {
-          CANdle.setStatus(Status.LASTSTATUS);
-        }
-      }
-    ));
-    NerdyMath.posMod(angleError, angleError);
-    commandDriverController.R1().whileTrue(Commands.runOnce(
-      () -> {
-        heading = NerdyMath.posMod(imu.getHeading(), 360);
-        if (!IsRedSide()) {
-          angleError = heading - 270;
-        } else {
-          angleError = heading - 90;
-        }
-        if (Math.abs(angleError) <= 10) {
-          CANdle.setStatus(Status.SHOTREADY);
-        } else {
-          CANdle.setStatus(Status.LASTSTATUS);
-        }
-      }
-    ));
+    // commandDriverController.L1().whileTrue(Commands.runOnce(
+    //   () -> {
+    //     heading = NerdyMath.posMod(imu.getHeading(), 360);
+    //     angleError = heading - 0; // Heading for speaker
+    //     if (Math.abs(angleError) <= 10) {
+    //       CANdle.setStatus(Status.SHOTREADY);
+    //     } else {
+    //       CANdle.setStatus(Status.LASTSTATUS);
+    //     }
+    //   }
+    // ));
+    // NerdyMath.posMod(angleError, angleError);
+    // commandDriverController.R1().whileTrue(Commands.runOnce(
+    //   () -> {
+    //     heading = NerdyMath.posMod(imu.getHeading(), 360);
+    //     if (!IsRedSide()) {
+    //       angleError = heading - 270;
+    //     } else {
+    //       angleError = heading - 90;
+    //     }
+    //     if (Math.abs(angleError) <= 10) {
+    //       CANdle.setStatus(Status.SHOTREADY);
+    //     } else {
+    //       CANdle.setStatus(Status.LASTSTATUS);
+    //     }
+    //   }
+    // ));
     // Trigger shotReadyTriger = new Trigger();
     // tagTrigger.onTrue(Commands.runOnce(
     //   () -> CANdle.setStatus(Status.SHOTREADY)
@@ -418,16 +418,16 @@ public class RobotContainer {
   }
   
   public void initShuffleboard() {
-    imu.initShuffleboard(loggingLevel);
-    swerveDrive.initShuffleboard(loggingLevel);
-    swerveDrive.initModuleShuffleboard(loggingLevel);
-    apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
-    noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
-    adjustmentCamera.initShuffleboard(LOG_LEVEL.ALL);
+    // imu.initShuffleboard(loggingLevel);
+    // swerveDrive.initShuffleboard(loggingLevel);
+    // swerveDrive.initModuleShuffleboard(loggingLevel);
+    // apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+    // noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+    // adjustmentCamera.initShuffleboard(LOG_LEVEL.ALL);
 
-    shooterRoller.initShuffleboard(loggingLevel);
+    // shooterRoller.initShuffleboard(loggingLevel);
     shooterPivot.initShuffleboard(loggingLevel);
-    indexer.initShuffleboard(loggingLevel);
+    // indexer.initShuffleboard(loggingLevel);
     // superSystem.colorSensor.initShuffleboard(loggingLevel);
     // superSystem.bannerSensor.initShuffleboard(loggingLevel);
 
@@ -444,7 +444,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command currentAuto = autoChooser.getSelected();
 
-    swerveDrive.setDriveMode(DRIVE_MODE.AUTONOMOUS);
+    // swerveDrive.setDriveMode(DRIVE_MODE.AUTONOMOUS);
     return currentAuto;
   }
 }

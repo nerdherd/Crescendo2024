@@ -16,22 +16,22 @@ public class SuperSystem {
     // public IntakeRoller intakeRoller;
     public ShooterPivot shooterPivot;
     public ShooterRoller shooterRoller;
-    public IndexerV2 indexer;
+    // public IndexerV2 indexer;
     // public ColorSensor colorSensor;
     // public BannerSensor bannerSensor;
     // public BeamBreak noteSensor;
-    public ClimbActuator linearActuator;
-    public Climber climber;
+    // public ClimbActuator linearActuator;
+    // public Climber climber;
 
     public SuperSystem(/*IntakePivot intakePivot, IntakeRoller intakeRoller, */ 
-                        ShooterPivot shooterPivot, ShooterRoller shooterRoller,
-                        IndexerV2 indexer) {
+                        ShooterPivot shooterPivot, ShooterRoller shooterRoller/*,
+                        IndexerV2 indexer*/) {
         // this.intakePivot = intakePivot;
         // this.intakeRoller = intakeRoller;
         this.shooterPivot = shooterPivot;
-        this.shooterRoller = shooterRoller;
-        this.indexer = indexer;
-        this.linearActuator = new ClimbActuator();
+        // this.shooterRoller = shooterRoller;
+        // this.indexer = indexer;
+        // this.linearActuator = new ClimbActuator();
         // this.colorSensor = new ColorSensor();
         // this.bannerSensor = new BannerSensor();
         // this.noteSensor = new BeamBreak();
@@ -61,44 +61,44 @@ public class SuperSystem {
         return command;
     }
 
-    public Command shootAmp() {
-        Command command = Commands.sequence(
-            shooterRoller.setEnabledCommand(true),
-            shooterRoller.shootAmp(),
-            Commands.waitSeconds(0.3), // Was 0.5    3/3/24    Code Orange
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
-            Commands.waitSeconds(1)
-        ).finallyDo(
-            () -> {
-                shooterRoller.stop();
-                indexer.stop();
-            }
-        );
+    // public Command shootAmp() {
+    //     Command command = Commands.sequence(
+    //         shooterRoller.setEnabledCommand(true),
+    //         shooterRoller.shootAmp(),
+    //         Commands.waitSeconds(0.3), // Was 0.5    3/3/24    Code Orange
+    //         indexer.setEnabledCommand(true),
+    //         indexer.indexCommand(),
+    //         Commands.waitSeconds(1)
+    //     ).finallyDo(
+    //         () -> {
+    //             shooterRoller.stop();
+    //             indexer.stop();
+    //         }
+    //     );
 
-        command.addRequirements(shooterRoller, indexer);
+    //     command.addRequirements(shooterRoller, indexer);
 
-        return command;
-    }
+    //     return command;
+    // }
 
-    public Command stow() {
-        Command command = Commands.sequence(
-            // intakeRoller.stopCommand(),
-            shooterRoller.stopCommand(),
-            indexer.stopCommand(),
-            // intakePivot.moveToNeutral(),
-            shooterPivot.setPositionCommand(ShooterConstants.kFullStowPosition.get()),
-            Commands.deadline(
-                Commands.waitUntil(shooterPivot::atTargetPosition),
-                Commands.waitSeconds(2)
-            )
-            // intakePivot.moveToVertical()
-        );
+    // public Command stow() {
+    //     Command command = Commands.sequence(
+    //         // intakeRoller.stopCommand(),
+    //         shooterRoller.stopCommand(),
+    //         indexer.stopCommand(),
+    //         // intakePivot.moveToNeutral(),
+    //         shooterPivot.setPositionCommand(ShooterConstants.kFullStowPosition.get()),
+    //         Commands.deadline(
+    //             Commands.waitUntil(shooterPivot::atTargetPosition),
+    //             Commands.waitSeconds(2)
+    //         )
+    //         // intakePivot.moveToVertical()
+    //     );
 
-        command.addRequirements(shooterPivot, shooterRoller, indexer);
+    //     command.addRequirements(shooterPivot, shooterRoller, indexer);
 
-        return command;
-    }
+    //     return command;
+    // }
 
     public Command handoff() {
         Command command = Commands.sequence(
@@ -112,439 +112,439 @@ public class SuperSystem {
         return command;
     }
 
-    public Command panicButton() {
-        Command command = Commands.sequence(
-            // intakePivot.moveToIntake(),
-            Commands.waitSeconds(0.2),
-            shooterPivot.setPositionCommand(6),
-            shooterRoller.setVelocityCommand(-20),
-            shooterRoller.setEnabledCommand(true),
-            indexer.indexCommand(),
-            indexer.setEnabledCommand(true),
-            Commands.waitUntil(() -> false)
-        ).finallyDo(
-            () -> {
-                shooterRoller.stop();
-                indexer.stop();
-            }
-        );
+    // public Command panicButton() {
+    //     Command command = Commands.sequence(
+    //         // intakePivot.moveToIntake(),
+    //         Commands.waitSeconds(0.2),
+    //         shooterPivot.setPositionCommand(6),
+    //         shooterRoller.setVelocityCommand(-20),
+    //         shooterRoller.setEnabledCommand(true),
+    //         indexer.indexCommand(),
+    //         indexer.setEnabledCommand(true),
+    //         Commands.waitUntil(() -> false)
+    //     ).finallyDo(
+    //         () -> {
+    //             shooterRoller.stop();
+    //             indexer.stop();
+    //         }
+    //     );
 
-        command.addRequirements(shooterPivot, indexer, shooterRoller);
+    //     command.addRequirements(shooterPivot, indexer, shooterRoller);
 
-        return command;
-    }
+    //     return command;
+    // }
 
-    public Command backupIndexer() {
-        Command command = Commands.sequence(
-            indexer.setEnabledCommand(true),
-            indexer.reverseIndexCommand(),
-            Commands.waitSeconds(0.2),
-            indexer.stopCommand()
-        ).finallyDo(indexer::stop);
+    // public Command backupIndexer() {
+    //     Command command = Commands.sequence(
+    //         indexer.setEnabledCommand(true),
+    //         indexer.reverseIndexCommand(),
+    //         Commands.waitSeconds(0.2),
+    //         indexer.stopCommand()
+    //     ).finallyDo(indexer::stop);
 
-        command.addRequirements(indexer);
+    //     command.addRequirements(indexer);
         
-        return command;
-    }
+    //     return command;
+    // }
 
-    public Command backupIndexerAndShooter() {
-        Command command = Commands.sequence(
-            shooterRoller.setVelocityCommand(-20, -20),
-            shooterRoller.setEnabledCommand(true),
-            indexer.setEnabledCommand(true),
-            indexer.reverseIndexCommand(),
-            Commands.waitSeconds(0.2),
-            indexer.stopCommand(),
-            shooterRoller.stopCommand()
-        ).finallyDo(() -> {
-            indexer.stop();
-            shooterRoller.stop();    
-        });
+    // public Command backupIndexerAndShooter() {
+    //     Command command = Commands.sequence(
+    //         shooterRoller.setVelocityCommand(-20, -20),
+    //         shooterRoller.setEnabledCommand(true),
+    //         indexer.setEnabledCommand(true),
+    //         indexer.reverseIndexCommand(),
+    //         Commands.waitSeconds(0.2),
+    //         indexer.stopCommand(),
+    //         shooterRoller.stopCommand()
+    //     ).finallyDo(() -> {
+    //         indexer.stop();
+    //         shooterRoller.stop();    
+    //     });
 
-        command.addRequirements(indexer, shooterRoller);
+    //     command.addRequirements(indexer, shooterRoller);
         
-        return command;
-    }
+    //     return command;
+    // }
 
-    public Command backupIndexerManual() {
-        Command command = Commands.sequence(
-            // shooterPivot.moveToSpeaker(),
-            indexer.setEnabledCommand(true),
-            shooterRoller.setEnabledCommand(true),
-            indexer.reverseIndexCommand(),
-            shooterRoller.setReverseVelocityCommand(-10, -10), // TODO: Later
-            Commands.waitSeconds(0.2)
-        ).finallyDo(() -> {
-            indexer.stop();
-            shooterRoller.stop();
-        });
+    // public Command backupIndexerManual() {
+    //     Command command = Commands.sequence(
+    //         // shooterPivot.moveToSpeaker(),
+    //         indexer.setEnabledCommand(true),
+    //         shooterRoller.setEnabledCommand(true),
+    //         indexer.reverseIndexCommand(),
+    //         shooterRoller.setReverseVelocityCommand(-10, -10), // TODO: Later
+    //         Commands.waitSeconds(0.2)
+    //     ).finallyDo(() -> {
+    //         indexer.stop();
+    //         shooterRoller.stop();
+    //     });
 
-        command.addRequirements(shooterRoller, indexer);
+    //     command.addRequirements(shooterRoller, indexer);
         
-        return command.withInterruptBehavior(InterruptionBehavior.kCancelSelf);
-    }
+    //     return command.withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+    // }
 
-    public Command intakeUntilSensed() {
-        Command command = Commands.sequence(
-            Commands.deadline(
-                Commands.waitUntil(() -> 
-                    // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
-                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
-                handoff(),
-                Commands.waitSeconds(1)
-            ),
-            shooterRoller.setVelocityCommand(0, 0),
-            shooterRoller.setEnabledCommand(true),
-            // intakeRoller.setEnabledCommand(true),
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
-            // intakeRoller.intakeCommand(),
+    // public Command intakeUntilSensed() {
+    //     Command command = Commands.sequence(
+    //         Commands.deadline(
+    //             Commands.waitUntil(() -> 
+    //                 // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+    //                 shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+    //             handoff(),
+    //             Commands.waitSeconds(1)
+    //         ),
+    //         shooterRoller.setVelocityCommand(0, 0),
+    //         shooterRoller.setEnabledCommand(true),
+    //         // intakeRoller.setEnabledCommand(true),
+    //         indexer.setEnabledCommand(true),
+    //         indexer.indexCommand(),
+    //         // intakeRoller.intakeCommand(),
 
-            // Commands.deadline(
-                // Commands.waitSeconds(1), // testing - check wait time             
-            Commands.waitUntil(this::noteIntook),
-            // ),
+    //         // Commands.deadline(
+    //             // Commands.waitSeconds(1), // testing - check wait time             
+    //         Commands.waitUntil(this::noteIntook),
+    //         // ),
             
-            // Move note back
-            indexer.reverseIndexCommand(),
-            shooterRoller.setVelocityCommand(0, 0),
-            Commands.waitSeconds(0.2), // Was 0.6   3/3/24   Code Orange
+    //         // Move note back
+    //         indexer.reverseIndexCommand(),
+    //         shooterRoller.setVelocityCommand(0, 0),
+    //         Commands.waitSeconds(0.2), // Was 0.6   3/3/24   Code Orange
 
-            // intakeRoller.stopCommand(),
-            indexer.stopCommand(),
-            shooterRoller.stopCommand()
-        ).finallyDo(() -> {
-            // intakeRoller.stop();
-            indexer.stop();
-            shooterRoller.stop();
-        });
+    //         // intakeRoller.stopCommand(),
+    //         indexer.stopCommand(),
+    //         shooterRoller.stopCommand()
+    //     ).finallyDo(() -> {
+    //         // intakeRoller.stop();
+    //         indexer.stop();
+    //         shooterRoller.stop();
+    //     });
 
-        command.addRequirements(shooterPivot, shooterRoller, indexer);
-        return command;
-    }
+    //     command.addRequirements(shooterPivot, shooterRoller, indexer);
+    //     return command;
+    // }
 
-    public Command intakeUntilSensed(double timeout) {
-        Command command = Commands.sequence(
-            Commands.deadline(
-                Commands.waitUntil(() -> 
-                    // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
-                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
-                handoff(),
-                Commands.waitSeconds(1)
-            ),
-            shooterRoller.setVelocityCommand(-10, -10),
-            shooterRoller.setEnabledCommand(true),
-            // intakeRoller.setEnabledCommand(true),
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
-            // intakeRoller.intakeCommand(),
+    // public Command intakeUntilSensed(double timeout) {
+    //     Command command = Commands.sequence(
+    //         Commands.deadline(
+    //             Commands.waitUntil(() -> 
+    //                 // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+    //                 shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+    //             handoff(),
+    //             Commands.waitSeconds(1)
+    //         ),
+    //         shooterRoller.setVelocityCommand(-10, -10),
+    //         shooterRoller.setEnabledCommand(true),
+    //         // intakeRoller.setEnabledCommand(true),
+    //         indexer.setEnabledCommand(true),
+    //         indexer.indexCommand(),
+    //         // intakeRoller.intakeCommand(),
 
-            Commands.deadline(
-                Commands.waitSeconds(timeout), // testing - check wait time             
-                Commands.waitUntil(this::noteIntook)
-            ),
+    //         Commands.deadline(
+    //             Commands.waitSeconds(timeout), // testing - check wait time             
+    //             Commands.waitUntil(this::noteIntook)
+    //         ),
             
-            // Move note back
-            indexer.reverseIndexCommand(),
-            shooterRoller.setVelocityCommand(-10, -10),
-            Commands.waitSeconds(0.2), // Was 0.6   3/3/24   Code Orange
+    //         // Move note back
+    //         indexer.reverseIndexCommand(),
+    //         shooterRoller.setVelocityCommand(-10, -10),
+    //         Commands.waitSeconds(0.2), // Was 0.6   3/3/24   Code Orange
 
-            // intakeRoller.stopCommand(),
-            indexer.stopCommand(),
-            shooterRoller.stopCommand()
-        ).finallyDo(() -> {
-            // intakeRoller.stop();
-            indexer.stop();
-            shooterRoller.stop();
-        });
+    //         // intakeRoller.stopCommand(),
+    //         indexer.stopCommand(),
+    //         shooterRoller.stopCommand()
+    //     ).finallyDo(() -> {
+    //         // intakeRoller.stop();
+    //         indexer.stop();
+    //         shooterRoller.stop();
+    //     });
 
-        command.addRequirements(shooterPivot, shooterRoller, indexer);
-        return command;
-    }
+    //     command.addRequirements(shooterPivot, shooterRoller, indexer);
+    //     return command;
+    // }
 
-    public Command intakeUntilSensedAuto(double timeout) {
-        Command command = Commands.sequence(
-            Commands.deadline(
-                Commands.waitUntil(() -> 
-                    // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
-                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
-                handoff(),
-                Commands.waitSeconds(1)
-            ),
-            shooterRoller.setVelocityCommand(-10, -10),
-            shooterRoller.setEnabledCommand(true),
-            // intakeRoller.setEnabledCommand(true),
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
-            // intakeRoller.intakeCommand(),
+    // public Command intakeUntilSensedAuto(double timeout) {
+    //     Command command = Commands.sequence(
+    //         Commands.deadline(
+    //             Commands.waitUntil(() -> 
+    //                 // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+    //                 shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+    //             handoff(),
+    //             Commands.waitSeconds(1)
+    //         ),
+    //         shooterRoller.setVelocityCommand(-10, -10),
+    //         shooterRoller.setEnabledCommand(true),
+    //         // intakeRoller.setEnabledCommand(true),
+    //         indexer.setEnabledCommand(true),
+    //         indexer.indexCommand(),
+    //         // intakeRoller.intakeCommand(),
 
-            Commands.deadline(
-                Commands.waitSeconds(timeout), // testing - check wait time             
-                Commands.waitUntil(this::noteIntook)
-            )
-        ).finallyDo(() -> {
-            // intakeRoller.stop();
-            indexer.stop();
-            shooterRoller.stop();
-        });
+    //         Commands.deadline(
+    //             Commands.waitSeconds(timeout), // testing - check wait time             
+    //             Commands.waitUntil(this::noteIntook)
+    //         )
+    //     ).finallyDo(() -> {
+    //         // intakeRoller.stop();
+    //         indexer.stop();
+    //         shooterRoller.stop();
+    //     });
 
-        command.addRequirements(shooterPivot, shooterRoller, indexer);
-        return command;
-    }
+    //     command.addRequirements(shooterPivot, shooterRoller, indexer);
+    //     return command;
+    // }
 
-    public Command intakeBasic() {
-        Command command = Commands.sequence(
-            Commands.deadline(
-                Commands.waitUntil(() -> 
-                    // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
-                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
-                handoff(),
-                Commands.waitSeconds(1)
-                ),
-            // intakeRoller.setEnabledCommand(true),
-            indexer.setEnabledCommand(true),
-            Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
-            indexer.indexCommand(),
-            // intakeRoller.intakeCommand(),
-            Commands.waitUntil(() -> false)
-        ).finallyDo(
-            () -> {
-                SmartDashboard.putBoolean("Intaking", false);
-                // intakeRoller.stop();
-                indexer.stop();
-            }
-        );
+    // public Command intakeBasic() {
+    //     Command command = Commands.sequence(
+    //         Commands.deadline(
+    //             Commands.waitUntil(() -> 
+    //                 // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+    //                 shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+    //             handoff(),
+    //             Commands.waitSeconds(1)
+    //             ),
+    //         // intakeRoller.setEnabledCommand(true),
+    //         indexer.setEnabledCommand(true),
+    //         Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
+    //         indexer.indexCommand(),
+    //         // intakeRoller.intakeCommand(),
+    //         Commands.waitUntil(() -> false)
+    //     ).finallyDo(
+    //         () -> {
+    //             SmartDashboard.putBoolean("Intaking", false);
+    //             // intakeRoller.stop();
+    //             indexer.stop();
+    //         }
+    //     );
 
-        command.addRequirements(shooterPivot, shooterRoller, indexer);
-        return command;
-    }
+    //     command.addRequirements(shooterPivot, shooterRoller, indexer);
+    //     return command;
+    // }
 
-    public Command intakeBasicHold() {
-        Command command = Commands.sequence(
-            Commands.deadline(
-                Commands.waitUntil(() -> 
-                    // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
-                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
-                handoff(),
-                Commands.waitSeconds(1)
-                ),
-            // intakeRoller.setEnabledCommand(true),
-            indexer.setEnabledCommand(true),
-            Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
-            indexer.indexCommand()
-            // intakeRoller.intakeCommand()
-        );
+    // public Command intakeBasicHold() {
+    //     Command command = Commands.sequence(
+    //         Commands.deadline(
+    //             Commands.waitUntil(() -> 
+    //                 // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+    //                 shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+    //             handoff(),
+    //             Commands.waitSeconds(1)
+    //             ),
+    //         // intakeRoller.setEnabledCommand(true),
+    //         indexer.setEnabledCommand(true),
+    //         Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
+    //         indexer.indexCommand()
+    //         // intakeRoller.intakeCommand()
+    //     );
 
-        command.addRequirements(shooterPivot, shooterRoller, indexer);
-        return command;
-    }
+    //     command.addRequirements(shooterPivot, shooterRoller, indexer);
+    //     return command;
+    // }
 
-    public Command stopIntaking() {
-        Command command = Commands.sequence(
-            indexer.reverseIndexCommand(),
-            Commands.waitSeconds(0.5),
-            Commands.runOnce(() -> {
-                SmartDashboard.putBoolean("Intaking", false);
-                // intakeRoller.stop();
-                indexer.stop();
-            })
-        );
+    // public Command stopIntaking() {
+    //     Command command = Commands.sequence(
+    //         indexer.reverseIndexCommand(),
+    //         Commands.waitSeconds(0.5),
+    //         Commands.runOnce(() -> {
+    //             SmartDashboard.putBoolean("Intaking", false);
+    //             // intakeRoller.stop();
+    //             indexer.stop();
+    //         })
+    //     );
 
-        command.addRequirements(indexer);
-        return command;
-    }
+    //     command.addRequirements(indexer);
+    //     return command;
+    // }
 
 
-    public Command intakeDirectShoot() {
-        return intakeDirectShoot(ShooterConstants.kHandoffPosition.get(), 
-                                 ShooterConstants.kTopOuttakeAuto1.get(),
-                                 ShooterConstants.kBottomOuttakeAuto1.get());
-    }
+    // public Command intakeDirectShoot() {
+    //     return intakeDirectShoot(ShooterConstants.kHandoffPosition.get(), 
+    //                              ShooterConstants.kTopOuttakeAuto1.get(),
+    //                              ShooterConstants.kBottomOuttakeAuto1.get());
+    // }
 
-    public Command intakeDirectShoot(double shooterPosition, double topShooterVelocity, double bottomShooterVelocity) {
-        Command command = Commands.sequence(
-            Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", true)),
-            Commands.deadline(
-                Commands.waitUntil(() -> 
-                    // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
-                    shooterPivot.hasReachedPosition(shooterPosition)),
-                // intakePivot.moveToIntake(),
-                shooterPivot.setPositionCommand(shooterPosition)
-                ),
-            Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", false)),
-            shooterRoller.setEnabledCommand(true),
-            indexer.setEnabledCommand(true),
-            Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
-            indexer.indexCommand(),
-            shooterRoller.setVelocityCommand(topShooterVelocity, bottomShooterVelocity),
-            Commands.waitUntil(() -> false)
-        ).finallyDo(
-            () -> {
-                SmartDashboard.putBoolean("Intaking", false);
-                indexer.stop();
-                shooterRoller.setVelocity(0, 0);
-            }
-        );
+    // public Command intakeDirectShoot(double shooterPosition, double topShooterVelocity, double bottomShooterVelocity) {
+    //     Command command = Commands.sequence(
+    //         Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", true)),
+    //         Commands.deadline(
+    //             Commands.waitUntil(() -> 
+    //                 // intakePivot.hasReachedPosition(IntakeConstants.kPickupPosition.get()) && 
+    //                 shooterPivot.hasReachedPosition(shooterPosition)),
+    //             // intakePivot.moveToIntake(),
+    //             shooterPivot.setPositionCommand(shooterPosition)
+    //             ),
+    //         Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", false)),
+    //         shooterRoller.setEnabledCommand(true),
+    //         indexer.setEnabledCommand(true),
+    //         Commands.runOnce(() -> SmartDashboard.putBoolean("Intaking", true)),
+    //         indexer.indexCommand(),
+    //         shooterRoller.setVelocityCommand(topShooterVelocity, bottomShooterVelocity),
+    //         Commands.waitUntil(() -> false)
+    //     ).finallyDo(
+    //         () -> {
+    //             SmartDashboard.putBoolean("Intaking", false);
+    //             indexer.stop();
+    //             shooterRoller.setVelocity(0, 0);
+    //         }
+    //     );
 
-        command.addRequirements(shooterPivot, shooterRoller, indexer);
-        return command;
-    }
+    //     command.addRequirements(shooterPivot, shooterRoller, indexer);
+    //     return command;
+    // }
 
-    public Command intakeDirectShoot(double shooterPosition, double shooterVelocity) {
-        return intakeDirectShoot(shooterPosition, shooterVelocity, shooterVelocity);
-    }
+    // public Command intakeDirectShoot(double shooterPosition, double shooterVelocity) {
+    //     return intakeDirectShoot(shooterPosition, shooterVelocity, shooterVelocity);
+    // }
 
-    public Command eject() {
-        Command command = Commands.sequence(
-            Commands.deadline(
-                Commands.waitUntil(() -> 
-                    shooterPivot.hasReachedPosition(ShooterConstants.kEjectPosition.get())),
-                shooterPivot.setPositionCommand(ShooterConstants.kEjectPosition.get())
-                ),
-            Commands.runOnce(() -> SmartDashboard.putBoolean("Outtaking", true)),
-            Commands.waitSeconds(0.25),
-            indexer.setEnabledCommand(true),
-            indexer.setVelocityCommand(-50),
-            Commands.runOnce(() -> SmartDashboard.putBoolean("Intake roller", true)),
-            Commands.waitUntil(() -> false)
-        ).finallyDo(
-            () -> {
-                SmartDashboard.putBoolean("Intake roller", false);
-                SmartDashboard.putBoolean("Outtaking", false);
-                indexer.stop();
-            }
-        );
+    // public Command eject() {
+    //     Command command = Commands.sequence(
+    //         Commands.deadline(
+    //             Commands.waitUntil(() -> 
+    //                 shooterPivot.hasReachedPosition(ShooterConstants.kEjectPosition.get())),
+    //             shooterPivot.setPositionCommand(ShooterConstants.kEjectPosition.get())
+    //             ),
+    //         Commands.runOnce(() -> SmartDashboard.putBoolean("Outtaking", true)),
+    //         Commands.waitSeconds(0.25),
+    //         indexer.setEnabledCommand(true),
+    //         indexer.setVelocityCommand(-50),
+    //         Commands.runOnce(() -> SmartDashboard.putBoolean("Intake roller", true)),
+    //         Commands.waitUntil(() -> false)
+    //     ).finallyDo(
+    //         () -> {
+    //             SmartDashboard.putBoolean("Intake roller", false);
+    //             SmartDashboard.putBoolean("Outtaking", false);
+    //             indexer.stop();
+    //         }
+    //     );
 
-        command.addRequirements(shooterPivot, shooterRoller, indexer);
-        return command;
-    }
+    //     command.addRequirements(shooterPivot, shooterRoller, indexer);
+    //     return command;
+    // }
 
-    public Command prepareShooter() {
-        Command command = Commands.sequence(
-            shooterPivot.moveToSpeaker(),
-            shooterRoller.setEnabledCommand(true),
-            shooterRoller.shootSpeaker()
-        );
-        command.addRequirements(shooterPivot, shooterRoller, indexer);
-        return command;
-    }
+    // public Command prepareShooter() {
+    //     Command command = Commands.sequence(
+    //         shooterPivot.moveToSpeaker(),
+    //         shooterRoller.setEnabledCommand(true),
+    //         shooterRoller.shootSpeaker()
+    //     );
+    //     command.addRequirements(shooterPivot, shooterRoller, indexer);
+    //     return command;
+    // }
 
-    public Command shootShooter() {
-        Command command = Commands.sequence(
-            shooterPivot.moveToSpeaker(),
-            shooterRoller.setEnabledCommand(true),
-            shooterRoller.shootSpeaker(),
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand()
-        );
-        command.addRequirements(shooterPivot, shooterRoller, indexer);
-        return command;
-    }
+    // public Command shootShooter() {
+    //     Command command = Commands.sequence(
+    //         shooterPivot.moveToSpeaker(),
+    //         shooterRoller.setEnabledCommand(true),
+    //         shooterRoller.shootSpeaker(),
+    //         indexer.setEnabledCommand(true),
+    //         indexer.indexCommand()
+    //     );
+    //     command.addRequirements(shooterPivot, shooterRoller, indexer);
+    //     return command;
+    // }
 
-    public Command shootSubwoofer() {
-        Command command = Commands.sequence(
-            // Prepare to shoot
-            shooterPivot.moveToSpeaker(),
-            shooterRoller.setEnabledCommand(true),
-            shooterRoller.shootSpeaker(),
-            Commands.waitSeconds(0.8), // Was 0.2     3/3/24     But 0.8   @Code Orange
+    // public Command shootSubwoofer() {
+    //     Command command = Commands.sequence(
+    //         // Prepare to shoot
+    //         shooterPivot.moveToSpeaker(),
+    //         shooterRoller.setEnabledCommand(true),
+    //         shooterRoller.shootSpeaker(),
+    //         Commands.waitSeconds(0.8), // Was 0.2     3/3/24     But 0.8   @Code Orange
             
-            // Shoot
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
-            Commands.waitUntil(() -> false)
-        ).finallyDo(interrupted -> {
-            indexer.stop();
-            shooterRoller.stop();
-        });
+    //         // Shoot
+    //         indexer.setEnabledCommand(true),
+    //         indexer.indexCommand(),
+    //         Commands.waitUntil(() -> false)
+    //     ).finallyDo(interrupted -> {
+    //         indexer.stop();
+    //         shooterRoller.stop();
+    //     });
 
-        command.addRequirements(shooterPivot, shooterRoller, indexer);
-        return command;
-    }
+    //     command.addRequirements(shooterPivot, shooterRoller, indexer);
+    //     return command;
+    // }
 
-    public Command shootSubwooferAuto() {
-        Command command = Commands.sequence(
-            // Prepare to shoot
-            shooterPivot.moveToSpeakerAuto(),
-            shooterRoller.setEnabledCommand(true),
-            shooterRoller.shootSpeaker(),
-            Commands.deadline(
-                Commands.waitSeconds(0.6),
-                Commands.waitUntil(shooterRoller::atTargetVelocity)
-            ),
+    // public Command shootSubwooferAuto() {
+    //     Command command = Commands.sequence(
+    //         // Prepare to shoot
+    //         shooterPivot.moveToSpeakerAuto(),
+    //         shooterRoller.setEnabledCommand(true),
+    //         shooterRoller.shootSpeaker(),
+    //         Commands.deadline(
+    //             Commands.waitSeconds(0.6),
+    //             Commands.waitUntil(shooterRoller::atTargetVelocity)
+    //         ),
             
-            // Shoot
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
-            Commands.waitUntil(() -> false)
-        ).finallyDo(interrupted -> {
-            indexer.stop();
-            shooterRoller.stop();
-        });
+    //         // Shoot
+    //         indexer.setEnabledCommand(true),
+    //         indexer.indexCommand(),
+    //         Commands.waitUntil(() -> false)
+    //     ).finallyDo(interrupted -> {
+    //         indexer.stop();
+    //         shooterRoller.stop();
+    //     });
 
-        command.addRequirements(shooterPivot, shooterRoller, indexer);
-        return command;
-    }
+    //     command.addRequirements(shooterPivot, shooterRoller, indexer);
+    //     return command;
+    // }
 
-    public Command shootSequenceAdjustable(ShooterVisionAdjustment sva) {
-        Command command = Commands.sequence(
-            // Prepare to shoot
-            Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
-            shooterRoller.setEnabledCommand(true),
-            shooterRoller.shootSpeaker(),
-            Commands.waitSeconds(0.8),
+    // public Command shootSequenceAdjustable(ShooterVisionAdjustment sva) {
+    //     Command command = Commands.sequence(
+    //         // Prepare to shoot
+    //         Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
+    //         shooterRoller.setEnabledCommand(true),
+    //         shooterRoller.shootSpeaker(),
+    //         Commands.waitSeconds(0.8),
             
-            // Shoot
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
-            Commands.waitUntil(() -> false)
-        ).finallyDo(interrupted -> {
-            indexer.stop();
-            shooterRoller.stop();
-        });
+    //         // Shoot
+    //         indexer.setEnabledCommand(true),
+    //         indexer.indexCommand(),
+    //         Commands.waitUntil(() -> false)
+    //     ).finallyDo(interrupted -> {
+    //         indexer.stop();
+    //         shooterRoller.stop();
+    //     });
 
-        command.addRequirements(shooterPivot, shooterRoller, indexer);
-        return command;
-    }
+    //     command.addRequirements(shooterPivot, shooterRoller, indexer);
+    //     return command;
+    // }
 
-    public Command turnAndShootWithVision(frc.robot.subsystems.swerve.SwerveDrivetrain swerve, ShooterVisionAdjustment sva, DriverAssist da) {
-        return Commands.sequence(
-            Commands.race(
-                da.turnToTag(RobotContainer.IsRedSide() ? 4 : 7, null),
-                Commands.waitSeconds(2)
-            ),
-            Commands.runOnce(swerve::towModules),
-            shootSequenceAdjustable(sva)
-        );
-    }
+    // public Command turnAndShootWithVision(frc.robot.subsystems.swerve.SwerveDrivetrain swerve, ShooterVisionAdjustment sva, DriverAssist da) {
+    //     return Commands.sequence(
+    //         Commands.race(
+    //             da.turnToTag(RobotContainer.IsRedSide() ? 4 : 7, null),
+    //             Commands.waitSeconds(2)
+    //         ),
+    //         Commands.runOnce(swerve::towModules),
+    //         shootSequenceAdjustable(sva)
+    //     );
+    // }
 
-    public Command shootPodium() {
-        Command command = Commands.sequence(
-            // Prepare to shoot
-            shooterPivot.moveToSpeakerFar(),
-            shooterRoller.setEnabledCommand(true),
-            shooterRoller.shootSpeaker(),
-            Commands.waitSeconds(0.8),
+    // public Command shootPodium() {
+    //     Command command = Commands.sequence(
+    //         // Prepare to shoot
+    //         shooterPivot.moveToSpeakerFar(),
+    //         shooterRoller.setEnabledCommand(true),
+    //         shooterRoller.shootSpeaker(),
+    //         Commands.waitSeconds(0.8),
             
-            // Shoot
-            indexer.setEnabledCommand(true),
-            indexer.indexCommand(),
-            Commands.waitUntil(() -> false)
-        ).finallyDo(interrupted -> {
-            indexer.stop();
-            shooterRoller.stop();
-        });
-        command.addRequirements(shooterPivot, shooterRoller, indexer);
-        return command;
-    }
+    //         // Shoot
+    //         indexer.setEnabledCommand(true),
+    //         indexer.indexCommand(),
+    //         Commands.waitUntil(() -> false)
+    //     ).finallyDo(interrupted -> {
+    //         indexer.stop();
+    //         shooterRoller.stop();
+    //     });
+    //     command.addRequirements(shooterPivot, shooterRoller, indexer);
+    //     return command;
+    // }
 
-    public Command climbSequence() {
-        return Commands.sequence(
-            linearActuator.retractCommand(),
-            Commands.waitSeconds(1),
-            Commands.runOnce(() -> climber.climb())
+    // public Command climbSequence() {
+    //     return Commands.sequence(
+    //         linearActuator.retractCommand(),
+    //         Commands.waitSeconds(1),
+    //         Commands.runOnce(() -> climber.climb())
         
-        );
+    //     );
             
-    }
+    // }
 }
