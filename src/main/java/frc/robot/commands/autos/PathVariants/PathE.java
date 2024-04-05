@@ -17,7 +17,7 @@ import frc.robot.subsystems.vision.NoteAssistance;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class PathE extends SequentialCommandGroup {
-    public PathE(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, NoteAssistance noteAssistance, DriverAssist driverAssist, ShooterVisionAdjustment sva){
+    public PathE(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva){
         Pose2d startingPose = pathGroup.get(0).getPreviewStartingHolonomicPose();
 
         // start of E ****************************************************************

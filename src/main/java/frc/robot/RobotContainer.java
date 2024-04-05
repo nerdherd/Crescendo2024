@@ -36,6 +36,11 @@ import frc.robot.commands.autos.Mid3PiecePathOnly;
 import frc.robot.commands.autos.PoseEstimatorTest;
 import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
+import frc.robot.commands.autos.PathVariants.PathA;
+import frc.robot.commands.autos.PathVariants.PathB;
+import frc.robot.commands.autos.PathVariants.PathC;
+import frc.robot.commands.autos.PathVariants.PathE;
+import frc.robot.commands.autos.PathVariants.PathF;
 import frc.robot.subsystems.CANdleSubSystem;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CANdleSubSystem.Status;
@@ -469,17 +474,32 @@ public class RobotContainer {
   PathPlannerPath a01 = PathPlannerPath.fromPathFile("a01Path");
   PathPlannerPath a02 = PathPlannerPath.fromPathFile("a02Path");
   PathPlannerPath a03 = PathPlannerPath.fromPathFile("a03Path");
-
+  PathPlannerPath b12 = PathPlannerPath.fromPathFile("b12Path");
+  PathPlannerPath c24 = PathPlannerPath.fromPathFile("c24Path");
+  PathPlannerPath d45 = PathPlannerPath.fromPathFile("d45Path");
+  PathPlannerPath e52 = PathPlannerPath.fromPathFile("e52Path");
+  PathPlannerPath f04 = PathPlannerPath.fromPathFile("f04Path");
   
-  PathPlannerPath c15 = PathPlannerPath.fromPathFile("c15Path");
-
-  PathPlannerPath d56 = PathPlannerPath.fromPathFile("c15Path");
-
-  final List<PathPlannerPath> pathGroupExample3 = List.of(
-    a01, c15, a03
+  // final List<PathPlannerPath> pathGroupExample3 = List.of(
+  //   a01, c15, a03
+  // );
+  final List<PathPlannerPath> pathGroupTestA = List.of(
+     a01
   );
-   final List<PathPlannerPath> pathGroupExample2 = List.of(
-     c15, d56
+  final List<PathPlannerPath> pathGroupTestB = List.of(
+     b12
+  );
+  final List<PathPlannerPath> pathGroupTestC = List.of(
+     c24
+  );
+  final List<PathPlannerPath> pathGroupTestD = List.of(
+     d45
+  );
+  final List<PathPlannerPath> pathGroupTestE = List.of(
+     e52
+  );
+  final List<PathPlannerPath> pathGroupTestF = List.of(
+     f04
   );
 
   private void initAutoChoosers() {
@@ -489,10 +509,10 @@ public class RobotContainer {
     autoChooser.addOption("Pose Estimator Test Auto", new PoseEstimatorTest(swerveDrive,"PoseEstimatorTest", superSystem ));
     
     // Testing/characterization autos
-    if (paths.contains("Test2M")) {
-      // autoChooser.addOption("Test2M", new Test2M(swerveDrive));
-      autoChooser.addOption("Preload Taxi Straight", new PreloadTaxi(swerveDrive, pathGroupExample3, superSystem));
-    }
+    // if (paths.contains("Test2M")) {
+    //   // autoChooser.addOption("Test2M", new Test2M(swerveDrive));
+    //   autoChooser.addOption("Preload Taxi Straight", new PreloadTaxi(swerveDrive, pathGroupExample3, superSystem));
+    // }
 
     if (paths.contains("PoseEstimatorTest")) {
       autoChooser.addOption("Pose Estimator Test Auto", new PoseEstimatorTest(swerveDrive,"PoseEstimatorTest", superSystem));
@@ -537,7 +557,12 @@ public class RobotContainer {
       autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem, adjustmentCamera));
     }
 
-    
+    autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, pathGroupTestA, apriltagCamera, adjustmentCamera));
+    autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, pathGroupTestB, apriltagCamera, adjustmentCamera));
+    autoChooser.addOption("PathC", new PathC(swerveDrive, pathGroupTestC, 0));
+    // autoChooser.addOption("PathD", new PathA(swerveDrive, superSystem, pathGroupExample2, apriltagCamera, adjustmentCamera));
+    autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, pathGroupTestE, apriltagCamera, adjustmentCamera));
+    autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, pathGroupTestF, 0));
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
