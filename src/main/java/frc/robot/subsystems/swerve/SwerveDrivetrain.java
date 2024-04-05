@@ -181,7 +181,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         if(!doRejectUpdate)
         {
             poseEstimator.setVisionMeasurementStdDevs(
-              VecBuilder.fill(0.8, 0.8, 9999999));
+              VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
 
             //poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
             poseEstimator.addVisionMeasurement(

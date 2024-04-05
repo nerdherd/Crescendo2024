@@ -42,6 +42,7 @@ import frc.robot.commands.autos.PathVariants.PathC;
 import frc.robot.commands.autos.PathVariants.PathD;
 import frc.robot.commands.autos.PathVariants.PathE;
 import frc.robot.commands.autos.PathVariants.PathF;
+import frc.robot.commands.autos.PathVariants.SuperPath;
 import frc.robot.subsystems.CANdleSubSystem;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CANdleSubSystem.Status;
@@ -472,10 +473,8 @@ public class RobotContainer {
     // ));
   }
 
-  PathPlannerPath a01 = PathPlannerPath.fromPathFile("a01Path");
   PathPlannerPath a02 = PathPlannerPath.fromPathFile("a02Path");
-  PathPlannerPath a03 = PathPlannerPath.fromPathFile("a03Path");
-  PathPlannerPath b12 = PathPlannerPath.fromPathFile("b12Path");
+  PathPlannerPath b23 = PathPlannerPath.fromPathFile("b23Path");
   PathPlannerPath c24 = PathPlannerPath.fromPathFile("c24Path");
   PathPlannerPath d45 = PathPlannerPath.fromPathFile("d45Path");
   PathPlannerPath d56 = PathPlannerPath.fromPathFile("d56Path");
@@ -485,11 +484,14 @@ public class RobotContainer {
   // final List<PathPlannerPath> pathGroupExample3 = List.of(
   //   a01, c15, a03
   // );
+  final List<PathPlannerPath> pathGroupTestSuper = List.of(
+     a02, b23
+  );
   final List<PathPlannerPath> pathGroupTestA = List.of(
-     a01
+     a02
   );
   final List<PathPlannerPath> pathGroupTestB = List.of(
-     b12
+     b23
   );
   final List<PathPlannerPath> pathGroupTestC = List.of(
      c24
@@ -542,10 +544,10 @@ public class RobotContainer {
     }
     
 
-    if (paths.contains("Reliable4Piece")) {
-      autoChooser.setDefaultOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
-      // autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
-    }
+    // if (paths.contains("Reliable4Piece")) {
+    //   autoChooser.setDefaultOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
+    //   // autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
+    // }
 
     if (paths.contains("NEW4Piece")) {
       autoChooser.addOption("New 4 Piece", new Reliable4Piece(swerveDrive, "NEW4Piece", superSystem));
@@ -559,6 +561,7 @@ public class RobotContainer {
       autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem, adjustmentCamera));
     }
 
+    autoChooser.setDefaultOption("SuperPath", new SuperPath(swerveDrive, superSystem, pathGroupTestSuper, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, pathGroupTestA, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, pathGroupTestB, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathC", new PathC(swerveDrive, pathGroupTestC, 0));

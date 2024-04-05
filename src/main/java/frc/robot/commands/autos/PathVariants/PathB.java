@@ -6,6 +6,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
@@ -16,7 +17,8 @@ import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class PathB extends SequentialCommandGroup{
     public PathB(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva) {
-        Pose2d startingPose = pathGroup.get(0).getPreviewStartingHolonomicPose();
+        // Pose2d startingPose = pathGroup.get(0).getPreviewStartingHolonomicPose();
+        Pose2d startingPose = new Pose2d(2.45, 5.55, new Rotation2d());//pathGroup.get(0).();
         addCommands(
             // Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
@@ -37,7 +39,7 @@ public class PathB extends SequentialCommandGroup{
             // Turn to Angle Shoot
             Commands.sequence(
                 Commands.deadline(
-                    Commands.waitSeconds(2),
+                    Commands.waitSeconds(0.4),
                     // adjust drive to april tag
                     Commands.either(
                         driverAssist.turnToTag(4, swerve),
