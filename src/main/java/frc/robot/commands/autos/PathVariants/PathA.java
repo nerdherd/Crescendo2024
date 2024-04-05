@@ -1,28 +1,17 @@
-package frc.robot.commands.autos;
+package frc.robot.commands.autos.PathVariants;
 
-import java.util.List;
+import edu.wpi.first.wpilibj2.command.Command;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.SuperSystem;
-import frc.robot.subsystems.swerve.SwerveDrivetrain;
-
-public class PreloadTaxi extends SequentialCommandGroup {
-    public PreloadTaxi(SwerveDrivetrain swerve, List<PathPlannerPath> pathGroup, SuperSystem superSystem) {     
-        //List<PathPlannerPath> pathGroup = pathGroupExample;
-        Pose2d startingPose = pathGroup.get(0).getPreviewStartingHolonomicPose();
-
-        addCommands(
+public class PathA {
+    /*
+    public Command PathA() {
+        return(
             // Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
             // Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
             
-            // A Start here
+            // A Start here ******************************************************
             // Preload
             Commands.deadline(
                 Commands.waitSeconds(1.5),
@@ -35,7 +24,7 @@ public class PreloadTaxi extends SequentialCommandGroup {
                 superSystem.shooterRoller.stopCommand()
             ), 
             
-            // Leave
+            // drive to note
             Commands.deadline(
                 AutoBuilder.followPath(pathGroup.get(0)),
                 Commands.waitSeconds(4.5),
@@ -46,8 +35,13 @@ public class PreloadTaxi extends SequentialCommandGroup {
                     // superSystem.intakeUntilSensed()
                 )
             )
+
+            // turn angle to tag
+
+
+            // shoot it
             
-            // A End here
+            // A End here ******************************************
 
             // C Starts here
 
@@ -56,4 +50,6 @@ public class PreloadTaxi extends SequentialCommandGroup {
             //....
         );
     }
+    */
+    
 }

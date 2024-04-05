@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -318,6 +319,9 @@ public class RobotContainer {
 
   public void configureBindings_test() {}
 
+
+
+
   public void configureLEDTriggers() {
     // Note Trigger
     Trigger noteTrigger = new Trigger(superSystem::noteIntook);
@@ -462,6 +466,22 @@ public class RobotContainer {
     // ));
   }
 
+  PathPlannerPath a01 = PathPlannerPath.fromPathFile("a01Path");
+  PathPlannerPath a02 = PathPlannerPath.fromPathFile("a02Path");
+  PathPlannerPath a03 = PathPlannerPath.fromPathFile("a03Path");
+
+  
+  PathPlannerPath c15 = PathPlannerPath.fromPathFile("c15Path");
+
+  PathPlannerPath d56 = PathPlannerPath.fromPathFile("c15Path");
+
+  final List<PathPlannerPath> pathGroupExample3 = List.of(
+    a01, c15, a03
+  );
+   final List<PathPlannerPath> pathGroupExample2 = List.of(
+     c15, d56
+  );
+
   private void initAutoChoosers() {
   	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands.none());
@@ -469,7 +489,7 @@ public class RobotContainer {
     // Testing/characterization autos
     if (paths.contains("Test2M")) {
       // autoChooser.addOption("Test2M", new Test2M(swerveDrive));
-      autoChooser.addOption("Preload Taxi Straight", new PreloadTaxi(swerveDrive, "Test2M", superSystem));
+      autoChooser.addOption("Preload Taxi Straight", new PreloadTaxi(swerveDrive, pathGroupExample3, superSystem));
     }
 
     if (paths.contains("PoseEstimatorTest")) {
@@ -485,11 +505,11 @@ public class RobotContainer {
     }
 
     if (paths.contains("PreloadTaxiSourceSide")) {
-      autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, "PreloadTaxiSourceSide", superSystem));
+      //autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, "PreloadTaxiSourceSide", superSystem));
     }
 
     if (paths.contains("PreloadTaxiPodiumSide")) {
-      autoChooser.addOption("Preload Taxi Podium Side", new PreloadTaxi(swerveDrive, "PreloadTaxiPodiumSide", superSystem));
+      //autoChooser.addOption("Preload Taxi Podium Side", new PreloadTaxi(swerveDrive, "PreloadTaxiPodiumSide", superSystem));
     }
 
     if (paths.contains("TaxiOnly")) {
