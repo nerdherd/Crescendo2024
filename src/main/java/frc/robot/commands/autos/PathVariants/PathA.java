@@ -1,55 +1,82 @@
 package frc.robot.commands.autos.PathVariants;
 
+import java.util.List;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.SuperSystem;
+import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.subsystems.vision.DriverAssist;
+import frc.robot.subsystems.vision.NoteAssistance;
+import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
-public class PathA {
-    /*
-    public Command PathA() {
-        return(
-            // Commands.runOnce(swerve.getImu()::zeroAll),
+public class PathA extends SequentialCommandGroup{
+    public PathA(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, NoteAssistance noteAssistance, DriverAssist driverAssist, int pathGroupNum, ShooterVisionAdjustment sva){
+        Pose2d startingPose = pathGroup.get(0).getPreviewStartingHolonomicPose();
+        addCommands(
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
-            // Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
-            
-            // A Start here ******************************************************
-            // Preload
-            Commands.deadline(
-                Commands.waitSeconds(1.5),
-                superSystem.shootSubwoofer()
-            ),
+            Commands.sequence(
+                // Preload
+                Commands.deadline(
+                    Commands.waitSeconds(1.5),
+                    superSystem.shootSubwoofer()
+                ),
 
-            // Stop shooter and indexer
-            Commands.parallel(
-                superSystem.indexer.stopCommand(),
-                superSystem.shooterRoller.stopCommand()
-            ), 
-            
-            // drive to note
-            Commands.deadline(
-                AutoBuilder.followPath(pathGroup.get(0)),
-                Commands.waitSeconds(4.5),
+                // Stop shooter and indexer
+                Commands.parallel(
+                    superSystem.indexer.stopCommand(),
+                    superSystem.shooterRoller.stopCommand()
+                ),
+
+                // Drive and intake
+                Commands.race(
+                    Commands.waitSeconds(3),
+                    Commands.sequence(
+                        // Path
+                        AutoBuilder.followPath(pathGroup.get(pathGroupNum))
+                        // Drive to note (if wanted)
+                        // noteAssistance.driveToNoteCommand(swerve, 0, 0, 0, 0, 0, startingPose) // TODO: change target values
+                    ),
+                    // Intake
+                    Commands.sequence(
+                        Commands.waitSeconds(0.125),
+                        superSystem.intakeUntilSensedAuto(1.75)
+                    )
+                ),
+
+                // Turn to angle and shoot
                 Commands.sequence(
-                    superSystem.stow()
-                    // ,
-                    // Commands.waitSeconds(2),
-                    // superSystem.intakeUntilSensed()
+                    // Turn to angle
+                    Commands.deadline(
+                        Commands.waitSeconds(2),
+                        Commands.either(
+                            driverAssist.turnToTag(4, swerve),
+                            driverAssist.turnToTag(7, swerve),
+                            RobotContainer::IsRedSide 
+                          )
+                    ),
+                    // Shoot
+                    Commands.sequence(
+                        superSystem.backupIndexerAndShooter(),
+                        Commands.waitSeconds(0.45),
+                        Commands.deadline(
+                            Commands.waitSeconds(1.2),
+                            // Adjust shooter Angle
+                            superSystem.shootSequenceAdjustable(sva)
+                        ),
+                        superSystem.indexer.stopCommand(),
+                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                        superSystem.shooterRoller.setEnabledCommand(true)
+                    )
                 )
             )
-
-            // turn angle to tag
-
-
-            // shoot it
-            
-            // A End here ******************************************
-
-            // C Starts here
-
-            // C ends here
-
-            //....
         );
     }
-    */
-    
 }
