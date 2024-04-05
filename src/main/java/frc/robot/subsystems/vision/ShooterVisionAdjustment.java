@@ -50,13 +50,18 @@ public class ShooterVisionAdjustment implements Reportable{
     private GenericEntry goalDistance;
     private Supplier<Pose2d> poseSupplier;
 
+    private Pose3d robotPose;
+
     // private double[] distances = {1.0, 1.356, 2.554, 2.95, 3.10, 3.5,  3.828,     4.15,     5.548}; // meters, from least to greatest
     // private double[] angles    = {-50, -49.6,   -31,  -30,  -27, -24.5, -23.25,  -22.375, -16.875}; // rotations // TODO: Convert to degrees
     //                           //  -50, -49.6,   -31,  -30,  -27, -23,   -22.5,   -22,    -16.875
     // the values above are old
 
-    private double[] distances = {2.483, 3.015, 3.573, 4.267, 4.697}; // distances from 4/3
-    private double[] angles = {-32.861, -29.114, -25.663, -22.413, -23.008}; // angles from 4/3
+    private double[] distances = {1.2, 2.483, 3.015, 3.573, 4.267, 4.697}; // distances from 4/3
+    private double[] angles = {-52.470, -32.861, -29.114, -25.663, -22.413, -23.008}; // angles from 4/3
+
+    //{2.483, 3.015, 3.573, 4.267, 4.697}; // old distances pre 4/5
+    //{-32.861, -29.114, -25.663, -22.413, -23.008}; // old angles from 4/5
 
     public ShooterVisionAdjustment(
         DriverAssist tagCamera, 
@@ -167,8 +172,8 @@ public class ShooterVisionAdjustment implements Reportable{
     }
 
     public double getDistanceFromTag(boolean preserveOldValue) {
-
-        Pose2d currentPose = (getRobotPose()==null)?null:getRobotPose().toPose2d();
+        robotPose = getRobotPose();
+        Pose2d currentPose = (robotPose == null) ? null : robotPose.toPose2d();
         if(currentPose == null) return (preserveOldValue ? lastDistance : 0.01);
         Pose3d tagPose;
         
@@ -222,7 +227,7 @@ public class ShooterVisionAdjustment implements Reportable{
         SmartDashboard.putNumber("Angle with Offset", output);
         SmartDashboard.putNumber("Angle Offset", angleoffset);
         lastAngle = output;
-        return output;
+        return output + 1.5;
     }
 
     @Override
