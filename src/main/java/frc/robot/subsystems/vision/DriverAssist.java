@@ -26,6 +26,8 @@ import frc.robot.commands.TurnToAngle;
 import frc.robot.commands.TurnToAngleLive;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
+import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers;
+import frc.robot.util.NerdyLine;
 import frc.robot.util.NerdyMath;
 import frc.robot.util.NerdySpline;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
@@ -64,8 +66,6 @@ public class DriverAssist implements Reportable{
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
         limelightName = name;
         ShuffleboardTab tab = Shuffleboard.getTab(limelightName);
-        toleranceSpline.create();
-        angleToleranceSpline.create();
         try {
             limelight = new Limelight(name);
             toggleLight(false);
@@ -88,7 +88,7 @@ public class DriverAssist implements Reportable{
 
     private double[] distances = new double[] {0, 1, 1.72, 2, 3, 3.5, 4, 5};
     private double[] tolerances = new double[] {10, 9, 8, 7, 4, 3, 1, 1};
-    private NerdySpline toleranceSpline = new NerdySpline(distances, tolerances);
+    private NerdyLine toleranceSpline = new NerdyLine(distances, tolerances);
 
     public double getTurnToAngleTolerance(double distance) {
         if (distance > 5) {
@@ -106,7 +106,7 @@ public class DriverAssist implements Reportable{
 
     private double[] angles          = new double[] {0, 10, 30, 45, 90};
     private double[] toleranceScales = new double[] {1, 0.95, 0.75, 0.4, 0};
-    private NerdySpline angleToleranceSpline = new NerdySpline(angles, toleranceScales);
+    private NerdyLine angleToleranceSpline = new NerdyLine(angles, toleranceScales);
 
     public double getTurnToAngleToleranceScale(double targetAngle) {
         double angleToSpeaker = 10000;
@@ -267,9 +267,9 @@ public class DriverAssist implements Reportable{
             Commands.runOnce(() -> reset()),
             Commands.run(
                 () -> TagAimingRotation(drivetrain, tagID, maxSamples)
-            ).until(() -> dataSampleCount >= minSamples && Math.abs(calculatedAngledPower) <= 0.1),
+            ).until(() -> dataSampleCount >= minSamples && Math.abs(calculatedAngledPower) <= 0.1)
 
-            Commands.runOnce(() -> reset())
+            //Commands.runOnce(() -> reset())
             // ,
             // resetOdoPoseByVision(drivetrain, tagID, maxSamples)
         );
@@ -301,6 +301,7 @@ public class DriverAssist implements Reportable{
         double txOffset;
 
         dataSampleCount++;
+        SmartDashboard.putNumber("dataSampleCount", dataSampleCount);
         if(maxSamples > 0 && dataSampleCount >= maxSamples)
         {
             calculatedAngledPower = 0;
@@ -313,7 +314,22 @@ public class DriverAssist implements Reportable{
                 targetId.setInteger(foundId);
 
             if(tagID == foundId || (tagID == 0 && foundId != -1)) {
+
+                lastTagSeenId = foundId;
                 
+                SmartDashboard.putNumber("lastTagSeenId", lastTagSeenId);
+                LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+                lastTagSeenDist = limelightMeasurement.avgTagDist;
+
+                lastTagSeenPose2d = limelightMeasurement.pose;
+                //double currentAngle = lastTagSeenPose2d.getRotation().getDegrees();
+                //SmartDashboard.putNumber("currentAngle", currentAngle);
+                
+                //Results a = LimelightHelpers.getLatestResults(limelightName).targetingResults;
+                double currentAngle;// = a.getBotPose2d().getRotation().getDegrees();
+                currentAngle = LimelightHelpers.getBotPose3d_TargetSpace(limelightName).toPose2d().getRotation().getDegrees();
+                SmartDashboard.putNumber("currentAngle", currentAngle);
+
                 taOffset = limelight.getArea_avg();
                 txOffset = limelight.getXAngle_avg();
                     
@@ -352,6 +368,26 @@ public class DriverAssist implements Reportable{
         }
 
         swerveDrive.drive(0, 0, calculatedAngledPower);
+    }
+
+    Pose2d lastTagSeenPose2d;
+    int lastTagSeenId;
+    double lastTagSeenDist;
+    public int getLastSeenAprilTagID() {
+        return lastTagSeenId;
+    }
+    public Pose2d getLastSeenPose2d() {
+        return lastTagSeenPose2d;
+    }
+    public double getLastTagSeenDist()
+    {
+        return lastTagSeenDist;
+    }
+
+    public Pose2d getLatestPose2dBlue()
+    {
+        LimelightHelpers.LimelightResults limelightResults = LimelightHelpers.getLatestResults(limelightName);
+        return limelightResults.targetingResults.getBotPose2d_wpiBlue();
     }
 
     // be careful to use this function!!! todo, not finished yet.....

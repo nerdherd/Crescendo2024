@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -92,10 +93,10 @@ public class RobotContainer {
    */
   public RobotContainer() {
     try {
-      // noteCamera = new NoteAssistance(VisnConstants.kLimelightFrontName);
-      apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
+      // noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
+      apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, VisionConstants.kAprilTagPipeline);
       swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
-      adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, apriltagCamera.getLimelight(), () -> swerveDrive.getPose());
+      adjustmentCamera = new ShooterVisionAdjustment(apriltagCamera, swerveDrive.getImu(), superSystem, () -> swerveDrive.getPose());
 
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
@@ -186,6 +187,7 @@ public class RobotContainer {
             || driverController.getL2Button() 
             || driverController.getCircleButton()
             || driverController.getTriangleButton()
+            // || driverController.getPSButton()
           ); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
@@ -214,6 +216,9 @@ public class RobotContainer {
           else if (driverController.getR1Button()) {
             return 180.0;
           }
+          // if (driverController.getPSButton()) { // Turn to shuffleboard angle
+          //   return SmartDashboard.getNumber("Test Desired Angle", 0);
+          // }
           return 0.0; 
         }
       );
@@ -313,6 +318,9 @@ public class RobotContainer {
   }
 
   public void configureBindings_test() {}
+
+
+
 
   public void configureLEDTriggers() {
     // Note Trigger
@@ -458,6 +466,22 @@ public class RobotContainer {
     // ));
   }
 
+  PathPlannerPath a01 = PathPlannerPath.fromPathFile("a01Path");
+  PathPlannerPath a02 = PathPlannerPath.fromPathFile("a02Path");
+  PathPlannerPath a03 = PathPlannerPath.fromPathFile("a03Path");
+
+  
+  PathPlannerPath c15 = PathPlannerPath.fromPathFile("c15Path");
+
+  PathPlannerPath d56 = PathPlannerPath.fromPathFile("c15Path");
+
+  final List<PathPlannerPath> pathGroupExample3 = List.of(
+    a01, c15, a03
+  );
+   final List<PathPlannerPath> pathGroupExample2 = List.of(
+     c15, d56
+  );
+
   private void initAutoChoosers() {
   	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands.none());
@@ -467,7 +491,11 @@ public class RobotContainer {
     // Testing/characterization autos
     if (paths.contains("Test2M")) {
       // autoChooser.addOption("Test2M", new Test2M(swerveDrive));
-      autoChooser.addOption("Preload Taxi Straight", new PreloadTaxi(swerveDrive, "Test2M", superSystem));
+      autoChooser.addOption("Preload Taxi Straight", new PreloadTaxi(swerveDrive, pathGroupExample3, superSystem));
+    }
+
+    if (paths.contains("PoseEstimatorTest")) {
+      autoChooser.addOption("Pose Estimator Test Auto", new PoseEstimatorTest(swerveDrive,"PoseEstimatorTest", superSystem));
     }
 
 
@@ -480,11 +508,11 @@ public class RobotContainer {
     }
 
     if (paths.contains("PreloadTaxiSourceSide")) {
-      autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, "PreloadTaxiSourceSide", superSystem));
+      //autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, "PreloadTaxiSourceSide", superSystem));
     }
 
     if (paths.contains("PreloadTaxiPodiumSide")) {
-      autoChooser.addOption("Preload Taxi Podium Side", new PreloadTaxi(swerveDrive, "PreloadTaxiPodiumSide", superSystem));
+      //autoChooser.addOption("Preload Taxi Podium Side", new PreloadTaxi(swerveDrive, "PreloadTaxiPodiumSide", superSystem));
     }
 
     if (paths.contains("TaxiOnly")) {
