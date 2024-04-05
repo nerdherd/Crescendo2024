@@ -485,6 +485,8 @@ public class RobotContainer {
   private void initAutoChoosers() {
   	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands.none());
+    if (paths.contains("PoseEstimatorTest")) 
+    autoChooser.addOption("Pose Estimator Test Auto", new PoseEstimatorTest(swerveDrive,"PoseEstimatorTest", superSystem ));
     
     // Testing/characterization autos
     if (paths.contains("Test2M")) {
@@ -495,6 +497,7 @@ public class RobotContainer {
     if (paths.contains("PoseEstimatorTest")) {
       autoChooser.addOption("Pose Estimator Test Auto", new PoseEstimatorTest(swerveDrive,"PoseEstimatorTest", superSystem));
     }
+
 
     // Note to self: IMU may not be facing the right way at the end of the auto
     if (paths.contains("Mid3Piece")) {
@@ -533,6 +536,7 @@ public class RobotContainer {
     if (paths.contains("5PieceMidSecond")){
       autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem, adjustmentCamera));
     }
+
     
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");

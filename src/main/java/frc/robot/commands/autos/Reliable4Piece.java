@@ -124,6 +124,6 @@ public class Reliable4Piece extends SequentialCommandGroup {
 
                 Commands.none()
             )
-            );
+        );
     }
 }
