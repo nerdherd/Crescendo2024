@@ -162,7 +162,8 @@ public class ShooterVisionAdjustment implements Reportable{
     }
 
     public double getDistanceFromTag(boolean preserveOldValue) {
-        Pose2d currentPose = getRobotPose().toPose2d();
+
+        Pose2d currentPose = (getRobotPose()==null)?null:getRobotPose().toPose2d();
         if(currentPose == null) return (preserveOldValue ? lastDistance : 0.01);
         Pose3d tagPose;
         
