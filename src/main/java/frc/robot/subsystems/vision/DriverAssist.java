@@ -27,6 +27,7 @@ import frc.robot.commands.TurnToAngleLive;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers;
+import frc.robot.util.NerdyLine;
 import frc.robot.util.NerdyMath;
 import frc.robot.util.NerdySpline;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
@@ -65,8 +66,6 @@ public class DriverAssist implements Reportable{
         layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
         limelightName = name;
         ShuffleboardTab tab = Shuffleboard.getTab(limelightName);
-        toleranceSpline.create();
-        angleToleranceSpline.create();
         try {
             limelight = new Limelight(name);
             toggleLight(false);
@@ -89,7 +88,7 @@ public class DriverAssist implements Reportable{
 
     private double[] distances = new double[] {0, 1, 1.72, 2, 3, 3.5, 4, 5};
     private double[] tolerances = new double[] {10, 9, 8, 7, 4, 3, 1, 1};
-    private NerdySpline toleranceSpline = new NerdySpline(distances, tolerances);
+    private NerdyLine toleranceSpline = new NerdyLine(distances, tolerances);
 
     public double getTurnToAngleTolerance(double distance) {
         if (distance > 5) {
@@ -107,7 +106,7 @@ public class DriverAssist implements Reportable{
 
     private double[] angles          = new double[] {0, 10, 30, 45, 90};
     private double[] toleranceScales = new double[] {1, 0.95, 0.75, 0.4, 0};
-    private NerdySpline angleToleranceSpline = new NerdySpline(angles, toleranceScales);
+    private NerdyLine angleToleranceSpline = new NerdyLine(angles, toleranceScales);
 
     public double getTurnToAngleToleranceScale(double targetAngle) {
         double angleToSpeaker = 10000;

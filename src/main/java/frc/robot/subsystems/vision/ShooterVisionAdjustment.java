@@ -23,6 +23,7 @@ import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.ShooterPivot;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.imu.Gyro;
+import frc.robot.util.NerdyLine;
 import frc.robot.util.NerdyMath;
 import frc.robot.util.NerdySpline;
 
@@ -36,8 +37,9 @@ public class ShooterVisionAdjustment implements Reportable{
     private Gyro swerveGyro;
 
 
-    private NerdySpline angleEquation;
-    private NerdySpline distanceEquation;
+    // private NerdySpline angleEquation;
+    // private NerdySpline distanceEquation;
+    private NerdyLine angleLine;
     private AprilTagFieldLayout layout;
 
     private GenericEntry targetFound;
@@ -72,10 +74,11 @@ public class ShooterVisionAdjustment implements Reportable{
             angles[i] += VisionConstants.kSplineAngleOffset; //currently 0
         }
 
-        angleEquation = new NerdySpline(distances, angles);
-        angleEquation.create();
-        distanceEquation = new NerdySpline(angles, distances);
-        distanceEquation.create();
+        // angleEquation = new NerdySpline(distances, angles);
+        // angleEquation.create();
+        // distanceEquation = new NerdySpline(angles, distances);
+        // distanceEquation.create();
+        angleLine = new NerdyLine(distances, angles);
     }
 
     public boolean hasValidTarget() {
@@ -145,7 +148,7 @@ public class ShooterVisionAdjustment implements Reportable{
         double[] outputs = new double[numberOfTests];
         for(int i = 0; i < outputs.length; i++) {
             inputs[i] = i * step;
-            outputs[i] = angleEquation.getOutput(inputs[i]);
+            outputs[i] = angleLine.getOutput(inputs[i]);
         }
         SmartDashboard.putNumberArray("Spline Test Inputs", inputs);
         SmartDashboard.putNumberArray("Spline Test Outputs", outputs);
@@ -204,7 +207,7 @@ public class ShooterVisionAdjustment implements Reportable{
 
         SmartDashboard.putBoolean("Vision failed", false);
 
-        double output = NerdyMath.clamp(angleEquation.getOutput(distance), ShooterConstants.kFullStowPosition.get(), 20);
+        double output = NerdyMath.clamp(angleLine.getOutput(distance), ShooterConstants.kFullStowPosition.get(), 20);
         SmartDashboard.putNumber("Vision Angle", output);
         SmartDashboard.putNumber("Vision Distance", distance);
         if(goalAngle != null) 
