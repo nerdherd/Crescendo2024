@@ -8,14 +8,15 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class PathB extends SequentialCommandGroup{
     public PathB(SwerveDrivetrain swerve, List<PathPlannerPath> pathGroup, SuperSystem superSystem, DriverAssist driverAssist, ShooterVisionAdjustment sva) {
         Pose2d startingPose = pathGroup.get(0).getPreviewStartingHolonomicPose();
-
         addCommands(
             // Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
@@ -53,7 +54,7 @@ public class PathB extends SequentialCommandGroup{
                 ),
                 superSystem.indexer.stopCommand(),
                 superSystem.shooterRoller.setVelocityCommand(-10, -10),
-                superSystem.shooterRoller.setEnabledCommand(tru
+                superSystem.shooterRoller.setEnabledCommand(true)
             )
         );
     }    
