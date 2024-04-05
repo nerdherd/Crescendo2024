@@ -140,8 +140,62 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             this);
 
             this.limelight = vision.getLimelight();
-            
+            enableVisionPE = true;
     }
+
+    private void visionupdateOdometry() {
+        boolean doRejectUpdate = false;
+
+        LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.kLimelightBackName);
+        double xyStds = 0.5;
+        double degStds = 999999;
+
+        if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1)
+        {
+            if(mt1.rawFiducials[0].ambiguity > .7)
+            {
+                doRejectUpdate = true;
+            }
+            if(mt1.rawFiducials[0].distToCamera > 3)
+            {
+                doRejectUpdate = true;
+            }
+
+            
+            // 1 target with large area and close to estimated pose
+            if (mt1.avgTagArea > 0.8 && mt1.rawFiducials[0].distToCamera < 0.5) {
+                xyStds = 1.0;
+                degStds = 12;
+            }
+            // 1 target farther away and estimated pose is close
+            else if (mt1.avgTagArea > 0.1 && mt1.rawFiducials[0].distToCamera < 0.3) {
+                xyStds = 2.0;
+                degStds = 30;
+            }
+        }
+        else if (mt1.tagCount >= 2) {
+            xyStds = 0.5;
+            degStds = 6;
+        }
+
+        if(!doRejectUpdate)
+        {
+            poseEstimator.setVisionMeasurementStdDevs(
+              VecBuilder.fill(0.8, 0.8, 9999999));
+
+            //poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
+            poseEstimator.addVisionMeasurement(
+                mt1.pose,
+                mt1.timestampSeconds);
+        }
+    }
+
+    private boolean enableVisionPE;
+    public void enableVisionPoseEstm(Boolean enable)
+    {
+        enableVisionPE = enable;
+    }
+
 
     boolean initPoseByVisionDone = false;
 
@@ -154,7 +208,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             runModules();
         }
         if (limelight.hasValidTarget()) {
-            updatePoseEstimatorWithVisionBotPose();
+            //updatePoseEstimatorWithVisionBotPose();
             // if (counter < 50) {
             //     limelight.updateAvgPose();
 
@@ -176,6 +230,10 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             counter += 1;
         }
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
+
+        if (enableVisionPE)
+            visionupdateOdometry();
+
         // counter = (counter + 1) % visionFrequency;
 
         // if(vision != null && vision.getAprilTagID() != -1)

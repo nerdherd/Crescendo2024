@@ -32,6 +32,7 @@ import frc.robot.commands.autos.Mid2Piece;
 import frc.robot.commands.autos.Mid3Piece;
 import frc.robot.commands.autos.Mid3PieceDeadReckoning;
 import frc.robot.commands.autos.Mid3PiecePathOnly;
+import frc.robot.commands.autos.PoseEstimatorTest;
 import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.subsystems.CANdleSubSystem;
@@ -91,10 +92,10 @@ public class RobotContainer {
    */
   public RobotContainer() {
     try {
-      // noteCamera = new NoteAssistance(VisnConstants.kLimelightFrontName);
-      apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
+      // noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
+      apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, VisionConstants.kAprilTagPipeline);
       swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
-      adjustmentCamera = new ShooterVisionAdjustment(VisionConstants.kLimelightBackName, apriltagCamera.getLimelight(), () -> swerveDrive.getPose());
+      adjustmentCamera = new ShooterVisionAdjustment(apriltagCamera, swerveDrive.getImu(), superSystem, () -> swerveDrive.getPose());
 
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
@@ -465,6 +466,10 @@ public class RobotContainer {
     if (paths.contains("Test2M")) {
       // autoChooser.addOption("Test2M", new Test2M(swerveDrive));
       autoChooser.addOption("Preload Taxi Straight", new PreloadTaxi(swerveDrive, "Test2M", superSystem));
+    }
+
+    if (paths.contains("PoseEstimatorTest")) {
+      autoChooser.addOption("Pose Estimator Test Auto", new PoseEstimatorTest(swerveDrive,"PoseEstimatorTest", superSystem));
     }
 
     // Note to self: IMU may not be facing the right way at the end of the auto

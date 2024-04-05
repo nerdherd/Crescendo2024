@@ -5,6 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -22,6 +26,8 @@ public class Robot extends TimedRobot {
   TalonFx talonFX;
   Orchestra orchestra;
    */
+
+   public static StringLogEntry armSensorCaliLog;
   
   @Override
   public void robotInit() {
@@ -34,6 +40,9 @@ public class Robot extends TimedRobot {
     robotContainer.apriltagCamera.toggleLight(true);
     robotContainer.configureLEDTriggers();
     robotContainer.shooterPivot.syncAbsoluteEncoderToPigeon();
+    DataLog log = DataLogManager.getLog();
+    armSensorCaliLog = new StringLogEntry(log, "arm_sensor_cali");
+    armSensorCaliLog.append("GoodOrBad, RobotX, RobotY, RobotR, Distance, ArmAngle, TargetArmAngle, SwervePitch\n");
   }
 
   @Override
