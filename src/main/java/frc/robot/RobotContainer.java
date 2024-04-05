@@ -39,6 +39,7 @@ import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.commands.autos.PathVariants.PathA;
 import frc.robot.commands.autos.PathVariants.PathB;
 import frc.robot.commands.autos.PathVariants.PathC;
+import frc.robot.commands.autos.PathVariants.PathD;
 import frc.robot.commands.autos.PathVariants.PathE;
 import frc.robot.commands.autos.PathVariants.PathF;
 import frc.robot.subsystems.CANdleSubSystem;
@@ -84,7 +85,7 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
-  // private NoteAssistance noteCamera; 
+  private NoteAssistance noteCamera; 
   public DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   public ShooterVisionAdjustment adjustmentCamera;
   
@@ -98,7 +99,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     try {
-      // noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
+      noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
       apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, VisionConstants.kAprilTagPipeline);
       swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
       adjustmentCamera = new ShooterVisionAdjustment(apriltagCamera, swerveDrive.getImu(), superSystem, () -> swerveDrive.getPose());
@@ -477,6 +478,7 @@ public class RobotContainer {
   PathPlannerPath b12 = PathPlannerPath.fromPathFile("b12Path");
   PathPlannerPath c24 = PathPlannerPath.fromPathFile("c24Path");
   PathPlannerPath d45 = PathPlannerPath.fromPathFile("d45Path");
+  PathPlannerPath d56 = PathPlannerPath.fromPathFile("d56Path");
   PathPlannerPath e52 = PathPlannerPath.fromPathFile("e52Path");
   PathPlannerPath f04 = PathPlannerPath.fromPathFile("f04Path");
   
@@ -560,7 +562,7 @@ public class RobotContainer {
     autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, pathGroupTestA, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, pathGroupTestB, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathC", new PathC(swerveDrive, pathGroupTestC, 0));
-    // autoChooser.addOption("PathD", new PathA(swerveDrive, superSystem, pathGroupExample2, apriltagCamera, adjustmentCamera));
+    autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 1, d45, d56));
     autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, pathGroupTestE, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, pathGroupTestF, 0));
 
@@ -574,7 +576,7 @@ public class RobotContainer {
     swerveDrive.initShuffleboard(loggingLevel);
     swerveDrive.initModuleShuffleboard(loggingLevel);
     apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
-    // noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+    noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
     adjustmentCamera.initShuffleboard(LOG_LEVEL.ALL);
 
     shooterRoller.initShuffleboard(loggingLevel);

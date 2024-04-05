@@ -64,7 +64,7 @@ public class PathD extends SequentialCommandGroup{
                 Commands.either(
                     Commands.sequence(
                         superSystem.intakeUntilSensedAuto(2),
-                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, new Pose2d())
+                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, swerve.getPose())
                             .onlyWhile(noteAssistance::hasTarget)
                     ),
                     Commands.none(), 
