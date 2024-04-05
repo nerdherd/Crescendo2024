@@ -26,8 +26,7 @@ public class PathE extends SequentialCommandGroup {
                 Commands.deadline(
                     AutoBuilder.followPath(pathGroup.get(0)), //path group is anything
                     Commands.sequence(
-                        superSystem.stow(),
-                        superSystem.backupIndexer(),
+                        superSystem.backupIndexer(), //TODO: should we move this into path D?
                         superSystem.prepareShooterPodium()
                     ),                
                     Commands.waitSeconds(3.5)
@@ -38,10 +37,10 @@ public class PathE extends SequentialCommandGroup {
     
                 Commands.deadline(
                     Commands.sequence(
-                        Commands.waitSeconds(0.1),
+                        // Commands.waitSeconds(0.1),
                         Commands.either(
                             //turn to angle
-                            driverAssist.turnToTag(4, swerve),
+                            driverAssist.turnToTag(4, swerve), //Placeholder turn to tag methods
                             driverAssist.turnToTag(7, swerve),
                             RobotContainer::IsRedSide 
                         )
