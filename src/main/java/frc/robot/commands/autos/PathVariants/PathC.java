@@ -15,14 +15,14 @@ import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
 public class PathC extends SequentialCommandGroup {
-    public PathC(SuperSystem superSystem, SwerveDrivetrain swerve, List<PathPlannerPath> pathGroup, int pathIndex){
+    public PathC(SwerveDrivetrain swerve, List<PathPlannerPath> pathGroup, int pathIndex){
         addCommands(
             Commands.sequence(
                 // C Start here ******************************************************
 
                 // Drive in front of mid note
                 Commands.deadline(
-                    AutoBuilder.followPath(pathGroup.get(pathIndex)),
+                    AutoBuilder.followPath(pathGroup.get(0)),
                     Commands.waitSeconds(3) // TODO: Find a working time
                 )
             )

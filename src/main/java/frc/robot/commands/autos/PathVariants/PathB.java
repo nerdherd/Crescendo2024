@@ -15,7 +15,7 @@ import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class PathB extends SequentialCommandGroup{
-    public PathB(SwerveDrivetrain swerve, List<PathPlannerPath> pathGroup, SuperSystem superSystem, DriverAssist driverAssist, ShooterVisionAdjustment sva) {
+    public PathB(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva) {
         Pose2d startingPose = pathGroup.get(0).getPreviewStartingHolonomicPose();
         addCommands(
             // Commands.runOnce(swerve.getImu()::zeroAll),

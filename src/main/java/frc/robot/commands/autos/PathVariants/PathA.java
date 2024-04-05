@@ -17,7 +17,7 @@ import frc.robot.subsystems.vision.NoteAssistance;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class PathA extends SequentialCommandGroup{
-    public PathA(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, NoteAssistance noteAssistance, DriverAssist driverAssist, ShooterVisionAdjustment sva){
+    public PathA(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva){
         Pose2d startingPose = pathGroup.get(0).getPreviewStartingHolonomicPose();
         addCommands(
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),

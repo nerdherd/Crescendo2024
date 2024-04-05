@@ -344,6 +344,7 @@ public class SuperSystem {
                 Commands.waitUntil(() -> 
                     shooterPivot.hasReachedPosition(shooterPosition)),
                 shooterPivot.setPositionCommand(shooterPosition)
+                // prepareShooterVision()
                 ),
             Commands.runOnce(() -> SmartDashboard.putBoolean("Moving Shooter", false)),
             shooterRoller.setEnabledCommand(true),
