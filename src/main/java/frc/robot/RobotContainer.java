@@ -281,6 +281,7 @@ public class RobotContainer {
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.cross().whileTrue(apriltagCamera.driveToAmpCommand(swerveDrive, 3, 3));
+    commandDriverController.square().whileTrue(noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 0, 0, null).until(superSystem::noteIntook));
 
     commandOperatorController.povLeft().whileTrue(
       Commands.repeatingSequence(
