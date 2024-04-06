@@ -27,6 +27,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
+import frc.robot.commands.autos.AutoCommands;
 import frc.robot.commands.autos.FivePieceEnd;
 import frc.robot.commands.autos.FivePieceSecond;
 import frc.robot.commands.autos.Mid2Piece;
@@ -43,6 +44,7 @@ import frc.robot.commands.autos.PathVariants.PathD;
 import frc.robot.commands.autos.PathVariants.PathE;
 import frc.robot.commands.autos.PathVariants.PathF;
 import frc.robot.commands.autos.PathVariants.SuperPath;
+import frc.robot.commands.autos.PathVariants.Variant5Piece;
 import frc.robot.subsystems.CANdleSubSystem;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CANdleSubSystem.Status;
@@ -475,14 +477,33 @@ public class RobotContainer {
     // ));
   }
 
+  PathPlannerPath a01 = PathPlannerPath.fromPathFile("a01Path");
   PathPlannerPath a02 = PathPlannerPath.fromPathFile("a02Path");
+  PathPlannerPath a03 = PathPlannerPath.fromPathFile("a03Path");
+  
+  PathPlannerPath b12 = PathPlannerPath.fromPathFile("b12Path");
   PathPlannerPath b23 = PathPlannerPath.fromPathFile("b23Path");
+  PathPlannerPath b32 = PathPlannerPath.fromPathFile("b32Path");
+  PathPlannerPath b21 = PathPlannerPath.fromPathFile("b21Path");
+  
+  PathPlannerPath c14 = PathPlannerPath.fromPathFile("c14Path");
   PathPlannerPath c24 = PathPlannerPath.fromPathFile("c24Path");
+  
   PathPlannerPath d45 = PathPlannerPath.fromPathFile("d45Path");
   PathPlannerPath d56 = PathPlannerPath.fromPathFile("d56Path");
+  PathPlannerPath d87 = PathPlannerPath.fromPathFile("d87Path");
+  PathPlannerPath d76 = PathPlannerPath.fromPathFile("d76Path");
+
+  PathPlannerPath e42 = PathPlannerPath.fromPathFile("e42Path");
   PathPlannerPath e52 = PathPlannerPath.fromPathFile("e52Path");
+
   PathPlannerPath f04 = PathPlannerPath.fromPathFile("f04Path");
-  
+  PathPlannerPath f05 = PathPlannerPath.fromPathFile("f05Path");
+  PathPlannerPath f06 = PathPlannerPath.fromPathFile("f06Path");
+  PathPlannerPath f07 = PathPlannerPath.fromPathFile("f07Path");
+  PathPlannerPath f08 = PathPlannerPath.fromPathFile("f08Path");
+
+
   // final List<PathPlannerPath> pathGroupExample3 = List.of(
   //   a01, c15, a03
   // );
@@ -506,6 +527,9 @@ public class RobotContainer {
   );
   final List<PathPlannerPath> pathGroupTestF = List.of(
      f04
+  );
+  final List<PathPlannerPath> variantPathGroup = List.of(
+     a03, b32, b21, c14, d45, d56, e42
   );
 
   private void initAutoChoosers() {
@@ -564,12 +588,13 @@ public class RobotContainer {
     }
 
     autoChooser.setDefaultOption("SuperPath", new SuperPath(swerveDrive, superSystem, pathGroupTestSuper, apriltagCamera, adjustmentCamera));
-    autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, pathGroupTestA, apriltagCamera, adjustmentCamera));
-    autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, pathGroupTestB, apriltagCamera, adjustmentCamera));
-    autoChooser.addOption("PathC", new PathC(swerveDrive, pathGroupTestC, 0));
+    autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, a02, apriltagCamera, adjustmentCamera));
+    autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, b23, apriltagCamera, adjustmentCamera));
+    autoChooser.addOption("PathC", new PathC(swerveDrive, c24));
     autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 1, 10, 50, pathGroupTestD));
-    autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, pathGroupTestE, apriltagCamera, adjustmentCamera));
-    autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, pathGroupTestF, 0));
+    autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, e52, apriltagCamera, adjustmentCamera));
+    autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, f04, apriltagCamera));
+    autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, apriltagCamera, adjustmentCamera, noteCamera));
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 

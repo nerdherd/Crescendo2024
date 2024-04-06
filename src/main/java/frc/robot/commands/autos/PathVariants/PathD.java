@@ -48,6 +48,7 @@ public class PathD extends SequentialCommandGroup{
      * @param swerve
      * @param superSystem
      * @param noteAssistance
+     * @param paths max 2 paths
      */
     public PathD(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteAssistance, double targetNoteArea, int minSamples, int maxSamples, List<PathPlannerPath> paths) {
         addCommands(
