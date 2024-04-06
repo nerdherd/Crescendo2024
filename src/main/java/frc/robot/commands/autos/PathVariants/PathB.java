@@ -16,20 +16,20 @@ import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class PathB extends SequentialCommandGroup{
-    public PathB(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva) {
+    public PathB(SwerveDrivetrain swerve, SuperSystem superSystem, PathPlannerPath path, DriverAssist driverAssist, ShooterVisionAdjustment sva) {
         // Pose2d startingPose = pathGroup.get(0).getPreviewStartingHolonomicPose();
-        Pose2d startingPose = new Pose2d(2.45, 5.55, new Rotation2d());//pathGroup.get(0).();
+        // Pose2d startingPose = new Pose2d(2.45, 5.55, new Rotation2d());//pathGroup.get(0).();
         addCommands(
             // Commands.runOnce(swerve.getImu()::zeroAll),
-            Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
+            // Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
             // Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
-            Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
+            // Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
             
             // B Start here *******************************************************************************
             // Intake and Path
             Commands.race(
                 Commands.waitSeconds(2),
-                AutoBuilder.followPath(pathGroup.get(0)).andThen(Commands.waitSeconds(0.75)),
+                AutoBuilder.followPath(path).andThen(Commands.waitSeconds(0.75)),
                 Commands.sequence(
                     Commands.waitSeconds(0.125),
                     superSystem.intakeUntilSensedAuto(1.75)

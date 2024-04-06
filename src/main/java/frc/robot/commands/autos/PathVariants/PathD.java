@@ -1,5 +1,7 @@
 package frc.robot.commands.autos.PathVariants;
 
+import java.util.List;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -46,33 +48,34 @@ public class PathD extends SequentialCommandGroup{
      * @param swerve
      * @param superSystem
      * @param noteAssistance
+     * @param paths max 2 paths
      */
-    public PathD(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteAssistance, double targetNoteArea, PathPlannerPath path1, PathPlannerPath path2) {
+    public PathD(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteAssistance, double targetNoteArea, List<PathPlannerPath> paths) {
         addCommands(
             Commands.sequence(
                 Commands.sequence(
                     Commands.either(
                         Commands.sequence(
                             superSystem.intakeUntilSensedAuto(2),
-                            noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, swerve.getPose())
+                            noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, paths.get(0).getPreviewStartingHolonomicPose())
                                 .onlyWhile(noteAssistance::hasTarget)
                         ),
                         Commands.none(), 
                         noteAssistance::hasTarget
                     ),
 
-                    AutoBuilder.followPath(path1),
+                    AutoBuilder.followPath(paths.get(0)),
                     Commands.either(
                         Commands.sequence(
                             superSystem.intakeUntilSensedAuto(2),
-                            noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, swerve.getPose())
+                            noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, paths.get(1).getPreviewStartingHolonomicPose())
                                 .onlyWhile(noteAssistance::hasTarget)
                         ),
                         Commands.none(), 
                         noteAssistance::hasTarget
                     ),
 
-                    AutoBuilder.followPath(path2),
+                    AutoBuilder.followPath(paths.get(1)),
                     Commands.either(
                         Commands.sequence(
                             superSystem.intakeUntilSensedAuto(2),
@@ -85,7 +88,7 @@ public class PathD extends SequentialCommandGroup{
 
                 ).until(superSystem::noteIntook),
                 Commands.sequence(
-                    swerve.driveToPose(path1.getPreviewStartingHolonomicPose(), 3, 3)
+                    swerve.driveToPose(paths.get(0).getPreviewStartingHolonomicPose(), 3, 3)
                 )
             )
         );
