@@ -769,6 +769,40 @@ public class DriverAssist implements Reportable{
         else limelight.setLightState(LightMode.OFF);
     }
 
+    public static double getAngleBetween(Pose2d tagPose, Pose2d robotPose) {
+        // Calculate the vector pointing from the robot to the tag
+        double deltaX = tagPose.getX() - robotPose.getX();
+        double deltaY = tagPose.getY() - robotPose.getY();
+
+        // Calculate the angle of this vector relative to the global X-axis
+        double angleToTagRadians = Math.atan2(deltaY, deltaX);
+
+        // Get the robot's current heading (orientation) in radians
+        double robotHeadingRadians = robotPose.getRotation().getRadians();
+
+        // Calculate the relative angle from the robot's heading to the tag
+        double relativeAngleRadians = angleToTagRadians - robotHeadingRadians;
+
+        // Normalize the relative angle to be within -Pi to Pi
+        relativeAngleRadians = normalizeRadians(relativeAngleRadians);
+
+        // Convert the angle from radians to degrees
+        double relativeAngleDegrees = Math.toDegrees(relativeAngleRadians);
+
+        return relativeAngleDegrees;
+    }
+
+    // Helper method to normalize an angle in radians to be within -Pi to Pi
+    private static double normalizeRadians(double angleRadians) {
+        // Add 2*Pi until the angle is positive
+        while (angleRadians < -Math.PI) angleRadians += 2 * Math.PI;
+        
+        // Subtract 2*Pi until the angle is less than or equal to Pi
+        while (angleRadians > Math.PI) angleRadians -= 2 * Math.PI;
+
+        return angleRadians;
+    }
+
     @Override
     public void reportToSmartDashboard(LOG_LEVEL priority) {
         // TODO Auto-generated method stub
