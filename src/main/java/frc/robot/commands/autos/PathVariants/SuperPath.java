@@ -5,6 +5,8 @@ import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -114,4 +116,18 @@ public class SuperPath extends SequentialCommandGroup{
             )
         );
     }    
+
+    // to be tested. Do not use it before test
+    public static Pose2d GetEndPoseInPath(PathPlannerPath path)
+    {
+        PathPoint tail  = path.getPoint(path.numPoints()-1);
+        double rad = tail.rotationTarget.getTarget().getRadians();
+        return new Pose2d(tail.position, new Rotation2d(rad));
+    } 
+    public static Pose2d GetStartPoseInPath(PathPlannerPath path)
+    {
+        PathPoint tail  = path.getPoint(0);
+        double rad = tail.rotationTarget.getTarget().getRadians();
+        return new Pose2d(tail.position, new Rotation2d(rad));
+    }
 }
