@@ -18,6 +18,8 @@ public class SuperSystem {
     public IndexerV2 indexer;
     // public ColorSensor colorSensor;
     public BannerSensor bannerSensor;
+    // add line below once new banner sensor is added
+    // public BannerSensor bannerSensorTwo;
     // public BeamBreak noteSensor;
     public ClimbActuator linearActuator;
     // public Climber climber;
@@ -33,6 +35,8 @@ public class SuperSystem {
         this.linearActuator = new ClimbActuator();
         // this.colorSensor = new ColorSensor();
         this.bannerSensor = new BannerSensor();
+        // add line below once we add new banner sensor
+        // this.bannerSensorTwo = new BannerSensor();
         // this.noteSensor = new BeamBreak();
     }
 
