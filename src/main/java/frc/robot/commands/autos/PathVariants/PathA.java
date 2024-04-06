@@ -18,11 +18,12 @@ import frc.robot.subsystems.vision.NoteAssistance;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class PathA extends SequentialCommandGroup{
-    public PathA(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva){
-        Pose2d startingPose = new Pose2d(1.33, 5.55, new Rotation2d());//pathGroup.get(0).();
+    public PathA(SwerveDrivetrain swerve, SuperSystem superSystem, PathPlannerPath path, DriverAssist driverAssist, ShooterVisionAdjustment sva){
+        Pose2d startingPose = path.getPreviewStartingHolonomicPose();
         addCommands(
-            Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
-            Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
+            Commands.runOnce(() -> swerve.getImu().zeroAll()),
+            Commands.runOnce(() -> swerve.getImu().setOffset((startingPose.getRotation().getDegrees()))),
+            Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
             Commands.sequence(
                 // Preload
                 Commands.deadline(
@@ -40,7 +41,7 @@ public class PathA extends SequentialCommandGroup{
                 Commands.race(
                     Commands.waitSeconds(2),
                     // Path
-                    AutoBuilder.followPath(pathGroup.get(0)).andThen(Commands.waitSeconds(0.75)),
+                    AutoBuilder.followPath(path).andThen(Commands.waitSeconds(0.75)),
                     // Drive to note (if wanted)
                     // noteAssistance.driveToNoteCommand(swerve, 0, 0, 0, 0, 0, startingPose) // TODO: change target values
                     // Intake
