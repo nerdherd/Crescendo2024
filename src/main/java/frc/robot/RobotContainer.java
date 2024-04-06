@@ -499,7 +499,7 @@ public class RobotContainer {
      c24
   );
   final List<PathPlannerPath> pathGroupTestD = List.of(
-     d45
+     d45, d56
   );
   final List<PathPlannerPath> pathGroupTestE = List.of(
      e52
@@ -567,7 +567,7 @@ public class RobotContainer {
     autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, pathGroupTestA, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, pathGroupTestB, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathC", new PathC(swerveDrive, pathGroupTestC, 0));
-    autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 1, d45, d56));
+    autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 1, 10, 50, pathGroupTestD));
     autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, pathGroupTestE, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, pathGroupTestF, 0));
 

@@ -1,5 +1,7 @@
 package frc.robot.commands.autos.PathVariants;
 
+import java.util.List;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -29,7 +31,7 @@ public class PathD extends SequentialCommandGroup{
     //             Commands.either(
     //                 Commands.sequence(
     //                     superSystem.intakeUntilSensedAuto(2),
-    //                     noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, new Pose2d())
+    //                     noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, minSamples, maxSamples, new Pose2d())
     //                         .onlyWhile(noteAssistance::hasTarget).until(superSystem::noteIntook),
     //                     Commands.runOnce(() -> stop = superSystem.noteIntook() ? true : false)
     //                 ),
@@ -47,47 +49,42 @@ public class PathD extends SequentialCommandGroup{
      * @param superSystem
      * @param noteAssistance
      */
-    public PathD(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteAssistance, double targetNoteArea, PathPlannerPath path1, PathPlannerPath path2) {
+    public PathD(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteAssistance, double targetNoteArea, int minSamples, int maxSamples, List<PathPlannerPath> paths) {
         addCommands(
             Commands.sequence(
-                Commands.sequence(
-                    Commands.either(
-                        Commands.sequence(
-                            superSystem.intakeUntilSensedAuto(2),
-                            noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, swerve.getPose())
-                                .onlyWhile(noteAssistance::hasTarget)
-                        ),
-                        Commands.none(), 
-                        noteAssistance::hasTarget
+                Commands.either(
+                    Commands.sequence(
+                        superSystem.intakeUntilSensedAuto(2),
+                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, minSamples, maxSamples, paths.get(0).getPreviewStartingHolonomicPose())
+                            .onlyWhile(noteAssistance::hasTarget)
                     ),
+                    Commands.none(), 
+                    noteAssistance::hasTarget
+                ),
 
-                    AutoBuilder.followPath(path1),
-                    Commands.either(
-                        Commands.sequence(
-                            superSystem.intakeUntilSensedAuto(2),
-                            noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, swerve.getPose())
-                                .onlyWhile(noteAssistance::hasTarget)
-                        ),
-                        Commands.none(), 
-                        noteAssistance::hasTarget
+                AutoBuilder.followPath(paths.get(0)),
+                Commands.either(
+                    Commands.sequence(
+                        superSystem.intakeUntilSensedAuto(2),
+                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, minSamples, maxSamples, paths.get(1).getPreviewStartingHolonomicPose())
+                            .onlyWhile(noteAssistance::hasTarget)
                     ),
+                    Commands.none(), 
+                    noteAssistance::hasTarget
+                ),
 
-                    AutoBuilder.followPath(path2),
-                    Commands.either(
-                        Commands.sequence(
-                            superSystem.intakeUntilSensedAuto(2),
-                            noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, swerve.getPose())
-                                .onlyWhile(noteAssistance::hasTarget)
-                        ),
-                        Commands.none(), 
-                        noteAssistance::hasTarget
-                    )
-
-                ).until(superSystem::noteIntook),
-                Commands.sequence(
-                    swerve.driveToPose(path1.getPreviewStartingHolonomicPose(), 3, 3)
+                AutoBuilder.followPath(paths.get(1)),
+                Commands.either(
+                    Commands.sequence(
+                        superSystem.intakeUntilSensedAuto(2),
+                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, minSamples, maxSamples, swerve.getPose())
+                            .onlyWhile(noteAssistance::hasTarget)
+                    ),
+                    Commands.none(), 
+                    noteAssistance::hasTarget
                 )
-            )
+
+            ).until(superSystem::noteIntook)
         );
     }
 
