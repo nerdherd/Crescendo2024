@@ -27,6 +27,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
+import frc.robot.commands.autos.AutoCommands;
 import frc.robot.commands.autos.FivePieceEnd;
 import frc.robot.commands.autos.FivePieceSecond;
 import frc.robot.commands.autos.Mid2Piece;
@@ -43,6 +44,7 @@ import frc.robot.commands.autos.PathVariants.PathD;
 import frc.robot.commands.autos.PathVariants.PathE;
 import frc.robot.commands.autos.PathVariants.PathF;
 import frc.robot.commands.autos.PathVariants.SuperPath;
+import frc.robot.commands.autos.PathVariants.VariantAuto;
 import frc.robot.subsystems.CANdleSubSystem;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CANdleSubSystem.Status;
@@ -505,6 +507,9 @@ public class RobotContainer {
   final List<PathPlannerPath> pathGroupTestF = List.of(
      f04
   );
+  final List<PathPlannerPath> variantPathGroup = List.of(
+     a02, b23, c24
+  );
 
   private void initAutoChoosers() {
   	List<String> paths = AutoBuilder.getAllAutoNames();
@@ -568,6 +573,7 @@ public class RobotContainer {
     autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 1, d45, d56));
     autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, pathGroupTestE, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, pathGroupTestF, 0));
+    autoChooser.addOption("TestPath", new VariantAuto(swerveDrive, superSystem, variantPathGroup, apriltagCamera, adjustmentCamera, "a02", 0, "b23", 1, "c24", 2));
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
