@@ -280,7 +280,7 @@ public class RobotContainer {
     // Driver bindings
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
-    commandDriverController.cross().whileTrue(apriltagCamera.driveToAmpCommand(swerve, 3, 3));
+    commandDriverController.cross().whileTrue(apriltagCamera.driveToAmpCommand(swerveDrive, 3, 3));
 
     commandOperatorController.povLeft().whileTrue(
       Commands.repeatingSequence(
