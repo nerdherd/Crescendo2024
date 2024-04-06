@@ -485,17 +485,39 @@ public class RobotContainer {
   PathPlannerPath b23 = PathPlannerPath.fromPathFile("b23Path");
   PathPlannerPath b32 = PathPlannerPath.fromPathFile("b32Path");
   PathPlannerPath b21 = PathPlannerPath.fromPathFile("b21Path");
+  PathPlannerPath b31 = PathPlannerPath.fromPathFile("b31Path");
   
   PathPlannerPath c14 = PathPlannerPath.fromPathFile("c14Path");
   PathPlannerPath c24 = PathPlannerPath.fromPathFile("c24Path");
+  PathPlannerPath c34 = PathPlannerPath.fromPathFile("c34Path");
+  PathPlannerPath c35 = PathPlannerPath.fromPathFile("c35Path");
+  PathPlannerPath c36 = PathPlannerPath.fromPathFile("c36Path");
+  PathPlannerPath c37 = PathPlannerPath.fromPathFile("c37Path");
+  PathPlannerPath c38 = PathPlannerPath.fromPathFile("c38Path");
+  PathPlannerPath c18 = PathPlannerPath.fromPathFile("c18Path");
+  PathPlannerPath c17 = PathPlannerPath.fromPathFile("c17Path");
+  PathPlannerPath c16 = PathPlannerPath.fromPathFile("c16Path");
+  PathPlannerPath c15 = PathPlannerPath.fromPathFile("c15Path");
+  PathPlannerPath c28 = PathPlannerPath.fromPathFile("c28Path");
+  PathPlannerPath c27 = PathPlannerPath.fromPathFile("c27Path");
+  PathPlannerPath c26 = PathPlannerPath.fromPathFile("c26Path");
+  PathPlannerPath c25 = PathPlannerPath.fromPathFile("c25Path");
   
   PathPlannerPath d45 = PathPlannerPath.fromPathFile("d45Path");
   PathPlannerPath d56 = PathPlannerPath.fromPathFile("d56Path");
   PathPlannerPath d87 = PathPlannerPath.fromPathFile("d87Path");
   PathPlannerPath d76 = PathPlannerPath.fromPathFile("d76Path");
+  PathPlannerPath d65 = PathPlannerPath.fromPathFile("d65Path");
+  PathPlannerPath d67 = PathPlannerPath.fromPathFile("d67Path");
+  PathPlannerPath d78 = PathPlannerPath.fromPathFile("d78Path");
+  PathPlannerPath d54 = PathPlannerPath.fromPathFile("d54Path");
 
-  PathPlannerPath e42 = PathPlannerPath.fromPathFile("e42Path");
-  PathPlannerPath e52 = PathPlannerPath.fromPathFile("e52Path");
+  PathPlannerPath e4Y = PathPlannerPath.fromPathFile("e4YPath");
+  PathPlannerPath e5Y = PathPlannerPath.fromPathFile("e5YPath");
+  PathPlannerPath e7Y = PathPlannerPath.fromPathFile("e7YPath");
+  PathPlannerPath e7Z = PathPlannerPath.fromPathFile("e7ZPath");
+  PathPlannerPath e8Z = PathPlannerPath.fromPathFile("e8ZPath");
+  PathPlannerPath e6Y = PathPlannerPath.fromPathFile("e6YPath");
 
   PathPlannerPath f04 = PathPlannerPath.fromPathFile("f04Path");
   PathPlannerPath f05 = PathPlannerPath.fromPathFile("f05Path");
@@ -523,13 +545,13 @@ public class RobotContainer {
      d45, d56
   );
   final List<PathPlannerPath> pathGroupTestE = List.of(
-     e52
+     e5Y
   );
   final List<PathPlannerPath> pathGroupTestF = List.of(
      f04
   );
   final List<PathPlannerPath> variantPathGroup = List.of(
-     a03, b32, b21, c14, d45, d56, e42
+     a03, b32, b21, c14, d45, d56, e4Y
   );
 
   private void initAutoChoosers() {
