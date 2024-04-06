@@ -12,8 +12,8 @@ import frc.robot.subsystems.vision.NoteAssistance;
 
 //TODO: get actual position for default pose
 public class PathD extends SequentialCommandGroup{
-    private boolean stop = false;
-    private int i;
+    // private boolean stop = false;
+    // private int i;
     /**
      * Paths for middle notes
      * @param swerve swerve drivetrain instance
@@ -50,44 +50,45 @@ public class PathD extends SequentialCommandGroup{
     public PathD(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteAssistance, double targetNoteArea, PathPlannerPath path1, PathPlannerPath path2) {
         addCommands(
             Commands.sequence(
-                Commands.either(
-                    Commands.sequence(
-                        superSystem.intakeUntilSensedAuto(2),
-                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, new Pose2d())
-                            .onlyWhile(noteAssistance::hasTarget)
+                Commands.sequence(
+                    Commands.either(
+                        Commands.sequence(
+                            superSystem.intakeUntilSensedAuto(2),
+                            noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, swerve.getPose())
+                                .onlyWhile(noteAssistance::hasTarget)
+                        ),
+                        Commands.none(), 
+                        noteAssistance::hasTarget
                     ),
-                    Commands.none(), 
-                    noteAssistance::hasTarget
-                ),
 
-                AutoBuilder.followPath(path1),
-                Commands.either(
-                    Commands.sequence(
-                        superSystem.intakeUntilSensedAuto(2),
-                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, swerve.getPose())
-                            .onlyWhile(noteAssistance::hasTarget)
+                    AutoBuilder.followPath(path1),
+                    Commands.either(
+                        Commands.sequence(
+                            superSystem.intakeUntilSensedAuto(2),
+                            noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, swerve.getPose())
+                                .onlyWhile(noteAssistance::hasTarget)
+                        ),
+                        Commands.none(), 
+                        noteAssistance::hasTarget
                     ),
-                    Commands.none(), 
-                    noteAssistance::hasTarget
-                ),
 
-                AutoBuilder.followPath(path2),
-                Commands.either(
-                    Commands.sequence(
-                        superSystem.intakeUntilSensedAuto(2),
-                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, new Pose2d())
-                            .onlyWhile(noteAssistance::hasTarget)
-                    ),
-                    Commands.none(), 
-                    noteAssistance::hasTarget
+                    AutoBuilder.followPath(path2),
+                    Commands.either(
+                        Commands.sequence(
+                            superSystem.intakeUntilSensedAuto(2),
+                            noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, 10, 50, swerve.getPose())
+                                .onlyWhile(noteAssistance::hasTarget)
+                        ),
+                        Commands.none(), 
+                        noteAssistance::hasTarget
+                    )
+
+                ).until(superSystem::noteIntook),
+                Commands.sequence(
+                    swerve.driveToPose(path1.getPreviewStartingHolonomicPose(), 3, 3)
                 )
-
-            ).until(superSystem::noteIntook)
+            )
         );
     }
 
-    /**
-     * @return the path this part of the auto stopped at (ex. 1st path, 2nd path ...)
-     */
-    // public int getPathStoppedAt() { return i + 1; }
 }
