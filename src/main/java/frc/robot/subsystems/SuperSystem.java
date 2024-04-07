@@ -557,22 +557,22 @@ public class SuperSystem {
         Command command = 
             Commands.either(
                 Commands.sequence(
-                // Prepare to shoot
-                Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
-                shooterRoller.setEnabledCommand(true),
-                shooterRoller.shootSpeaker(),
-                Commands.race(
-                    Commands.sequence(
-                        Commands.waitUntil(() -> shooterPivot.atTargetPosition()),
-                        Commands.waitSeconds(0.2)
+                    // Prepare to shoot
+                    Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
+                    shooterRoller.setEnabledCommand(true),
+                    shooterRoller.shootSpeaker(),
+                    Commands.race(
+                        Commands.sequence(
+                            Commands.waitUntil(() -> shooterPivot.atTargetPosition()),
+                            Commands.waitSeconds(0.2)
+                        ),
+                        Commands.waitSeconds(0.4)
                     ),
-                    Commands.waitSeconds(0.4)
-                ),
-                
-                // Shoot
-                indexer.setEnabledCommand(true),
-                indexer.indexCommand(),
-                Commands.waitUntil(() -> false)
+                    
+                    // Shoot
+                    indexer.setEnabledCommand(true),
+                    indexer.indexCommand(),
+                    Commands.waitUntil(() -> false)
                 ).finallyDo(interrupted -> {
                     indexer.stop();
                     shooterRoller.stop();
