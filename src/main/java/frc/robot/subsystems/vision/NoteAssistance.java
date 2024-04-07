@@ -159,13 +159,14 @@ public class NoteAssistance implements Reportable{
         
         
 
-        // todo, need to convert angle to continues value!!! bug
-        if(currentX < defaultX-1 || currentX > defaultX+1 ||  // todo, tuning pls
-           currentY < defaultY-1 || currentY > defaultY+1 ||
-           currentR < NerdyMath.continueAngle(defaultR, defaultR - 30) || currentR > NerdyMath.continueAngle(defaultR, defaultR + 30))
-        {
-            speeds[0] = speeds[1] = 0; // stop because moved too far
-        }
+            // todo, need to convert angle to continues value!!! bug
+            if(currentX < defaultX-1 || currentX > defaultX+1 ||  // todo, tuning pls
+            currentY < defaultY-1 || currentY > defaultY+1 ||
+            currentR < NerdyMath.continueAngle(defaultR, defaultR - 30) || currentR > NerdyMath.continueAngle(defaultR, defaultR + 30))
+            {
+                speeds[0] = speeds[1] = 0; // stop because moved too far
+                dataSampleCount = maxSamples+1;
+            }
         }
         if(maxSamples > 0 && dataSampleCount > maxSamples)
         {
@@ -189,13 +190,21 @@ public class NoteAssistance implements Reportable{
     // double targetTX: max left tx value to pickup, min right tx value(-1*)
     // double targetTY: the bottom cutoff value
     public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY, int minSamples, int maxSamples, Pose2d defaultPose) {
-        return Commands.sequence(
+        Command a = Commands.sequence(
             Commands.runOnce(() -> reset()),
             Commands.run( () -> driveToNote(drivetrain, targetArea, targetTX, targetTY, maxSamples, defaultPose))// todo, tuning pls!!!
                 .until(() -> (dataSampleCount >= minSamples && 
                     Math.abs(getForwardSpeed()) <= 0.1 && 
-                    Math.abs(getSidewaysSpeed()) <= 0.1) )// todo, tuning pls!!!
+                    Math.abs(getSidewaysSpeed()) <= 0.1) ),// todo, tuning pls!!!
+            Commands.run(()->stopBot(drivetrain))
         );
+        a.addRequirements(drivetrain);  
+        return a;
+    }
+
+    private void stopBot(SwerveDrivetrain drivetrain)
+    {
+        drivetrain.stopModules();
     }
 
     boolean foundNote = false;
