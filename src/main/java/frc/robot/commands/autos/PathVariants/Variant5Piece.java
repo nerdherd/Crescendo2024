@@ -21,7 +21,7 @@ public class Variant5Piece extends SequentialCommandGroup {
                 new PathA(swerve, superSystem, pathGroup.get(0), driverAssist, sva),
                 new PathB(swerve, superSystem, pathGroup.get(1), driverAssist, sva),
                 new PathC(swerve, pathGroup.get(2)),
-                new PathD(swerve, superSystem, noteCamera, 15, pathGroup.get(3), pathGroup.get(4)),
+                new PathD(swerve, superSystem, noteCamera, 15, 10, 50, pathGroup.get(3), pathGroup.get(4)),
                 new PathE(swerve, superSystem, pathGroup.get(5), driverAssist, sva)
             )
         );

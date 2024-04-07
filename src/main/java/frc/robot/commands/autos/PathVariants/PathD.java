@@ -50,31 +50,31 @@ public class PathD extends SequentialCommandGroup{
      * @param noteAssistance
      * @param paths max 2 paths
      */
-    public PathD(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteAssistance, double targetNoteArea, int minSamples, int maxSamples, List<PathPlannerPath> paths) {
+    public PathD(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteAssistance, double targetNoteArea, int minSamples, int maxSamples, PathPlannerPath path0, PathPlannerPath path1) {
         addCommands(
             Commands.sequence(
                 Commands.either(
                     Commands.sequence(
                         superSystem.intakeUntilSensedAuto(2),
-                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, minSamples, maxSamples, paths.get(0).getPreviewStartingHolonomicPose())
+                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, minSamples, maxSamples, path0.getPreviewStartingHolonomicPose())
                             .onlyWhile(noteAssistance::hasTarget)
                     ),
                     Commands.none(), 
                     noteAssistance::hasTarget
                 ),
 
-                AutoBuilder.followPath(paths.get(0)),
+                AutoBuilder.followPath(path0),
                 Commands.either(
                     Commands.sequence(
                         superSystem.intakeUntilSensedAuto(2),
-                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, minSamples, maxSamples, paths.get(1).getPreviewStartingHolonomicPose())
+                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, minSamples, maxSamples, path1.getPreviewStartingHolonomicPose())
                             .onlyWhile(noteAssistance::hasTarget)
                     ),
                     Commands.none(), 
                     noteAssistance::hasTarget
                 ),
 
-                AutoBuilder.followPath(paths.get(1)),
+                AutoBuilder.followPath(path1),
                 Commands.either(
                     Commands.sequence(
                         superSystem.intakeUntilSensedAuto(2),

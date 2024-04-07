@@ -613,7 +613,7 @@ public class RobotContainer {
     autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, a02, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, b23, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathC", new PathC(swerveDrive, c24));
-    autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 1, 10, 50, pathGroupTestD));
+    autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 1, 10, 50, pathGroupTestD.get(0), pathGroupTestD.get(1)));
     autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, e5Y, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, f04, apriltagCamera));
     autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, apriltagCamera, adjustmentCamera, noteCamera));
