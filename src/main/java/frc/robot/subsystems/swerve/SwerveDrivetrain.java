@@ -150,7 +150,13 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         double xyStds = 0.5;
         double degStds = 999999;
 
-        if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1)
+        boolean receivedValidData = LimelightHelpers.getTV(VisionConstants.kLimelightBackName);
+        Pose3d botPose1 = LimelightHelpers.getBotPose3d_wpiBlue(VisionConstants.kLimelightBackName);
+        if(!receivedValidData)
+            doRejectUpdate = true;
+        else if(botPose1.getZ() > 0.3 || botPose1.getZ() < -0.3)
+            doRejectUpdate = true;
+        else if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1)
         {
             if(mt1.rawFiducials[0].ambiguity > .7)
             {
