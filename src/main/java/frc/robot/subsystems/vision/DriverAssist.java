@@ -905,15 +905,14 @@ public class DriverAssist implements Reportable{
     }
 
     private final PIDController turnToTagAngleControllerAuto = new PIDController(4, 0, 0.1);
-    // private void setPIDConfig()
-    // {
-    //     this.turnToTagAngleControllerAuto.setTolerance(
-    //         SwerveAutoConstants.kTurnToAnglePositionToleranceAngle, 
-    //         SwerveAutoConstants.kTurnToAngleVelocityToleranceAnglesPerSec * 0.02);
-    
+    private void setPIDConfig()
+    {
+        this.turnToTagAngleControllerAuto.setTolerance(
+            SwerveAutoConstants.kTurnToAnglePositionToleranceAngle, 
+            SwerveAutoConstants.kTurnToAngleVelocityToleranceAnglesPerSec * 0.02);
 
-    //     this.turnToTagAngleControllerAuto.enableContinuousInput(0, 360);
-    // }
+        this.turnToTagAngleControllerAuto.enableContinuousInput(0, 360);
+    }
     private void TurnToTag4Auto(SwerveDrivetrain swerveDrive, int validTagID, int maxSamples) {
         dataSampleCount++;
         SmartDashboard.putNumber("dataSampleCount", dataSampleCount);
@@ -969,10 +968,94 @@ public class DriverAssist implements Reportable{
         }
         else 
         {
-            calculatedAngledPower = 0;
+            // if no frame 
+            // dataSampleCount = 0;
+            //calculatedAngledPower = 0;// do not do it!
         }
 
         swerveDrive.drive(0, 0, calculatedAngledPower);
+    }
+
+
+    public Command TurnToAngleByTagCommand4Auto(SwerveDrivetrain drivetrain, int minSamples, int maxSamples) {
+        Command command = Commands.sequence(
+            Commands.runOnce(() -> reset()),
+            Commands.runOnce(() -> {aimTargetAngle=1000;readDone = false;calculatedAngledPower=0;}),
+            Commands.either(
+                Commands.run(() -> readCurrentAimAngle(drivetrain, 4, maxSamples)).until(()-> dataSampleCount >= minSamples && readDone == true),
+                Commands.run(() -> readCurrentAimAngle(drivetrain, 7, maxSamples)).until(()-> dataSampleCount >= minSamples && readDone == true),
+                
+                RobotContainer::IsRedSide 
+            ),
+            Commands.run(()->TurnToAngle4Auto(drivetrain)).until(()->Math.abs(calculatedAngledPower) <= 0.05)                
+        );
+        command.addRequirements(drivetrain);
+
+        return command;
+    }
+
+    double aimTargetAngle = 1000;
+    boolean readDone = false;
+    private void readCurrentAimAngle(SwerveDrivetrain drivetrain, int validTagID, int maxSamples)
+    {
+        dataSampleCount++;
+        SmartDashboard.putNumber("dataSampleCount", dataSampleCount);
+        if(maxSamples > 0 && dataSampleCount >= maxSamples)
+        {
+            readDone = true;
+        }
+        else if(LimelightHelpers.getTV(limelightName)) 
+        {
+            Pose2d tagPose = layout.getTagPose(validTagID).get().toPose2d();
+            
+            int lastTagSeenId = (int)LimelightHelpers.getFiducialID(limelightName);
+            if(targetId != null)
+                targetId.setInteger(lastTagSeenId);
+            //SmartDashboard.putNumber("lastTagSeenId", lastTagSeenId);
+
+            Pose3d botPose3d = LimelightHelpers.getBotPose3d_wpiBlue(limelightName);
+            if(botPose3d.getZ() > 0.5 || botPose3d.getZ() < -0.5)
+            {
+                return;
+            }
+
+            LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+
+            lastTagSeenDist = limelightMeasurement.avgTagDist;
+
+            lastTagSeenBotPose2d = limelightMeasurement.pose;
+
+            double toTagAngle = getBotAimTagRotationAngle(tagPose, lastTagSeenBotPose2d);
+            //SmartDashboard.putNumber("AngleOffsetToTag", toTagAngle);
+
+            double updatedAngle;
+            double allianceOffset = 90;
+            double angle = NerdyMath.posMod(-toTagAngle + allianceOffset, 360);
+            if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
+                updatedAngle = Rotation2d.fromDegrees(angle).getDegrees(); // to be tested!!! not tested yet
+            }
+            else
+                updatedAngle = 90 - ((180 + angle) % 360);
+
+            SmartDashboard.putNumber("UPDATEDAngleOffset", updatedAngle);
+
+            // TODO: check left or right side of tag, and heading left or right direction of tag
+            aimTargetAngle = updatedAngle + drivetrain.getImu().getHeading();
+
+            readDone = true;
+            setPIDConfig();
+        }
+    }
+
+    private void TurnToAngle4Auto(SwerveDrivetrain swerveDrive)
+    {
+        if(aimTargetAngle < 1000-1)
+        {
+                calculatedAngledPower = turnToTagAngleControllerAuto.calculate(swerveDrive.getImu().getHeading(), aimTargetAngle);
+                calculatedAngledPower += Math.signum(calculatedAngledPower) * 0.05;
+                //calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.1, 0.1); 
+                swerveDrive.drive(0, 0, calculatedAngledPower);
+        }
     }
 
 }
