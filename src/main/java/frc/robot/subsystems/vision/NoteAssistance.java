@@ -36,8 +36,9 @@ public class NoteAssistance implements Reportable{
         this.name = name;
         ShuffleboardTab tab = Shuffleboard.getTab(name);
 
-        areaController = new PIDController(0.12, 0, 0.001);// todo, tuning pls!!!
-        txController = new PIDController(0.025, 0, 0.001);// todo, tuning pls!!!
+        areaController = new PIDController(0.12, 0, 0.004);// todo, tuning pls!!!// 0.12, 0, 0.001 Pre 4/6 Original Values
+        txController = new PIDController(0.035, 0, 0.001);// todo, tuning pls!!!
+        // 0.025, 0, 0.001 Pre 4/6 Original Values
         rotationController = new PIDController(0.08, 0, 0.006); // d = 0.008
 
         try { // TODO , we don't need to try-catch
@@ -77,15 +78,15 @@ public class NoteAssistance implements Reportable{
             targetFound.setBoolean(hasTarget);
         if(hasTarget) 
         {
-            double area = limelight.getArea_avg();
+            double area = limelight.getArea(); // try no avg
             if(currentArea != null)
                 currentArea.setDouble(area);
                 
-            double tx = limelight.getXAngle_avg();
+            double tx = limelight.getXAngle();
             if(currentTX != null)
                 currentTX.setDouble(tx);
                 
-            double ty = limelight.getYAngle_avg();
+            double ty = limelight.getYAngle();
             if(currentTY != null)
                 currentTY.setDouble(ty);
 
@@ -106,8 +107,8 @@ public class NoteAssistance implements Reportable{
                 speeds[0] = 1 * areaController.calculate(area, targetArea);
                 speeds[1]= 1 * txController.calculate(tx, 0);
 
-                speeds[0] = NerdyMath.deadband(speeds[0], -0.2, 0.2); // todo, tuning pls!!!
-                speeds[1] = NerdyMath.deadband(speeds[1], -0.2, 0.2);// todo, tuning pls!!!
+                speeds[0] = NerdyMath.deadband(speeds[0], -0.25, 0.25); // todo, tuning pls!!!
+                speeds[1] = NerdyMath.deadband(speeds[1], -0.1, 0.1);// todo, tuning pls!!!
             }
         }
         else
@@ -151,9 +152,12 @@ public class NoteAssistance implements Reportable{
         double currentY = currentPose.getY();
         double currentR = currentPose.getRotation().getDegrees();
 
-        double defaultX = defaultPose.getX();
-        double defaultY = defaultPose.getY();
-        double defaultR = defaultPose.getRotation().getDegrees();
+        if(defaultPose != null) {
+            double defaultX = defaultPose.getX();
+            double defaultY = defaultPose.getY();
+            double defaultR = defaultPose.getRotation().getDegrees();
+        
+        
 
         // todo, need to convert angle to continues value!!! bug
         if(currentX < defaultX-1 || currentX > defaultX+1 ||  // todo, tuning pls
@@ -162,7 +166,8 @@ public class NoteAssistance implements Reportable{
         {
             speeds[0] = speeds[1] = 0; // stop because moved too far
         }
-        else if(maxSamples > 0 && dataSampleCount > maxSamples)
+        }
+        if(maxSamples > 0 && dataSampleCount > maxSamples)
         {
             speeds[0] = speeds[1] = 0; // stop because running time too long
         }
@@ -270,8 +275,8 @@ public class NoteAssistance implements Reportable{
 
         if(NerdyMath.inRange(currentTA, targetTA - 0.2, targetTA * 1.1)) 
             speeds[0] = 0;
-        else if(NerdyMath.inRange(currentTY, targetTY - 0.1, targetTY + 0.1))
-            speeds[0] = 0;
+        // else if(NerdyMath.inRange(currentTY, targetTY - 0.1, targetTY + 0.1))
+        //     speeds[0] = 0;
         if(NerdyMath.inRange(currentTX, targetTX - 0.1, targetTX + 0.1))
             speeds[1] = 0;
 

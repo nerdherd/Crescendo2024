@@ -23,6 +23,8 @@ public class SuperPath extends SequentialCommandGroup{
         addCommands(
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
             Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
+
+            ///A
             Commands.sequence(
                 // Preload
                 Commands.deadline(
@@ -81,11 +83,45 @@ public class SuperPath extends SequentialCommandGroup{
             // Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             //Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
             
-            // B Start here *******************************************************************************
+            // B (1) Start here *******************************************************************************
             // Intake and Path
             Commands.race(
                 Commands.waitSeconds(2),
                 AutoBuilder.followPath(pathGroup.get(1)).andThen(Commands.waitSeconds(0.75)),
+                Commands.sequence(
+                    Commands.waitSeconds(0.125),
+                    superSystem.intakeUntilSensedAuto(1.75)
+                )                
+            ),
+
+            // Turn to Angle Shoot
+            Commands.sequence(
+                Commands.deadline(
+                    Commands.waitSeconds(2),
+                    // adjust drive to april tag
+                    Commands.either(
+                        driverAssist.turnToTag(4, swerve),
+                        driverAssist.turnToTag(7, swerve),
+                        RobotContainer::IsRedSide 
+                    )
+                ),
+                superSystem.backupIndexerAndShooter(),
+                Commands.waitSeconds(0.45),
+                Commands.deadline(
+                    Commands.waitSeconds(1.4),
+                    // adjust shooter angle
+                    superSystem.shootSequenceAdjustable(sva)
+                ),
+                superSystem.indexer.stopCommand(),
+                superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                superSystem.shooterRoller.setEnabledCommand(true)
+            ),
+
+            // B (2) Start here *******************************************************************************
+            // Intake and Path
+            Commands.race(
+                Commands.waitSeconds(2),
+                AutoBuilder.followPath(pathGroup.get(2)).andThen(Commands.waitSeconds(0.75)),
                 Commands.sequence(
                     Commands.waitSeconds(0.125),
                     superSystem.intakeUntilSensedAuto(1.75)

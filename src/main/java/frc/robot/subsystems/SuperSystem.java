@@ -270,6 +270,35 @@ public class SuperSystem {
         return command;
     }
     
+    public Command intakeUntilSensedAutoNoStow(double timeout) {
+        Command command = Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(() -> 
+                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+                handoff(),
+                Commands.waitSeconds(1)
+            ),
+            shooterRoller.setVelocityCommand(-10, -10),
+            shooterRoller.setEnabledCommand(true),
+            intakeRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            intakeRoller.intakeCommand(),
+
+            Commands.deadline(
+                Commands.waitSeconds(timeout), // testing - check wait time             
+                Commands.waitUntil(this::noteIntook)
+            )
+        ).finallyDo(() -> {
+            intakeRoller.stop();
+            indexer.stop();
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
+        return command;
+    }
+
     // public Command climbSequence(){
     //     return shooterPivot.climbSequence();
     // }

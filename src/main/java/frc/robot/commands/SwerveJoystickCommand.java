@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.SwerveAutoConstants;
 import frc.robot.Constants.SwerveDriveConstants;
@@ -32,9 +33,9 @@ public class SwerveJoystickCommand extends Command {
     private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
     private final Supplier<Boolean> fieldOrientedFunction;
     private final Supplier<Boolean> towSupplier, precisionSupplier;
-    private final Supplier<Double> desiredAngle;
-    private final Supplier<Boolean> turnToAngleSupplier;
-    private final PIDController turnToAngleController;
+    private final Supplier<Double> desiredAngle, desiredTagAngle;
+    private final Supplier<Boolean> turnToAngleSupplier, turnToTagSupplier;
+    private final PIDController turnToAngleController, turnToTagController;
     private Filter xFilter, yFilter, turningFilter;
 
     public static double targetAngle = 0;
@@ -62,7 +63,9 @@ public class SwerveJoystickCommand extends Command {
             Supplier<Boolean> fieldOrientedFunction, Supplier<Boolean> towSupplier, 
             Supplier<Boolean> precisionSupplier,
             Supplier<Boolean> turnToAngleSupplier,
-            Supplier<Double> desiredAngleSupplier
+            Supplier<Double> desiredAngleSupplier,
+            Supplier<Boolean> turnToTagSupplier,
+            Supplier<Double> desiredTagAngleSupplier
         ) {
         this.swerveDrive = swerveDrive;
         this.xSpdFunction = xSpdFunction;
@@ -74,6 +77,9 @@ public class SwerveJoystickCommand extends Command {
         
         this.turnToAngleSupplier = turnToAngleSupplier;
         this.desiredAngle = desiredAngleSupplier;
+
+        this.turnToTagSupplier = turnToTagSupplier;
+        this.desiredTagAngle = desiredAngleSupplier;
 
         this.xFilter = new OldDriverFilter2(
             ControllerConstants.kDeadband, 
@@ -100,6 +106,11 @@ public class SwerveJoystickCommand extends Command {
             SwerveDriveConstants.kIThetaTeleop.get(),
             SwerveDriveConstants.kDThetaTeleop.get()
             );
+
+        this.turnToTagController = new PIDController(
+            3,
+            0, 
+            0.3); // TODO: Add to constants
 
         // this.turnToAngleController = new PIDController(
         //     SwerveAutoConstants.kPTurnToAngle, 
@@ -159,6 +170,18 @@ public class SwerveJoystickCommand extends Command {
             SmartDashboard.putNumber("Turning Speed", turningSpeed);
             SmartDashboard.putNumber("Target Angle", targetAngle);
             
+            filteredTurningSpeed = turningSpeed;
+        }
+        else if(turnToTagSupplier.get()) {
+            targetAngle = desiredTagAngle.get();
+            targetAngle = ((targetAngle + turningSpdFunction.get() % 360) + 360) % 360;
+            turningSpeed = turnToTagController.calculate(swerveDrive.getImu().getHeading(), targetAngle);
+            turningSpeed += Math.signum(turningSpeed) * SwerveAutoConstants.kTurnToAngleFeedForwardDegreesPerSecond;
+            turningSpeed = Math.toRadians(turningSpeed);
+            turningSpeed = MathUtil.clamp(
+                turningSpeed, 
+                -SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond, 
+                SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond);
             filteredTurningSpeed = turningSpeed;
         }
         else {

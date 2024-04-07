@@ -131,19 +131,36 @@ public class DriverAssist implements Reportable{
 
         Optional<Pose3d> tagPoseOptional = layout.getTagPose(ID);
         if(tagPoseOptional.isEmpty()) return 1000;
-        Pose3d tagPose = tagPoseOptional.get();
+        // Pose3d tagPose = tagPoseOptional.get();
+        //Pose3d tagPose = layout.getTagPose(7);
 
-        Pose3d robotPose = getCurrentPose3DVision();
+        LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.kLimelightBackName);
+        Pose2d robotPose = mt1.pose;
 
-        double xOffset = tagPose.getX() - robotPose.getX();
-        double yOffset = tagPose.getY() - robotPose.getY();
+        // Pose3d robotPose = getCurrentPose3DVision();
+        double toTagAngle = getAngleBetween(tagPoseOptional.get().toPose2d(), robotPose);
+        SmartDashboard.putNumber("AngleOffsetToTag", toTagAngle);
+
+        // double xOffset = tagPose.getX() - robotPose.getX();
+        // double yOffset = tagPose.getY() - robotPose.getY();
+
+        // double allianceOffset = 90;
+        // double angle = NerdyMath.posMod(-Math.toDegrees(Math.atan2(xOffset, yOffset)) + allianceOffset, 360);
+        // if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
+        //     return Rotation2d.fromDegrees(angle).getDegrees();
+        // }
+        // return (180 + angle) % 360;
 
         double allianceOffset = 90;
-        double angle = NerdyMath.posMod(-Math.toDegrees(Math.atan2(xOffset, yOffset)) + allianceOffset, 360);
+        double angle = NerdyMath.posMod(-toTagAngle + allianceOffset, 360);
         if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
             return Rotation2d.fromDegrees(angle).getDegrees();
         }
-        return (180 + angle) % 360;
+
+        double updatedAngle = 90 - ((180 + angle) % 360);
+
+        SmartDashboard.putNumber("UPDATEDAngleOffset", updatedAngle);
+        return updatedAngle;
     }
 
     public Command turnToTag(int ID, SwerveDrivetrain swerve) {
@@ -784,7 +801,7 @@ public class DriverAssist implements Reportable{
         double relativeAngleRadians = angleToTagRadians - robotHeadingRadians;
 
         // Normalize the relative angle to be within -Pi to Pi
-        relativeAngleRadians = normalizeRadians(relativeAngleRadians);
+        //relativeAngleRadians = normalizeRadians(relativeAngleRadians);
 
         // Convert the angle from radians to degrees
         double relativeAngleDegrees = Math.toDegrees(relativeAngleRadians);

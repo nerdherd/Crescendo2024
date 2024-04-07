@@ -208,10 +208,6 @@ public class RobotContainer {
               return 225.0;
             }
           }
-          if (driverController.getL2Button()) {
-            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
-            // 4 if red side, 7 if blue
-          }
           if (driverController.getCircleButton()) { //turn to amp
             if (!IsRedSide()){
               return 270.0;
@@ -229,6 +225,19 @@ public class RobotContainer {
           //   return SmartDashboard.getNumber("Test Desired Angle", 0);
           // }
           return 0.0; 
+        },
+        () -> {
+          return (
+            driverController.getL2Button() 
+          ); // Turn to tag
+        }, 
+        () -> {
+          if (driverController.getL2Button()) {
+            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
+          }
+          else {
+            return 0.0;
+          }
         }
       );
 
@@ -283,7 +292,7 @@ public class RobotContainer {
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.cross().whileTrue(apriltagCamera.driveToAmpCommand(swerveDrive, 3, 3));
-    commandDriverController.square().whileTrue(noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 0, 0, null).until(superSystem::noteIntook));
+    commandDriverController.square().onTrue(noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 10, 200, null).until(superSystem::noteIntook));
 
     commandOperatorController.povLeft().whileTrue(
       Commands.repeatingSequence(
@@ -530,7 +539,7 @@ public class RobotContainer {
   //   a01, c15, a03
   // );
   final List<PathPlannerPath> pathGroupTestSuper = List.of(
-     a02, b23
+     a01, b12, b23
   );
   final List<PathPlannerPath> pathGroupTestA = List.of(
      a02
@@ -614,7 +623,7 @@ public class RobotContainer {
     autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, b23, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathC", new PathC(swerveDrive, c24));
     autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 1, 10, 50, pathGroupTestD));
-    autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, e52, apriltagCamera, adjustmentCamera));
+    autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, e5Y, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, f04, apriltagCamera));
     autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, apriltagCamera, adjustmentCamera, noteCamera));
 
@@ -625,16 +634,16 @@ public class RobotContainer {
   
   public void initShuffleboard() {
     imu.initShuffleboard(loggingLevel);
-    swerveDrive.initShuffleboard(loggingLevel);
-    swerveDrive.initModuleShuffleboard(loggingLevel);
+    swerveDrive.initShuffleboard(LOG_LEVEL.OFF);
+    swerveDrive.initModuleShuffleboard(LOG_LEVEL.OFF);
     apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
     noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
     adjustmentCamera.initShuffleboard(LOG_LEVEL.ALL);
 
-    shooterRoller.initShuffleboard(loggingLevel);
+    shooterRoller.initShuffleboard(LOG_LEVEL.OFF);
     shooterPivot.initShuffleboard(loggingLevel);
-    intakeRoller.initShuffleboard(loggingLevel);
-    indexer.initShuffleboard(loggingLevel);
+    intakeRoller.initShuffleboard(LOG_LEVEL.OFF);
+    indexer.initShuffleboard(LOG_LEVEL.OFF);
     // superSystem.colorSensor.initShuffleboard(loggingLevel);
     superSystem.bannerSensor.initShuffleboard(loggingLevel);
 

@@ -57,11 +57,13 @@ public class ShooterVisionAdjustment implements Reportable{
     //                           //  -50, -49.6,   -31,  -30,  -27, -23,   -22.5,   -22,    -16.875
     // the values above are old
 
-    private double[] distances = {1.2, 2.483, 3.015, 3.573, 4.267, 4.697}; // distances from 4/3
-    private double[] angles = {-52.470, -32.861, -29.114, -25.663, -22.413, -23.008}; // angles from 4/3
+    // Warbots field
+    private double[] distances = {1.2,   2.483,   3.015,    3.573,   4.267,   4.697}; // distances from 4/6
+    private double[] angles = {-52.470, -32.861, -29.114, -25.663, -21.413, -20.8}; // angles from 4/6
 
-    //{2.483, 3.015, 3.573, 4.267, 4.697}; // old distances pre 4/5
-    //{-32.861, -29.114, -25.663, -22.413, -23.008}; // old angles from 4/5
+    // at school field
+    //private double[] distances = {1.2, 2.483, 3.015, 3.573, 4.267, 4.697}; // distances from 4/3
+    //private double[] angles = {-52.470, -32.861, -29.114, -25.663, -22.413, -23.008}; // angles from 4/3
 
     public ShooterVisionAdjustment(
         DriverAssist tagCamera, 
