@@ -786,7 +786,7 @@ public class DriverAssist implements Reportable{
         double relativeAngleRadians = angleToTagRadians - robotHeadingRadians;
 
         // Normalize the relative angle to be within -Pi to Pi
-        relativeAngleRadians = normalizeRadians(relativeAngleRadians);
+        //relativeAngleRadians = normalizeRadians(relativeAngleRadians);
 
         // Convert the angle from radians to degrees
         double relativeAngleDegrees = Math.toDegrees(relativeAngleRadians);

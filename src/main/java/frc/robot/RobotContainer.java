@@ -283,7 +283,7 @@ public class RobotContainer {
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.cross().whileTrue(apriltagCamera.driveToAmpCommand(swerveDrive, 3, 3));
-    commandDriverController.square().whileTrue(noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 0, 0, null).until(superSystem::noteIntook));
+    //commandDriverController.square().onTrue(noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 10, 200, null).until(superSystem::noteIntook));
     commandDriverController.square().onTrue(apriltagCamera.TurnToTagCommand4Auto(swerveDrive, 5, 50));
     commandOperatorController.povLeft().whileTrue(
       Commands.repeatingSequence(
@@ -530,7 +530,7 @@ public class RobotContainer {
   //   a01, c15, a03
   // );
   final List<PathPlannerPath> pathGroupTestSuper = List.of(
-     a02, b23
+     a01, b12, b23
   );
   final List<PathPlannerPath> pathGroupTestA = List.of(
      a02
