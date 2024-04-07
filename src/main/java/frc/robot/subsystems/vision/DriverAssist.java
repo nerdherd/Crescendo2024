@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.SwerveAutoConstants;
+import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.TurnToAngle;
 import frc.robot.commands.TurnToAngleLive;
@@ -321,7 +323,7 @@ public class DriverAssist implements Reportable{
                 LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
                 lastTagSeenDist = limelightMeasurement.avgTagDist;
 
-                lastTagSeenPose2d = limelightMeasurement.pose;
+                lastTagSeenBotPose2d = limelightMeasurement.pose;
                 //double currentAngle = lastTagSeenPose2d.getRotation().getDegrees();
                 //SmartDashboard.putNumber("currentAngle", currentAngle);
                 
@@ -370,14 +372,14 @@ public class DriverAssist implements Reportable{
         swerveDrive.drive(0, 0, calculatedAngledPower);
     }
 
-    Pose2d lastTagSeenPose2d;
+    Pose2d lastTagSeenBotPose2d;
     int lastTagSeenId;
     double lastTagSeenDist;
     public int getLastSeenAprilTagID() {
         return lastTagSeenId;
     }
     public Pose2d getLastSeenPose2d() {
-        return lastTagSeenPose2d;
+        return lastTagSeenBotPose2d;
     }
     public double getLastTagSeenDist()
     {
@@ -769,7 +771,7 @@ public class DriverAssist implements Reportable{
         else limelight.setLightState(LightMode.OFF);
     }
 
-    public static double getAngleBetween(Pose2d tagPose, Pose2d robotPose) {
+    public static double getBotAimTagRotationAngle(Pose2d tagPose, Pose2d robotPose) {
         // Calculate the vector pointing from the robot to the tag
         double deltaX = tagPose.getX() - robotPose.getX();
         double deltaY = tagPose.getY() - robotPose.getY();
@@ -882,6 +884,95 @@ public class DriverAssist implements Reportable{
                 break;
             
         }
+    }
+
+
+
+    /****** with new limelight lib *********/
+    public Command TurnToTagCommand4Auto(SwerveDrivetrain drivetrain, int minSamples, int maxSamples) {
+        Command command = Commands.sequence(
+            Commands.runOnce(() -> reset()),      
+            Commands.either(
+                Commands.run(() -> TurnToTag4Auto(drivetrain, 4, maxSamples)).until(()-> dataSampleCount >= minSamples && Math.abs(Math.abs(getAngledPower())) <= 0.05),
+                Commands.run(() -> TurnToTag4Auto(drivetrain, 7, maxSamples)).until(()-> dataSampleCount >= minSamples && Math.abs(Math.abs(getAngledPower())) <= 0.05),
+                
+                RobotContainer::IsRedSide 
+            )                
+        );
+        command.addRequirements(drivetrain);
+
+        return command;
+    }
+
+    private final PIDController turnToTagAngleControllerAuto = new PIDController(4, 0, 0.1);
+    // private void setPIDConfig()
+    // {
+    //     this.turnToTagAngleControllerAuto.setTolerance(
+    //         SwerveAutoConstants.kTurnToAnglePositionToleranceAngle, 
+    //         SwerveAutoConstants.kTurnToAngleVelocityToleranceAnglesPerSec * 0.02);
+    
+
+    //     this.turnToTagAngleControllerAuto.enableContinuousInput(0, 360);
+    // }
+    private void TurnToTag4Auto(SwerveDrivetrain swerveDrive, int validTagID, int maxSamples) {
+        dataSampleCount++;
+        SmartDashboard.putNumber("dataSampleCount", dataSampleCount);
+        if(maxSamples > 0 && dataSampleCount >= maxSamples)
+        {
+            calculatedAngledPower = 0;
+        }
+        else if(LimelightHelpers.getTV(limelightName)) 
+        {
+            Pose2d tagPose = layout.getTagPose(validTagID).get().toPose2d();
+            
+            int lastTagSeenId = (int)LimelightHelpers.getFiducialID(limelightName);
+            if(targetId != null)
+                targetId.setInteger(lastTagSeenId);
+            //SmartDashboard.putNumber("lastTagSeenId", lastTagSeenId);
+
+            LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+
+            lastTagSeenDist = limelightMeasurement.avgTagDist;
+
+            lastTagSeenBotPose2d = limelightMeasurement.pose;
+
+            double toTagAngle = getBotAimTagRotationAngle(tagPose, lastTagSeenBotPose2d);
+            //SmartDashboard.putNumber("AngleOffsetToTag", toTagAngle);
+
+            double updatedAngle;
+            double allianceOffset = 90;
+            double angle = NerdyMath.posMod(-toTagAngle + allianceOffset, 360);
+            if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
+                updatedAngle = Rotation2d.fromDegrees(angle).getDegrees(); // to be tested!!! not tested yet
+            }
+            else
+                updatedAngle = 90 - ((180 + angle) % 360);
+
+            SmartDashboard.putNumber("UPDATEDAngleOffset", updatedAngle);
+
+            // if( txOffset < txInRangeValue && txOffset > -1*txInRangeValue ) // todo, tuning pls!!!
+            // {
+            //     calculatedAngledPower = 0; // in good tx ranges. faster than the pid
+            // } 
+            // else
+            {
+                calculatedAngledPower = turnToTagAngleControllerAuto.calculate(updatedAngle, 0);
+                calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.1, 0.1); // todo, tuning pls. Have to consider the Ta for all coeffs!!! Todo
+            }
+
+            if(forwardSpeed != null)
+                forwardSpeed.setDouble(0);
+            if(sidewaysSpeed != null)
+                sidewaysSpeed.setDouble(0);
+            if(angularSpeed != null)
+                angularSpeed.setDouble(calculatedAngledPower);
+        }
+        else 
+        {
+            calculatedAngledPower = 0;
+        }
+
+        swerveDrive.drive(0, 0, calculatedAngledPower);
     }
 
 }
