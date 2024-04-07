@@ -203,9 +203,9 @@ public class RobotContainer {
         () -> { // Turn To angle Direction
           if (driverController.getTriangleButton()) {
             if (!IsRedSide()) {
-              return 135.0;
+              return 315.0;
             } else {
-              return 225.0;
+              return 45.0;
             }
           }
           if (driverController.getL2Button()) {
@@ -487,7 +487,8 @@ public class RobotContainer {
   PathPlannerPath b32 = PathPlannerPath.fromPathFile("b32Path");
   PathPlannerPath b21 = PathPlannerPath.fromPathFile("b21Path");
   PathPlannerPath b31 = PathPlannerPath.fromPathFile("b31Path");
-  
+  PathPlannerPath b13 = PathPlannerPath.fromPathFile("b13Path");
+
   PathPlannerPath c14 = PathPlannerPath.fromPathFile("c14Path");
   PathPlannerPath c24 = PathPlannerPath.fromPathFile("c24Path");
   PathPlannerPath c34 = PathPlannerPath.fromPathFile("c34Path");
@@ -531,7 +532,7 @@ public class RobotContainer {
   //   a01, c15, a03
   // );
   final List<PathPlannerPath> pathGroupTestSuper = List.of(
-     a01, b12, b23
+     a03, b32, b21
   );
   final List<PathPlannerPath> pathGroupTestA = List.of(
      a02
@@ -593,10 +594,10 @@ public class RobotContainer {
     }
     
 
-    // if (paths.contains("Reliable4Piece")) {
-    //   autoChooser.setDefaultOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
-    //   // autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
-    // }
+    if (paths.contains("Reliable4Piece")) {
+      autoChooser.setDefaultOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
+      // autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
+    }
 
     if (paths.contains("NEW4Piece")) {
       autoChooser.addOption("New 4 Piece", new Reliable4Piece(swerveDrive, "NEW4Piece", superSystem));

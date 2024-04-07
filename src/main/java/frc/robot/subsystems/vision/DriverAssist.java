@@ -148,9 +148,36 @@ public class DriverAssist implements Reportable{
         return (180 + angle) % 360;
     }
 
+    /**
+     * 
+     * @param ID april tag ID to turn to
+     * @return the angle in degrees to get to the april tag
+     */
+    public double getTurnToSpecificTagAngle(int ID, SwerveDrivetrain swerve) {
+        if(ID < 1 || ID > 16) return 1000;
+        if(!limelight.hasValidTarget()) return 1000;
+
+        Optional<Pose3d> tagPoseOptional = layout.getTagPose(ID);
+        if(tagPoseOptional.isEmpty()) return 1000;
+        Pose3d tagPose = tagPoseOptional.get();
+
+        Pose2d robotPose = swerve.getPose();
+
+        double xOffset = tagPose.getX() - robotPose.getX();
+        double yOffset = tagPose.getY() - robotPose.getY();
+
+        double allianceOffset = 90;
+        double angle = NerdyMath.posMod(-Math.toDegrees(Math.atan2(xOffset, yOffset)) + allianceOffset, 360);
+        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) {
+            return Rotation2d.fromDegrees(angle).getDegrees();
+        }
+        return (180 + angle) % 360;
+    }
+
+
     public Command turnToTag(int ID, SwerveDrivetrain swerve) {
         return Commands.sequence(
-            new TurnToAngleLive(() -> getTurnToSpecificTagAngle(ID), swerve)
+            new TurnToAngleLive(() -> getTurnToSpecificTagAngle(ID, swerve), swerve)
         );
     }
 
