@@ -60,13 +60,13 @@ public class TurnToAngleLive extends Command {
     public void execute() {
         // Calculate turning speed with PID
         double turningSpeed = pidController.calculate(swerveDrive.getImu().getHeading(), target);
+        turningSpeed += Math.signum(turningSpeed) * SwerveAutoConstants.kTurnToAngleFeedForwardDegreesPerSecond;
         turningSpeed = Math.toRadians(turningSpeed);
 
         turningSpeed = NerdyMath.clamp(
             turningSpeed, 
             -SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond, 
             SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond);
-        turningSpeed += Math.signum(turningSpeed) * SwerveAutoConstants.kTurnToAngleFeedForwardDegreesPerSecond;
         // SmartDashboard.putNumber("Turning speed limited", turningSpeed);
         
         // Convert speed into swerve states
