@@ -18,10 +18,10 @@ public class Variant5Piece extends SequentialCommandGroup {
     public Variant5Piece(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva, NoteAssistance noteCamera) {
         addCommands(
             Commands.sequence(
-                new PathA(swerve, superSystem, pathGroup.get(0), driverAssist, sva),
-                new PathB(swerve, superSystem, pathGroup.get(1), driverAssist, sva),
-                new PathC(swerve, pathGroup.get(2)),
-                new PathD(swerve, superSystem, noteCamera, 15, 10, 50, pathGroup.get(3), pathGroup.get(4)),
+                new PathA(swerve, superSystem, pathGroup, driverAssist, sva, 0),
+                new PathB(swerve, superSystem, pathGroup, driverAssist, sva, 1),
+                new PathC(swerve, superSystem, pathGroup),
+                new PathD(swerve, superSystem, noteCamera, 15, 10, 50, pathGroup.get(3), pathGroup.get(4), driverAssist, sva),
                 new PathE(swerve, superSystem, pathGroup.get(5), driverAssist, sva)
             )
         );

@@ -16,7 +16,7 @@ import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class PathB extends SequentialCommandGroup{
-    public PathB(SwerveDrivetrain swerve, SuperSystem superSystem, PathPlannerPath path, DriverAssist driverAssist, ShooterVisionAdjustment sva) {
+    public PathB(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva, int index) {
         // Pose2d startingPose = pathGroup.get(0).getPreviewStartingHolonomicPose();
         // Pose2d startingPose = new Pose2d(2.45, 5.55, new Rotation2d());//pathGroup.get(0).();
         addCommands(
@@ -28,35 +28,40 @@ public class PathB extends SequentialCommandGroup{
             // B Start here *******************************************************************************
             // Intake and Path
             Commands.race(
-                Commands.waitSeconds(2),
-                AutoBuilder.followPath(path).andThen(Commands.waitSeconds(0.75)),
+                Commands.waitSeconds(3),
+                AutoBuilder.followPath(pathGroup.get(index)).andThen(Commands.waitSeconds(1.5)),
                 Commands.sequence(
                     Commands.waitSeconds(0.125),
-                    superSystem.intakeUntilSensedAuto(1.75)
-                )                
+                    superSystem.intakeUntilSensedAuto(2.875)
+                ),
+                Commands.waitUntil(superSystem::noteIntook)         
             ),
 
-            // Turn to Angle Shoot
-            Commands.sequence(
-                Commands.deadline(
-                    Commands.waitSeconds(0.4),
-                    // adjust drive to april tag
-                    Commands.either(
-                        driverAssist.turnToTag(4, swerve),
-                        driverAssist.turnToTag(7, swerve),
-                        RobotContainer::IsRedSide 
+            // Turn to angle and shoot
+            Commands.deadline(
+                Commands.waitUntil(() -> !superSystem.noteIntook()),
+                Commands.sequence(
+                    Commands.deadline(
+                        // Turn to angle
+                        Commands.sequence(
+                            Commands.deadline(
+                                Commands.waitSeconds(1),
+                                Commands.either(
+                                    driverAssist.turnToTag(4, swerve, 2),
+                                    driverAssist.turnToTag(7, swerve, 2),
+                                    RobotContainer::IsRedSide 
+                                )
+                            ),
+                            Commands.runOnce(() -> swerve.towModules()),
+                            superSystem.shootAuto()
+                        ),
+                        // Shoot
+                        Commands.sequence(
+                            superSystem.backupIndexerAndShooter(),
+                            superSystem.prepareShooterVision(sva)
+                        )
                     )
-                ),
-                superSystem.backupIndexerAndShooter(),
-                Commands.waitSeconds(0.45),
-                Commands.deadline(
-                    Commands.waitSeconds(1.4),
-                    // adjust shooter angle
-                    superSystem.shootSequenceAdjustable(sva)
-                ),
-                superSystem.indexer.stopCommand(),
-                superSystem.shooterRoller.setVelocityCommand(-10, -10),
-                superSystem.shooterRoller.setEnabledCommand(true)
+                )
             )
         );
     }    

@@ -18,8 +18,9 @@ import frc.robot.subsystems.vision.NoteAssistance;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class PathA extends SequentialCommandGroup{
-    public PathA(SwerveDrivetrain swerve, SuperSystem superSystem, PathPlannerPath path, DriverAssist driverAssist, ShooterVisionAdjustment sva){
-        Pose2d startingPose = path.getPreviewStartingHolonomicPose();
+    public PathA(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva, int index){
+        // Pose2d startingPose = path.getPreviewStartingHolonomicPose();
+        Pose2d startingPose = new Pose2d(1.33, 5.55, new Rotation2d());//pathGroup.get(0).();
         addCommands(
             Commands.runOnce(() -> swerve.getImu().zeroAll()),
             Commands.runOnce(() -> swerve.getImu().setOffset((startingPose.getRotation().getDegrees()))),
@@ -27,7 +28,7 @@ public class PathA extends SequentialCommandGroup{
             Commands.sequence(
                 // Preload
                 Commands.deadline(
-                    Commands.waitSeconds(1.5),
+                    Commands.waitUntil(() -> !superSystem.noteIntook()),
                     superSystem.shootSubwoofer()
                 ),
 
@@ -39,45 +40,46 @@ public class PathA extends SequentialCommandGroup{
 
                 // Drive and intake
                 Commands.race(
-                    Commands.waitSeconds(2),
+                    Commands.waitSeconds(3),
                     // Path
-                    AutoBuilder.followPath(path).andThen(Commands.waitSeconds(0.75)),
+                    AutoBuilder.followPath(pathGroup.get(index)).andThen(Commands.waitSeconds(1.5)),
                     // Drive to note (if wanted)
                     // noteAssistance.driveToNoteCommand(swerve, 0, 0, 0, 0, 0, startingPose) // TODO: change target values
                     // Intake
                     Commands.sequence(
                         Commands.waitSeconds(0.125),
-                        superSystem.intakeUntilSensedAuto(1.75)
-                    )
+                        superSystem.intakeUntilSensedAuto(2.875)
+                    ),
+                    Commands.waitUntil(superSystem::noteIntook)
                 ),
 
                 // Turn to angle and shoot
-                Commands.sequence(
-                    // Turn to angle
-                    Commands.deadline(
-                        Commands.waitSeconds(0.4),
-                        Commands.either(
-                            driverAssist.turnToTag(4, swerve),
-                            driverAssist.turnToTag(7, swerve),
-                            RobotContainer::IsRedSide 
-                          )
-                    ),
-                    // Shoot
+                Commands.deadline(
+                    Commands.waitUntil(() -> !superSystem.noteIntook()),
                     Commands.sequence(
-                        superSystem.backupIndexerAndShooter(),
-                        Commands.waitSeconds(0.45),
                         Commands.deadline(
-                            Commands.waitSeconds(1.2),
-                            // Adjust shooter Angle
-                            superSystem.shootSequenceAdjustable(sva)
-                        ),
-                        superSystem.indexer.stopCommand(),
-                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
-                        superSystem.shooterRoller.setEnabledCommand(true)
+                            // Turn to angle
+                            Commands.sequence(
+                                Commands.deadline(
+                                    Commands.waitSeconds(1),
+                                    Commands.either(
+                                        driverAssist.turnToTag(4, swerve, 2),
+                                        driverAssist.turnToTag(7, swerve, 2),
+                                        RobotContainer::IsRedSide 
+                                    )
+                                ),
+                                Commands.runOnce(() -> swerve.towModules()),
+                                superSystem.shootAuto()
+                            ),
+                            // Shoot
+                            Commands.sequence(
+                                superSystem.backupIndexerAndShooter(),
+                                superSystem.prepareShooterVision(sva)
+                            )
+                        )
                     )
                 )
-            ),
-            Commands.none()
+            )
         );
     }
 }
