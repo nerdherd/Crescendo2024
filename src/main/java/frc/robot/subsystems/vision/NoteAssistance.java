@@ -36,8 +36,8 @@ public class NoteAssistance implements Reportable{
         this.name = name;
         ShuffleboardTab tab = Shuffleboard.getTab(name);
 
-        areaController = new PIDController(0.12, 0, 0.004);// todo, tuning pls!!!// 0.12, 0, 0.001 Pre 4/6 Original Values
-        txController = new PIDController(0.035, 0, 0.001);// todo, tuning pls!!!
+        areaController = new PIDController(0.18, 0, 0.004);// todo, tuning pls!!!// 0.12, 0, 0.001 Pre 4/6 Original Values
+        txController = new PIDController(0.05, 0, 0.001);// todo, tuning pls!!!
         // 0.025, 0, 0.001 Pre 4/6 Original Values
         rotationController = new PIDController(0.08, 0, 0.006); // d = 0.008
 
@@ -191,12 +191,15 @@ public class NoteAssistance implements Reportable{
     // double targetTY: the bottom cutoff value
     public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY, int minSamples, int maxSamples, Pose2d defaultPose) {
         Command a = Commands.sequence(
+            Commands.runOnce(() -> setLight(true)),
             Commands.runOnce(() -> reset()),
             Commands.run( () -> driveToNote(drivetrain, targetArea, targetTX, targetTY, maxSamples, defaultPose))// todo, tuning pls!!!
                 .until(() -> (dataSampleCount >= minSamples && 
                     Math.abs(getForwardSpeed()) <= 0.1 && 
                     Math.abs(getSidewaysSpeed()) <= 0.1) ),// todo, tuning pls!!!
             Commands.run(()->stopBot(drivetrain))
+        ).finallyDo(
+            () -> setLight(false)
         );
         a.addRequirements(drivetrain);  
         return a;

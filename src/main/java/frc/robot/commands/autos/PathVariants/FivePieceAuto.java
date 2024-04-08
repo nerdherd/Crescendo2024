@@ -15,12 +15,14 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.vision.DriverAssist;
+import frc.robot.subsystems.vision.NoteAssistance;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
-public class SuperPath extends SequentialCommandGroup{
-    public SuperPath(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva) {
+public class FivePieceAuto extends SequentialCommandGroup{
+    public FivePieceAuto(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva, NoteAssistance na) {
         Pose2d startingPose = new Pose2d(1.33, 5.55, new Rotation2d());//pathGroup.get(0).();
         addCommands(
+            Commands.runOnce(() -> na.setLight(false)),
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
             Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
 
@@ -28,7 +30,7 @@ public class SuperPath extends SequentialCommandGroup{
             Commands.sequence(
                 // Preload
                 Commands.deadline(
-                    Commands.waitSeconds(0.2).andThen(Commands.waitUntil(() -> !superSystem.noteIntook())).andThen(Commands.waitSeconds(0.2)),
+                    Commands.waitUntil(() -> !superSystem.noteIntook()),
                     superSystem.shootSubwoofer()
                 ),
 
@@ -48,38 +50,35 @@ public class SuperPath extends SequentialCommandGroup{
                     // Intake
                     Commands.sequence(
                         Commands.waitSeconds(0.125),
-                        superSystem.intakeUntilSensedAuto(1.75)
+                        superSystem.intakeUntilSensedAuto(2.875)
                     ),
                     Commands.waitUntil(superSystem::noteIntook)
                 ),
 
                 // Turn to angle and shoot
                 Commands.deadline(
-                    Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.2)),
+                    Commands.waitUntil(() -> !superSystem.noteIntook()),
                     Commands.sequence(
-                        Commands.parallel(
+                        Commands.deadline(
                             // Turn to angle
                             Commands.sequence(
                                 Commands.deadline(
                                     Commands.waitSeconds(1),
                                     Commands.either(
-                                        driverAssist.turnToTag(4, swerve),
-                                        driverAssist.turnToTag(7, swerve),
+                                        driverAssist.turnToTag(4, swerve, 2),
+                                        driverAssist.turnToTag(7, swerve, 2),
                                         RobotContainer::IsRedSide 
                                     )
                                 ),
                                 Commands.runOnce(() -> swerve.towModules()),
-                                superSystem.shoot()
+                                superSystem.shootAuto()
                             ),
                             // Shoot
                             Commands.sequence(
                                 superSystem.backupIndexerAndShooter(),
                                 superSystem.prepareShooterVision(sva)
                             )
-                        ),
-                        superSystem.shoot(),
-                        superSystem.indexer.stopCommand(),
-                        superSystem.shooterRoller.stopCommand()
+                        )
                     )
                 )
             ),
@@ -95,38 +94,35 @@ public class SuperPath extends SequentialCommandGroup{
                 AutoBuilder.followPath(pathGroup.get(1)).andThen(Commands.waitSeconds(1.5)),
                 Commands.sequence(
                     Commands.waitSeconds(0.125),
-                    superSystem.intakeUntilSensedAuto(1.75)
+                    superSystem.intakeUntilSensedAuto(2.875)
                 ),
                 Commands.waitUntil(superSystem::noteIntook)         
             ),
 
             // Turn to angle and shoot
             Commands.deadline(
-                Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.2)),
+                Commands.waitUntil(() -> !superSystem.noteIntook()),
                 Commands.sequence(
-                    Commands.parallel(
+                    Commands.deadline(
                         // Turn to angle
                         Commands.sequence(
                             Commands.deadline(
                                 Commands.waitSeconds(1),
                                 Commands.either(
-                                    driverAssist.turnToTag(4, swerve),
-                                    driverAssist.turnToTag(7, swerve),
+                                    driverAssist.turnToTag(4, swerve, 2),
+                                    driverAssist.turnToTag(7, swerve, 2),
                                     RobotContainer::IsRedSide 
                                 )
                             ),
                             Commands.runOnce(() -> swerve.towModules()),
-                            superSystem.shoot()
+                            superSystem.shootAuto()
                         ),
                         // Shoot
                         Commands.sequence(
                             superSystem.backupIndexerAndShooter(),
                             superSystem.prepareShooterVision(sva)
                         )
-                    ),
-                    superSystem.shoot(),
-                    superSystem.indexer.stopCommand(),
-                    superSystem.shooterRoller.stopCommand()
+                    )
                 )
             ),
 
@@ -137,41 +133,107 @@ public class SuperPath extends SequentialCommandGroup{
                 AutoBuilder.followPath(pathGroup.get(2)).andThen(Commands.waitSeconds(1.5)),
                 Commands.sequence(
                     Commands.waitSeconds(0.125),
-                    superSystem.intakeUntilSensedAuto(1.75)
+                    superSystem.intakeUntilSensedAuto(2.875)
                 ),
                 Commands.waitUntil(superSystem::noteIntook)           
             ),
 
             // Turn to angle and shoot
             Commands.deadline(
-                Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.2)),
+                Commands.waitUntil(() -> !superSystem.noteIntook()),
                 Commands.sequence(
-                    Commands.parallel(
+                    Commands.deadline(
                         // Turn to angle
                         Commands.sequence(
                             Commands.deadline(
                                 Commands.waitSeconds(1),
                                 Commands.either(
-                                    driverAssist.turnToTag(4, swerve),
-                                    driverAssist.turnToTag(7, swerve),
+                                    driverAssist.turnToTag(4, swerve, 2),
+                                    driverAssist.turnToTag(7, swerve, 2),
                                     RobotContainer::IsRedSide 
                                 )
                             ),
                             Commands.runOnce(() -> swerve.towModules()),
-                            superSystem.shoot()
+                            superSystem.shootAuto()
                         ),
                         // Shoot
                         Commands.sequence(
                             superSystem.backupIndexerAndShooter(),
                             superSystem.prepareShooterVision(sva)
                         )
-                    ),
-                    superSystem.shoot(),
-                    superSystem.indexer.stopCommand(),
-                    superSystem.shooterRoller.stopCommand()
+                    )
                 )
             )
-        );
+            ,
+            // C Start here ******************************************************
+
+            Commands.parallel(
+                Commands.sequence(
+                    superSystem.stow(),
+                    Commands.waitSeconds(1),
+                    superSystem.shooterPivot.moveToHandoff()
+                ),
+                // Drive in front of mid note
+                Commands.deadline(
+                    Commands.waitSeconds(2), // TODO: Find a working time
+                    swerve.driveToPose(new Pose2d(6, 6.5, new Rotation2d()), 5, 5)
+                )
+            ),
+
+            Commands.runOnce(() -> swerve.towModules()),
+
+            // This should be Path D
+
+
+            Commands.deadline(
+                Commands.waitUntil(superSystem::noteIntook),
+                superSystem.intakeUntilSensedAuto(4),
+                Commands.sequence(
+                    Commands.waitSeconds(0.1),
+                    na.driveToNoteCommand(swerve, 15, 0, 0, 10, 50, null)
+                )
+            ),
+            
+            Commands.parallel(
+                superSystem.backupIndexerAndShooter(),
+                superSystem.stow(),
+                // Drive in front of mid note
+                Commands.deadline(
+                    Commands.waitSeconds(2), // TODO: Find a working time
+                    swerve.driveToPose(new Pose2d(4.5, 5.55, new Rotation2d()), 5, 5)
+                )
+            ),
+
+            Commands.runOnce(() -> swerve.towModules()),
+
+            // Turn to angle and shoot
+            Commands.deadline(
+                Commands.waitUntil(() -> !superSystem.noteIntook()),
+                Commands.sequence(
+                    Commands.parallel(
+                        // Turn to angle
+                        Commands.sequence(
+                            Commands.deadline(
+                                Commands.waitSeconds(2),
+                                Commands.either(
+                                    driverAssist.turnToTag(4, swerve, 1),
+                                    driverAssist.turnToTag(7, swerve, 1),
+                                    RobotContainer::IsRedSide 
+                                )
+                            ),
+                            Commands.runOnce(() -> swerve.towModules()),
+                            superSystem.shootAuto()
+                        ),
+                        // Shoot
+                        Commands.sequence(
+                            superSystem.backupIndexerAndShooter(),
+                            superSystem.prepareShooterVision(sva)
+                        )
+                    )
+                )
+            )
+
+            );
     }    
 
     // to be tested. Do not use it before test

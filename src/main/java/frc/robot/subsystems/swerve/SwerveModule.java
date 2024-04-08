@@ -181,7 +181,7 @@ public class SwerveModule implements Reportable {
         // double velocity = desiredState.speedMetersPerSecond / ModuleConstants.kDriveTicksPer100MsToMetersPerSec / ModuleConstants.kDriveMotorGearRatio;
         this.desiredVelocity = velocity;
         
-    if (Math.abs(velocity) < 0.001) {
+    if (Math.abs(velocity) < 0.0001) {
             driveMotor.setControl(brakeRequest);
         }
         else if (this.velocityControl) {
@@ -351,7 +351,7 @@ public class SwerveModule implements Reportable {
                 // tab.addNumber("Module Velocity", this::getDriveVelocity);
                 tab.addNumber("Module Velocity RPS", this::getDriveVelocityRPS);
                 tab.addNumber("Desired Velocity", () -> this.desiredVelocity);
-                // tab.addBoolean("Velocity Control", () -> this.velocityControl);
+                tab.addBoolean("Velocity Control", () -> this.velocityControl);
                 // tab.addString("Error Status", () -> driveMotor.getFaultField().getName());
                 tab.addNumber("Drive Stator Current", () -> driveMotor.getStatorCurrent().getValue());
                 break;

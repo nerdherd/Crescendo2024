@@ -16,6 +16,7 @@ public class TurnToAngleLive extends Command {
     private SwerveDrivetrain swerveDrive;
     private PIDController pidController;
     private double target;
+    private double tolerance;
     // private SlewRateLimiter limiter;
 
     /**
@@ -24,7 +25,7 @@ public class TurnToAngleLive extends Command {
      * @param swerveDrive   Swerve drivetrain to rotate
      * @param period        Time between each calculation (default 20ms)
      */
-    public TurnToAngleLive(Supplier<Double> targetAngle, SwerveDrivetrain swerveDrive, double period) {
+    public TurnToAngleLive(Supplier<Double> targetAngle, SwerveDrivetrain swerveDrive, double period, double tolerance) {
         this.targetAngle = targetAngle;
         this.swerveDrive = swerveDrive;
 
@@ -45,9 +46,9 @@ public class TurnToAngleLive extends Command {
         addRequirements(swerveDrive);
     }
 
-    public TurnToAngleLive(Supplier<Double> targetAngle, SwerveDrivetrain swerveDrive) {
+    public TurnToAngleLive(Supplier<Double> targetAngle, SwerveDrivetrain swerveDrive, double angleTolerance) {
         // Default period is 20 ms
-        this(targetAngle, swerveDrive, 0.02);
+        this(targetAngle, swerveDrive, 0.02, angleTolerance);
     }
 
     @Override
@@ -65,6 +66,7 @@ public class TurnToAngleLive extends Command {
             turningSpeed, 
             -SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond, 
             SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond);
+        turningSpeed += Math.signum(turningSpeed) * SwerveAutoConstants.kTurnToAngleFeedForwardDegreesPerSecond;
         // SmartDashboard.putNumber("Turning speed limited", turningSpeed);
         
         // Convert speed into swerve states
@@ -78,6 +80,6 @@ public class TurnToAngleLive extends Command {
 
     @Override
     public boolean isFinished() {
-        return pidController.atSetpoint();
+        return Math.abs(swerveDrive.getImu().getHeading() - target) < tolerance;
     }
 }

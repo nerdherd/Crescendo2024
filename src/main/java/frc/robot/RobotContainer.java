@@ -43,7 +43,8 @@ import frc.robot.commands.autos.PathVariants.PathC;
 import frc.robot.commands.autos.PathVariants.PathD;
 import frc.robot.commands.autos.PathVariants.PathE;
 import frc.robot.commands.autos.PathVariants.PathF;
-import frc.robot.commands.autos.PathVariants.SuperPath;
+import frc.robot.commands.autos.PathVariants.ThreePieceMid;
+import frc.robot.commands.autos.PathVariants.FivePieceAuto;
 import frc.robot.commands.autos.PathVariants.Variant5Piece;
 import frc.robot.subsystems.CANdleSubSystem;
 import frc.robot.subsystems.Climber;
@@ -283,8 +284,8 @@ public class RobotContainer {
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.cross().whileTrue(apriltagCamera.driveToAmpCommand(swerveDrive, 3, 3));
-    //commandDriverController.square().onTrue(noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 10, 200, null).until(superSystem::noteIntook));
-    commandDriverController.square().onTrue(apriltagCamera.TurnToTagCommand4Auto(swerveDrive, 5, 50));
+    commandDriverController.square().whileTrue(noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 10, 200, null).until(superSystem::noteIntook));
+    // commandDriverController.square().onTrue(apriltagCamera.TurnToTagCommand4Auto(swerveDrive, 5, 50));
     //commandDriverController.square().onTrue(apriltagCamera.TurnToAngleByTagCommand4Auto(swerveDrive, 2, 15));
     commandOperatorController.povLeft().whileTrue(
       Commands.repeatingSequence(
@@ -526,13 +527,17 @@ public class RobotContainer {
   PathPlannerPath f06 = PathPlannerPath.fromPathFile("f06Path");
   PathPlannerPath f07 = PathPlannerPath.fromPathFile("f07Path");
   PathPlannerPath f08 = PathPlannerPath.fromPathFile("f08Path");
+  PathPlannerPath fS8 = PathPlannerPath.fromPathFile("fS8Path");
 
 
   // final List<PathPlannerPath> pathGroupExample3 = List.of(
   //   a01, c15, a03
   // );
-  final List<PathPlannerPath> pathGroupTestSuper = List.of(
-     a03, b32, b21
+  final List<PathPlannerPath> pathGroupFivePiece = List.of(
+     a03, b32, b21, c14
+  );
+  final List<PathPlannerPath> pathGroupThreePiece = List.of(
+     fS8, e8Z, c37, e7Z
   );
   final List<PathPlannerPath> pathGroupTestA = List.of(
      a02
@@ -611,7 +616,8 @@ public class RobotContainer {
       autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem, adjustmentCamera));
     }
 
-    autoChooser.setDefaultOption("SuperPath", new SuperPath(swerveDrive, superSystem, pathGroupTestSuper, apriltagCamera, adjustmentCamera));
+    autoChooser.setDefaultOption("Five Piece", new FivePieceAuto(swerveDrive, superSystem, pathGroupFivePiece, apriltagCamera, adjustmentCamera, noteCamera));
+    autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, apriltagCamera, adjustmentCamera, noteCamera));
     autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, a02, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, b23, apriltagCamera, adjustmentCamera));
     autoChooser.addOption("PathC", new PathC(swerveDrive, c24));

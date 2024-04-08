@@ -175,9 +175,15 @@ public class DriverAssist implements Reportable{
     }
 
 
+    public Command turnToTag(int ID, SwerveDrivetrain swerve, double angleTolerance) {
+        return Commands.sequence(
+            new TurnToAngleLive(() -> getTurnToSpecificTagAngle(ID, swerve), swerve, angleTolerance)
+        );
+    }
+
     public Command turnToTag(int ID, SwerveDrivetrain swerve) {
         return Commands.sequence(
-            new TurnToAngleLive(() -> getTurnToSpecificTagAngle(ID, swerve), swerve)
+            new TurnToAngleLive(() -> getTurnToSpecificTagAngle(ID, swerve), swerve, 1)
         );
     }
 

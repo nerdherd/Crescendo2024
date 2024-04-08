@@ -449,6 +449,7 @@ public class SuperSystem {
         command.addRequirements(shooterPivot, shooterRoller, indexer);
         return command;
     }
+    
 
     public Command shoot() {
         Command command = Commands.either(
@@ -468,6 +469,18 @@ public class SuperSystem {
             ),
             () -> shooterRoller.getTargetVelocity() == 0
         );
+
+        command.addRequirements(indexer);
+
+        return command;
+    }
+
+    public Command shootAuto() {
+        Command command =
+            Commands.sequence(
+                indexer.setEnabledCommand(true),
+                indexer.indexCommand()
+            );
 
         command.addRequirements(indexer);
 

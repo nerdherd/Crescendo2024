@@ -150,6 +150,7 @@ public class SwerveJoystickCommand extends Command {
                 // turnToAngleController.setD(SwerveDriveConstants.kDThetaTeleop.get());
             }
             turningSpeed = turnToAngleController.calculate(swerveDrive.getImu().getHeading(), targetAngle);
+            SmartDashboard.putNumber("Turning Speed Initial", turningSpeed);
             turningSpeed += Math.signum(turningSpeed) * SwerveAutoConstants.kTurnToAngleFeedForwardDegreesPerSecond;
             turningSpeed = Math.toRadians(turningSpeed);
             turningSpeed = MathUtil.clamp(

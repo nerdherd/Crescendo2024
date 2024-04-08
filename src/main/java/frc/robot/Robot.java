@@ -67,6 +67,7 @@ public class Robot extends TimedRobot {
     RobotContainer.refreshAlliance();
     robotContainer.swerveDrive.setBreak(false);
     robotContainer.swerveDrive.refreshModulePID();
+    robotContainer.swerveDrive.setVelocityControl(true);
     robotContainer.imu.zeroHeading();
     robotContainer.imu.zeroAll();
     
@@ -107,8 +108,8 @@ public class Robot extends TimedRobot {
     robotContainer.swerveDrive.setBreak(false);
     robotContainer.swerveDrive.setChassisSpeeds(new ChassisSpeeds());
     robotContainer.apriltagCamera.toggleLight(false);
+    robotContainer.swerveDrive.setVelocityControl(false);
     SmartDashboard.putString("Phase", "Teleop");
-    // robotContainer.swerveDrive.setVelocityControl(true);
     // robotContainer.swerveDrive.refreshModulePID();
     // ShooterConstants.kPivotDeadband.loadPreferences();
     // ShooterConstants.fullDisableShooter.loadPreferences();

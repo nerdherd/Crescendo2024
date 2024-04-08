@@ -62,6 +62,7 @@ public class TurnToAngle extends Command {
             turningSpeed, 
             -SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond, 
             SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond);
+        turningSpeed += Math.signum(turningSpeed) * SwerveAutoConstants.kTurnToAngleFeedForwardDegreesPerSecond;
         // SmartDashboard.putNumber("Turning speed limited", turningSpeed);
         
         // Convert speed into swerve states
