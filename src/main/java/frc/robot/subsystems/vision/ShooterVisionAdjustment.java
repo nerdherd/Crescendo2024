@@ -207,6 +207,8 @@ public class ShooterVisionAdjustment implements Reportable{
         angleoffset = 0;
     }
  
+    final double MIN_SHOOT_ANGLE = -48;
+    final double MAX_SHOOT_ANGLE = -21;
     public double getShooterAngle(boolean preserveOldValue) {
         double distance = getDistanceFromTag(preserveOldValue);
         if(distance < distances[0]) {

@@ -269,6 +269,35 @@ public class SuperSystem {
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
         return command;
     }
+
+    public Command intakeUntilSensedAutoPickShoot() {
+        Command command = Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(() -> 
+                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+                handoff(),
+                Commands.waitSeconds(1)
+            ),
+            //shooterRoller.setVelocityCommand(-10, -10),
+            //shooterRoller.setEnabledCommand(true),
+            intakeRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            intakeRoller.intakeCommand(),
+
+            // Commands.deadline(
+            //     //Commands.waitSeconds(timeout), // testing - check wait time             
+                 Commands.waitUntil(this::noteIntook)
+            // )
+        ).finallyDo(() -> {
+            intakeRoller.stop();
+            indexer.stop();
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
+        return command;
+    }
     
     // public Command climbSequence(){
     //     return shooterPivot.climbSequence();
@@ -509,6 +538,27 @@ public class SuperSystem {
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
         return command;
     }
+
+    public Command shootSubwooferAutoStart() {
+        Command command = Commands.sequence(
+            // Prepare to shoot
+            //shooterPivot.moveToSpeaker(),
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker(),
+            Commands.waitSeconds(0.2), // Was 0.2     3/3/24     But 0.8   @Code Orange
+            
+            // Shoot
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand()
+            //Commands.waitUntil(() -> false)
+        ).finallyDo(interrupted -> {
+            indexer.stop();
+            //shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
+        return command;
+    } 
 
     public Command shootSubwooferAuto() {
         Command command = Commands.sequence(
