@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.vision.DriverAssist;
@@ -27,30 +28,39 @@ public class PathA extends SequentialCommandGroup{
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
             Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
 
-            Commands.parallel(
-                // Preload
-                Commands.sequence(
-                //Commands.deadline(
-                    //Commands.waitUntil(() -> !superSystem.noteIntook()),
-                    superSystem.shootSubwooferAutoStart(),
-                //),
-
-                superSystem.shooterPivot.moveToHandoff(),
-            // Drive to note 2
-                
-                    //superSystem.stow(),
-                    //Commands.waitSeconds(1),
-                    
-                    //Commands.waitUntil(superSystem::noteIntook),
-                    superSystem.intakeUntilSensedAutoPickShoot()
+            Commands.sequence(
+                Commands.parallel(
+                    // Preload
+                    Commands.sequence(
+                    //Commands.deadline(
+                        //Commands.waitUntil(() -> !superSystem.noteIntook()),
+                        superSystem.shootSubwooferAutoStart(),
+                    //),
+    //Commands.waitSeconds(0.1),
+                    superSystem.shooterPivot.moveToHandoff(),
+                // Drive to note 2
+                        //superSystem.stow(),
+                        //Commands.waitSeconds(1),
+                        
+                        //Commands.waitUntil(superSystem::noteIntook),
+                        // superSystem.intakeUntilSensedAutoPickShoot(1)
+                        superSystem.intakeDirectShootAutoStart()
+                    ),
+                    // Drive in front of mid note
+                    Commands.sequence(
+                        Commands.waitSeconds(0.35),
+                        AutoBuilder.followPath(pathGroup.get(0))
+                    )
                 ),
-                // Drive in front of mid note
-                //Commands.deadline(
-                //    Commands.waitSeconds(2.5),
-                    AutoBuilder.followPath(pathGroup.get(0))
-                //)
-            )//,
 
+                Commands.parallel(
+                // lower it before enter in stage area
+                superSystem.shooterPivot.moveToSpeakerAuto(),
+                
+
+// debug procedure, TODO remove them
+                superSystem.shooterRoller.stopCommand()
+)//,
             // Commands.sequence(
             //     // Preload
             //     Commands.deadline(
@@ -105,7 +115,7 @@ public class PathA extends SequentialCommandGroup{
             //             )
             //         )
             //     )
-            // )
+             )
         );
     }
 }

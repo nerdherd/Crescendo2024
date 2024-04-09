@@ -349,6 +349,9 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
     public Command shootSpeakerSlow() {
         return setVelocityCommand(ShooterConstants.kTopOuttakeLow.get());
     }
+    public Command shootSpeakerAutoStart() {
+        return setVelocityCommand(ShooterConstants.kTopOuttakeLowAutostart.get());
+    }
 
     public Command shootSpeakerAuto1() {
         return setVelocityCommand(ShooterConstants.kTopOuttakeAuto1.get(), ShooterConstants.kBottomOuttakeAuto1.get());

@@ -266,7 +266,8 @@ public final class Constants {
     public static final double kShooterMinVelocityRPS = -100;
 
     public static final PrefDouble kTopOuttakeHigh  = new PrefDouble("Top Shooter Outtake High", 70); // Was 50    3/3/24 Code Orange
-    public static final PrefDouble kTopOuttakeLow   = new PrefDouble("Top Shooter Outtake Low", 20);
+    public static final PrefDouble kTopOuttakeLow   = new PrefDouble("Top Shooter Outtake Low", 30);
+    public static final PrefDouble kTopOuttakeLowAutostart   = new PrefDouble("Top Shooter Outtake Low", 30);
     public static final PrefDouble kTopOuttakeAuto1 = new PrefDouble("Top Shooter Outtake Auto 1", 20);
     public static final PrefDouble kTopOuttakeAuto2 = new PrefDouble("Top Shooter Outtake Auto 2", 100);
     public static final PrefDouble kTopOuttakeAuto3 = new PrefDouble("Top Shooter Outtake Auto 3", 100);

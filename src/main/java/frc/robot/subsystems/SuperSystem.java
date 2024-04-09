@@ -270,7 +270,7 @@ public class SuperSystem {
         return command;
     }
 
-    public Command intakeUntilSensedAutoPickShoot() {
+    public Command intakeUntilSensedAutoPickShoot(double noNoteTimeout) {
         Command command = Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(() -> 
@@ -278,6 +278,10 @@ public class SuperSystem {
                 handoff(),
                 Commands.waitSeconds(1)
             ),
+            
+            shooterRoller.shootSpeakerSlow(),
+            Commands.waitSeconds(0.1),
+
             //shooterRoller.setVelocityCommand(-10, -10),
             //shooterRoller.setEnabledCommand(true),
             intakeRoller.setEnabledCommand(true),
@@ -285,10 +289,10 @@ public class SuperSystem {
             indexer.indexCommand(),
             intakeRoller.intakeCommand(),
 
-            // Commands.deadline(
-            //     //Commands.waitSeconds(timeout), // testing - check wait time             
+             Commands.deadline(
+                 Commands.waitSeconds(noNoteTimeout), // testing - check wait time             
                  Commands.waitUntil(this::noteIntook)
-            // )
+             )
         ).finallyDo(() -> {
             intakeRoller.stop();
             indexer.stop();
@@ -368,6 +372,12 @@ public class SuperSystem {
         return intakeDirectShoot(ShooterConstants.kHandoffPosition.get(), 
                                  ShooterConstants.kTopOuttakeAuto1.get(),
                                  ShooterConstants.kBottomOuttakeAuto1.get());
+    }
+
+    public Command intakeDirectShootAutoStart() {
+        return intakeDirectShoot(ShooterConstants.kHandoffPosition.get(), 
+                                 30,
+                                 30);
     }
 
     public Command intakeDirectShoot(double shooterPosition, double topShooterVelocity, double bottomShooterVelocity) {
@@ -544,12 +554,13 @@ public class SuperSystem {
             // Prepare to shoot
             //shooterPivot.moveToSpeaker(),
             shooterRoller.setEnabledCommand(true),
-            shooterRoller.shootSpeaker(),
-            Commands.waitSeconds(0.2), // Was 0.2     3/3/24     But 0.8   @Code Orange
+            shooterRoller.shootSpeakerAutoStart(),
+            Commands.waitSeconds(0.3), // Was 0.2     3/3/24     But 0.8   @Code Orange
             
             // Shoot
             indexer.setEnabledCommand(true),
-            indexer.indexCommand()
+            indexer.indexCommand(),
+            Commands.waitSeconds(0.2)
             //Commands.waitUntil(() -> false)
         ).finallyDo(interrupted -> {
             indexer.stop();
