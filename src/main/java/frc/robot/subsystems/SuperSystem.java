@@ -631,14 +631,15 @@ public class SuperSystem {
 
     public Command climbSequence(){
         Command command = Commands.sequence(
-            // Commands.runOnce(() -> shooterPivot.configureClimb()),
+            Commands.runOnce(() -> shooterPivot.configureClimb()),
+            shooterPivot.setPositionCommand(ShooterConstants.kPrepClimbPosition.get()),
+            Commands.waitSeconds(1),
             shooterPivot.setPositionCommand(ShooterConstants.kFullStowPosition.get()),
             Commands.waitSeconds(2),
             Commands.runOnce(() -> shooterPivot.setBreakMode(true)),
-            // climber.setOutputCommand(30),
             Commands.waitUntil(() -> false)
         ).finallyDo(() -> {
-            // climber.stop();
+            shooterPivot.stop();
         });
 
         command.addRequirements(shooterPivot);

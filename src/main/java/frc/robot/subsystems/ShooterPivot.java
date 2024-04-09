@@ -129,6 +129,8 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         ShooterConstants.kAmpPosition.loadPreferences();
         ShooterConstants.kHandoffPosition.loadPreferences();
         ShooterConstants.kNeutralPosition.loadPreferences();
+        ShooterConstants.kPrepClimbPosition.loadPreferences();
+
 
         TalonFXConfiguration pivotConfigs = new TalonFXConfiguration();
         leftPivotConfigurator.refresh(pivotConfigs);
@@ -416,27 +418,29 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
 
     //****************************** POSITION COMMANDS *****************************//
 
-    // public void configureClimb() {
-    //     TalonFXConfiguration climbConfigs = new TalonFXConfiguration();
-    //     leftPivotConfigurator.refresh(climbConfigs);
-    //     climbConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    //     climbConfigs.Feedback.RotorToSensorRatio = 1;
-    //     climbConfigs.Feedback.SensorToMechanismRatio = ShooterConstants.kPivotGearRatio;
-    //     climbConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    //     climbConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    public void configureClimb() {
+        TalonFXConfiguration climbConfigs = new TalonFXConfiguration();
+        leftPivotConfigurator.refresh(climbConfigs);
+        climbConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        climbConfigs.Feedback.RotorToSensorRatio = 1;
+        climbConfigs.Feedback.SensorToMechanismRatio = ShooterConstants.kPivotGearRatio;
+        climbConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        climbConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-    //     StatusCode leftStatusPivot = leftPivotConfigurator.apply(climbConfigs);
-    //     if (!leftStatusPivot.isOK()){
-    //         DriverStation.reportError("Could not apply left climb configs, error code:"+ leftStatusPivot.toString(), true);
-    //     }
+        climbConfigs.MotionMagic.MotionMagicCruiseVelocity = ShooterConstants.kCruiseVelocity.get()/2;
 
-    //     climbConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        StatusCode leftStatusPivot = leftPivotConfigurator.apply(climbConfigs);
+        if (!leftStatusPivot.isOK()){
+            DriverStation.reportError("Could not apply left climb configs, error code:"+ leftStatusPivot.toString(), true);
+        }
 
-    //     StatusCode rightStatusPivot = rightPivotConfigurator.apply(climbConfigs);
-    //     if (!rightStatusPivot.isOK()){
-    //         DriverStation.reportError("Could not apply right climb configs, error code:"+ rightStatusPivot.toString(), true);
-    //     }
-    // }
+        climbConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
+        StatusCode rightStatusPivot = rightPivotConfigurator.apply(climbConfigs);
+        if (!rightStatusPivot.isOK()){
+            DriverStation.reportError("Could not apply right climb configs, error code:"+ rightStatusPivot.toString(), true);
+        }
+    }
 
     public Command moveToNeutral() {
         return Commands.runOnce(() -> setPosition(ShooterConstants.kNeutralPosition.get()));
