@@ -1,26 +1,27 @@
 {
-  "robotWidth": 0.69,
-  "robotLength": 0.69,
+  "robotWidth": 0.9,
+  "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
     "Basic4Piece",
     "Mid3Piece",
     "Mid4Notes",
     "NEW4Piece",
+    "DriveToNoteTest",
+    "Reliable4Piece",
+    "aPaths",
+    "bPaths",
     "cPaths",
     "dPaths",
     "ePaths",
-    "fPaths",
-    "Reliable4Piece",
-    "aPaths",
-    "bPaths"
+    "fPaths"
   ],
   "autoFolders": [
     "Comp Autos",
     "Test Autos"
   ],
-  "defaultMaxVel": 3.5,
-  "defaultMaxAccel": 4.0,
+  "defaultMaxVel": 3.0,
+  "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "maxModuleSpeed": 4.5

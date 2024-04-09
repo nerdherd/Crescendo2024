@@ -44,6 +44,7 @@ import frc.robot.commands.autos.PathVariants.PathD;
 import frc.robot.commands.autos.PathVariants.PathE;
 import frc.robot.commands.autos.PathVariants.PathF;
 import frc.robot.commands.autos.PathVariants.ThreePieceMid;
+import frc.robot.commands.autos.PathVariants.DriveToNoteTest;
 import frc.robot.commands.autos.PathVariants.FivePieceAuto;
 import frc.robot.commands.autos.PathVariants.Variant5Piece;
 import frc.robot.subsystems.CANdleSubSystem;
@@ -615,6 +616,8 @@ public class RobotContainer {
     if (paths.contains("5PieceMidSecond")){
       autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem, adjustmentCamera));
     }
+
+    autoChooser.addOption("DriveToNoteTest", new DriveToNoteTest(swerveDrive, superSystem, noteCamera, 15, 10, 50, PathPlannerPath.fromPathFile("DriveForwards"), PathPlannerPath.fromPathFile("DriveBackwards"), apriltagCamera, adjustmentCamera));
 
     autoChooser.setDefaultOption("Five Piece", new FivePieceAuto(swerveDrive, superSystem, pathGroupFivePiece, apriltagCamera, adjustmentCamera, noteCamera));
     autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, apriltagCamera, adjustmentCamera, noteCamera));
