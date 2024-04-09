@@ -199,7 +199,10 @@ public class NoteAssistance implements Reportable{
                     Math.abs(getSidewaysSpeed()) <= 0.1) ),// todo, tuning pls!!!
             Commands.run(()->stopBot(drivetrain))
         ).finallyDo(
-            () -> setLight(false)
+            () -> {
+                setLight(false);
+                drivetrain.towModules();
+            }
         );
         a.addRequirements(drivetrain);  
         return a;

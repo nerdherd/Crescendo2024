@@ -46,46 +46,8 @@ public class PathF extends SequentialCommandGroup {
                 )
             ),
             
-            Commands.parallel(
-                superSystem.backupIndexerAndShooter(),
-                superSystem.stow(),
-                // Drive back
-                Commands.deadline(
-                    Commands.waitSeconds(2),
-                    AutoBuilder.followPath(pathGroup.get(1))
-                )
-            ),
-
-            // Shoot 8
-
-            Commands.runOnce(() -> swerve.towModules()),
-
-            // Turn to angle and shoot
-            Commands.deadline(
-                Commands.waitUntil(() -> !superSystem.noteIntook()),
-                Commands.sequence(
-                    Commands.parallel(
-                        // Turn to angle
-                        Commands.sequence(
-                            Commands.deadline(
-                                Commands.waitSeconds(2),
-                                Commands.either(
-                                    driverAssist.turnToTag(4, swerve, 1),
-                                    driverAssist.turnToTag(7, swerve, 1),
-                                    RobotContainer::IsRedSide 
-                                )
-                            ),
-                            Commands.runOnce(() -> swerve.towModules()),
-                            superSystem.shootAuto()
-                        ),
-                        // Shoot
-                        Commands.sequence(
-                            superSystem.backupIndexerAndShooter(),
-                            superSystem.prepareShooterVision(sva)
-                        )
-                    )
-                )
-            )
+            superSystem.backupIndexerAndShooter(),
+            superSystem.stow()
         );
     }
 }

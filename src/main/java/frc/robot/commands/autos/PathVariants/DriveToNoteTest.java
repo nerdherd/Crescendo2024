@@ -52,7 +52,8 @@ public class DriveToNoteTest extends SequentialCommandGroup{
                     Commands.waitSeconds(0.1),
                     na.driveToNoteCommand(swerve, 15, 0, 0, 10, 50, null)
                 )
-            ),
+            )
+            ,
             
             Commands.parallel(
                 Commands.sequence(
@@ -64,36 +65,37 @@ public class DriveToNoteTest extends SequentialCommandGroup{
                     Commands.waitSeconds(2), // TODO: Find a working time
                     AutoBuilder.followPath(path1)
                 )
-            ),
-
-            Commands.runOnce(() -> swerve.towModules()),
-
-            // Turn to angle and shoot
-            Commands.deadline(
-                Commands.waitUntil(() -> !superSystem.noteIntook()),
-                Commands.sequence(
-                    Commands.parallel(
-                        // Turn to angle
-                        Commands.sequence(
-                            Commands.deadline(
-                                Commands.waitSeconds(2),
-                                Commands.either(
-                                    driverAssist.turnToTag(4, swerve, 1),
-                                    driverAssist.turnToTag(7, swerve, 1),
-                                    RobotContainer::IsRedSide 
-                                )
-                            ),
-                            Commands.runOnce(() -> swerve.towModules()),
-                            superSystem.shootAuto()
-                        ),
-                        // Shoot
-                        Commands.sequence(
-                            superSystem.backupIndexerAndShooter(),
-                            superSystem.prepareShooterVision(sva)
-                        )
-                    )
-                )
             )
+            // ,
+
+            // Commands.runOnce(() -> swerve.towModules()),
+
+            // // Turn to angle and shoot
+            // Commands.deadline(
+            //     Commands.waitUntil(() -> !superSystem.noteIntook()),
+            //     Commands.sequence(
+            //         Commands.parallel(
+            //             // Turn to angle
+            //             Commands.sequence(
+            //                 Commands.deadline(
+            //                     Commands.waitSeconds(2),
+            //                     Commands.either(
+            //                         driverAssist.turnToTag(4, swerve, 1),
+            //                         driverAssist.turnToTag(7, swerve, 1),
+            //                         RobotContainer::IsRedSide 
+            //                     )
+            //                 ),
+            //                 Commands.runOnce(() -> swerve.towModules()),
+            //                 superSystem.shootAuto()
+            //             ),
+            //             // Shoot
+            //             Commands.sequence(
+            //                 superSystem.backupIndexerAndShooter(),
+            //                 superSystem.prepareShooterVision(sva)
+            //             )
+            //         )
+            //     )
+            // )
 
         );
     }

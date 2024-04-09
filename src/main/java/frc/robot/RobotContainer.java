@@ -624,9 +624,9 @@ public class RobotContainer {
     autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, List.of(a02), apriltagCamera, adjustmentCamera, 0));
     autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, List.of(b23), apriltagCamera, adjustmentCamera, 0));
     autoChooser.addOption("PathC", new PathC(swerveDrive, superSystem, List.of(c24)));
-    autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 1, 10, 50, pathGroupTestD.get(0), pathGroupTestD.get(1), apriltagCamera, adjustmentCamera));
+    autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 15, 10, 50, pathGroupTestD));
     autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, e5Y, apriltagCamera, adjustmentCamera));
-    autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, f04, apriltagCamera));
+    autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, List.of(f04), apriltagCamera, noteCamera, adjustmentCamera));
     autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, apriltagCamera, adjustmentCamera, noteCamera));
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
