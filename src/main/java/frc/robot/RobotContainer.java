@@ -211,7 +211,7 @@ public class RobotContainer {
             }
           }
           if (driverController.getL2Button()) {
-            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
+            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7); // TODO, update?
             // 4 if red side, 7 if blue
           }
           if (driverController.getCircleButton()) { //turn to amp
@@ -367,7 +367,7 @@ public class RobotContainer {
 
     // AprilTag Trigger
     Trigger aimTrigger = new Trigger(() -> {
-      double desiredAngle = apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
+      double desiredAngle = apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);// TODO, update?
       SmartDashboard.putNumber("Desired Angle", desiredAngle);
       double angleToleranceScale = apriltagCamera.getTurnToAngleToleranceScale(desiredAngle);
       SmartDashboard.putNumber("Angle Tolerance Scale", angleToleranceScale);
@@ -652,7 +652,7 @@ public class RobotContainer {
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
     tab.addNumber("Voltage", () -> Math.abs(pdp.getVoltage()));
-    tab.addNumber("apriltag angle", () -> apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7));
+    tab.addNumber("apriltag angle", () -> apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7));// TODO, update?
   }
   
   /**
