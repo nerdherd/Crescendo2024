@@ -565,7 +565,7 @@ public class SuperSystem {
             indexer.indexCommand(),
             Commands.waitUntil(() -> false)
         ).finallyDo(interrupted -> {
-            //indexer.stop(); // keep it running for next pickup
+            indexer.stop(); // keep it running for next pickup
             shooterRoller.stop();
         });
 

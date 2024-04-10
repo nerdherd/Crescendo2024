@@ -36,9 +36,8 @@ public class PathA0 extends SequentialCommandGroup{
             Commands.sequence(
                 Commands.parallel(
                     // Drive to note 2
-                    //AutoBuilder.followPath(pathGroup.get(0))
                     Commands.race(
-                        driveToPose(endingPose),
+                        AutoBuilder.followPath(pathGroup.get(0)),
                         Commands.sequence(
                             // enable after the preload gone
                             Commands.waitSeconds(1.25),
@@ -52,28 +51,50 @@ public class PathA0 extends SequentialCommandGroup{
                     Commands.sequence(
 
                         // Preload
-                        //Commands.race(
-                            superSystem.shootSubwooferAutoStart(),
-                            //Commands.waitUntil(() -> !superSystem.noteIntook())
-                        //),
+                        Commands.deadline(
+                            Commands.waitUntil(() -> !superSystem.noteIntook()),
+                            Commands.parallel(
+                                superSystem.shootSubwooferAutoStart(),
+                                superSystem.intakeRoller.autoIntakeCommand()
+                            )
+                        ),
+                        
+                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                        superSystem.shooterRoller.setEnabledCommand(true),
+                        //superSystem.indexer.stopCommand(),
+                        Commands.waitSeconds(0.1),
 
                         // pick up note 2
-                        //Commands.race(
-                            //Commands.sequence(
-                                //Commands.waitSeconds(0.125),
-                                superSystem.intakeUntilSensedAuto(2.875)
-                            //),
-                            //Commands.waitUntil(superSystem::noteIntook)
-                        //)
-                    )
+                        // Commands.race(
+                        //     // Intake
+                        //     Commands.sequence(
+                        //         Commands.waitSeconds(0.125),
+                        //         superSystem.intakeUntilSensedAuto(2.875)
+                        //     ),
+                        //     Commands.waitUntil(superSystem::noteIntook)
+                        // ),
+
+                        Commands.deadline(
+                            Commands.waitUntil(superSystem::noteIntook),
+                            superSystem.intakeUntilSensedAuto(2.875)
+                        ),
+                        
+                        // Turn to angle and shoot
+                        Commands.waitSeconds(0.5),
+                        Commands.deadline(
+                            Commands.waitUntil(() -> !superSystem.noteIntook()),
+                            superSystem.shootSubwooferAutoStart2()
+                        )
+                    )    
                 ),
 
-                superSystem.shootSubwooferAutoStart2(),
+                //superSystem.shootSubwooferAutoStart2(),
 
                 // after done with 2 notes 
                 //Commands.parallel(
                     // lower it before enter in stage area
-                    superSystem.stow()
+                    superSystem.stow(),
+                    superSystem.indexer.stopCommand()
                 //),
             // Commands.sequence(
             //     // Preload
@@ -141,7 +162,7 @@ public class PathA0 extends SequentialCommandGroup{
     public Command driveToPose(Pose2d destPoseInBlue) {
         return Commands.either(
             AutoBuilder.pathfindToPose(GeometryUtil.flipFieldPose(destPoseInBlue), pathcons),
-            AutoBuilder.pathfindToPose(destPoseInBlue, pathcons),
+            AutoBuilder.pathfindToPose(destPoseInBlue, pathcons,0),
             RobotContainer::IsRedSide  
         );
     }  

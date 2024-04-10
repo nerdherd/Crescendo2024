@@ -140,7 +140,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             this);
 
             this.limelight = vision.getLimelight();
-            enableVisionPE = true;
+            enableVisionPE = true;// for debug, set to false
     }
 
     private void visionupdateOdometry() {

@@ -38,6 +38,7 @@ import frc.robot.commands.autos.PoseEstimatorTest;
 import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.commands.autos.PathVariants.PathA;
+import frc.robot.commands.autos.PathVariants.PathA0;
 import frc.robot.commands.autos.PathVariants.PathB;
 import frc.robot.commands.autos.PathVariants.PathC;
 import frc.robot.commands.autos.PathVariants.PathD;
@@ -621,7 +622,7 @@ public class RobotContainer {
 
     autoChooser.setDefaultOption("Five Piece", new FivePieceAuto(swerveDrive, superSystem, pathGroupFivePiece, apriltagCamera, adjustmentCamera, noteCamera));
     autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, apriltagCamera, adjustmentCamera, noteCamera));
-    autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, List.of(a02), apriltagCamera, adjustmentCamera, 0));
+    autoChooser.addOption("PathA", new PathA0(swerveDrive, superSystem, List.of(a02), apriltagCamera, adjustmentCamera, 0));
     autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, List.of(b23), apriltagCamera, adjustmentCamera, 0));
     autoChooser.addOption("PathC", new PathC(swerveDrive, superSystem, List.of(c24)));
     autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 15, 10, 50, pathGroupTestD));
