@@ -270,7 +270,7 @@ public class SuperSystem {
         return command;
     }
 
-    public Command intakeUntilSensedAutoPickShoot(double noNoteTimeout) {
+    public Command intakeUntilSensedAutoShoot(double noNoteTimeout) {
         Command command = Commands.sequence(
             Commands.deadline(
                 Commands.waitUntil(() -> 
@@ -278,12 +278,9 @@ public class SuperSystem {
                 handoff(),
                 Commands.waitSeconds(1)
             ),
-            
-            shooterRoller.shootSpeakerSlow(),
-            Commands.waitSeconds(0.1),
 
-            //shooterRoller.setVelocityCommand(-10, -10),
-            //shooterRoller.setEnabledCommand(true),
+            shooterRoller.setVelocityCommand(-10, -10),
+            shooterRoller.setEnabledCommand(true),
             intakeRoller.setEnabledCommand(true),
             indexer.setEnabledCommand(true),
             indexer.indexCommand(),
@@ -552,19 +549,53 @@ public class SuperSystem {
     public Command shootSubwooferAutoStart() {
         Command command = Commands.sequence(
             // Prepare to shoot
-            //shooterPivot.moveToSpeaker(),
             shooterRoller.setEnabledCommand(true),
-            shooterRoller.shootSpeakerAutoStart(),
-            Commands.waitSeconds(0.3), // Was 0.2     3/3/24     But 0.8   @Code Orange
-            
+            Commands.deadline(
+                Commands.waitSeconds(0.32), // Was 0.2     3/3/24     But 0.8   @Code Orange
+                
+                Commands.deadline(
+                    Commands.waitUntil(() -> 
+                        shooterPivot.hasReachedPosition(ShooterConstants.kSpeakerPositionAutoStart.get())),
+                    shooterPivot.moveToSpeakerAutoStart()
+                ),
+
+                shooterRoller.shootSpeakerAutoStart()
+            ),
             // Shoot
             indexer.setEnabledCommand(true),
             indexer.indexCommand(),
-            Commands.waitSeconds(0.2)
-            //Commands.waitUntil(() -> false)
+            Commands.waitUntil(() -> false)
         ).finallyDo(interrupted -> {
-            indexer.stop();
-            //shooterRoller.stop();
+            //indexer.stop(); // keep it running for next pickup
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
+        return command;
+    } 
+
+    public Command shootSubwooferAutoStart2() {
+        Command command = Commands.sequence(
+            // Prepare to shoot
+            shooterRoller.setEnabledCommand(true),
+            Commands.deadline(
+                Commands.waitSeconds(0.32), // Was 0.2     3/3/24     But 0.8   @Code Orange
+                
+                Commands.deadline(
+                    Commands.waitUntil(() -> 
+                        shooterPivot.hasReachedPosition(ShooterConstants.kSpeakerPositionAutoStart2.get())),
+                    shooterPivot.moveToSpeakerAutoStart2()
+                ),
+
+                shooterRoller.shootSpeakerAutoStart()
+            ),
+            // Shoot
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            Commands.waitUntil(() -> false)
+        ).finallyDo(interrupted -> {
+            indexer.stop(); // keep it running for next pickup
+            shooterRoller.stop();
         });
 
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
