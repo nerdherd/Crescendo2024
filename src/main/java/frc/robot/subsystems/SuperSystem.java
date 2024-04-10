@@ -257,7 +257,7 @@ public class SuperSystem {
             intakeRoller.intakeCommand(),
 
             Commands.deadline(
-                Commands.waitSeconds(timeout), // testing - check wait time             
+                Commands.waitSeconds(timeout),              
                 Commands.waitUntil(this::noteIntook)
             )
         ).finallyDo(() -> {
@@ -550,6 +550,7 @@ public class SuperSystem {
         Command command = Commands.sequence(
             // Prepare to shoot
             shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeakerAutoStart(),
             Commands.deadline(
                 Commands.waitSeconds(0.32), // Was 0.2     3/3/24     But 0.8   @Code Orange
                 
@@ -557,9 +558,7 @@ public class SuperSystem {
                     Commands.waitUntil(() -> 
                         shooterPivot.hasReachedPosition(ShooterConstants.kSpeakerPositionAutoStart.get())),
                     shooterPivot.moveToSpeakerAutoStart()
-                ),
-
-                shooterRoller.shootSpeakerAutoStart()
+                )
             ),
             // Shoot
             indexer.setEnabledCommand(true),
@@ -578,6 +577,7 @@ public class SuperSystem {
         Command command = Commands.sequence(
             // Prepare to shoot
             shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeakerAutoStart(),
             Commands.deadline(
                 Commands.waitSeconds(0.32), // Was 0.2     3/3/24     But 0.8   @Code Orange
                 
@@ -585,9 +585,7 @@ public class SuperSystem {
                     Commands.waitUntil(() -> 
                         shooterPivot.hasReachedPosition(ShooterConstants.kSpeakerPositionAutoStart2.get())),
                     shooterPivot.moveToSpeakerAutoStart2()
-                ),
-
-                shooterRoller.shootSpeakerAutoStart()
+                )
             ),
             // Shoot
             indexer.setEnabledCommand(true),

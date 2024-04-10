@@ -5,6 +5,7 @@ import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
 import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -41,7 +42,10 @@ public class PathA0 extends SequentialCommandGroup{
                         Commands.sequence(
                             // enable after the preload gone
                             Commands.waitSeconds(1.25),
-                            Commands.waitUntil(superSystem::noteIntook)
+                            Commands.deadline(
+                                Commands.waitSeconds(1),
+                                Commands.waitUntil(superSystem::noteIntook)
+                            )
                         )
                     ),
 
@@ -140,5 +144,19 @@ public class PathA0 extends SequentialCommandGroup{
             AutoBuilder.pathfindToPose(destPoseInBlue, pathcons),
             RobotContainer::IsRedSide  
         );
+    }  
+
+    // to be tested. Do not use it before test
+    public static Pose2d GetEndPoseInPath(PathPlannerPath path)
+    {
+        PathPoint tail  = path.getPoint(path.numPoints()-1);
+        double rad = tail.rotationTarget.getTarget().getRadians();
+        return new Pose2d(tail.position, new Rotation2d(rad));
+    } 
+    public static Pose2d GetStartPoseInPath(PathPlannerPath path)
+    {
+        PathPoint tail  = path.getPoint(0);
+        double rad = tail.rotationTarget.getTarget().getRadians();
+        return new Pose2d(tail.position, new Rotation2d(rad));
     }
 }
