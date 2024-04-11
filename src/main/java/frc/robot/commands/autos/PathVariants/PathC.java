@@ -19,17 +19,20 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain;
 public class PathC extends SequentialCommandGroup {
     public PathC(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup){
         addCommands(
-            Commands.parallel(
-                Commands.sequence(
-                    superSystem.stow(),
-                    Commands.waitSeconds(1),
-                    superSystem.shooterPivot.moveToHandoff()
+            Commands.sequence(
+                Commands.parallel(
+                    AutoBuilder.followPath(pathGroup.get(0)),
+                    Commands.sequence(
+                        superSystem.stow(),
+                        Commands.waitSeconds(1.5),
+                        superSystem.shooterPivot.moveToHandoff(),
+                        Commands.deadline(
+                            Commands.waitUntil(superSystem::noteIntook),
+                            superSystem.intakeUntilSensedAuto(2.875)
+                        )
+                    )
                 ),
-                // Drive in front of mid note
-                Commands.deadline(
-                    Commands.waitSeconds(2), // TODO: Find a working time
-                    swerve.driveToPose(new Pose2d(6, 6.5, new Rotation2d()), 5, 5)
-                )
+                AutoBuilder.followPath(pathGroup.get(1))
             )
         );
     }
