@@ -105,6 +105,7 @@ public class Robot extends TimedRobot {
     if (autoCommand != null) {
       autoCommand.cancel();
     }
+    robotContainer.swerveDrive.towModules();
     robotContainer.swerveDrive.setBreak(false);
     robotContainer.swerveDrive.setChassisSpeeds(new ChassisSpeeds());
     robotContainer.apriltagCamera.toggleLight(false);
