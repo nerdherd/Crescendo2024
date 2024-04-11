@@ -507,6 +507,7 @@ public class RobotContainer {
   PathPlannerPath c27 = PathPlannerPath.fromPathFile("c27Path");
   PathPlannerPath c26 = PathPlannerPath.fromPathFile("c26Path");
   PathPlannerPath c25 = PathPlannerPath.fromPathFile("c25Path");
+  PathPlannerPath c2p6 = PathPlannerPath.fromPathFile("c2p6Path");
   
   PathPlannerPath d45 = PathPlannerPath.fromPathFile("d45Path");
   PathPlannerPath d56 = PathPlannerPath.fromPathFile("d56Path");
@@ -581,12 +582,12 @@ public class RobotContainer {
 
 
     // Note to self: IMU may not be facing the right way at the end of the auto
-    if (paths.contains("Mid3Piece")) {
-      autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
-      autoChooser.addOption("Mid3Piece Path Only", new Mid3PiecePathOnly(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
-      autoChooser.addOption("Mid3Piece Dead Reckoning", new Mid3PieceDeadReckoning(swerveDrive, "Mid3Piece", superSystem));
-      autoChooser.addOption("Mid2Piece", new Mid2Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
-    }
+    // if (paths.contains("Mid3Piece")) {
+    //   autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
+    //   autoChooser.addOption("Mid3Piece Path Only", new Mid3PiecePathOnly(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
+    //   autoChooser.addOption("Mid3Piece Dead Reckoning", new Mid3PieceDeadReckoning(swerveDrive, "Mid3Piece", superSystem));
+    //   autoChooser.addOption("Mid2Piece", new Mid2Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
+    // }
 
     if (paths.contains("PreloadTaxiSourceSide")) {
       //autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, "PreloadTaxiSourceSide", superSystem));
@@ -622,7 +623,7 @@ public class RobotContainer {
 
     autoChooser.setDefaultOption("Five Piece", new FivePieceAuto(swerveDrive, superSystem, pathGroupFivePiece, apriltagCamera, adjustmentCamera, noteCamera));
     autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, apriltagCamera, adjustmentCamera, noteCamera));
-    autoChooser.addOption("PathA", new PathA0(swerveDrive, superSystem, List.of(a02), apriltagCamera, adjustmentCamera, 0));
+    autoChooser.addOption("PathA", new PathA0(swerveDrive, superSystem, List.of(a02,c2p6), apriltagCamera, adjustmentCamera, 0));
     autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, List.of(b23), apriltagCamera, adjustmentCamera, 0));
     autoChooser.addOption("PathC", new PathC(swerveDrive, superSystem, List.of(c24)));
     autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 15, 10, 50, pathGroupTestD));

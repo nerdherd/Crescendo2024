@@ -87,6 +87,27 @@ public class PathA0 extends SequentialCommandGroup{
                         )
                     )    
                 ),
+                
+                Commands.parallel(
+                    // Drive to note 6
+                    //Commands.race(
+                        AutoBuilder.followPath(pathGroup.get(1)),
+                        // Commands.sequence(
+                        //     // enable after the preload gone
+                        //     Commands.waitSeconds(1.25),
+                        //     Commands.deadline(
+                        //         Commands.waitSeconds(1),
+                        //         Commands.waitUntil(superSystem::noteIntook)
+                        //     )
+                        // )
+                    //),
+
+                        // note 2
+                        Commands.deadline(
+                            Commands.waitUntil(() -> !superSystem.noteIntook()),
+                            superSystem.shootSubwooferAutoStart2()
+                        )
+                ),        
 
                 //superSystem.shootSubwooferAutoStart2(),
 
@@ -94,7 +115,8 @@ public class PathA0 extends SequentialCommandGroup{
                 //Commands.parallel(
                     // lower it before enter in stage area
                     superSystem.stow(),
-                    superSystem.indexer.stopCommand()
+                    superSystem.indexer.stopCommand(),
+                    Commands.waitSeconds(1)
                 //),
             // Commands.sequence(
             //     // Preload
