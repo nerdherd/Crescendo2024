@@ -26,10 +26,11 @@ public class PathA extends SequentialCommandGroup{
     public PathA(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva, int index){
         // Pose2d startingPose = path.getPreviewStartingHolonomicPose();
         Pose2d startingPose = new Pose2d(1.33, 5.55, new Rotation2d());//pathGroup.get(0).();
-        Pose2d endingPose = new Pose2d(4.5, 5.55, new Rotation2d());
+        //Pose2d endingPose = new Pose2d(4.5, 5.55, new Rotation2d());
         addCommands(
             
             //Commands.runOnce(() -> na.setLight(false)),
+            Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
             Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
 
