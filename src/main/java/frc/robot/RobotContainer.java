@@ -367,7 +367,7 @@ public class RobotContainer {
       SmartDashboard.putNumber("Desired Angle", desiredAngle);
       double angleToleranceScale = swerveDrive.getTurnToAngleToleranceScale(desiredAngle);
       SmartDashboard.putNumber("Angle Tolerance Scale", angleToleranceScale);
-      double angleTolerance = angleToleranceScale * swerveDrive.getTurnToAngleTolerance(swerveDrive.getDistanceFromTag(true));
+      double angleTolerance = angleToleranceScale * swerveDrive.getTurnToAngleTolerance(RobotContainer.IsRedSide() ? 4 : 7);
       SmartDashboard.putNumber("Angle Tolerance", angleTolerance);
       double angleDifference = Math.abs(swerveDrive.getImu().getHeading() - desiredAngle);
       angleDifference = NerdyMath.posMod(angleDifference, 360);

@@ -1,9 +1,12 @@
 package frc.robot.subsystems.swerve;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -23,9 +26,11 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
+import frc.robot.commands.TurnToAngleLive;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers;
 import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers.PoseEstimate;
+import frc.robot.util.NerdyLine;
 import frc.robot.util.NerdyMath;
 import frc.robot.subsystems.Reportable;
 
@@ -33,6 +38,8 @@ import static frc.robot.Constants.PathPlannerConstants.kPPMaxVelocity;
 import static frc.robot.Constants.PathPlannerConstants.kPPRotationPIDConstants;
 import static frc.robot.Constants.PathPlannerConstants.kPPTranslationPIDConstants;
 import static frc.robot.Constants.SwerveDriveConstants.*;
+
+import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
@@ -51,8 +58,18 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     private boolean isTest = false;
     private final SwerveDrivePoseEstimator poseEstimator;
     private DRIVE_MODE driveMode = DRIVE_MODE.FIELD_ORIENTED;
+
+    //Vision
     private int counter = 0;
     private int visionFrequency = 1;
+    private AprilTagFieldLayout layout;
+    private double lastDistance;
+    private double[] distances = new double[] {0, 1, 1.72, 2, 3, 3.5, 4, 5};
+    private double[] tolerances = new double[] {10, 9, 8, 7, 4, 3, 1, 1};
+    private NerdyLine toleranceSpline = new NerdyLine(distances, tolerances);
+    private double[] angles          = new double[] {0, 10, 30, 45, 90};
+    private double[] toleranceScales = new double[] {1, 0.95, 0.75, 0.4, 0};
+    private NerdyLine angleToleranceSpline = new NerdyLine(angles, toleranceScales);
     
     private Field2d field;
 
@@ -108,6 +125,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
           VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // TODO: Set pose estimator weights
           VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); 
         
+        layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();  
+
         field = new Field2d();
         field.setRobotPose(poseEstimator.getEstimatedPosition());
 
@@ -343,48 +362,92 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         return poseEstimator.getEstimatedPosition();
     }
 
-    public double getTagDistance2D(int tagID)
+    public Pose2d getTagPose2D(int tagID)
     {
-        return 0;
+        return getTagPose3D(tagID).toPose2d();
     }
 
-    public double getTagDistance3D(int tagID)
+    public Pose3d getTagPose3D(int tagID)
     {
-        return 0;
+        Optional<Pose3d> tagPose = layout.getTagPose(tagID);
+        if(tagPose.isEmpty()) return null;
+        return tagPose.get();
     }
 
-    public double getDistanceFromTag(boolean a)
+    public double getDistanceFromTag(boolean preserveOldValue, int tagID)
     {
-        return 0;
+        Pose2d tagPose = getTagPose2D(tagID);
+        if(tagPose == null) return (preserveOldValue ? lastDistance : 0.01);
+
+        Pose2d robotPose = getPose();
+        lastDistance = robotPose.getTranslation().getDistance(tagPose.getTranslation());
+        // lastDistance = Math.sqrt(Math.pow(robotPose.getX()-tagPose.getX(), 2) + Math.pow(robotPose.getY()-tagPose.getY(), 2));
+
+        return lastDistance;
     }
-    public double getTurnToAngleTolerance (double distance)
+    public double getTurnToAngleTolerance (int tagID)
     {
-        return 0;
+        double distance = getDistanceFromTag(true, tagID);
+        if(distance > 5) {
+            return 0;
+        }
+        if(distance > 4) {
+            return 1;
+        }
+        double tolerance = toleranceSpline.getOutput(distance);
+        if(tolerance < 0) {
+            return 0;
+        }
+        return tolerance;
     }
 
     public double getTurnToSpecificTagAngle(int tagID)
     {
-        // the angle
-        return 0;
+        Pose2d tagPose = getTagPose2D(tagID);
+        Pose2d robotPose = getPose();
+        double xOffset = tagPose.getX() - robotPose.getX();
+        double yOffset = tagPose.getY() - robotPose.getY();
+
+        double allianceOffset = 90;
+        double angle = NerdyMath.posMod(-Math.toDegrees(Math.atan2(xOffset, yOffset)) + allianceOffset, 360);
+        if(RobotContainer.IsRedSide()) {
+            return angle; //TODO: test if works since this is a bit different than original code
+        }
+        return (180 + angle) % 360;
     }
 
-    public double getTurnToAngleToleranceScale(double desiredAngle)
+    public double getTurnToAngleToleranceScale(double targetAngle)
     {
-        return 0;
+        double angleToSpeaker = 10000;
+        targetAngle = NerdyMath.posMod(targetAngle, 360);
+        if (targetAngle > 180) {
+            angleToSpeaker = Math.abs(360 - targetAngle);
+        }
+        else if (targetAngle < 180) {
+            angleToSpeaker = targetAngle;
+        }
+        return angleToleranceSpline.getOutput(angleToSpeaker);
     }
 
-    public Command driveToAmpCommand( double a, double b)
+    public Command driveToAmpCommand( double maxVelocityMps, double maxAccelerationMpsSq)
     {
-        return Commands.none();
+        Pose2d targetPose = RobotContainer.IsRedSide() ? VisionConstants.kRedAmpPose : VisionConstants.kBlueAmpPose;
+        return Commands.sequence(
+            driveToPose(targetPose, maxVelocityMps, maxAccelerationMpsSq)
+        );
     }
 
     public Command turnToTag(int tagID)
     {
-        return Commands.none();
+        return Commands.sequence(
+            new TurnToAngleLive(() -> getTurnToSpecificTagAngle(tagID), this, 1)
+        );
     }
-    public Command turnToTag(int tagID, int a)
+    public Command turnToTag(int tagID, double angleTolerance)
     {
-        return Commands.none();
+        return Commands.sequence(
+            new TurnToAngleLive(() -> getTurnToSpecificTagAngle(tagID), this, angleTolerance)
+        );
     }
     /**
      * Get the position of each swerve module

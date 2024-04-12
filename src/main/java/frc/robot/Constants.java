@@ -10,6 +10,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -207,6 +208,8 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
+    public static final Pose2d kBlueAmpPose = new Pose2d(new Translation2d(1.85, 7.5), Rotation2d.fromDegrees(270));
+    public static final Pose2d kRedAmpPose = new Pose2d(new Translation2d(1.85, 7.5), Rotation2d.fromDegrees(270));//TODO: change this pose to the correct number
     public static final double kFrontCameraHeightMeters = Units.inchesToMeters(45.25);
     public static final double kNoteHeightMeters = Units.inchesToMeters(17);
     public static final double kCameraPitchRadians = Units.degreesToRadians(-42);
