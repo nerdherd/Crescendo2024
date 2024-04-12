@@ -51,47 +51,60 @@ public class PathD extends SequentialCommandGroup{
      * @param noteAssistance
      * @param paths max 2 paths
      */
-    public PathD(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteAssistance, double targetNoteArea, int minSamples, int maxSamples, List<PathPlannerPath> paths) {
+    public PathD(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteAssistance, double targetNoteArea, int minSamples, int maxSamples, List<PathPlannerPath> paths, boolean slowPick) {
         Pose2d startingPose = new Pose2d(7.2, 7.45, new Rotation2d());        
         addCommands(
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
             Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
-            Commands.sequence(
-                superSystem.shooterPivot.moveToHandoff(),
-                Commands.waitSeconds(0.5),
-                Commands.either(
-                    Commands.race(
-                        superSystem.intakeUntilSensedAuto(2),
-                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, minSamples, maxSamples, null)
-                            .onlyWhile(noteAssistance::hasTarget)
+            Commands.either(
+                Commands.sequence(
+                    superSystem.shooterPivot.moveToHandoff(),
+                    Commands.waitSeconds(0.5),
+                    Commands.either(
+                        Commands.race(
+                            superSystem.intakeUntilSensedAuto(2),
+                            noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, minSamples, maxSamples, null)
+                                .onlyWhile(noteAssistance::hasTarget)
+                        ),
+                        Commands.none(), 
+                        noteAssistance::hasTarget
                     ),
-                    Commands.none(), 
-                    noteAssistance::hasTarget
+
+                    AutoBuilder.followPath(paths.get(0)),
+                    Commands.either(
+                        Commands.race(
+                            superSystem.intakeUntilSensedAuto(2),
+                            noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, minSamples, maxSamples, null)
+                                .onlyWhile(noteAssistance::hasTarget)
+                        ),
+                        Commands.none(), 
+                        noteAssistance::hasTarget
+                    ),
+
+                    AutoBuilder.followPath(paths.get(1)),
+                    Commands.either(
+                        Commands.race(
+                            superSystem.intakeUntilSensedAuto(2),
+                            noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, minSamples, maxSamples, null)
+                                .onlyWhile(noteAssistance::hasTarget)
+                        ),
+                        Commands.none(), 
+                        noteAssistance::hasTarget
+                    )
+
+                ).until(superSystem::noteIntook),
+
+                Commands.parallel(
+                    AutoBuilder.followPath(paths.get(0)),
+                    Commands.deadline(
+                        Commands.waitUntil(superSystem::noteIntook),
+                        superSystem.intakeUntilSensedAuto(2.875)
+                    )
                 ),
 
-                AutoBuilder.followPath(paths.get(0)),
-                Commands.either(
-                    Commands.race(
-                        superSystem.intakeUntilSensedAuto(2),
-                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, minSamples, maxSamples, null)
-                            .onlyWhile(noteAssistance::hasTarget)
-                    ),
-                    Commands.none(), 
-                    noteAssistance::hasTarget
-                ),
+                ()->slowPick
+            ),
 
-                AutoBuilder.followPath(paths.get(1)),
-                Commands.either(
-                    Commands.race(
-                        superSystem.intakeUntilSensedAuto(2),
-                        noteAssistance.driveToNoteCommand(swerve, targetNoteArea, 0, 0, minSamples, maxSamples, null)
-                            .onlyWhile(noteAssistance::hasTarget)
-                    ),
-                    Commands.none(), 
-                    noteAssistance::hasTarget
-                )
-
-            ).until(superSystem::noteIntook),
             Commands.runOnce(() -> swerve.towModules())
         );
     }

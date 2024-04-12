@@ -22,11 +22,10 @@ import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.NoteAssistance;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
-public class PathA extends SequentialCommandGroup{
-    public PathA(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva, int index){
-
-        Pose2d startingPose = GetEndPoseInPath(pathGroup.get(0));//new Pose2d(1.33, 5.55, new Rotation2d());//pathGroup.get(0).();
-
+public class PathAPre extends SequentialCommandGroup{
+    public PathAPre(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva, int index){
+        // Pose2d startingPose = path.getPreviewStartingHolonomicPose();
+        Pose2d startingPose = new Pose2d(1.33, 5.55, new Rotation2d());//pathGroup.get(0).();
         //Pose2d endingPose = new Pose2d(4.5, 5.55, new Rotation2d());
         addCommands(
             
@@ -37,28 +36,88 @@ public class PathA extends SequentialCommandGroup{
 
             Commands.sequence(
                 Commands.parallel(
-                    // Drive to note 123
-                    AutoBuilder.followPath(pathGroup.get(0)),
-                    
-                    Commands.sequence(
-                        Commands.deadline(
-                            Commands.waitUntil(superSystem::noteIntook),
-                            superSystem.intakeUntilSensedAuto(2.875)
-                        ),
+                    // Drive to note 2
+                    Commands.race(
+                        AutoBuilder.followPath(pathGroup.get(0)),
+                        Commands.sequence(
+                            // enable after the preload gone
+                            Commands.waitSeconds(1.25),
+                            Commands.deadline(
+                                Commands.waitSeconds(1),
+                                Commands.waitUntil(superSystem::noteIntook)
+                            )
+                        )
+                    ),
 
+                    Commands.sequence(
+
+                        // Preload
                         Commands.deadline(
                             Commands.waitUntil(() -> !superSystem.noteIntook()),
                             Commands.parallel(
                                 superSystem.shootSubwooferAutoStart(),
                                 superSystem.intakeRoller.autoIntakeCommand()
                             )
+                        ),
+                        
+                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                        superSystem.shooterRoller.setEnabledCommand(true),
+                        //superSystem.indexer.stopCommand(),
+                        Commands.waitSeconds(0.1),
+
+                        // pick up note 2
+                        // Commands.race(
+                        //     // Intake
+                        //     Commands.sequence(
+                        //         Commands.waitSeconds(0.125),
+                        //         superSystem.intakeUntilSensedAuto(2.875)
+                        //     ),
+                        //     Commands.waitUntil(superSystem::noteIntook)
+                        // ),
+
+                        Commands.deadline(
+                            Commands.waitUntil(superSystem::noteIntook),
+                            superSystem.intakeUntilSensedAuto(2.875)
+                        ),
+                        
+                        // Turn to angle and shoot
+                        Commands.waitSeconds(0.5),
+                        Commands.deadline(
+                            Commands.waitUntil(() -> !superSystem.noteIntook()),
+                            superSystem.shootSubwooferAutoStart2()
                         )
                     )    
-                ),  
+                ),
+                
+                Commands.parallel(
+                    // Drive to note 6
+                    //Commands.race(
+                        AutoBuilder.followPath(pathGroup.get(1)),
+                        // Commands.sequence(
+                        //     // enable after the preload gone
+                        //     Commands.waitSeconds(1.25),
+                        //     Commands.deadline(
+                        //         Commands.waitSeconds(1),
+                        //         Commands.waitUntil(superSystem::noteIntook)
+                        //     )
+                        // )
+                    //),
 
-                superSystem.stow(),
-                superSystem.indexer.stopCommand(),
-                Commands.waitSeconds(1)
+                        // note 2
+                        Commands.deadline(
+                            Commands.waitUntil(() -> !superSystem.noteIntook()),
+                            superSystem.shootSubwooferAutoStart2()
+                        )
+                ),        
+
+                //superSystem.shootSubwooferAutoStart2(),
+
+                // after done with 2 notes 
+                //Commands.parallel(
+                    // lower it before enter in stage area
+                    superSystem.stow(),
+                    superSystem.indexer.stopCommand(),
+                    Commands.waitSeconds(1)
                 //),
             // Commands.sequence(
             //     // Preload

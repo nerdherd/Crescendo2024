@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.1,
-        "y": 4.09
+        "x": 2.8,
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.16,
-        "y": 4.09
+        "x": 3.565009532730408,
+        "y": 5.55
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.080833945451674,
-        "y": 4.345010491822786
+        "x": 3.8420437201234763,
+        "y": 4.751777431482791
       },
       "prevControl": {
-        "x": 5.811165496204866,
-        "y": 3.965977661685054
+        "x": 3.5423099698382727,
+        "y": 5.151422431863065
       },
       "nextControl": {
-        "x": 4.081451351554574,
-        "y": 4.8636774076428
+        "x": 4.008448377257114,
+        "y": 4.529904555304607
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.002347788479361,
-        "y": 5.55
+        "x": 4.8,
+        "y": 4.09
       },
       "prevControl": {
-        "x": 3.990017944405031,
-        "y": 5.55
+        "x": 4.068732876019991,
+        "y": 4.09
       },
       "nextControl": null,
       "isLocked": false,
@@ -54,12 +54,12 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0,
+    "velocity": 2.0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "ePaths",
+  "folder": "cPaths",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

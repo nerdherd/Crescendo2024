@@ -38,6 +38,7 @@ import frc.robot.commands.autos.PoseEstimatorTest;
 import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.commands.autos.PathVariants.PathA;
+import frc.robot.commands.autos.PathVariants.PathAPre;
 import frc.robot.commands.autos.PathVariants.PathB;
 import frc.robot.commands.autos.PathVariants.PathC;
 import frc.robot.commands.autos.PathVariants.PathD;
@@ -46,7 +47,6 @@ import frc.robot.commands.autos.PathVariants.PathF;
 import frc.robot.commands.autos.PathVariants.ThreePieceMid;
 import frc.robot.commands.autos.PathVariants.DriveToNoteTest;
 import frc.robot.commands.autos.PathVariants.FivePieceAuto;
-import frc.robot.commands.autos.PathVariants.Variant5Piece;
 import frc.robot.subsystems.CANdleSubSystem;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CANdleSubSystem.Status;
@@ -483,6 +483,7 @@ public class RobotContainer {
   PathPlannerPath a01 = PathPlannerPath.fromPathFile("a01Path");
   PathPlannerPath a02 = PathPlannerPath.fromPathFile("a02Path");
   PathPlannerPath a03 = PathPlannerPath.fromPathFile("a03Path");
+  PathPlannerPath aY3 = PathPlannerPath.fromPathFile("aY3Path");  
   
   PathPlannerPath b12 = PathPlannerPath.fromPathFile("b12Path");
   PathPlannerPath b23 = PathPlannerPath.fromPathFile("b23Path");
@@ -507,7 +508,9 @@ public class RobotContainer {
   PathPlannerPath c27 = PathPlannerPath.fromPathFile("c27Path");
   PathPlannerPath c26 = PathPlannerPath.fromPathFile("c26Path");
   PathPlannerPath c25 = PathPlannerPath.fromPathFile("c25Path");
+  PathPlannerPath c26Short = PathPlannerPath.fromPathFile("c26PathShort");
   
+  PathPlannerPath d26ShortC = PathPlannerPath.fromPathFile("d26PathShortC");
   PathPlannerPath d26 = PathPlannerPath.fromPathFile("d26Path");
   PathPlannerPath d45 = PathPlannerPath.fromPathFile("d45Path");
   PathPlannerPath d56 = PathPlannerPath.fromPathFile("d56Path");
@@ -625,13 +628,14 @@ public class RobotContainer {
 
     autoChooser.setDefaultOption("Five Piece", new FivePieceAuto(swerveDrive, superSystem, pathGroupFivePiece, apriltagCamera, adjustmentCamera, noteCamera));
     autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, apriltagCamera, adjustmentCamera, noteCamera));
-    autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, List.of(a02,b2p6), apriltagCamera, adjustmentCamera, 0));
+    autoChooser.addOption("PathA", new PathAPre(swerveDrive, superSystem, List.of(a02,b2p6), apriltagCamera, adjustmentCamera, 0));
+    autoChooser.addOption("PathA_Last", new PathA(swerveDrive, superSystem, List.of(aY3), apriltagCamera, adjustmentCamera, 0));
     //autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, List.of(b23), apriltagCamera, adjustmentCamera, 0));
-    autoChooser.addOption("PathC", new PathC(swerveDrive, superSystem, List.of(c26,d26)));
+    autoChooser.addOption("PathC", new PathC(swerveDrive, superSystem, List.of(c26Short,d26ShortC)));
     //autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 15, 10, 50, pathGroupTestD));
-    autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, e6Y, apriltagCamera, adjustmentCamera));
+    autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, List.of(e6Y), apriltagCamera, adjustmentCamera));
     //autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, List.of(f04), apriltagCamera, noteCamera, adjustmentCamera));
-    autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, apriltagCamera, adjustmentCamera, noteCamera));
+    //autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, apriltagCamera, adjustmentCamera, noteCamera));
     autoChooser.addOption("Path C Testing", new PathC(swerveDrive, superSystem, pathGroupTestC));
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
