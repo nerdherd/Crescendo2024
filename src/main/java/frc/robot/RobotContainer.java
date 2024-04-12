@@ -527,6 +527,7 @@ public class RobotContainer {
   PathPlannerPath e7Z = PathPlannerPath.fromPathFile("e7ZPath");
   PathPlannerPath e8Z = PathPlannerPath.fromPathFile("e8ZPath");
   PathPlannerPath e6Y = PathPlannerPath.fromPathFile("e6YPath");
+  PathPlannerPath e6YShort = PathPlannerPath.fromPathFile("e6YPathShort");
 
   PathPlannerPath f04 = PathPlannerPath.fromPathFile("f04Path");
   PathPlannerPath f05 = PathPlannerPath.fromPathFile("f05Path");
@@ -628,15 +629,15 @@ public class RobotContainer {
 
     autoChooser.setDefaultOption("Five Piece", new FivePieceAuto(swerveDrive, superSystem, pathGroupFivePiece, apriltagCamera, adjustmentCamera, noteCamera));
     autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, apriltagCamera, adjustmentCamera, noteCamera));
-    autoChooser.addOption("PathA", new PathAPre(swerveDrive, superSystem, List.of(a02,b2p6), apriltagCamera, adjustmentCamera, 0));
+    autoChooser.addOption("Path_PreA", new PathAPre(swerveDrive, superSystem, List.of(a02,b2p6), apriltagCamera, adjustmentCamera, 0));
     autoChooser.addOption("PathA_Last", new PathA(swerveDrive, superSystem, List.of(aY3), apriltagCamera, adjustmentCamera, 0));
     //autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, List.of(b23), apriltagCamera, adjustmentCamera, 0));
-    autoChooser.addOption("PathC", new PathC(swerveDrive, superSystem, List.of(c26Short,d26ShortC)));
+    autoChooser.addOption("PathCandEandLastA", new PathC(swerveDrive, superSystem, List.of(c26Short,d26ShortC,e6YShort,aY3)));
     //autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 15, 10, 50, pathGroupTestD));
-    autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, List.of(e6Y), apriltagCamera, adjustmentCamera));
+    //autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, List.of(e6YShort), apriltagCamera, adjustmentCamera));
     //autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, List.of(f04), apriltagCamera, noteCamera, adjustmentCamera));
     //autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, apriltagCamera, adjustmentCamera, noteCamera));
-    autoChooser.addOption("Path C Testing", new PathC(swerveDrive, superSystem, pathGroupTestC));
+    //autoChooser.addOption("Path C Testing", new PathC(swerveDrive, superSystem, pathGroupTestC));
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
     autosTab.add("Selected Auto", autoChooser);

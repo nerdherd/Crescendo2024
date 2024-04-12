@@ -6,6 +6,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPoint;
+import com.pathplanner.lib.path.RotationTarget;
 import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,9 +24,24 @@ import frc.robot.subsystems.vision.NoteAssistance;
 import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class PathA extends SequentialCommandGroup{
+    // to be tested. Do not use it before test
+    
+    public static Pose2d GetStartPoseInPath(PathPlannerPath path)
+    {
+        PathPoint tail  = path.getPoint(0);
+        RotationTarget rt = tail.rotationTarget;
+        double rad;
+        if (rt == null) {
+            rad  = 0;
+        }
+        else {
+            rad = tail.rotationTarget.getTarget().getRadians();
+        }
+        return new Pose2d(tail.position, new Rotation2d(rad));
+    }
     public PathA(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva, int index){
 
-        Pose2d startingPose = GetEndPoseInPath(pathGroup.get(0));//new Pose2d(1.33, 5.55, new Rotation2d());//pathGroup.get(0).();
+        Pose2d startingPose = GetStartPoseInPath(pathGroup.get(0));//new Pose2d(1.33, 5.55, new Rotation2d());//pathGroup.get(0).();
 
         //Pose2d endingPose = new Pose2d(4.5, 5.55, new Rotation2d());
         addCommands(
@@ -138,10 +154,4 @@ public class PathA extends SequentialCommandGroup{
         double rad = tail.rotationTarget.getTarget().getRadians();
         return new Pose2d(tail.position, new Rotation2d(rad));
     } 
-    public static Pose2d GetStartPoseInPath(PathPlannerPath path)
-    {
-        PathPoint tail  = path.getPoint(0);
-        double rad = tail.rotationTarget.getTarget().getRadians();
-        return new Pose2d(tail.position, new Rotation2d(rad));
-    }
 }

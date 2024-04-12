@@ -6,6 +6,7 @@ import java.util.function.BooleanSupplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPoint;
+import com.pathplanner.lib.path.RotationTarget;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,6 +21,20 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain;
 public class PathC extends SequentialCommandGroup {
     
     // to be tested. Do not use it before test
+    
+    public static Pose2d GetStartPoseInPath(PathPlannerPath path)
+    {
+        PathPoint tail  = path.getPoint(0);
+        RotationTarget rt = tail.rotationTarget;
+        double rad;
+        if (rt == null) {
+            rad  = 0;
+        }
+        else {
+            rad = tail.rotationTarget.getTarget().getRadians();
+        }
+        return new Pose2d(tail.position, new Rotation2d(rad));
+    }
     public static Pose2d GetEndPoseInPath(PathPlannerPath path)
     {
         PathPoint tail  = path.getPoint(path.numPoints()-1);
@@ -28,7 +43,7 @@ public class PathC extends SequentialCommandGroup {
     } 
 
     public PathC(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup){
-        Pose2d startingPose = GetEndPoseInPath(pathGroup.get(0));
+        Pose2d startingPose = GetStartPoseInPath(pathGroup.get(0));
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
@@ -51,6 +66,50 @@ public class PathC extends SequentialCommandGroup {
                     Commands.deadline(
                         Commands.waitUntil(superSystem::noteIntook),
                         superSystem.intakeUntilSensedAuto(2.875)
+                    )
+                ),
+
+                // PATH EEEEEEEEE
+                Commands.sequence(
+                Commands.parallel(
+                    AutoBuilder.followPath(pathGroup.get(2)),
+                    Commands.sequence(
+                        superSystem.stow(),
+                        Commands.waitSeconds(.9), // regualr path uses 2.4; shorter one uses .9
+                        superSystem.shooterPivot.moveToHandoff(),
+                        superSystem.shooterPivot.setEnabledCommand(true),
+
+                        Commands.deadline(
+                            Commands.waitUntil(() -> !superSystem.noteIntook()),
+                            Commands.parallel(
+                                superSystem.shootSubwooferAutoStart(),
+                                superSystem.intakeRoller.autoIntakeCommand()
+                            )
+                        ),
+                        
+                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                        superSystem.shooterRoller.setEnabledCommand(true)
+                    )
+                )
+            ),
+
+            // PATH LAST AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+            Commands.parallel(
+                // Drive to note 123
+                AutoBuilder.followPath(pathGroup.get(3)),
+                Commands.sequence(
+                        Commands.deadline(
+                            Commands.waitUntil(superSystem::noteIntook),
+                            superSystem.intakeUntilSensedAuto(2.875)
+                        ),
+
+                        Commands.deadline(
+                            Commands.waitUntil(() -> !superSystem.noteIntook()),
+                            Commands.parallel(
+                                superSystem.shootSubwooferAutoStart(),
+                                superSystem.intakeRoller.autoIntakeCommand()
+                            )
+                        )
                     )
                 )
             ),

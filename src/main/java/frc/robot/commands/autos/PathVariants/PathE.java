@@ -6,6 +6,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPoint;
+import com.pathplanner.lib.path.RotationTarget;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,6 +23,19 @@ import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 public class PathE extends SequentialCommandGroup {
 
     // to be tested. Do not use it before test
+    public static Pose2d GetStartPoseInPath(PathPlannerPath path)
+    {
+        PathPoint tail  = path.getPoint(0);
+        RotationTarget rt = tail.rotationTarget;
+        double rad;
+        if (rt == null) {
+            rad  = 0;
+        }
+        else {
+            rad = tail.rotationTarget.getTarget().getRadians();
+        }
+        return new Pose2d(tail.position, new Rotation2d(rad));
+    }
     public static Pose2d GetEndPoseInPath(PathPlannerPath path)
     {
         PathPoint tail  = path.getPoint(path.numPoints()-1);
@@ -31,7 +45,7 @@ public class PathE extends SequentialCommandGroup {
     
     public PathE(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva)
     {
-        Pose2d startingPose = GetEndPoseInPath(pathGroup.get(0));
+        Pose2d startingPose = GetStartPoseInPath(pathGroup.get(0));
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
@@ -42,7 +56,7 @@ public class PathE extends SequentialCommandGroup {
                     AutoBuilder.followPath(pathGroup.get(0)),
                     Commands.sequence(
                         superSystem.stow(),
-                        Commands.waitSeconds(2.4),
+                        Commands.waitSeconds(.85), // regualr path uses 2.4; shorter one uses .85
                         superSystem.shooterPivot.moveToHandoff(),
                         superSystem.shooterPivot.setEnabledCommand(true),
 
