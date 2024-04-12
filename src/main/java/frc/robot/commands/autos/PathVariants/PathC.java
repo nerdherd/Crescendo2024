@@ -50,8 +50,85 @@ public class PathC extends SequentialCommandGroup {
             Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
             
             Commands.sequence(
+
+            Commands.parallel(
+                    // Drive to note 2
+                    Commands.race(
+                        AutoBuilder.followPath(pathGroup.get(0)),//a02
+                        Commands.sequence(
+                            // enable after the preload gone
+                            Commands.waitSeconds(1.25),
+                            Commands.deadline(
+                                Commands.waitSeconds(1),
+                                Commands.waitUntil(superSystem::noteIntook)
+                            )
+                        )
+                    ),
+
+                    Commands.sequence(
+
+                        // Preload
+                        Commands.deadline(
+                            Commands.waitUntil(() -> !superSystem.noteIntook()),
+                            Commands.parallel(
+                                superSystem.shootSubwooferAutoStart(),
+                                superSystem.intakeRoller.autoIntakeCommand()
+                            )
+                        ),
+                        
+                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                        superSystem.shooterRoller.setEnabledCommand(true),
+                        //superSystem.indexer.stopCommand(),
+                        Commands.waitSeconds(0.1),
+
+                        // pick up note 2
+                        // Commands.race(
+                        //     // Intake
+                        //     Commands.sequence(
+                        //         Commands.waitSeconds(0.125),
+                        //         superSystem.intakeUntilSensedAuto(2.875)
+                        //     ),
+                        //     Commands.waitUntil(superSystem::noteIntook)
+                        // ),
+
+                        Commands.deadline(
+                            Commands.waitUntil(superSystem::noteIntook),
+                            superSystem.intakeUntilSensedAuto(2.875)
+                        ),
+                        
+                        // Turn to angle and shoot
+                        Commands.waitSeconds(0.5),
+                        Commands.deadline(
+                            Commands.waitUntil(() -> !superSystem.noteIntook()),
+                            superSystem.shootSubwooferAutoStart2()
+                        )
+                    )    
+                ),
+                
                 Commands.parallel(
-                    AutoBuilder.followPath(pathGroup.get(0)),
+                    // Drive to note 6
+                    //Commands.race(
+                        AutoBuilder.followPath(pathGroup.get(1)),//b2p6
+                        // Commands.sequence(
+                        //     // enable after the preload gone
+                        //     Commands.waitSeconds(1.25),
+                        //     Commands.deadline(
+                        //         Commands.waitSeconds(1),
+                        //         Commands.waitUntil(superSystem::noteIntook)
+                        //     )
+                        // )
+                    //),
+
+                        // note 2
+                        Commands.deadline(
+                            Commands.waitUntil(() -> !superSystem.noteIntook()),
+                            superSystem.shootSubwooferAutoStart2()
+                        )
+                ),
+
+            // PATH CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+                Commands.parallel(
+                    AutoBuilder.followPath(pathGroup.get(2)),//c26
                     Commands.sequence(
                         superSystem.stow(),
                         Commands.waitSeconds(1.5),
@@ -62,7 +139,7 @@ public class PathC extends SequentialCommandGroup {
                 
                 // this is for PathD
                 Commands.parallel(
-                    AutoBuilder.followPath(pathGroup.get(1)),
+                    AutoBuilder.followPath(pathGroup.get(3)),//d26
                     Commands.deadline(
                         Commands.waitUntil(superSystem::noteIntook),
                         superSystem.intakeUntilSensedAuto(2.875)
@@ -72,7 +149,7 @@ public class PathC extends SequentialCommandGroup {
                 // PATH EEEEEEEEE
                 Commands.sequence(
                 Commands.parallel(
-                    AutoBuilder.followPath(pathGroup.get(2)),
+                    AutoBuilder.followPath(pathGroup.get(4)), //e6Y
                     Commands.sequence(
                         superSystem.stow(),
                         Commands.waitSeconds(.9), // regualr path uses 2.4; shorter one uses .9
@@ -96,7 +173,7 @@ public class PathC extends SequentialCommandGroup {
             // PATH LAST AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
             Commands.parallel(
                 // Drive to note 123
-                AutoBuilder.followPath(pathGroup.get(3)),
+                AutoBuilder.followPath(pathGroup.get(5)), //aY3
                 Commands.sequence(
                         Commands.deadline(
                             Commands.waitUntil(superSystem::noteIntook),
