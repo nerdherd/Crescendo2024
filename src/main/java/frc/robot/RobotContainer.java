@@ -211,7 +211,7 @@ public class RobotContainer {
             }
           }
           if (driverController.getL2Button()) {
-            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
+            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7); // TODO, update?
             // 4 if red side, 7 if blue
           }
           if (driverController.getCircleButton()) { //turn to amp
@@ -367,7 +367,7 @@ public class RobotContainer {
 
     // AprilTag Trigger
     Trigger aimTrigger = new Trigger(() -> {
-      double desiredAngle = apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);
+      double desiredAngle = apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);// TODO, update?
       SmartDashboard.putNumber("Desired Angle", desiredAngle);
       double angleToleranceScale = apriltagCamera.getTurnToAngleToleranceScale(desiredAngle);
       SmartDashboard.putNumber("Angle Tolerance Scale", angleToleranceScale);
@@ -490,6 +490,7 @@ public class RobotContainer {
   PathPlannerPath b21 = PathPlannerPath.fromPathFile("b21Path");
   PathPlannerPath b31 = PathPlannerPath.fromPathFile("b31Path");
   PathPlannerPath b13 = PathPlannerPath.fromPathFile("b13Path");
+  PathPlannerPath b2p6 = PathPlannerPath.fromPathFile("b2p6Path");
 
   PathPlannerPath c14 = PathPlannerPath.fromPathFile("c14Path");
   PathPlannerPath c24 = PathPlannerPath.fromPathFile("c24Path");
@@ -507,6 +508,7 @@ public class RobotContainer {
   PathPlannerPath c26 = PathPlannerPath.fromPathFile("c26Path");
   PathPlannerPath c25 = PathPlannerPath.fromPathFile("c25Path");
   
+  PathPlannerPath d26 = PathPlannerPath.fromPathFile("d26Path");
   PathPlannerPath d45 = PathPlannerPath.fromPathFile("d45Path");
   PathPlannerPath d56 = PathPlannerPath.fromPathFile("d56Path");
   PathPlannerPath d87 = PathPlannerPath.fromPathFile("d87Path");
@@ -582,12 +584,12 @@ public class RobotContainer {
 
 
     // Note to self: IMU may not be facing the right way at the end of the auto
-    if (paths.contains("Mid3Piece")) {
-      autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
-      autoChooser.addOption("Mid3Piece Path Only", new Mid3PiecePathOnly(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
-      autoChooser.addOption("Mid3Piece Dead Reckoning", new Mid3PieceDeadReckoning(swerveDrive, "Mid3Piece", superSystem));
-      autoChooser.addOption("Mid2Piece", new Mid2Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
-    }
+    // if (paths.contains("Mid3Piece")) {
+    //   autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
+    //   autoChooser.addOption("Mid3Piece Path Only", new Mid3PiecePathOnly(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
+    //   autoChooser.addOption("Mid3Piece Dead Reckoning", new Mid3PieceDeadReckoning(swerveDrive, "Mid3Piece", superSystem));
+    //   autoChooser.addOption("Mid2Piece", new Mid2Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
+    // }
 
     if (paths.contains("PreloadTaxiSourceSide")) {
       //autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, "PreloadTaxiSourceSide", superSystem));
@@ -623,12 +625,12 @@ public class RobotContainer {
 
     autoChooser.setDefaultOption("Five Piece", new FivePieceAuto(swerveDrive, superSystem, pathGroupFivePiece, apriltagCamera, adjustmentCamera, noteCamera));
     autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, apriltagCamera, adjustmentCamera, noteCamera));
-    // autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, a02, apriltagCamera, adjustmentCamera));
-    // autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, b23, apriltagCamera, adjustmentCamera));
-    // autoChooser.addOption("PathC", new PathC(swerveDrive, c24));
-    // autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 1, 10, 50, pathGroupTestD.get(0), pathGroupTestD.get(1)));
-    // autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, e5Y, apriltagCamera, adjustmentCamera));
-    // autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, f04, apriltagCamera));
+    autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, List.of(a02,b2p6), apriltagCamera, adjustmentCamera, 0));
+    //autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, List.of(b23), apriltagCamera, adjustmentCamera, 0));
+    autoChooser.addOption("PathC", new PathC(swerveDrive, superSystem, List.of(c26,d26)));
+    //autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 15, 10, 50, pathGroupTestD));
+    autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, e6Y, apriltagCamera, adjustmentCamera));
+    //autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, List.of(f04), apriltagCamera, noteCamera, adjustmentCamera));
     autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, apriltagCamera, adjustmentCamera, noteCamera));
     autoChooser.addOption("Path C Testing", new PathC(swerveDrive, superSystem, pathGroupTestC));
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
@@ -654,7 +656,7 @@ public class RobotContainer {
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
     tab.addNumber("Voltage", () -> Math.abs(pdp.getVoltage()));
-    tab.addNumber("apriltag angle", () -> apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7));
+    tab.addNumber("apriltag angle", () -> apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7));// TODO, update?
   }
   
   /**

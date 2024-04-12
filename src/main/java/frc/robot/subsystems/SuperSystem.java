@@ -269,6 +269,36 @@ public class SuperSystem {
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
         return command;
     }
+
+    public Command intakeUntilSensedAutoShoot(double noNoteTimeout) {
+        Command command = Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(() -> 
+                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+                handoff(),
+                Commands.waitSeconds(1)
+            ),
+
+            shooterRoller.setVelocityCommand(-10, -10),
+            shooterRoller.setEnabledCommand(true),
+            intakeRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            intakeRoller.intakeCommand(),
+
+             Commands.deadline(
+                 Commands.waitSeconds(noNoteTimeout), // testing - check wait time             
+                 Commands.waitUntil(this::noteIntook)
+             )
+        ).finallyDo(() -> {
+            intakeRoller.stop();
+            indexer.stop();
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
+        return command;
+    }
     
     // public Command climbSequence(){
     //     return shooterPivot.climbSequence();
@@ -339,6 +369,12 @@ public class SuperSystem {
         return intakeDirectShoot(ShooterConstants.kHandoffPosition.get(), 
                                  ShooterConstants.kTopOuttakeAuto1.get(),
                                  ShooterConstants.kBottomOuttakeAuto1.get());
+    }
+
+    public Command intakeDirectShootAutoStart() {
+        return intakeDirectShoot(ShooterConstants.kHandoffPosition.get(), 
+                                 30,
+                                 30);
     }
 
     public Command intakeDirectShoot(double shooterPosition, double topShooterVelocity, double bottomShooterVelocity) {
@@ -509,6 +545,60 @@ public class SuperSystem {
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
         return command;
     }
+
+    public Command shootSubwooferAutoStart() {
+        Command command = Commands.sequence(
+            // Prepare to shoot
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeakerAutoStart(),
+            Commands.deadline(
+                Commands.waitSeconds(0.32), // Was 0.2     3/3/24     But 0.8   @Code Orange
+                
+                Commands.deadline(
+                    Commands.waitUntil(() -> 
+                        shooterPivot.hasReachedPosition(ShooterConstants.kSpeakerPositionAutoStart.get())),
+                    shooterPivot.moveToSpeakerAutoStart()
+                )
+            ),
+            // Shoot
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            Commands.waitUntil(() -> false)
+        ).finallyDo(interrupted -> {
+            indexer.stop(); // keep it running for next pickup
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
+        return command;
+    } 
+
+    public Command shootSubwooferAutoStart2() {
+        Command command = Commands.sequence(
+            // Prepare to shoot
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeakerAutoStart(),
+            Commands.deadline(
+                Commands.waitSeconds(0.32), // Was 0.2     3/3/24     But 0.8   @Code Orange
+                
+                Commands.deadline(
+                    Commands.waitUntil(() -> 
+                        shooterPivot.hasReachedPosition(ShooterConstants.kSpeakerPositionAutoStart2.get())),
+                    shooterPivot.moveToSpeakerAutoStart2()
+                )
+            ),
+            // Shoot
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            Commands.waitUntil(() -> false)
+        ).finallyDo(interrupted -> {
+            indexer.stop(); // keep it running for next pickup
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
+        return command;
+    } 
 
     public Command shootSubwooferAuto() {
         Command command = Commands.sequence(
