@@ -491,6 +491,7 @@ public class RobotContainer {
   PathPlannerPath b21 = PathPlannerPath.fromPathFile("b21Path");
   PathPlannerPath b31 = PathPlannerPath.fromPathFile("b31Path");
   PathPlannerPath b13 = PathPlannerPath.fromPathFile("b13Path");
+  PathPlannerPath b2p6 = PathPlannerPath.fromPathFile("b2p6Path");
 
   PathPlannerPath c14 = PathPlannerPath.fromPathFile("c14Path");
   PathPlannerPath c24 = PathPlannerPath.fromPathFile("c24Path");
@@ -507,7 +508,6 @@ public class RobotContainer {
   PathPlannerPath c27 = PathPlannerPath.fromPathFile("c27Path");
   PathPlannerPath c26 = PathPlannerPath.fromPathFile("c26Path");
   PathPlannerPath c25 = PathPlannerPath.fromPathFile("c25Path");
-  PathPlannerPath c2p6 = PathPlannerPath.fromPathFile("c2p6Path");
   
   PathPlannerPath d26 = PathPlannerPath.fromPathFile("d26Path");
   PathPlannerPath d45 = PathPlannerPath.fromPathFile("d45Path");
@@ -624,7 +624,7 @@ public class RobotContainer {
 
     autoChooser.setDefaultOption("Five Piece", new FivePieceAuto(swerveDrive, superSystem, pathGroupFivePiece, apriltagCamera, adjustmentCamera, noteCamera));
     autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, apriltagCamera, adjustmentCamera, noteCamera));
-    autoChooser.addOption("PathA", new PathA0(swerveDrive, superSystem, List.of(a02,c2p6), apriltagCamera, adjustmentCamera, 0));
+    autoChooser.addOption("PathA", new PathA0(swerveDrive, superSystem, List.of(a02,b2p6), apriltagCamera, adjustmentCamera, 0));
     autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, List.of(b23), apriltagCamera, adjustmentCamera, 0));
     autoChooser.addOption("PathC", new PathC(swerveDrive, superSystem, List.of(c26,d26)));
     autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 15, 10, 50, pathGroupTestD));
