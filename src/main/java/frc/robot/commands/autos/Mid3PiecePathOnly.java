@@ -13,10 +13,9 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.vision.DriverAssist;
 
 public class Mid3PiecePathOnly extends SequentialCommandGroup {
-    public Mid3PiecePathOnly(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem, DriverAssist tagCam) {     
+    public Mid3PiecePathOnly(SwerveDrivetrain swerve, String autoPath, SuperSystem superSystem) {     
         
         // Use the PathPlannerAuto class to get a path group from an auto
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);

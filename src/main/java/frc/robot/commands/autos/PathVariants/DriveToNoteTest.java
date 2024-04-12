@@ -12,9 +12,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.NoteAssistance;
-import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 //TODO: get actual position for default pose
 public class DriveToNoteTest extends SequentialCommandGroup{
@@ -36,7 +34,7 @@ public class DriveToNoteTest extends SequentialCommandGroup{
      * @param noteAssistance
      * @param paths max 2 paths
      */
-    public DriveToNoteTest(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance na, double targetNoteArea, int minSamples, int maxSamples, PathPlannerPath path0, PathPlannerPath path1, DriverAssist driverAssist, ShooterVisionAdjustment sva) {
+    public DriveToNoteTest(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance na, double targetNoteArea, int minSamples, int maxSamples, PathPlannerPath path0, PathPlannerPath path1) {
         Pose2d startingPose = new Pose2d(2.5, 5.58, new Rotation2d());
         
         addCommands(

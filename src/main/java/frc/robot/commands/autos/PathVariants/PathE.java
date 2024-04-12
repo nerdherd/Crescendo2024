@@ -12,12 +12,10 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.NoteAssistance;
-import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class PathE extends SequentialCommandGroup {
-    public PathE(SwerveDrivetrain swerve, SuperSystem superSystem, PathPlannerPath path, DriverAssist driverAssist, ShooterVisionAdjustment sva){
+    public PathE(SwerveDrivetrain swerve, SuperSystem superSystem, PathPlannerPath path){
         // start of E ****************************************************************
         addCommands(
             Commands.sequence(
@@ -38,15 +36,15 @@ public class PathE extends SequentialCommandGroup {
                         // Commands.waitSeconds(0.1),
                         Commands.either(
                             //turn to angle
-                            driverAssist.turnToTag(4, swerve), //Placeholder turn to tag methods
-                            driverAssist.turnToTag(7, swerve),
+                            swerve.turnToTag(4), //Placeholder turn to tag methods
+                            swerve.turnToTag(7),
                             RobotContainer::IsRedSide 
                         )
                     ),
                     Commands.deadline(
                         Commands.waitSeconds(2),
                         // superSystem.shootPodium()
-                        superSystem.shootSequenceAdjustableAuto(sva)
+                        superSystem.shootSequenceAdjustableAuto()
                     )
                     // end of E *******************************************************
                 )

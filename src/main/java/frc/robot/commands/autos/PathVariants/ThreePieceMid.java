@@ -14,15 +14,13 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.NoteAssistance;
-import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class ThreePieceMid extends SequentialCommandGroup{
-    public ThreePieceMid(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva, NoteAssistance na) {
+    public ThreePieceMid(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, NoteAssistance na) {
         Pose2d startingPose = new Pose2d(0.70, 4.37, Rotation2d.fromDegrees(-60));//pathGroup.get(0).();
         addCommands(
-            Commands.runOnce(() -> na.setLight(false)),
+            //Commands.runOnce(() -> na.setLight(false)),
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
             Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
 
@@ -80,8 +78,8 @@ public class ThreePieceMid extends SequentialCommandGroup{
                             Commands.deadline(
                                 Commands.waitSeconds(2),
                                 Commands.either(
-                                    driverAssist.turnToTag(4, swerve, 1),
-                                    driverAssist.turnToTag(7, swerve, 1),
+                                    swerve.turnToTag(4, 1),
+                                    swerve.turnToTag(7, 1),
                                     RobotContainer::IsRedSide 
                                 )
                             ),
@@ -91,7 +89,7 @@ public class ThreePieceMid extends SequentialCommandGroup{
                         // Shoot
                         Commands.sequence(
                             superSystem.backupIndexerAndShooter(),
-                            superSystem.prepareShooterVision(sva)
+                            superSystem.prepareShooterVision()
                         )
                     )
                 )
@@ -145,8 +143,8 @@ public class ThreePieceMid extends SequentialCommandGroup{
                             Commands.deadline(
                                 Commands.waitSeconds(2),
                                 Commands.either(
-                                    driverAssist.turnToTag(4, swerve, 1),
-                                    driverAssist.turnToTag(7, swerve, 1),
+                                    swerve.turnToTag(4, 1),
+                                    swerve.turnToTag(7, 1),
                                     RobotContainer::IsRedSide 
                                 )
                             ),
@@ -156,7 +154,7 @@ public class ThreePieceMid extends SequentialCommandGroup{
                         // Shoot
                         Commands.sequence(
                             superSystem.backupIndexerAndShooter(),
-                            superSystem.prepareShooterVision(sva)
+                            superSystem.prepareShooterVision()
                         )
                     )
                 )

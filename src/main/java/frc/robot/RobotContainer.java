@@ -30,8 +30,6 @@ import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.autos.AutoCommands;
 import frc.robot.commands.autos.FivePieceEnd;
 import frc.robot.commands.autos.FivePieceSecond;
-import frc.robot.commands.autos.Mid2Piece;
-import frc.robot.commands.autos.Mid3Piece;
 import frc.robot.commands.autos.Mid3PieceDeadReckoning;
 import frc.robot.commands.autos.Mid3PiecePathOnly;
 import frc.robot.commands.autos.PoseEstimatorTest;
@@ -60,9 +58,8 @@ import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.imu.PigeonV2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
-import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.NoteAssistance;
-import frc.robot.subsystems.vision.ShooterVisionAdjustment;
+import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers;
 import frc.robot.util.NerdyMath;
 
 public class RobotContainer {
@@ -91,8 +88,6 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
   private NoteAssistance noteCamera; 
-  public DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
-  public ShooterVisionAdjustment adjustmentCamera;
   
   public CANdleSubSystem CANdle = new CANdleSubSystem();
   private SwerveJoystickCommand swerveJoystickCommand;
@@ -105,15 +100,15 @@ public class RobotContainer {
   public RobotContainer() {
     try {
       noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
-      apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, VisionConstants.kAprilTagPipeline);
-      swerveDrive = new SwerveDrivetrain(imu, apriltagCamera);
-      adjustmentCamera = new ShooterVisionAdjustment(apriltagCamera, swerveDrive.getImu(), superSystem, () -> swerveDrive.getPose());
+      swerveDrive = new SwerveDrivetrain(imu);
 
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
 
-    apriltagCamera.toggleLight(true);
+    
+    LimelightHelpers.setLEDMode_ForceBlink(VisionConstants.kLimelightBackName);
+    LimelightHelpers.setLEDMode_ForceBlink(VisionConstants.kLimelightFrontName);
 
     initAutoChoosers();
     initShuffleboard();
@@ -211,7 +206,7 @@ public class RobotContainer {
             }
           }
           if (driverController.getL2Button()) {
-            return apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7); // TODO, update?
+            return swerveDrive.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7); // TODO, update?
             // 4 if red side, 7 if blue
           }
           if (driverController.getCircleButton()) { //turn to amp
@@ -284,24 +279,24 @@ public class RobotContainer {
     // Driver bindings
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
-    commandDriverController.cross().whileTrue(apriltagCamera.driveToAmpCommand(swerveDrive, 3, 3));
+    commandDriverController.cross().whileTrue(swerveDrive.driveToAmpCommand(3, 3));
     commandDriverController.square().whileTrue(noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 10, 200, null).until(superSystem::noteIntook));
     // commandDriverController.square().onTrue(apriltagCamera.TurnToTagCommand4Auto(swerveDrive, 5, 50));
     //commandDriverController.square().onTrue(apriltagCamera.TurnToAngleByTagCommand4Auto(swerveDrive, 2, 15));
     commandOperatorController.povLeft().whileTrue(
       Commands.repeatingSequence(
-        Commands.runOnce(() -> adjustmentCamera.getShooterAngle())
+        Commands.runOnce(() -> superSystem.getShooterAngle())
       )
     );
 
     commandOperatorController.povUp().onTrue(
-      Commands.runOnce(() -> adjustmentCamera.incrementOffset(0.5))
+      Commands.runOnce(() -> superSystem.incrementOffset(0.5))
     );
     commandOperatorController.povDown().onTrue(
-      Commands.runOnce(() -> adjustmentCamera.incrementOffset(-0.5))
+      Commands.runOnce(() -> superSystem.incrementOffset(-0.5))
     );
     commandOperatorController.povRight().onTrue(
-      Commands.runOnce(() -> adjustmentCamera.resetOffset())
+      Commands.runOnce(() -> superSystem.resetOffset())
     );
     commandDriverController.touchpad().whileTrue(superSystem.shoot())
                                       .whileFalse(superSystem.stow());
@@ -327,7 +322,7 @@ public class RobotContainer {
                                         .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
     commandOperatorController.circle().whileTrue(superSystem.stow()); // TODO: Change this binding
     commandOperatorController.share().whileTrue(superSystem.intakeDirectShoot());
-    commandOperatorController.options().whileTrue(superSystem.prepareShooterVision(adjustmentCamera)) //
+    commandOperatorController.options().whileTrue(superSystem.prepareShooterVision()) //
                                   .whileFalse(superSystem.stow()); // TODO: Safety *Do nothing if April Tag is not seen*
   }
 
@@ -361,17 +356,18 @@ public class RobotContainer {
     Trigger tagTrigger = new Trigger(
       () -> {
         return superSystem.noteIntook() 
-            && apriltagCamera.hasValidTarget(); 
+            //&& apriltagCamera.hasValidTarget()
+            ; 
       }
     );
 
     // AprilTag Trigger
     Trigger aimTrigger = new Trigger(() -> {
-      double desiredAngle = apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);// TODO, update?
+      double desiredAngle = swerveDrive.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);// TODO, update?
       SmartDashboard.putNumber("Desired Angle", desiredAngle);
-      double angleToleranceScale = apriltagCamera.getTurnToAngleToleranceScale(desiredAngle);
+      double angleToleranceScale = swerveDrive.getTurnToAngleToleranceScale(desiredAngle);
       SmartDashboard.putNumber("Angle Tolerance Scale", angleToleranceScale);
-      double angleTolerance = angleToleranceScale * apriltagCamera.getTurnToAngleTolerance(adjustmentCamera.getDistanceFromTag(true));
+      double angleTolerance = angleToleranceScale * swerveDrive.getTurnToAngleTolerance(swerveDrive.getDistanceFromTag(true));
       SmartDashboard.putNumber("Angle Tolerance", angleTolerance);
       double angleDifference = Math.abs(swerveDrive.getImu().getHeading() - desiredAngle);
       angleDifference = NerdyMath.posMod(angleDifference, 360);
@@ -614,24 +610,24 @@ public class RobotContainer {
     }
 
     if (paths.contains("5PieceMid")){
-      autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5PieceMid", superSystem, adjustmentCamera));
+      autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5PieceMid", superSystem));
     }
 
     if (paths.contains("5PieceMidSecond")){
-      autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem, adjustmentCamera));
+      autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem));
     }
 
-    autoChooser.addOption("DriveToNoteTest", new DriveToNoteTest(swerveDrive, superSystem, noteCamera, 15, 10, 50, PathPlannerPath.fromPathFile("DriveForwards"), PathPlannerPath.fromPathFile("DriveBackwards"), apriltagCamera, adjustmentCamera));
+    autoChooser.addOption("DriveToNoteTest", new DriveToNoteTest(swerveDrive, superSystem, noteCamera, 15, 10, 50, PathPlannerPath.fromPathFile("DriveForwards"), PathPlannerPath.fromPathFile("DriveBackwards")));
 
-    autoChooser.setDefaultOption("Five Piece", new FivePieceAuto(swerveDrive, superSystem, pathGroupFivePiece, apriltagCamera, adjustmentCamera, noteCamera));
-    autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, apriltagCamera, adjustmentCamera, noteCamera));
-    autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, List.of(a02,b2p6), apriltagCamera, adjustmentCamera, 0));
+    autoChooser.setDefaultOption("Five Piece", new FivePieceAuto(swerveDrive, superSystem, pathGroupFivePiece, noteCamera));
+    autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, noteCamera));
+    autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, List.of(a02,b2p6), 0));
     //autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, List.of(b23), apriltagCamera, adjustmentCamera, 0));
     autoChooser.addOption("PathC", new PathC(swerveDrive, superSystem, List.of(c26,d26)));
     //autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 15, 10, 50, pathGroupTestD));
-    autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, e6Y, apriltagCamera, adjustmentCamera));
+    autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, e6Y));
     //autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, List.of(f04), apriltagCamera, noteCamera, adjustmentCamera));
-    autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, apriltagCamera, adjustmentCamera, noteCamera));
+    autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, noteCamera));
     autoChooser.addOption("Path C Testing", new PathC(swerveDrive, superSystem, pathGroupTestC));
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
@@ -641,10 +637,8 @@ public class RobotContainer {
   public void initShuffleboard() {
     imu.initShuffleboard(loggingLevel);
     swerveDrive.initShuffleboard(loggingLevel);
-    swerveDrive.initModuleShuffleboard(loggingLevel);
-    apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+    swerveDrive.initModuleShuffleboard(loggingLevel);    
     noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
-    adjustmentCamera.initShuffleboard(LOG_LEVEL.ALL);
 
     shooterRoller.initShuffleboard(loggingLevel);
     shooterPivot.initShuffleboard(loggingLevel);
@@ -656,7 +650,7 @@ public class RobotContainer {
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
     tab.addNumber("Voltage", () -> Math.abs(pdp.getVoltage()));
-    tab.addNumber("apriltag angle", () -> apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7));// TODO, update?
+    tab.addNumber("apriltag angle", () -> swerveDrive.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7));// TODO, update?
   }
   
   /**

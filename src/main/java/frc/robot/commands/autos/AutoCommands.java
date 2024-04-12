@@ -13,12 +13,10 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.vision.DriverAssist;
-import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class AutoCommands extends SequentialCommandGroup{
 
-    public void PathA(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva, String pathName, int pathIndex){
+    public void PathA(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, String pathName, int pathIndex){
         // Pose2d startingPose = new Pose2d(1.33, 5.55, new Rotation2d());//pathGroup.get(0).();
         Pose2d startingPose = PathPlannerPath.fromPathFile(pathName).getStartingDifferentialPose();
         addCommands(
@@ -57,8 +55,8 @@ public class AutoCommands extends SequentialCommandGroup{
                     Commands.deadline(
                         Commands.waitSeconds(0.4),
                         Commands.either(
-                            driverAssist.turnToTag(4, swerve),
-                            driverAssist.turnToTag(7, swerve),
+                            swerve.turnToTag(4),
+                            swerve.turnToTag(7),
                             RobotContainer::IsRedSide 
                           )
                     ),
@@ -69,7 +67,7 @@ public class AutoCommands extends SequentialCommandGroup{
                         Commands.deadline(
                             Commands.waitSeconds(1.2),
                             // Adjust shooter Angle
-                            superSystem.shootSequenceAdjustable(sva)
+                            superSystem.shootSequenceAdjustable()
                         ),
                         superSystem.indexer.stopCommand(),
                         superSystem.shooterRoller.setVelocityCommand(-10, -10),
@@ -81,7 +79,7 @@ public class AutoCommands extends SequentialCommandGroup{
         );
     }
 
-    public void PathB(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva, String pathName, int pathIndex) {
+    public void PathB(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, String pathName, int pathIndex) {
         // Pose2d startingPose = pathGroup.get(0).getPreviewStartingHolonomicPose();
         Pose2d startingPose = PathPlannerPath.fromPathFile(pathName).getStartingDifferentialPose();
         addCommands(
@@ -107,8 +105,8 @@ public class AutoCommands extends SequentialCommandGroup{
                     Commands.waitSeconds(0.4),
                     // adjust drive to april tag
                     Commands.either(
-                        driverAssist.turnToTag(4, swerve),
-                        driverAssist.turnToTag(7, swerve),
+                        swerve.turnToTag(4),
+                        swerve.turnToTag(7),
                         RobotContainer::IsRedSide 
                     )
                 ),
@@ -117,7 +115,7 @@ public class AutoCommands extends SequentialCommandGroup{
                 Commands.deadline(
                     Commands.waitSeconds(1.4),
                     // adjust shooter angle
-                    superSystem.shootSequenceAdjustable(sva)
+                    superSystem.shootSequenceAdjustable()
                 ),
                 superSystem.indexer.stopCommand(),
                 superSystem.shooterRoller.setVelocityCommand(-10, -10),

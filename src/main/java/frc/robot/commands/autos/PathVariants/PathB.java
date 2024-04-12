@@ -12,11 +12,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.vision.DriverAssist;
-import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class PathB extends SequentialCommandGroup{
-    public PathB(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva, int index) {
+    public PathB(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, int index) {
         // Pose2d startingPose = pathGroup.get(0).getPreviewStartingHolonomicPose();
         // Pose2d startingPose = new Pose2d(2.45, 5.55, new Rotation2d());//pathGroup.get(0).();
         addCommands(
@@ -47,8 +45,8 @@ public class PathB extends SequentialCommandGroup{
                             Commands.deadline(
                                 Commands.waitSeconds(1),
                                 Commands.either(
-                                    driverAssist.turnToTag(4, swerve, 2),
-                                    driverAssist.turnToTag(7, swerve, 2),
+                                    swerve.turnToTag(4, 2),
+                                    swerve.turnToTag(7, 2),
                                     RobotContainer::IsRedSide 
                                 )
                             ),
@@ -58,7 +56,7 @@ public class PathB extends SequentialCommandGroup{
                         // Shoot
                         Commands.sequence(
                             superSystem.backupIndexerAndShooter(),
-                            superSystem.prepareShooterVision(sva)
+                            superSystem.prepareShooterVision()
                         )
                     )
                 )

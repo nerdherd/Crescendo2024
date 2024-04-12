@@ -10,11 +10,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.vision.Limelight.LightMode;
+//import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.util.NerdyMath;
 
 public class NoteAssistance implements Reportable{
-    private Limelight limelight;
+    //private Limelight limelight;
     private String name;
 
     private PIDController areaController;
@@ -42,14 +42,44 @@ public class NoteAssistance implements Reportable{
         rotationController = new PIDController(0.08, 0, 0.006); // d = 0.008
 
         try { // TODO , we don't need to try-catch
-            limelight = new Limelight(name);
-            tab.add(name + " inited", true);
-            limelight.setPipeline(VisionConstants.kNotePipeline);
+            //limelight = new Limelight(name);
+            //tab.add(name + " inited", true);
+            setPipeline(VisionConstants.kNotePipeline);
 
         } catch (Exception e) {
-            limelight = null;
+            //limelight = null;
             tab.add(name + " inited", false);
         }
+    }
+
+    private void setPipeline(int a)
+    {
+
+    }
+    private void setLight(boolean on)
+    {
+
+    }
+    private void resetLists()
+    {
+
+    }
+    public boolean hasTarget() { return hasValidTarget(); }
+    private boolean hasValidTarget()
+    {
+        return false;
+    }
+    private double getArea_avg()
+    {
+        return 0;
+    }
+    private double getXAngle_avg()
+    {
+        return 0;
+    }
+    private double getYAngle_avg()
+    {
+        return 0;
     }
 
     private void pidTuning_test() {
@@ -66,27 +96,27 @@ public class NoteAssistance implements Reportable{
 
     int dataSampleCount = 0;
     public void reset() {
-        limelight.resetLists();
+        resetLists();
         dataSampleCount = 0;
     }
 
     private void speedToNote(double targetArea, double targetTX, double targetTY) {
-        if(limelight == null) return; // todo, never happens
+        //if(limelight == null) return; // todo, never happens
         
-        boolean hasTarget = limelight.hasValidTarget();
+        boolean hasTarget = hasValidTarget();
         if(targetFound != null)
             targetFound.setBoolean(hasTarget);
         if(hasTarget) 
         {
-            double area = limelight.getArea_avg();
+            double area = getArea_avg();
             if(currentArea != null)
                 currentArea.setDouble(area);
                 
-            double tx = limelight.getXAngle_avg();
+            double tx = getXAngle_avg();
             if(currentTX != null)
                 currentTX.setDouble(tx);
                 
-            double ty = limelight.getYAngle_avg();
+            double ty = getYAngle_avg();
             if(currentTY != null)
                 currentTY.setDouble(ty);
 
@@ -274,7 +304,7 @@ public class NoteAssistance implements Reportable{
             return;
         }
 
-        boolean hasTarget = limelight.hasValidTarget();
+        boolean hasTarget = hasValidTarget();
         if(targetFound != null)
             targetFound.setBoolean(hasTarget);
 
@@ -284,9 +314,9 @@ public class NoteAssistance implements Reportable{
             return;
         }
 
-        double currentTA = limelight.getArea_avg();
-        double currentTX = limelight.getXAngle_avg();
-        double currentTY = limelight.getYAngle_avg();
+        double currentTA = getArea_avg();
+        double currentTX = getXAngle_avg();
+        double currentTY = getYAngle_avg();
 
         if(NerdyMath.inRange(currentTA, targetTA - 0.2, targetTA * 1.1)) 
             speeds[0] = 0;
@@ -320,7 +350,7 @@ public class NoteAssistance implements Reportable{
             return;
         }
         
-        boolean hasTarget = limelight.hasValidTarget();
+        boolean hasTarget = hasValidTarget();
         if(targetFound != null)
             targetFound.setBoolean(hasTarget);
 
@@ -329,7 +359,7 @@ public class NoteAssistance implements Reportable{
             return;
         }
 
-        double currentTX = limelight.getXAngle_avg();
+        double currentTX = getXAngle_avg();
         
         if(NerdyMath.inRange(currentTX, targetTX - 0.1, targetTX + 0.1)) {
             speeds[2] = 0;
@@ -368,13 +398,6 @@ public class NoteAssistance implements Reportable{
     private double getForwardSpeed() { return speeds[0]; }
     private double getSidewaysSpeed() { return speeds[1]; }
     public double getRotationSpeed() { return speeds[2]; }
-
-    public boolean hasTarget() { return limelight.hasValidTarget(); }
-
-    public void setLight(boolean lightModeOn) {
-        if(lightModeOn) limelight.setLightState(LightMode.ON);
-        else limelight.setLightState(LightMode.OFF);
-    }
 
     @Override
     public void reportToSmartDashboard(LOG_LEVEL priority) {

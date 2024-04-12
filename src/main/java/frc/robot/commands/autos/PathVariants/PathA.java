@@ -18,12 +18,10 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.NoteAssistance;
-import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class PathA extends SequentialCommandGroup{
-    public PathA(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva, int index){
+    public PathA(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, int index){
         // Pose2d startingPose = path.getPreviewStartingHolonomicPose();
         Pose2d startingPose = new Pose2d(1.33, 5.55, new Rotation2d());//pathGroup.get(0).();
         //Pose2d endingPose = new Pose2d(4.5, 5.55, new Rotation2d());

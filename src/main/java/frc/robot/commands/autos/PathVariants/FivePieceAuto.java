@@ -14,15 +14,13 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.NoteAssistance;
-import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class FivePieceAuto extends SequentialCommandGroup{
-    public FivePieceAuto(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, ShooterVisionAdjustment sva, NoteAssistance na) {
+    public FivePieceAuto(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, NoteAssistance na) {
         Pose2d startingPose = new Pose2d(1.33, 5.55, new Rotation2d());//pathGroup.get(0).();
         addCommands(
-            Commands.runOnce(() -> na.setLight(false)),
+            //Commands.runOnce(() -> na.setLight(false)),
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
             Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
 
@@ -65,8 +63,8 @@ public class FivePieceAuto extends SequentialCommandGroup{
                                 Commands.deadline(
                                     Commands.waitSeconds(1),
                                     Commands.either(
-                                        driverAssist.turnToTag(4, swerve, 2),
-                                        driverAssist.turnToTag(7, swerve, 2),
+                                        swerve.turnToTag(4, 2),
+                                        swerve.turnToTag(7, 2),
                                         RobotContainer::IsRedSide 
                                     )
                                 ),
@@ -76,7 +74,7 @@ public class FivePieceAuto extends SequentialCommandGroup{
                             // Shoot
                             Commands.sequence(
                                 superSystem.backupIndexerAndShooter(),
-                                superSystem.prepareShooterVision(sva)
+                                superSystem.prepareShooterVision()
                             )
                         )
                     )
@@ -109,8 +107,8 @@ public class FivePieceAuto extends SequentialCommandGroup{
                             Commands.deadline(
                                 Commands.waitSeconds(1),
                                 Commands.either(
-                                    driverAssist.turnToTag(4, swerve, 2),
-                                    driverAssist.turnToTag(7, swerve, 2),
+                                    swerve.turnToTag(4, 2),
+                                    swerve.turnToTag(7, 2),
                                     RobotContainer::IsRedSide 
                                 )
                             ),
@@ -120,7 +118,7 @@ public class FivePieceAuto extends SequentialCommandGroup{
                         // Shoot
                         Commands.sequence(
                             superSystem.backupIndexerAndShooter(),
-                            superSystem.prepareShooterVision(sva)
+                            superSystem.prepareShooterVision()
                         )
                     )
                 )
@@ -148,8 +146,8 @@ public class FivePieceAuto extends SequentialCommandGroup{
                             Commands.deadline(
                                 Commands.waitSeconds(1),
                                 Commands.either(
-                                    driverAssist.turnToTag(4, swerve, 2),
-                                    driverAssist.turnToTag(7, swerve, 2),
+                                    swerve.turnToTag(4, 2),
+                                    swerve.turnToTag(7, 2),
                                     RobotContainer::IsRedSide 
                                 )
                             ),
@@ -159,7 +157,7 @@ public class FivePieceAuto extends SequentialCommandGroup{
                         // Shoot
                         Commands.sequence(
                             superSystem.backupIndexerAndShooter(),
-                            superSystem.prepareShooterVision(sva)
+                            superSystem.prepareShooterVision()
                         )
                     )
                 )
@@ -216,8 +214,8 @@ public class FivePieceAuto extends SequentialCommandGroup{
                             Commands.deadline(
                                 Commands.waitSeconds(2),
                                 Commands.either(
-                                    driverAssist.turnToTag(4, swerve, 1),
-                                    driverAssist.turnToTag(7, swerve, 1),
+                                    swerve.turnToTag(4, 1),
+                                    swerve.turnToTag(7, 1),
                                     RobotContainer::IsRedSide 
                                 )
                             ),
@@ -227,7 +225,7 @@ public class FivePieceAuto extends SequentialCommandGroup{
                         // Shoot
                         Commands.sequence(
                             superSystem.backupIndexerAndShooter(),
-                            superSystem.prepareShooterVision(sva)
+                            superSystem.prepareShooterVision()
                         )
                     )
                 )

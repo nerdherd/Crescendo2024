@@ -24,8 +24,6 @@ import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
 import frc.robot.subsystems.imu.Gyro;
-import frc.robot.subsystems.vision.DriverAssist;
-import frc.robot.subsystems.vision.Limelight;
 import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers;
 import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers.PoseEstimate;
 import frc.robot.util.NerdyMath;
@@ -52,15 +50,11 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     // private final SwerveDriveOdometry odometer;
     private boolean isTest = false;
     private final SwerveDrivePoseEstimator poseEstimator;
-    private final DriverAssist vision; 
     private DRIVE_MODE driveMode = DRIVE_MODE.FIELD_ORIENTED;
     private int counter = 0;
     private int visionFrequency = 1;
     
-
     private Field2d field;
-
-    Limelight limelight;
 
     public enum DRIVE_MODE {
         FIELD_ORIENTED,
@@ -71,7 +65,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     /**
      * Construct a new {@link SwerveDrivetrain}
      */
-    public SwerveDrivetrain(Gyro gyro, DriverAssist vision) throws IllegalArgumentException {
+    public SwerveDrivetrain(Gyro gyro) throws IllegalArgumentException {
         frontLeft = new SwerveModule(
             kFLDriveID,
             kFLTurningID,
@@ -113,8 +107,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         this.poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d(),
           VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // TODO: Set pose estimator weights
           VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); 
-
-        this.vision = vision;
         
         field = new Field2d();
         field.setRobotPose(poseEstimator.getEstimatedPosition());
@@ -139,7 +131,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             }, 
             this);
 
-            this.limelight = vision.getLimelight();
             enableVisionPE = true;
     }
 
@@ -213,28 +204,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         if (!isTest) {
             runModules();
         }
-        if (limelight.hasValidTarget()) {
-            //updatePoseEstimatorWithVisionBotPose();
-            // if (counter < 50) {
-            //     limelight.updateAvgPose();
-
-            // }
-            // else {
-            //     counter = 0;
-            //     Pose3d pose = limelight.getBotPose3D();
-            //     if (pose != null && NerdyMath.validatePose(pose)) {
-            //         limelight.filterPoseX.reset(pose.getX());
-            //         limelight.filterPoseY.reset(pose.getY());
-            //         limelight.filterPoseZ.reset(pose.getZ());
-            //     } else {
-            //         SmartDashboard.putBoolean("Invalid pose", true);
-            //     }
-            // }
-        }
-        else {
-            SmartDashboard.putBoolean("Invalid pose", true);
-            counter += 1;
-        }
+        
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
 
         if (enableVisionPE)
@@ -276,47 +246,32 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             .getDistance(visionPoseEstimate.pose.getTranslation());
     
         if (visionPoseEstimate.tagCount > 0) {
-          double xyStds;
-          double degStds;
-          // multiple targets detected
-          if (visionPoseEstimate.tagCount >= 2) {
-            xyStds = 0.5;
-            degStds = 6;
-          }
-          // 1 target with large area and close to estimated pose
-          else if (visionPoseEstimate.avgTagArea > 0.8 && poseDifference < 0.5) {
-            xyStds = 1.0;
-            degStds = 12;
-          }
-          // 1 target farther away and estimated pose is close
-          else if (visionPoseEstimate.avgTagArea > 0.1 && poseDifference < 0.3) {
-            xyStds = 2.0;
-            degStds = 30;
-          }
-          // conditions don't match to add a vision measurement
-          else {
-            return;
-          }
-    
-          poseEstimator.setVisionMeasurementStdDevs(
-              VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
-          poseEstimator.addVisionMeasurement(visionPoseEstimate.pose,
-              Timer.getFPGATimestamp() - visionPoseEstimate.latency);
-        }
-      }
-
-    public void resetInitPoseByVision()
-    {
-        if(vision != null && vision.getAprilTagID() != -1)
-        {
-            // 7 is blue side, 4 is red side, center of speaker
-            if(!initPoseByVisionDone && (vision.getAprilTagID() == 7 || vision.getAprilTagID() == 4))
-            {
-                initPoseByVisionDone = true;
-                Pose3d p = vision.getCurrentPose3DVision();
-                resetOdometry(p.toPose2d());
-                gyro.setOffset(p.getRotation().getZ());
+            double xyStds;
+            double degStds;
+            // multiple targets detected
+            if (visionPoseEstimate.tagCount >= 2) {
+                xyStds = 0.5;
+                degStds = 6;
             }
+            // 1 target with large area and close to estimated pose
+            else if (visionPoseEstimate.avgTagArea > 0.8 && poseDifference < 0.5) {
+                xyStds = 1.0;
+                degStds = 12;
+            }
+            // 1 target farther away and estimated pose is close
+            else if (visionPoseEstimate.avgTagArea > 0.1 && poseDifference < 0.3) {
+                xyStds = 2.0;
+                degStds = 30;
+            }
+            // conditions don't match to add a vision measurement
+            else {
+                return;
+            }
+        
+            poseEstimator.setVisionMeasurementStdDevs(
+                VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
+            poseEstimator.addVisionMeasurement(visionPoseEstimate.pose,
+                Timer.getFPGATimestamp() - visionPoseEstimate.latency);
         }
     }
 
@@ -388,6 +343,49 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         return poseEstimator.getEstimatedPosition();
     }
 
+    public double getTagDistance2D(int tagID)
+    {
+        return 0;
+    }
+
+    public double getTagDistance3D(int tagID)
+    {
+        return 0;
+    }
+
+    public double getDistanceFromTag(boolean a)
+    {
+        return 0;
+    }
+    public double getTurnToAngleTolerance (double distance)
+    {
+        return 0;
+    }
+
+    public double getTurnToSpecificTagAngle(int tagID)
+    {
+        // the angle
+        return 0;
+    }
+
+    public double getTurnToAngleToleranceScale(double desiredAngle)
+    {
+        return 0;
+    }
+
+    public Command driveToAmpCommand( double a, double b)
+    {
+        return Commands.none();
+    }
+
+    public Command turnToTag(int tagID)
+    {
+        return Commands.none();
+    }
+    public Command turnToTag(int tagID, int a)
+    {
+        return Commands.none();
+    }
     /**
      * Get the position of each swerve module
      * @return An array of swerve module positions

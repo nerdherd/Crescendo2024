@@ -15,8 +15,10 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.CANdleSubSystem.AnimationTypes;
 import frc.robot.subsystems.CANdleSubSystem.Status;
+import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers;
 
 public class Robot extends TimedRobot {
   private Command autoCommand;
@@ -37,7 +39,6 @@ public class Robot extends TimedRobot {
     DataLogManager.logNetworkTables(true);
     enableLiveWindowInTest(false);
     robotContainer.swerveDrive.refreshModulePID();
-    robotContainer.apriltagCamera.toggleLight(true);
     robotContainer.configureLEDTriggers();
     robotContainer.shooterPivot.syncAbsoluteEncoderToPigeon();
     DataLog log = DataLogManager.getLog();
@@ -56,7 +57,6 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
     robotContainer.swerveDrive.setBreak(true);
     robotContainer.CANdle.setStatus(Status.DISABLED);
-    robotContainer.apriltagCamera.toggleLight(true);
   }
 
   @Override
@@ -70,6 +70,9 @@ public class Robot extends TimedRobot {
     robotContainer.swerveDrive.setVelocityControl(true);
     robotContainer.imu.zeroHeading();
     robotContainer.imu.zeroAll();
+    
+    LimelightHelpers.setLEDMode_ForceOff(VisionConstants.kLimelightBackName);
+    LimelightHelpers.setLEDMode_ForceOff(VisionConstants.kLimelightFrontName);
     
 
     // ShooterConstants.kPivotDeadband.loadPreferences();
@@ -108,7 +111,9 @@ public class Robot extends TimedRobot {
     robotContainer.swerveDrive.towModules();
     robotContainer.swerveDrive.setBreak(false);
     robotContainer.swerveDrive.setChassisSpeeds(new ChassisSpeeds());
-    robotContainer.apriltagCamera.toggleLight(false);
+    //robotContainer.apriltagCamera.toggleLight(false);
+    LimelightHelpers.setLEDMode_ForceOff(VisionConstants.kLimelightBackName);
+    LimelightHelpers.setLEDMode_ForceOff(VisionConstants.kLimelightFrontName);
     robotContainer.swerveDrive.setVelocityControl(true);
     SmartDashboard.putString("Phase", "Teleop");
     // robotContainer.swerveDrive.refreshModulePID();

@@ -16,12 +16,10 @@ import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.vision.DriverAssist;
 import frc.robot.subsystems.vision.NoteAssistance;
-import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 public class PathF extends SequentialCommandGroup {
-    public PathF(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, DriverAssist driverAssist, NoteAssistance na, ShooterVisionAdjustment sva) {
+    public PathF(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, NoteAssistance na) {
         Pose2d startingPose = new Pose2d(0.70, 4.37, Rotation2d.fromDegrees(-60));//pathGroup.get(0).();
         addCommands(
             Commands.parallel(

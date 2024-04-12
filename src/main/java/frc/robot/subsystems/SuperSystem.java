@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.subsystems.vision.DriverAssist;
-import frc.robot.subsystems.vision.ShooterVisionAdjustment;
+//import frc.robot.subsystems.vision.DriverAssist;
+//import frc.robot.subsystems.vision.ShooterVisionAdjustment;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,6 +43,24 @@ public class SuperSystem {
     public boolean noteIntook() {
         // return colorSensor.noteIntook() || bannerSensor.noteIntook();
         return bannerSensor.noteIntook();
+    }
+
+    public double getShooterAngle()
+    {
+        return 0;
+    }
+    public void incrementOffset(double a)
+    {
+
+    }
+    public void resetOffset()
+    {
+
+    }
+
+    public double getShooterAngle(boolean a)
+    {
+        return 0;
     }
 
     public Command getReadyForAmp() {
@@ -451,12 +469,12 @@ public class SuperSystem {
         return command;
     }
 
-    public Command prepareShooterVision(ShooterVisionAdjustment sva) {
+    public Command prepareShooterVision() {
         Command command = Commands.sequence(
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
             Commands.repeatingSequence(
-                Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle(true))),
+                Commands.runOnce(() -> shooterPivot.setPosition(getShooterAngle(true))),
                 Commands.waitSeconds(0.02)
             )
         );
@@ -624,12 +642,12 @@ public class SuperSystem {
         return command;
     }
 
-    public Command shootSequenceAdjustable(ShooterVisionAdjustment sva) {
+    public Command shootSequenceAdjustable() {
         Command command = 
-            Commands.either(
-                Commands.sequence(
+            // Commands.either(
+            Commands.sequence(
                 // Prepare to shoot
-                Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
+                Commands.runOnce(() -> shooterPivot.setPosition(getShooterAngle())),
                 shooterRoller.setEnabledCommand(true),
                 shooterRoller.shootSpeaker(),
                 Commands.race(
@@ -638,30 +656,31 @@ public class SuperSystem {
                         Commands.waitSeconds(0.2)
                     ),
                     Commands.waitSeconds(0.8)
-                ),
+                )
+                // ,
                 
-                // Shoot
-                indexer.setEnabledCommand(true),
-                indexer.indexCommand(),
-                Commands.waitUntil(() -> false)
-                ).finallyDo(interrupted -> {
-                    indexer.stop();
-                    shooterRoller.stop();
-                }),
-                Commands.none(),
-                sva::hasValidTarget
+                // // Shoot
+                // indexer.setEnabledCommand(true),
+                // indexer.indexCommand(),
+                // Commands.waitUntil(() -> false)
+                // ).finallyDo(interrupted -> {
+                //     indexer.stop();
+                //     shooterRoller.stop();
+                // }),
+                // Commands.none(),
+                // sva::hasValidTarget
             );
 
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
         return command;
     }
 
-    public Command shootSequenceAdjustableAuto(ShooterVisionAdjustment sva) {
+    public Command shootSequenceAdjustableAuto() {
         Command command = 
-            Commands.either(
-                Commands.sequence(
+            //Commands.either(
+            Commands.sequence(
                     // Prepare to shoot
-                    Commands.runOnce(() -> shooterPivot.setPosition(sva.getShooterAngle())),
+                    Commands.runOnce(() -> shooterPivot.setPosition(getShooterAngle())),
                     shooterRoller.setEnabledCommand(true),
                     shooterRoller.shootSpeaker(),
                     Commands.race(
@@ -670,32 +689,33 @@ public class SuperSystem {
                             Commands.waitSeconds(0.2)
                         ),
                         Commands.waitSeconds(0.4)
-                    ),
+                    )
+                //     ,
                     
-                    // Shoot
-                    indexer.setEnabledCommand(true),
-                    indexer.indexCommand(),
-                    Commands.waitUntil(() -> false)
-                ).finallyDo(interrupted -> {
-                    indexer.stop();
-                    shooterRoller.stop();
-                }),
-                Commands.none(),
-                sva::hasValidTarget
+                //     // Shoot
+                //     indexer.setEnabledCommand(true),
+                //     indexer.indexCommand(),
+                //     Commands.waitUntil(() -> false)
+                // ).finallyDo(interrupted -> {
+                //     indexer.stop();
+                //     shooterRoller.stop();
+                // }),
+                // Commands.none(),
+                // sva::hasValidTarget
             );
 
         command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
         return command;
     }
 
-    public Command turnAndShootWithVision(frc.robot.subsystems.swerve.SwerveDrivetrain swerve, ShooterVisionAdjustment sva, DriverAssist da) {
+    public Command turnAndShootWithVision(frc.robot.subsystems.swerve.SwerveDrivetrain swerve) {
         return Commands.sequence(
             Commands.race(
-                da.turnToTag(RobotContainer.IsRedSide() ? 4 : 7, null),
+                swerve.turnToTag(RobotContainer.IsRedSide() ? 4 : 7),
                 Commands.waitSeconds(2)
             ),
             Commands.runOnce(swerve::towModules),
-            shootSequenceAdjustable(sva)
+            shootSequenceAdjustable()
         );
     }
 
