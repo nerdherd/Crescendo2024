@@ -89,7 +89,7 @@ public class DriverAssist implements Reportable{
     }
 
     private double[] distances = new double[] {0, 1, 1.72, 2, 3, 3.5, 4, 5};
-    private double[] tolerances = new double[] {10, 9, 8, 7, 4, 3, 1, 1};
+    private double[] tolerances = new double[] {12, 11, 10, 9, 7, 5, 3, 1};
     private NerdyLine toleranceSpline = new NerdyLine(distances, tolerances);
 
     public double getTurnToAngleTolerance(double distance) {

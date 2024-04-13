@@ -198,12 +198,16 @@ public class RobotContainer {
             || driverController.getL2Button() 
             || driverController.getCircleButton()
             || driverController.getTriangleButton()
+            || (
+              driverController.getTouchpad() && shooterRoller.getTargetVelocity() == 0
+            )
             // || driverController.getPSButton()
           ); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          if (driverController.getTriangleButton()) {
+          if ((driverController.getTouchpad() && shooterRoller.getTargetVelocity() == 0)
+           || driverController.getTriangleButton()) {
             if (!IsRedSide()) {
               return 315.0;
             } else {
@@ -285,7 +289,12 @@ public class RobotContainer {
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.cross().whileTrue(apriltagCamera.driveToAmpCommand(swerveDrive, 3, 3));
-    commandDriverController.square().whileTrue(noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 10, 200, null).until(superSystem::noteIntook));
+    commandDriverController.square().whileTrue(
+      Commands.parallel(
+        noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 10, 200, null),
+        superSystem.intakeUntilSensed().andThen(superSystem.stow())
+      )
+    ).whileFalse(superSystem.stow());
     // commandDriverController.square().onTrue(apriltagCamera.TurnToTagCommand4Auto(swerveDrive, 5, 50));
     //commandDriverController.square().onTrue(apriltagCamera.TurnToAngleByTagCommand4Auto(swerveDrive, 2, 15));
     commandOperatorController.povLeft().whileTrue(
@@ -305,6 +314,24 @@ public class RobotContainer {
     );
     commandDriverController.touchpad().whileTrue(superSystem.shoot())
                                       .whileFalse(superSystem.stow());
+    
+    commandDriverController.L2().whileTrue(Commands.sequence(
+      Commands.waitUntil(tagTrigger),
+      Commands.race(
+        superSystem.prepareShooterVision(adjustmentCamera),
+        Commands.sequence(
+          Commands.waitSeconds(.1),
+          Commands.race(
+           Commands.waitUntil(() -> aimTrigger.getAsBoolean() && armTrigger.getAsBoolean()),
+           Commands.waitSeconds(1)
+          ),
+          superSystem.indexer.setEnabledCommand(true),
+          superSystem.indexer.indexCommand(),
+          Commands.waitUntil(() -> !superSystem.noteIntook())
+        )
+      ),
+      superSystem.stow()
+    )).whileFalse(superSystem.stow());
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
@@ -333,6 +360,39 @@ public class RobotContainer {
 
   public void configureBindings_test() {}
 
+  Trigger armTrigger = new Trigger(
+    () -> superSystem.shooterPivot.atTargetPositionAccurate() 
+        && superSystem.shooterPivot.getTargetPositionDegrees() > ShooterConstants.kFullStowPosition.get()
+        && superSystem.shooterRoller.getVelocity() > (superSystem.shooterRoller.getTargetVelocity() * 0.6) 
+        && superSystem.shooterRoller.getTargetVelocity() > 0
+    );
+
+  Trigger tagTrigger = new Trigger(
+    () -> {
+      return superSystem.noteIntook() 
+          && apriltagCamera.hasValidTarget(); 
+    }
+  );
+
+  // AprilTag Trigger
+  Trigger aimTrigger = new Trigger(() -> {
+    double desiredAngle = apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);// TODO, update?
+    SmartDashboard.putNumber("Desired Angle", desiredAngle);
+    double angleToleranceScale = apriltagCamera.getTurnToAngleToleranceScale(desiredAngle);
+    SmartDashboard.putNumber("Angle Tolerance Scale", angleToleranceScale);
+    double angleTolerance = angleToleranceScale * apriltagCamera.getTurnToAngleTolerance(adjustmentCamera.getDistanceFromTag(true));
+    SmartDashboard.putNumber("Angle Tolerance", angleTolerance);
+    double angleDifference = Math.abs(swerveDrive.getImu().getHeading() - desiredAngle);
+    angleDifference = NerdyMath.posMod(angleDifference, 360);
+    SmartDashboard.putNumber("Angle Difference", angleDifference);
+    if (angleDifference > 360 - angleTolerance && angleDifference < 360 + angleTolerance) {
+      return true;
+    } else if (angleDifference > -angleTolerance && angleDifference < angleTolerance) {
+      return true;
+    }
+    return false;
+    // return apriltagCamera.apriltagInRange(IsRedSide() ? 4 : 7, 0, 0);
+  });
 
 
 
@@ -350,40 +410,6 @@ public class RobotContainer {
         CANdle.setStatus(Status.TELEOP);
       }
     ));
-
-    Trigger armTrigger = new Trigger(
-      () -> superSystem.shooterPivot.atTargetPositionAccurate() 
-         && superSystem.shooterPivot.getTargetPositionDegrees() > ShooterConstants.kFullStowPosition.get()
-         && superSystem.shooterRoller.getVelocity() > (superSystem.shooterRoller.getTargetVelocity() * 0.6) 
-         && superSystem.shooterRoller.getTargetVelocity() > 0
-      );
-
-    Trigger tagTrigger = new Trigger(
-      () -> {
-        return superSystem.noteIntook() 
-            && apriltagCamera.hasValidTarget(); 
-      }
-    );
-
-    // AprilTag Trigger
-    Trigger aimTrigger = new Trigger(() -> {
-      double desiredAngle = apriltagCamera.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);// TODO, update?
-      SmartDashboard.putNumber("Desired Angle", desiredAngle);
-      double angleToleranceScale = apriltagCamera.getTurnToAngleToleranceScale(desiredAngle);
-      SmartDashboard.putNumber("Angle Tolerance Scale", angleToleranceScale);
-      double angleTolerance = angleToleranceScale * apriltagCamera.getTurnToAngleTolerance(adjustmentCamera.getDistanceFromTag(true));
-      SmartDashboard.putNumber("Angle Tolerance", angleTolerance);
-      double angleDifference = Math.abs(swerveDrive.getImu().getHeading() - desiredAngle);
-      angleDifference = NerdyMath.posMod(angleDifference, 360);
-      SmartDashboard.putNumber("Angle Difference", angleDifference);
-      if (angleDifference > 360 - angleTolerance && angleDifference < 360 + angleTolerance) {
-        return true;
-      } else if (angleDifference > -angleTolerance && angleDifference < angleTolerance) {
-        return true;
-      }
-      return false;
-      // return apriltagCamera.apriltagInRange(IsRedSide() ? 4 : 7, 0, 0);
-    });
 
     noteTrigger.and(tagTrigger.and(aimTrigger.negate()).and(armTrigger.negate())).onTrue(
       Commands.runOnce(
