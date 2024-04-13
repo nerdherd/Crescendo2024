@@ -287,6 +287,35 @@ public class SuperSystem {
         return command;
     }
 
+    public Command intakeUntilSensedNoBackup() {
+        Command command = Commands.sequence(
+            Commands.deadline(
+                Commands.waitUntil(() -> 
+                    shooterPivot.hasReachedPosition(ShooterConstants.kHandoffPosition.get())),
+                handoff(),
+                Commands.waitSeconds(1)
+            ),
+            shooterRoller.setVelocityCommand(-10, -10),
+            shooterRoller.setEnabledCommand(true),
+            intakeRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            intakeRoller.intakeCommand(),
+
+            Commands.waitUntil(this::noteIntook),
+            intakeRoller.stopCommand(),
+            indexer.stopCommand(),
+            shooterRoller.stopCommand()
+        ).finallyDo(() -> {
+            intakeRoller.stop();
+            indexer.stop();
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
+        return command;
+    }
+
     public Command intakeUntilSensedAuto(double timeout) {
         Command command = Commands.sequence(
             Commands.deadline(

@@ -284,8 +284,12 @@ public class RobotContainer {
 
     commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.cross().whileTrue(swerveDrive.driveToAmpCommand(3, 3));
-    commandDriverController.square().whileTrue(noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 10, 200, null).until(superSystem::noteIntook));
-    // commandDriverController.square().onTrue(apriltagCamera.TurnToTagCommand4Auto(swerveDrive, 5, 50));
+    commandDriverController.square().whileTrue(
+      Commands.parallel(
+        noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 10, 200, null),
+        superSystem.intakeUntilSensedNoBackup().andThen(superSystem.stow())
+      )
+    ).whileFalse(superSystem.backupIndexerAndShooter().andThen(superSystem.stow()));    // commandDriverController.square().onTrue(apriltagCamera.TurnToTagCommand4Auto(swerveDrive, 5, 50));
     //commandDriverController.square().onTrue(apriltagCamera.TurnToAngleByTagCommand4Auto(swerveDrive, 2, 15));
     commandOperatorController.povLeft().whileTrue(
       Commands.repeatingSequence(
@@ -312,7 +316,7 @@ public class RobotContainer {
           Commands.waitSeconds(.1),
           Commands.race(
            Commands.waitUntil(() -> aimTrigger.getAsBoolean() && armTrigger.getAsBoolean()),
-           Commands.waitSeconds(1)
+           Commands.waitSeconds(1.5)
           ),
           superSystem.indexer.setEnabledCommand(true),
           superSystem.indexer.indexCommand(),
@@ -644,7 +648,7 @@ public class RobotContainer {
     autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, List.of(e6Y)));
     //autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, List.of(f04), apriltagCamera, noteCamera, adjustmentCamera));
     // autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, noteCamera));
-    autoChooser.addOption("Path C Testing", new PathC(swerveDrive, superSystem, pathGroupTestC));
+    // autoChooser.addOption("Path C Testing", new PathC(swerveDrive, superSystem, pathGroupTestC));
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
     autosTab.add("Selected Auto", autoChooser);

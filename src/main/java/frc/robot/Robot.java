@@ -44,6 +44,8 @@ public class Robot extends TimedRobot {
     DataLog log = DataLogManager.getLog();
     armSensorCaliLog = new StringLogEntry(log, "arm_sensor_cali");
     armSensorCaliLog.append("GoodOrBad, RobotX, RobotY, RobotR, Distance, ArmAngle, TargetArmAngle, SwervePitch\n");
+    LimelightHelpers.setLEDMode_ForceOff(VisionConstants.kLimelightBackName);
+    LimelightHelpers.setLEDMode_ForceOff(VisionConstants.kLimelightFrontName);
   }
 
   @Override
