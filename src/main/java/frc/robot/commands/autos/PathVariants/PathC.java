@@ -52,102 +52,82 @@ public class PathC extends SequentialCommandGroup {
             Commands.sequence(
 
             Commands.parallel(
-                    // Drive to note 2
-                    Commands.race(
-                        AutoBuilder.followPath(pathGroup.get(0)),//a02
-                        Commands.sequence(
-                            // enable after the preload gone
-                            Commands.waitSeconds(1.25),
-                            Commands.deadline(
-                                Commands.waitSeconds(1),
-                                Commands.waitUntil(superSystem::noteIntook)
-                            )
-                        )
-                    ),
-
+                // Drive to note 2
+                Commands.race(
+                    AutoBuilder.followPath(pathGroup.get(0)),//a02
                     Commands.sequence(
-
-                        // Preload
+                        // enable after the preload gone
+                        Commands.waitSeconds(1.25),
                         Commands.deadline(
-                            Commands.waitUntil(() -> !superSystem.noteIntook()),
-                            Commands.parallel(
-                                superSystem.shootSubwooferAutoStart(),
-                                superSystem.intakeRoller.autoIntakeCommand()
-                            )
-                        ),
-                        
-                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
-                        superSystem.shooterRoller.setEnabledCommand(true),
-                        //superSystem.indexer.stopCommand(),
-                        Commands.waitSeconds(0.1),
-
-                        // pick up note 2
-                        // Commands.race(
-                        //     // Intake
-                        //     Commands.sequence(
-                        //         Commands.waitSeconds(0.125),
-                        //         superSystem.intakeUntilSensedAuto(2.875)
-                        //     ),
-                        //     Commands.waitUntil(superSystem::noteIntook)
-                        // ),
-
-                        Commands.deadline(
-                            Commands.waitUntil(superSystem::noteIntook),
-                            superSystem.intakeUntilSensedAuto(2.875)
-                        ),
-                        
-                        // Turn to angle and shoot
-                        Commands.waitSeconds(0.5),
-                        Commands.deadline(
-                            Commands.waitUntil(() -> !superSystem.noteIntook()),
-                            superSystem.shootSubwooferAutoStart2()
+                            Commands.waitSeconds(1),
+                            Commands.waitUntil(superSystem::noteIntook)
                         )
-                    )    
-                ),
-                
-                Commands.parallel(
-                    // Drive to note 6
-                    //Commands.race(
-                        AutoBuilder.followPath(pathGroup.get(1)),//b2p6
-                        // Commands.sequence(
-                        //     // enable after the preload gone
-                        //     Commands.waitSeconds(1.25),
-                        //     Commands.deadline(
-                        //         Commands.waitSeconds(1),
-                        //         Commands.waitUntil(superSystem::noteIntook)
-                        //     )
-                        // )
-                    //),
-
-                        // note 2
-                        Commands.deadline(
-                            Commands.waitUntil(() -> !superSystem.noteIntook()),
-                            superSystem.shootSubwooferAutoStart2()
-                        )
-                ),
-
-            // PATH CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-                Commands.parallel(
-                    AutoBuilder.followPath(pathGroup.get(2)),//c26
-                    Commands.sequence(
-                        superSystem.stow(),
-                        Commands.waitSeconds(1.5),
-                        superSystem.shooterPivot.moveToHandoff(),
-                        superSystem.shooterPivot.setEnabledCommand(true)
                     )
                 ),
-                
-                // this is for PathD
-                Commands.parallel(
-                    AutoBuilder.followPath(pathGroup.get(3)),//d26
+
+                Commands.sequence(
+                    // Preload
+                    Commands.deadline(
+                        Commands.waitUntil(() -> !superSystem.noteIntook()),
+                        Commands.parallel(
+                            superSystem.shootSubwooferAutoStart(),
+                            superSystem.intakeRoller.autoIntakeCommand()
+                        )
+                    ),
+                    
+                    // Stop note from popping out
+                    superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                    superSystem.shooterRoller.setEnabledCommand(true),
+                    Commands.waitSeconds(0.1),
+
                     Commands.deadline(
                         Commands.waitUntil(superSystem::noteIntook),
                         superSystem.intakeUntilSensedAuto(2.875)
-                    )
-                ),
+                    ),
+                    superSystem.backupIndexerAndShooter()
+                    
+                    // // shoot second piece
+                    // Commands.waitSeconds(0.25),
+                    // Commands.deadline(
+                    //     Commands.waitUntil(() -> !superSystem.noteIntook()),
+                    //     superSystem.shootSubwooferAutoStart2()
+                    // )
+                )    
+            ),
+            
+            // Shoot note 2 while moving back to C start position
+            Commands.parallel(
+                AutoBuilder.followPath(pathGroup.get(1)),//b2p6
 
-                // PATH EEEEEEEEE
+                // note 2
+                Commands.deadline(
+                    Commands.waitUntil(() -> !superSystem.noteIntook()),
+                    superSystem.shootSubwooferAutoStart2()
+                )
+            ),
+
+            // PATH CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+            Commands.parallel(
+                AutoBuilder.followPath(pathGroup.get(2)),//c26
                 Commands.sequence(
+                    superSystem.stow(),
+                    Commands.waitSeconds(1.5),
+                    superSystem.shooterPivot.moveToHandoff(),
+                    superSystem.shooterPivot.setEnabledCommand(true)
+                )
+            ),
+                
+            // this is for PathD
+            Commands.parallel(
+                AutoBuilder.followPath(pathGroup.get(3)),//d26
+                Commands.deadline(
+                    Commands.waitUntil(superSystem::noteIntook),
+                    superSystem.intakeUntilSensedAuto(2.875)
+                )
+            ),
+
+            // PATH EEEEEEEEE
+            Commands.sequence(
                 Commands.parallel(
                     AutoBuilder.followPath(pathGroup.get(4)), //e6Y
                     Commands.sequence(
