@@ -56,7 +56,7 @@ public class PathB extends SequentialCommandGroup{
                         // Shoot
                         Commands.sequence(
                             superSystem.backupIndexerAndShooter(),
-                            superSystem.prepareShooterVision()
+                            superSystem.prepareShooterVision(swerve)
                         )
                     )
                 )

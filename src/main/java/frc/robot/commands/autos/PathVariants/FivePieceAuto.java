@@ -74,7 +74,7 @@ public class FivePieceAuto extends SequentialCommandGroup{
                             // Shoot
                             Commands.sequence(
                                 superSystem.backupIndexerAndShooter(),
-                                superSystem.prepareShooterVision()
+                                superSystem.prepareShooterVision(swerve)
                             )
                         )
                     )
@@ -118,7 +118,7 @@ public class FivePieceAuto extends SequentialCommandGroup{
                         // Shoot
                         Commands.sequence(
                             superSystem.backupIndexerAndShooter(),
-                            superSystem.prepareShooterVision()
+                            superSystem.prepareShooterVision(swerve)
                         )
                     )
                 )
@@ -157,7 +157,7 @@ public class FivePieceAuto extends SequentialCommandGroup{
                         // Shoot
                         Commands.sequence(
                             superSystem.backupIndexerAndShooter(),
-                            superSystem.prepareShooterVision()
+                            superSystem.prepareShooterVision(swerve)
                         )
                     )
                 )
@@ -225,7 +225,7 @@ public class FivePieceAuto extends SequentialCommandGroup{
                         // Shoot
                         Commands.sequence(
                             superSystem.backupIndexerAndShooter(),
-                            superSystem.prepareShooterVision()
+                            superSystem.prepareShooterVision(swerve)
                         )
                     )
                 )

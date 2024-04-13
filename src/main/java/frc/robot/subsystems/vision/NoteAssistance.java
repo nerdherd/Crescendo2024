@@ -3,6 +3,9 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,10 +33,32 @@ public class NoteAssistance implements Reportable{
     private GenericEntry sidewaysSpeed;
     private GenericEntry rotationSpeed;
 
-    double[] speeds = {0.0, 0.0, 0.0};
+    private NetworkTableEntry tx;
+    private NetworkTableEntry ty;
+    private NetworkTableEntry ta;
+
+    //stuff originally from limelight
+    private NetworkTable table;
+    private double[] speeds = {0.0, 0.0, 0.0};
+    private double tXList[] = new double[10];
+    private double tAList[] = new double[10];
+    private double tYList[] = new double[10];
+    private int indexTA = 0;
+    private boolean initDoneTA = false;
+    private int indexTX = 0;
+    private boolean initDoneTX = false;
+    private int indexTY = 0;
+    private boolean initDoneTY = false;
+    
 
     public NoteAssistance(String name) {
+        table = NetworkTableInstance.getDefault().getTable(name);
         this.name = name;
+
+        tx = table.getEntry("tx");
+        ty = table.getEntry("ty");
+        ta = table.getEntry("ta");
+
         ShuffleboardTab tab = Shuffleboard.getTab(name);
 
         areaController = new PIDController(0.18, 0, 0.004);// todo, tuning pls!!!// 0.12, 0, 0.001 Pre 4/6 Original Values
@@ -52,34 +77,115 @@ public class NoteAssistance implements Reportable{
         }
     }
 
-    private void setPipeline(int a)
+    private void setPipeline(int pipeline)
     {
-
+        table.getEntry("pipeline").setNumber(pipeline);
     }
     private void setLight(boolean on)
     {
-
+        int mode = 1;
+        if(on) mode = 3;
+        table.getEntry("ledMode").setNumber(mode);
     }
     private void resetLists()
     {
-
+        initDoneTX = false;
+        indexTX = 0;
     }
     public boolean hasTarget() { return hasValidTarget(); }
     private boolean hasValidTarget()
     {
-        return false;
+        boolean has = NerdyMath.inRange(table.getEntry("tv").getDouble(0), -0.01, 0.01);
+        return !has;
     }
-    private double getArea_avg()
-    {
-        return 0;
+    public double getArea_avg() {
+        // double previousValue = -1;
+        // if(indexTA > 0 ) previousValue  = tAList[indexTA - 1];
+        // if(NerdyMath.deadband(tAList[indexTA], previousValue + 5, previousValue)) tAList[indexTA] = ta.getDouble(0);
+        // tAList[indexTA] = NerdyMath.deadband(ta.getDouble(0), previousValue, previousValue);
+        tAList[indexTA] = ta.getDouble(0);
+        indexTA ++;
+        if(indexTA >= tAList.length) {
+            indexTA = 0;
+            initDoneTA = true;
+        }
+
+        //SmartDashboard.putNumberArray("taFiltered", tAList);
+        
+        double TASum = 0;
+        if(initDoneTA) {
+            for(int i = 0; i < tAList.length; i++) {
+                TASum += tAList[i];
+            }
+            //SmartDashboard.putNumber("TAAverage", TASum / tAList.length);
+
+            return TASum / tAList.length;
+        }
+        else {
+            for(int i = 0; i < indexTA; i++) {
+                TASum += tAList[i];
+            }
+
+            return TASum / indexTA;
+        }
     }
-    private double getXAngle_avg()
-    {
-        return 0;
+
+    private double getXAngle_avg() {
+        tXList[indexTX] = tx.getDouble(0);
+        indexTX ++;
+        if(indexTX >= tXList.length) {
+            indexTX = 0;
+            initDoneTX = true;
+        }
+
+        //SmartDashboard.putNumberArray("txFiltered", tXList);
+
+        double TXSum = 0;
+        if(initDoneTX) {
+            for(int i = 0; i < tXList.length; i++) {
+                TXSum += tXList[i];
+            }
+            
+            //SmartDashboard.putNumber("TXAverage", TXSum / tXList.length);
+
+            return TXSum / tXList.length;
+        }
+        else {
+            for(int i = 0; i < indexTX; i++) {
+                TXSum += tXList[i];
+            }
+
+            return TXSum / indexTX;
+        }
     }
-    private double getYAngle_avg()
-    {
-        return 0;
+    
+    public double getYAngle_avg() {
+        tYList[indexTY] = ty.getDouble(0);
+        indexTY ++;
+        if(indexTY >= tYList.length) {
+            indexTY = 0;
+            initDoneTY = true;
+        }
+
+        //SmartDashboard.putNumberArray("txFiltered", tXList);
+
+        double TYSum = 0;
+        if(initDoneTY) {
+            for(int i = 0; i < tYList.length; i++) {
+                TYSum += tYList[i];
+            }
+            
+            //SmartDashboard.putNumber("TXAverage", TXSum / tXList.length);
+
+            return TYSum / tYList.length;
+        }
+        else {
+            for(int i = 0; i < indexTY; i++) {
+                TYSum += tYList[i];
+            }
+
+            return TYSum / indexTY;
+        }
     }
 
     private void pidTuning_test() {

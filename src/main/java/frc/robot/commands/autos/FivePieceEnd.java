@@ -135,7 +135,7 @@ public class FivePieceEnd extends SequentialCommandGroup {
                         Commands.waitSeconds(0.85),
                         Commands.deadline(
                             Commands.waitSeconds(1.2),
-                            superSystem.shootSequenceAdjustable()  
+                            superSystem.shootSequenceAdjustable(swerve)  
                         ),
                         superSystem.stow()
                     )
