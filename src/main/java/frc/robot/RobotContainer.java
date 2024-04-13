@@ -282,7 +282,9 @@ public class RobotContainer {
   public void configureBindings_teleop() {
     // Driver bindings
 
-    commandDriverController.share().whileTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
+    commandDriverController.share().whileTrue(
+      Commands.runOnce(() -> swerveDrive.zeroGyroAndPoseAngle())
+    );
     commandDriverController.cross().whileTrue(swerveDrive.driveToAmpCommand(3, 3));
     commandDriverController.square().whileTrue(
       Commands.parallel(
@@ -331,7 +333,7 @@ public class RobotContainer {
     commandOperatorController.square().whileTrue(superSystem.getReadyForAmp())
                                       .whileFalse(superSystem.stow()); // TODO: Can we try getting rid of this whileFalse line here **(field testing)**
     commandOperatorController.cross().whileTrue(superSystem.shootAmp()).whileFalse(superSystem.stow());
-    commandOperatorController.PS().whileTrue(superSystem.climbSequence());
+    // commandOperatorController.PS().whileTrue(superSystem.climbSequence());
 
     commandOperatorController.L1().whileTrue(superSystem.backupIndexerManual());
     
@@ -343,10 +345,11 @@ public class RobotContainer {
     commandOperatorController.R1().whileTrue(superSystem.prepareShooterPodium())
                                   .whileFalse(superSystem.stow());
 
-    commandOperatorController.touchpad().whileTrue(superSystem.panicButton())
-                                        .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
+    commandOperatorController.touchpad().whileTrue(superSystem.ejectIntakeOnly());
+    commandOperatorController.PS().whileTrue(superSystem.panicEject());
     commandOperatorController.circle().whileTrue(superSystem.stow()); // TODO: Change this binding
-    commandOperatorController.share().whileTrue(superSystem.intakeDirectShoot());
+    // commandOperatorController.share().whileTrue(superSystem.intakeDirectShoot());
+    commandOperatorController.share().whileTrue(superSystem.advanceIndexerManual());
     commandOperatorController.options().whileTrue(superSystem.prepareShooterVision(swerveDrive)) //
                                   .whileFalse(superSystem.stow()); // TODO: Safety *Do nothing if April Tag is not seen*
   }

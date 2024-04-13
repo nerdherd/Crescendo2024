@@ -208,8 +208,9 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final Pose2d kBlueAmpPose = new Pose2d(new Translation2d(1.85, 7.5), Rotation2d.fromDegrees(270));
-    public static final Pose2d kRedAmpPose = new Pose2d(new Translation2d(1.85, 7.5), Rotation2d.fromDegrees(270));//TODO: change this pose to the correct number
+    public static final Pose2d kBlueAmpPose = new Pose2d(new Translation2d(1.85, 7), Rotation2d.fromDegrees(270));
+    // public static final Pose2d kBlueAmpPose = new Pose2d(new Translation2d(1.85, 7.67), Rotation2d.fromDegrees(270));
+    // public static final Pose2d kRedAmpPose = new Pose2d(new Translation2d(1.85, 7.5), Rotation2d.fromDegrees(270));//TODO: change this pose to the correct number
     public static final double kFrontCameraHeightMeters = Units.inchesToMeters(45.25);
     public static final double kNoteHeightMeters = Units.inchesToMeters(17);
     public static final double kCameraPitchRadians = Units.degreesToRadians(-42);
@@ -332,7 +333,7 @@ public final class Constants {
     public static final PrefDouble kAPivotMotor = new PrefDouble("kA Shooter Pivot", 0.5);
     public static final PrefDouble kGPivotMotor = new PrefDouble("kG Shooter Pivot", 0.44);
   
-    public static final PrefDouble kCruiseAcceleration = new PrefDouble("Shooter Pivot Cruise Acceleration", 0.85);
+    public static final PrefDouble kCruiseAcceleration = new PrefDouble("Shooter Pivot Cruise Acceleration", 1.7);
     public static final PrefDouble kCruiseVelocity = new PrefDouble("Shooter Pivot Cruise Velocity", 0.425);
 
     // in degrees

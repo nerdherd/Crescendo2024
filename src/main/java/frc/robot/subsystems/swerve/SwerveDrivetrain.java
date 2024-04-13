@@ -310,6 +310,14 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         }
     }
 
+    public void zeroGyroAndPoseAngle() {
+        gyro.zeroHeading();
+        gyro.setOffset(0);
+        Pose2d pose = getPose();
+        Pose2d newPose = new Pose2d(pose.getX(), pose.getY(), RobotContainer.IsRedSide() ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0));
+        poseEstimator.resetPosition(gyro.getRotation2d(), getModulePositions(), newPose);
+    }
+
     public void resetGyroFromPoseWithAlliance(Pose2d pose) {
         if (RobotContainer.IsRedSide()) {
             double angle = GeometryUtil.flipFieldPose(pose).getRotation().getDegrees() - 180;
@@ -431,7 +439,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
 
     public Command driveToAmpCommand( double maxVelocityMps, double maxAccelerationMpsSq)
     {
-        Pose2d targetPose = RobotContainer.IsRedSide() ? VisionConstants.kRedAmpPose : VisionConstants.kBlueAmpPose;
+        Pose2d targetPose = VisionConstants.kBlueAmpPose;
         return Commands.sequence(
             driveToPose(targetPose, maxVelocityMps, maxAccelerationMpsSq) //TODO: verify if works on red side
         );

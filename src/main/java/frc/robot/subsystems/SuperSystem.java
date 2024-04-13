@@ -211,6 +211,24 @@ public class SuperSystem {
         return command.withInterruptBehavior(InterruptionBehavior.kCancelSelf);
     }
 
+    public Command advanceIndexerManual() {
+        Command command = Commands.sequence(
+            // shooterPivot.moveToSpeaker(),
+            indexer.setEnabledCommand(true),
+            shooterRoller.setEnabledCommand(true),
+            indexer.reverseIndexCommand(),
+            shooterRoller.setReverseVelocityCommand(10, 10), // TODO: Later
+            Commands.waitSeconds(0.2)
+        ).finallyDo(() -> {
+            indexer.stop();
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterRoller, indexer);
+        
+        return command.withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+    }
+
     public Command intakeUntilSensed() {
         Command command = Commands.sequence(
             Commands.deadline(
@@ -516,6 +534,43 @@ public class SuperSystem {
         return command;
     }
 
+    public Command panicEject() {
+        Command command = Commands.sequence(
+            shooterPivot.setPositionCommand(ShooterConstants.kFullStowPosition.get() + 2),
+            intakeRoller.setEnabledCommand(true),
+            intakeRoller.setVelocityCommand(-50),
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Outtaking", true)),
+            indexer.setEnabledCommand(true),
+            indexer.setVelocityCommand(-50, 50),
+            Commands.runOnce(() -> SmartDashboard.putBoolean("Intake roller", true)),
+            Commands.waitUntil(() -> false)
+        ).finallyDo(
+            () -> {
+                SmartDashboard.putBoolean("Intake roller", false);
+                SmartDashboard.putBoolean("Outtaking", false);
+                intakeRoller.stop();
+                indexer.stop();
+            }
+        );
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
+        return command;
+    }
+
+    public Command ejectIntakeOnly() {
+        Command command = Commands.sequence(
+            intakeRoller.setEnabledCommand(true),
+            intakeRoller.setVelocityCommand(-100)
+        ).finallyDo(
+            () -> {
+                intakeRoller.stop();
+            }
+        );
+
+        command.addRequirements(intakeRoller);
+        return command;
+    }
+
     public Command prepareShooter() {
         Command command = Commands.sequence(
             shooterPivot.moveToSpeaker(),
@@ -538,6 +593,16 @@ public class SuperSystem {
 
         command.addRequirements(shooterPivot, shooterRoller);
 
+        return command;
+    }
+
+    public Command prepareShooterRollersOnly() {
+        Command command = Commands.sequence(
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker()        
+        );
+
+        command.addRequirements(shooterRoller);
         return command;
     }
 
