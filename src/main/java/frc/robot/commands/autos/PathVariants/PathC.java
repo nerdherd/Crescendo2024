@@ -132,7 +132,7 @@ public class PathC extends SequentialCommandGroup {
                     AutoBuilder.followPath(pathGroup.get(4)), //e6Y
                     Commands.sequence(
                         superSystem.stow(),
-                        Commands.waitSeconds(.9), // regualr path uses 2.4; shorter one uses .9
+                        Commands.waitSeconds(2.3), // regualr path uses 2.4; shorter one uses .9
                         superSystem.shooterPivot.moveToHandoff(),
                         superSystem.shooterPivot.setEnabledCommand(true),
 
