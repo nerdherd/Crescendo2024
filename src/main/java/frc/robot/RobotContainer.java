@@ -285,7 +285,7 @@ public class RobotContainer {
     //commandDriverController.square().onTrue(apriltagCamera.TurnToAngleByTagCommand4Auto(swerveDrive, 2, 15));
     commandOperatorController.povLeft().whileTrue(
       Commands.repeatingSequence(
-        Commands.runOnce(() -> superSystem.getShooterAngle())
+        Commands.runOnce(() -> superSystem.getShooterAngle(swerveDrive))
       )
     );
 
@@ -322,7 +322,7 @@ public class RobotContainer {
                                         .whileFalse(superSystem.backupIndexer().andThen(superSystem.stow()));
     commandOperatorController.circle().whileTrue(superSystem.stow()); // TODO: Change this binding
     commandOperatorController.share().whileTrue(superSystem.intakeDirectShoot());
-    commandOperatorController.options().whileTrue(superSystem.prepareShooterVision()) //
+    commandOperatorController.options().whileTrue(superSystem.prepareShooterVision(swerveDrive)) //
                                   .whileFalse(superSystem.stow()); // TODO: Safety *Do nothing if April Tag is not seen*
   }
 
@@ -367,7 +367,7 @@ public class RobotContainer {
       SmartDashboard.putNumber("Desired Angle", desiredAngle);
       double angleToleranceScale = swerveDrive.getTurnToAngleToleranceScale(desiredAngle);
       SmartDashboard.putNumber("Angle Tolerance Scale", angleToleranceScale);
-      double angleTolerance = angleToleranceScale * swerveDrive.getTurnToAngleTolerance(RobotContainer.IsRedSide() ? 4 : 7);
+      double angleTolerance = angleToleranceScale * swerveDrive.getSpeakerTurnToAngleTolerance();
       SmartDashboard.putNumber("Angle Tolerance", angleTolerance);
       double angleDifference = Math.abs(swerveDrive.getImu().getHeading() - desiredAngle);
       angleDifference = NerdyMath.posMod(angleDifference, 360);

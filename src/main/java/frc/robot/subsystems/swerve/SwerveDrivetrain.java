@@ -385,9 +385,9 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
 
         return lastDistance;
     }
-    public double getTurnToAngleTolerance (int tagID)
+    public double getSpeakerTurnToAngleTolerance ()
     {
-        double distance = getDistanceFromTag(true, tagID);
+        double distance = getDistanceFromTag(true, RobotContainer.IsRedSide() ? 4 : 7);
         if(distance > 5) {
             return 0;
         }
@@ -433,7 +433,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     {
         Pose2d targetPose = RobotContainer.IsRedSide() ? VisionConstants.kRedAmpPose : VisionConstants.kBlueAmpPose;
         return Commands.sequence(
-            driveToPose(targetPose, maxVelocityMps, maxAccelerationMpsSq)
+            driveToPose(targetPose, maxVelocityMps, maxAccelerationMpsSq) //TODO: verify if works on red side
         );
     }
 

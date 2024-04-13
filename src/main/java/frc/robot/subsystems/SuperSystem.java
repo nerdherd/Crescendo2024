@@ -7,6 +7,10 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 //import frc.robot.subsystems.vision.DriverAssist;
 //import frc.robot.subsystems.vision.ShooterVisionAdjustment;
+import frc.robot.util.NerdyLine;
+import frc.robot.util.NerdyMath;
+
+import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,6 +28,14 @@ public class SuperSystem {
     public ClimbActuator linearActuator;
     // public Climber climber;
 
+    //vision
+    // Warbots field
+    private double[] distances = {1.2,   2.483,   3.015,    3.573,   4.267,   4.697}; // distances from 4/6
+    private double[] angles = {-52.470, -32.861, -29.114, -25.663, -21.413, -20.8}; // angles from 4/6
+    private double lastAngle = -0.2;
+    private double angleOffset = 0;
+    private NerdyLine angleLine;
+
     public SuperSystem(IntakeRoller intakeRoller, 
                         ShooterPivot shooterPivot, ShooterRoller shooterRoller,
                         IndexerV2 indexer) {
@@ -38,6 +50,7 @@ public class SuperSystem {
         // add line below once we add new banner sensor
         // this.bannerSensorTwo = new BannerSensor();
         // this.noteSensor = new BeamBreak();
+        angleLine = new NerdyLine(distances, angles);
     }
 
     public boolean noteIntook() {
@@ -45,22 +58,36 @@ public class SuperSystem {
         return bannerSensor.noteIntook();
     }
 
-    public double getShooterAngle()
+    public double getShooterAngle(SwerveDrivetrain swerve)
     {
-        return 0;
+        return getShooterAngle(swerve, false);
     }
-    public void incrementOffset(double a)
+    public void incrementOffset(double increment)
     {
-
+        angleOffset += increment;
+        angleOffset = NerdyMath.clamp(angleOffset, -10, 10);
     }
     public void resetOffset()
     {
-
+        angleOffset = 0;
     }
 
-    public double getShooterAngle(boolean a)
+    public double getShooterAngle(SwerveDrivetrain swerve, boolean preserveOldValue)
     {
-        return 0;
+        double distance = swerve.getDistanceFromTag(preserveOldValue, RobotContainer.IsRedSide() ? 4 : 7);
+        if(distance < distances[0]) {
+            SmartDashboard.putBoolean("Vision failed", true);
+            return (preserveOldValue ? lastAngle : -0.2);
+        }
+        if (distance > distances[distances.length - 1]) {
+            SmartDashboard.putBoolean("Vision failed", true);
+            return (preserveOldValue ? lastAngle : -0.3);
+        }
+        
+        double output = NerdyMath.clamp(angleLine.getOutput(distance), ShooterConstants.kFullStowPosition.get(), 20);
+        output += angleOffset;
+        lastAngle = output;
+        return output;
     }
 
     public Command getReadyForAmp() {
@@ -469,12 +496,12 @@ public class SuperSystem {
         return command;
     }
 
-    public Command prepareShooterVision() {
+    public Command prepareShooterVision(SwerveDrivetrain swerve) {
         Command command = Commands.sequence(
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
             Commands.repeatingSequence(
-                Commands.runOnce(() -> shooterPivot.setPosition(getShooterAngle(true))),
+                Commands.runOnce(() -> shooterPivot.setPosition(getShooterAngle(swerve, true))),
                 Commands.waitSeconds(0.02)
             )
         );
@@ -642,12 +669,12 @@ public class SuperSystem {
         return command;
     }
 
-    public Command shootSequenceAdjustable() {
+    public Command shootSequenceAdjustable(SwerveDrivetrain swerve) {
         Command command = 
             // Commands.either(
             Commands.sequence(
                 // Prepare to shoot
-                Commands.runOnce(() -> shooterPivot.setPosition(getShooterAngle())),
+                Commands.runOnce(() -> shooterPivot.setPosition(getShooterAngle(swerve))),
                 shooterRoller.setEnabledCommand(true),
                 shooterRoller.shootSpeaker(),
                 Commands.race(
@@ -675,12 +702,12 @@ public class SuperSystem {
         return command;
     }
 
-    public Command shootSequenceAdjustableAuto() {
+    public Command shootSequenceAdjustableAuto(SwerveDrivetrain swerve) {
         Command command = 
             //Commands.either(
             Commands.sequence(
                     // Prepare to shoot
-                    Commands.runOnce(() -> shooterPivot.setPosition(getShooterAngle())),
+                    Commands.runOnce(() -> shooterPivot.setPosition(getShooterAngle(swerve))),
                     shooterRoller.setEnabledCommand(true),
                     shooterRoller.shootSpeaker(),
                     Commands.race(
@@ -715,7 +742,7 @@ public class SuperSystem {
                 Commands.waitSeconds(2)
             ),
             Commands.runOnce(swerve::towModules),
-            shootSequenceAdjustable()
+            shootSequenceAdjustable(swerve)
         );
     }
 

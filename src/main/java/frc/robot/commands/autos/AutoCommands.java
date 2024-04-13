@@ -67,7 +67,7 @@ public class AutoCommands extends SequentialCommandGroup{
                         Commands.deadline(
                             Commands.waitSeconds(1.2),
                             // Adjust shooter Angle
-                            superSystem.shootSequenceAdjustable()
+                            superSystem.shootSequenceAdjustable(swerve)
                         ),
                         superSystem.indexer.stopCommand(),
                         superSystem.shooterRoller.setVelocityCommand(-10, -10),
@@ -115,7 +115,7 @@ public class AutoCommands extends SequentialCommandGroup{
                 Commands.deadline(
                     Commands.waitSeconds(1.4),
                     // adjust shooter angle
-                    superSystem.shootSequenceAdjustable()
+                    superSystem.shootSequenceAdjustable(swerve)
                 ),
                 superSystem.indexer.stopCommand(),
                 superSystem.shooterRoller.setVelocityCommand(-10, -10),
