@@ -107,8 +107,8 @@ public class FivePieceAuto extends SequentialCommandGroup{
                             Commands.deadline(
                                 Commands.waitSeconds(1),
                                 Commands.either(
-                                    swerve.turnToTag(4, 2),
-                                    swerve.turnToTag(7, 2),
+                                    swerve.turnToTag(4,  2),
+                                    swerve.turnToTag(7,  2),
                                     RobotContainer::IsRedSide 
                                 )
                             ),
@@ -146,8 +146,8 @@ public class FivePieceAuto extends SequentialCommandGroup{
                             Commands.deadline(
                                 Commands.waitSeconds(1),
                                 Commands.either(
-                                    swerve.turnToTag(4, 2),
-                                    swerve.turnToTag(7, 2),
+                                    swerve.turnToTag(4,  2),
+                                    swerve.turnToTag(7,  2),
                                     RobotContainer::IsRedSide 
                                 )
                             ),
@@ -214,8 +214,8 @@ public class FivePieceAuto extends SequentialCommandGroup{
                             Commands.deadline(
                                 Commands.waitSeconds(2),
                                 Commands.either(
-                                    swerve.turnToTag(4, 1),
-                                    swerve.turnToTag(7, 1),
+                                    swerve.turnToTag(4,  1),
+                                    swerve.turnToTag(7,  1),
                                     RobotContainer::IsRedSide 
                                 )
                             ),
