@@ -100,7 +100,7 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
         rightIntakeConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         rightIntakeConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
         rightIntakeConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
-        rightIntakeConfigs.CurrentLimits.StatorCurrentLimit = 50;
+        rightIntakeConfigs.CurrentLimits.StatorCurrentLimit = 200;
         rightIntakeConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         rightIntakeConfigs.Audio.AllowMusicDurDisable = true;
 

@@ -193,12 +193,16 @@ public class RobotContainer {
             || driverController.getL2Button() 
             || driverController.getCircleButton()
             || driverController.getTriangleButton()
+            || (
+              driverController.getTouchpad() && shooterRoller.getTargetVelocity() == 0
+            )
             // || driverController.getPSButton()
           ); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          if (driverController.getTriangleButton()) {
+          if ((driverController.getTouchpad() && shooterRoller.getTargetVelocity() == 0)
+           || driverController.getTriangleButton()) {
             if (!IsRedSide()) {
               return 315.0;
             } else {
@@ -300,6 +304,23 @@ public class RobotContainer {
     );
     commandDriverController.touchpad().whileTrue(superSystem.shoot())
                                       .whileFalse(superSystem.stow());
+    
+    commandDriverController.L2().whileTrue(Commands.sequence(
+      Commands.race(
+        superSystem.prepareShooterVision(swerveDrive),
+        Commands.sequence(
+          Commands.waitSeconds(.1),
+          Commands.race(
+           Commands.waitUntil(() -> aimTrigger.getAsBoolean() && armTrigger.getAsBoolean()),
+           Commands.waitSeconds(1)
+          ),
+          superSystem.indexer.setEnabledCommand(true),
+          superSystem.indexer.indexCommand(),
+          Commands.waitUntil(() -> !superSystem.noteIntook())
+        )
+      ),
+      superSystem.stow()
+    )).whileFalse(superSystem.stow());
 
     // Operator bindings
     commandOperatorController.triangle().whileTrue(superSystem.eject());
@@ -328,6 +349,32 @@ public class RobotContainer {
 
   public void configureBindings_test() {}
 
+  Trigger armTrigger = new Trigger(
+    () -> superSystem.shooterPivot.atTargetPositionAccurate() 
+        && superSystem.shooterPivot.getTargetPositionDegrees() > ShooterConstants.kFullStowPosition.get()
+        && superSystem.shooterRoller.getVelocity() > (superSystem.shooterRoller.getTargetVelocity() * 0.6) 
+        && superSystem.shooterRoller.getTargetVelocity() > 0
+    );
+
+  // AprilTag Trigger
+  Trigger aimTrigger = new Trigger(() -> {
+    double desiredAngle = swerveDrive.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);// TODO, update?
+    SmartDashboard.putNumber("Desired Angle", desiredAngle);
+    double angleToleranceScale = swerveDrive.getTurnToAngleToleranceScale(desiredAngle);
+    SmartDashboard.putNumber("Angle Tolerance Scale", angleToleranceScale);
+    double angleTolerance = angleToleranceScale * swerveDrive.getSpeakerTurnToAngleTolerance();
+    SmartDashboard.putNumber("Angle Tolerance", angleTolerance);
+    double angleDifference = Math.abs(swerveDrive.getImu().getHeading() - desiredAngle);
+    angleDifference = NerdyMath.posMod(angleDifference, 360);
+    SmartDashboard.putNumber("Angle Difference", angleDifference);
+    if (angleDifference > 360 - angleTolerance && angleDifference < 360 + angleTolerance) {
+      return true;
+    } else if (angleDifference > -angleTolerance && angleDifference < angleTolerance) {
+      return true;
+    }
+    return false;
+    // return apriltagCamera.apriltagInRange(IsRedSide() ? 4 : 7, 0, 0);
+  });
 
 
 
@@ -346,42 +393,7 @@ public class RobotContainer {
       }
     ));
 
-    Trigger armTrigger = new Trigger(
-      () -> superSystem.shooterPivot.atTargetPositionAccurate() 
-         && superSystem.shooterPivot.getTargetPositionDegrees() > ShooterConstants.kFullStowPosition.get()
-         && superSystem.shooterRoller.getVelocity() > (superSystem.shooterRoller.getTargetVelocity() * 0.6) 
-         && superSystem.shooterRoller.getTargetVelocity() > 0
-      );
-
-    Trigger tagTrigger = new Trigger(
-      () -> {
-        return superSystem.noteIntook() 
-            //&& apriltagCamera.hasValidTarget()
-            ; 
-      }
-    );
-
-    // AprilTag Trigger
-    Trigger aimTrigger = new Trigger(() -> {
-      double desiredAngle = swerveDrive.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7);// TODO, update?
-      SmartDashboard.putNumber("Desired Angle", desiredAngle);
-      double angleToleranceScale = swerveDrive.getTurnToAngleToleranceScale(desiredAngle);
-      SmartDashboard.putNumber("Angle Tolerance Scale", angleToleranceScale);
-      double angleTolerance = angleToleranceScale * swerveDrive.getSpeakerTurnToAngleTolerance();
-      SmartDashboard.putNumber("Angle Tolerance", angleTolerance);
-      double angleDifference = Math.abs(swerveDrive.getImu().getHeading() - desiredAngle);
-      angleDifference = NerdyMath.posMod(angleDifference, 360);
-      SmartDashboard.putNumber("Angle Difference", angleDifference);
-      if (angleDifference > 360 - angleTolerance && angleDifference < 360 + angleTolerance) {
-        return true;
-      } else if (angleDifference > -angleTolerance && angleDifference < angleTolerance) {
-        return true;
-      }
-      return false;
-      // return apriltagCamera.apriltagInRange(IsRedSide() ? 4 : 7, 0, 0);
-    });
-
-    noteTrigger.and(tagTrigger.and(aimTrigger.negate()).and(armTrigger.negate())).onTrue(
+    noteTrigger.and(aimTrigger.negate().and(armTrigger.negate())).onTrue(
       Commands.runOnce(
         () -> {
           CANdle.setStatus(Status.HAS_TARGET);
@@ -402,7 +414,7 @@ public class RobotContainer {
     tab.addBoolean("Arm aimed", armTrigger);    
     tab.addBoolean("Drivebase aimed", aimTrigger);
 
-    armTrigger.negate().and(aimTrigger.negate()).and(tagTrigger.negate()).and(noteTrigger).onTrue(
+    armTrigger.negate().and(aimTrigger.negate()).and(noteTrigger).onTrue(
       Commands.runOnce(
         () -> {
           CANdle.setStatus(Status.HASNOTE);
@@ -410,7 +422,7 @@ public class RobotContainer {
       )
     );
 
-    tagTrigger.and(aimTrigger).and(armTrigger).onTrue(
+    aimTrigger.and(armTrigger).onTrue(
       Commands.runOnce(
         () -> {
           CANdle.setStatus(Status.SHOTREADY);
@@ -631,7 +643,7 @@ public class RobotContainer {
     //autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 15, 10, 50, pathGroupTestD));
     autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, List.of(e6Y)));
     //autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, List.of(f04), apriltagCamera, noteCamera, adjustmentCamera));
-    //autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, noteCamera));
+    // autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, noteCamera));
     autoChooser.addOption("Path C Testing", new PathC(swerveDrive, superSystem, pathGroupTestC));
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
