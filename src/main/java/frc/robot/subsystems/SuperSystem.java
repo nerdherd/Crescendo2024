@@ -88,7 +88,7 @@ public class SuperSystem {
         double output = NerdyMath.clamp(angleLine.getOutput(distance), ShooterConstants.kFullStowPosition.get(), 20);
         output += angleOffset;
         lastAngle = output;
-        return output;
+        return output + 1.5;
     }
 
     public Command getReadyForAmp() {
@@ -607,7 +607,7 @@ public class SuperSystem {
     }
 
     public Command prepareShooterSpeaker() {
-        Command command = Commands.sequence(
+        Command command = Commands.parallel(
             shooterPivot.moveToSpeaker(),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker()
@@ -617,7 +617,7 @@ public class SuperSystem {
     }
 
     public Command prepareShooterPodium() {
-        Command command = Commands.sequence(
+        Command command = Commands.parallel(
             shooterPivot.moveToSpeakerFar(),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker()
@@ -627,19 +627,27 @@ public class SuperSystem {
     }
     
 
+    private boolean isPassing = false;
+
+    public boolean getIsPassing() {
+        return isPassing;
+    }
+
     public Command shoot() {
         Command command = Commands.either(
             // Pass
             Commands.sequence(
+                Commands.runOnce(() -> isPassing = true),
                 shooterPivot.setPositionCommand(ShooterConstants.kSpeakerPosition.get()),
                 shooterRoller.setEnabledCommand(true),
-                shooterRoller.setVelocityCommand(40),
+                shooterRoller.setVelocityCommand(37),
                 Commands.waitSeconds(0.3),
                 indexer.setEnabledCommand(true),
                 indexer.indexCommand()
             ),
             // Shoot
             Commands.sequence(
+                Commands.runOnce(() -> isPassing = false),
                 indexer.setEnabledCommand(true),
                 indexer.indexCommand()
             ),

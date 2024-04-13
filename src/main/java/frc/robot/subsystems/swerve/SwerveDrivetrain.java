@@ -65,7 +65,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     private AprilTagFieldLayout layout;
     private double lastDistance;
     private double[] distances = new double[] {0, 1, 1.72, 2, 3, 3.5, 4, 5};
-    private double[] tolerances = new double[] {10, 9, 8, 7, 4, 3, 1, 1};
+    private double[] tolerances = new double[] {12, 11, 10, 9, 5, 4, 2, 2};
     private NerdyLine toleranceSpline = new NerdyLine(distances, tolerances);
     private double[] angles          = new double[] {0, 10, 30, 45, 90};
     private double[] toleranceScales = new double[] {1, 0.95, 0.75, 0.4, 0};

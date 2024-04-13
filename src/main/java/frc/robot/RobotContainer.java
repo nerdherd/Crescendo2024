@@ -194,14 +194,14 @@ public class RobotContainer {
             || driverController.getCircleButton()
             || driverController.getTriangleButton()
             || (
-              driverController.getTouchpad() && shooterRoller.getTargetVelocity() == 0
+              driverController.getTouchpad() && superSystem.getIsPassing()
             )
             // || driverController.getPSButton()
           ); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          if ((driverController.getTouchpad() && shooterRoller.getTargetVelocity() == 0)
+          if ((driverController.getTouchpad() && superSystem.getIsPassing())
            || driverController.getTriangleButton()) {
             if (!IsRedSide()) {
               return 315.0;
@@ -286,12 +286,16 @@ public class RobotContainer {
       Commands.runOnce(() -> swerveDrive.zeroGyroAndPoseAngle())
     );
     commandDriverController.cross().whileTrue(swerveDrive.driveToAmpCommand(3, 3));
-    commandDriverController.square().whileTrue(
-      Commands.parallel(
-        noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 10, 200, null),
-        superSystem.intakeUntilSensedNoBackup().andThen(superSystem.stow())
-      )
-    ).whileFalse(superSystem.backupIndexerAndShooter().andThen(superSystem.stow()));    // commandDriverController.square().onTrue(apriltagCamera.TurnToTagCommand4Auto(swerveDrive, 5, 50));
+    // commandDriverController.square().whileTrue(
+    //   Commands.parallel(
+    //     noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 10, 200, null),
+    //     superSystem.intakeUntilSensedNoBackup().andThen(superSystem.stow())
+    //   )                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+    // ).whileFalse(superSystem.backupIndexerAndShooter().andThen(superSystem.stow()));    // commandDriverController.square().onTrue(apriltagCamera.TurnToTagCommand4Auto(swerveDrive, 5, 50));
+
+    commandDriverController.square().whileTrue(superSystem.intakeUntilSensedNoBackup().andThen(superSystem.stow()))
+                                    .whileFalse(superSystem.backupIndexerAndShooter().andThen(superSystem.stow()));
+
     //commandDriverController.square().onTrue(apriltagCamera.TurnToAngleByTagCommand4Auto(swerveDrive, 2, 15));
     commandOperatorController.povLeft().whileTrue(
       Commands.repeatingSequence(
@@ -315,13 +319,22 @@ public class RobotContainer {
       Commands.race(
         superSystem.prepareShooterVision(swerveDrive),
         Commands.sequence(
-          Commands.waitSeconds(.1),
           Commands.race(
-           Commands.waitUntil(() -> aimTrigger.getAsBoolean() && armTrigger.getAsBoolean()),
-           Commands.waitSeconds(1.5)
+            Commands.waitUntil(() -> 
+              // aimTrigger.getAsBoolean() 
+              // && 
+              armTrigger.getAsBoolean()
+            ),
+            Commands.waitSeconds(1.5)
           ),
+          Commands.waitSeconds(0.1),
           superSystem.indexer.setEnabledCommand(true),
           superSystem.indexer.indexCommand(),
+          Commands.either(
+            Commands.none(),
+            Commands.waitSeconds(0.5),
+            () -> superSystem.noteIntook()
+          ),
           Commands.waitUntil(() -> !superSystem.noteIntook())
         )
       ),
