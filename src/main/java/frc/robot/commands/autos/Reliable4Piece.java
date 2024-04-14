@@ -23,6 +23,7 @@ public class Reliable4Piece extends SequentialCommandGroup {
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
             Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
+            Commands.runOnce(() -> swerve.enableVisionPoseEstm(false)),
             // Commands.runOnce(() -> swerve.resetInitPoseByVision()),
             Commands.sequence(
 

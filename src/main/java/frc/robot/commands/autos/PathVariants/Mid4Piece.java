@@ -14,11 +14,13 @@ import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.SuperStructureConstants;
 import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.subsystems.vision.NoteAssistance;
 
-public class PathC extends SequentialCommandGroup {
+public class Mid4Piece extends SequentialCommandGroup {
     
     // to be tested. Do not use it before test
     
@@ -42,7 +44,7 @@ public class PathC extends SequentialCommandGroup {
         return new Pose2d(tail.position, new Rotation2d(rad));
     } 
 
-    public PathC(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup){
+    public Mid4Piece(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteCamera, List<PathPlannerPath> pathGroup){
         Pose2d startingPose = GetStartPoseInPath(pathGroup.get(0));
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
@@ -54,12 +56,12 @@ public class PathC extends SequentialCommandGroup {
             Commands.parallel(
                 // Drive to note 2
                 Commands.race(
-                    AutoBuilder.followPath(pathGroup.get(0)),//a02
+                    AutoBuilder.followPath(pathGroup.get(0)).andThen(Commands.waitSeconds(0.5)),//a02
                     Commands.sequence(
                         // enable after the preload gone
                         Commands.waitSeconds(1.25),
                         Commands.deadline(
-                            Commands.waitSeconds(1),
+                            Commands.waitSeconds(2),
                             Commands.waitUntil(superSystem::noteIntook)
                         )
                     )
@@ -84,7 +86,7 @@ public class PathC extends SequentialCommandGroup {
                         Commands.waitUntil(superSystem::noteIntook),
                         superSystem.intakeUntilSensedAuto(2.875)
                     ),
-                    superSystem.backupIndexerAndShooter()
+                    superSystem.backupIndexerAndShooterLess()
                     
                     // // shoot second piece
                     // Commands.waitSeconds(0.25),
@@ -101,7 +103,7 @@ public class PathC extends SequentialCommandGroup {
 
                 // note 2
                 Commands.deadline(
-                    Commands.waitUntil(() -> !superSystem.noteIntook()),
+                    Commands.waitSeconds(0.4).andThen(Commands.waitUntil(() -> !superSystem.noteIntook())),
                     superSystem.shootSubwooferAutoStart2()
                 )
             ),
@@ -118,35 +120,37 @@ public class PathC extends SequentialCommandGroup {
             ),
                 
             // this is for PathD
-            Commands.parallel(
-                AutoBuilder.followPath(pathGroup.get(3)),//d26
-                Commands.deadline(
-                    Commands.waitUntil(superSystem::noteIntook),
-                    superSystem.intakeUntilSensedAuto(2.875)
-                )
+            Commands.race(
+                AutoBuilder.followPath(pathGroup.get(3)).andThen(Commands.waitSeconds(0.5)),//d26
+                superSystem.intakeUntilSensedAuto(2.875),
+                Commands.waitUntil(() -> superSystem.noteIntook())
             ),
 
-            // PATH EEEEEEEEE
-            Commands.sequence(
-                Commands.parallel(
-                    AutoBuilder.followPath(pathGroup.get(4)), //e6Y
-                    Commands.sequence(
-                        superSystem.stow(),
-                        Commands.waitSeconds(2.3), // regualr path uses 2.4; shorter one uses .9
-                        superSystem.shooterPivot.moveToHandoff(),
-                        superSystem.shooterPivot.setEnabledCommand(true),
+            // Commands.either(
+            //     Commands.none(), 
+            //     Commands.race(
+            //         noteCamera.driveToNoteCommand(swerve, 15, 0, 0, 10, 200, null),   
+            //         superSystem.intakeUntilSensedAuto(3)
+            //     ),
+            //     () -> superSystem.noteIntook()
+            // ),
+            superSystem.backupIndexerAndShooterLess(),
 
-                        Commands.deadline(
-                            Commands.waitUntil(() -> !superSystem.noteIntook()),
-                            Commands.parallel(
-                                superSystem.shootSubwooferAutoStart(),
-                                superSystem.intakeRoller.autoIntakeCommand()
-                            )
-                        ),
-                        
-                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
-                        superSystem.shooterRoller.setEnabledCommand(true)
-                    )
+            // PATH EEEEEEEEE
+            Commands.parallel(
+                AutoBuilder.followPath(pathGroup.get(4)), //e6Y
+                Commands.sequence(
+                    superSystem.stow(),
+                    Commands.waitSeconds(2.3), // regualr path uses 2.4; shorter one uses .9
+                    superSystem.shooterPivot.moveToHandoff(),
+
+                    Commands.deadline(
+                        Commands.waitUntil(() -> !superSystem.noteIntook()),
+                        superSystem.shootSubwoofer()
+                    ),
+                    
+                    superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                    superSystem.shooterRoller.setEnabledCommand(true)
                 )
             ),
 
@@ -155,26 +159,42 @@ public class PathC extends SequentialCommandGroup {
                 // Drive to note 123
                 AutoBuilder.followPath(pathGroup.get(5)), //aY3
                 Commands.sequence(
-                        Commands.deadline(
-                            Commands.waitUntil(superSystem::noteIntook),
-                            superSystem.intakeUntilSensedAuto(2.875)
-                        ),
+                    Commands.deadline(
+                        Commands.waitUntil(superSystem::noteIntook),
+                        superSystem.intakeUntilSensedAuto(2.875)
+                    ),
 
-                        Commands.deadline(
-                            Commands.waitUntil(() -> !superSystem.noteIntook()),
-                            Commands.parallel(
-                                superSystem.shootSubwooferAutoStart(),
-                                superSystem.intakeRoller.autoIntakeCommand()
-                            )
+                    superSystem.backupIndexerAndShooterLess(),
+
+                    Commands.deadline(
+                        Commands.waitUntil(() -> !superSystem.noteIntook()),
+                        Commands.parallel(
+                            Commands.sequence(
+                                superSystem.shootSequenceAdjustable(swerve),
+                                superSystem.shoot()
+                            ),
+                            superSystem.intakeRoller.autoIntakeCommand()
                         )
+                    )
                     )
                 )
             ),
 
-            //Commands.runOnce(() -> swerve.towModules()),
-            superSystem.stow(),
-            superSystem.indexer.stopCommand(),
-            Commands.waitSeconds(1)
+            Commands.race(
+                AutoBuilder.followPath(pathGroup.get(6)).andThen(Commands.waitSeconds(0.5)),
+                Commands.sequence(
+                    superSystem.intakeUntilSensedAuto(3)
+                ),
+                Commands.waitUntil(superSystem::noteIntook)
+            ),
+            Commands.parallel(
+                Commands.sequence(
+                    superSystem.backupIndexerAndShooterLess(),
+                    superSystem.shootSequenceAdjustable(swerve),
+                    superSystem.shoot()
+                ),
+                swerve.turnToTag(RobotContainer.IsRedSide() ? 4 : 7)
+            )
         );
     }
 }

@@ -129,6 +129,7 @@ public class Robot extends TimedRobot {
     // robotContainer.indexer.configurePID();
     robotContainer.configureBindings_teleop();
     robotContainer.initDefaultCommands_teleop();
+    robotContainer.swerveDrive.enableVisionPoseEstm(true);
     // robotContainer.configureLEDTriggers_teleop();
     robotContainer.CANdle.setStatus(Status.TELEOP);
     // robotContainer.CANdle.changeAnimation(AnimationTypes.Fire);

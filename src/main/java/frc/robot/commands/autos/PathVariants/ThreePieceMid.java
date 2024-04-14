@@ -47,7 +47,7 @@ public class ThreePieceMid extends SequentialCommandGroup{
 
             Commands.deadline(
                 Commands.waitUntil(superSystem::noteIntook),
-                superSystem.intakeUntilSensedAuto(4),
+                superSystem.intakeUntilSensedAuto(6),
                 Commands.sequence(
                     Commands.waitSeconds(0.1),
                     na.driveToNoteCommand(swerve, 15, 0, 0, 10, 50, null)
@@ -55,8 +55,10 @@ public class ThreePieceMid extends SequentialCommandGroup{
             ),
             
             Commands.parallel(
-                superSystem.backupIndexerAndShooter(),
-                superSystem.stow(),
+                Commands.sequence(
+                    superSystem.backupIndexerAndShooterLess(),
+                    superSystem.stow()
+                ),
                 // Drive back
                 Commands.deadline(
                     Commands.waitSeconds(2),

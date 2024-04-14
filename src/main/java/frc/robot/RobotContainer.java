@@ -38,7 +38,7 @@ import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.commands.autos.PathVariants.PathA;
 import frc.robot.commands.autos.PathVariants.PathAPre;
 import frc.robot.commands.autos.PathVariants.PathB;
-import frc.robot.commands.autos.PathVariants.PathC;
+import frc.robot.commands.autos.PathVariants.Mid4Piece;
 import frc.robot.commands.autos.PathVariants.PathD;
 import frc.robot.commands.autos.PathVariants.PathE;
 import frc.robot.commands.autos.PathVariants.PathF;
@@ -536,10 +536,13 @@ public class RobotContainer {
   PathPlannerPath c27 = PathPlannerPath.fromPathFile("c27Path");
   PathPlannerPath c26 = PathPlannerPath.fromPathFile("c26Path");
   PathPlannerPath c25 = PathPlannerPath.fromPathFile("c25Path");
+  PathPlannerPath c25Stage = PathPlannerPath.fromPathFile("c25PathStage");
   PathPlannerPath c26Short = PathPlannerPath.fromPathFile("c26PathShort");
   
   PathPlannerPath d26ShortC = PathPlannerPath.fromPathFile("d26PathShortC");
   PathPlannerPath d26 = PathPlannerPath.fromPathFile("d26Path");
+  PathPlannerPath d25 = PathPlannerPath.fromPathFile("d25Path");
+  PathPlannerPath d27 = PathPlannerPath.fromPathFile("d27Path");
   PathPlannerPath d45 = PathPlannerPath.fromPathFile("d45Path");
   PathPlannerPath d56 = PathPlannerPath.fromPathFile("d56Path");
   PathPlannerPath d87 = PathPlannerPath.fromPathFile("d87Path");
@@ -659,7 +662,10 @@ public class RobotContainer {
     autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, noteCamera));
     autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, List.of(a02,b2p6), 0));
     //autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, List.of(b23), apriltagCamera, adjustmentCamera, 0));
-    autoChooser.addOption("PathCandEandLastA", new PathC(swerveDrive, superSystem, List.of(a02,b2p6,c26Short,d26ShortC,e6YShort,aY3)));
+    autoChooser.addOption("FivePieceMiddle",     new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3,b13)));
+    autoChooser.addOption("FivePieceSourceSide", new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d27,e6Y,aY3,b13)));
+    autoChooser.addOption("FivePieceAmpSide",    new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d25,e6Y,aY3,b13)));
+
     //autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 15, 10, 50, pathGroupTestD));
     autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, List.of(e6Y)));
     //autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, List.of(f04), apriltagCamera, noteCamera, adjustmentCamera));

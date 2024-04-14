@@ -193,6 +193,25 @@ public class SuperSystem {
         return command;
     }
 
+    public Command backupIndexerAndShooterLess() {
+        Command command = Commands.sequence(
+            shooterRoller.setVelocityCommand(-20, -20),
+            shooterRoller.setEnabledCommand(true),
+            indexer.setEnabledCommand(true),
+            indexer.reverseIndexCommand(),
+            Commands.waitSeconds(0.05),
+            indexer.stopCommand(),
+            shooterRoller.stopCommand()
+        ).finallyDo(() -> {
+            indexer.stop();
+            shooterRoller.stop();    
+        });
+
+        command.addRequirements(indexer, shooterRoller);
+        
+        return command;
+    }
+
     public Command backupIndexerManual() {
         Command command = Commands.sequence(
             // shooterPivot.moveToSpeaker(),
@@ -700,7 +719,7 @@ public class SuperSystem {
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeakerAutoStart(),
             Commands.deadline(
-                Commands.waitSeconds(0.32), // Was 0.2     3/3/24     But 0.8   @Code Orange
+                Commands.waitSeconds(0.45), // Was 0.2     3/3/24     But 0.8   @Code Orange
                 
                 Commands.deadline(
                     Commands.waitUntil(() -> 
@@ -781,10 +800,7 @@ public class SuperSystem {
                 shooterRoller.setEnabledCommand(true),
                 shooterRoller.shootSpeaker(),
                 Commands.race(
-                    Commands.sequence(
-                        Commands.waitUntil(() -> shooterPivot.atTargetPosition()),
-                        Commands.waitSeconds(0.2)
-                    ),
+                    Commands.waitUntil(() -> shooterPivot.atTargetPosition()),
                     Commands.waitSeconds(0.8)
                 )
                 // ,
