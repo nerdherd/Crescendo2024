@@ -39,6 +39,8 @@ import frc.robot.commands.autos.PathVariants.PathA;
 import frc.robot.commands.autos.PathVariants.PathAPre;
 import frc.robot.commands.autos.PathVariants.PathB;
 import frc.robot.commands.autos.PathVariants.Mid4Piece;
+import frc.robot.commands.autos.PathVariants.Mid5PieceMiddle;
+import frc.robot.commands.autos.PathVariants.Mid5PieceSide;
 import frc.robot.commands.autos.PathVariants.PathD;
 import frc.robot.commands.autos.PathVariants.PathE;
 import frc.robot.commands.autos.PathVariants.PathF;
@@ -512,7 +514,8 @@ public class RobotContainer {
   PathPlannerPath a02 = PathPlannerPath.fromPathFile("a02Path");
   PathPlannerPath a03 = PathPlannerPath.fromPathFile("a03Path");
   PathPlannerPath aY3 = PathPlannerPath.fromPathFile("aY3Path");  
-  
+  PathPlannerPath aY3Slow = PathPlannerPath.fromPathFile("aY3SlowPath");  
+
   PathPlannerPath b12 = PathPlannerPath.fromPathFile("b12Path");
   PathPlannerPath b23 = PathPlannerPath.fromPathFile("b23Path");
   PathPlannerPath b32 = PathPlannerPath.fromPathFile("b32Path");
@@ -538,7 +541,8 @@ public class RobotContainer {
   PathPlannerPath c25 = PathPlannerPath.fromPathFile("c25Path");
   PathPlannerPath c25Stage = PathPlannerPath.fromPathFile("c25PathStage");
   PathPlannerPath c26Short = PathPlannerPath.fromPathFile("c26PathShort");
-  
+  PathPlannerPath c26Slow = PathPlannerPath.fromPathFile("c26PathSlow");
+
   PathPlannerPath d26ShortC = PathPlannerPath.fromPathFile("d26PathShortC");
   PathPlannerPath d26 = PathPlannerPath.fromPathFile("d26Path");
   PathPlannerPath d25 = PathPlannerPath.fromPathFile("d25Path");
@@ -559,6 +563,7 @@ public class RobotContainer {
   PathPlannerPath e8Z = PathPlannerPath.fromPathFile("e8ZPath");
   PathPlannerPath e6Y = PathPlannerPath.fromPathFile("e6YPath");
   PathPlannerPath e6YShort = PathPlannerPath.fromPathFile("e6YPathShort");
+  PathPlannerPath e6YSlow = PathPlannerPath.fromPathFile("e6YPathSlow");
 
   PathPlannerPath f04 = PathPlannerPath.fromPathFile("f04Path");
   PathPlannerPath f05 = PathPlannerPath.fromPathFile("f05Path");
@@ -567,7 +572,6 @@ public class RobotContainer {
   PathPlannerPath f08 = PathPlannerPath.fromPathFile("f08Path");
   PathPlannerPath fS8 = PathPlannerPath.fromPathFile("fS8Path");
   PathPlannerPath fast = PathPlannerPath.fromPathFile("c26TestPath");
-
 
   // final List<PathPlannerPath> pathGroupExample3 = List.of(
   //   a01, c15, a03
@@ -662,10 +666,10 @@ public class RobotContainer {
     autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, noteCamera));
     autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, List.of(a02,b2p6), 0));
     //autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, List.of(b23), apriltagCamera, adjustmentCamera, 0));
-    autoChooser.addOption("FivePieceMiddle",     new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3,b13)));
-    autoChooser.addOption("FivePieceSourceSide", new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d27,e6Y,aY3,b13)));
-    autoChooser.addOption("FivePieceAmpSide",    new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d25,e6Y,aY3,b13)));
-
+    autoChooser.addOption("FivePieceMiddle",     new Mid5PieceMiddle(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3,b13)));
+    autoChooser.addOption("FivePieceSourceSide", new Mid5PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d27,e6Y,aY3,b13)));
+    autoChooser.addOption("FivePieceAmpSide",    new Mid5PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d25,e6Y,aY3,b13)));
+    autoChooser.addOption("FourPieceMiddle", new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26Slow,d25,e6YSlow,aY3Slow)));
     //autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 15, 10, 50, pathGroupTestD));
     autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, List.of(e6Y)));
     //autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, List.of(f04), apriltagCamera, noteCamera, adjustmentCamera));
