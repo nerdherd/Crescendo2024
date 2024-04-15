@@ -141,6 +141,7 @@ public class Mid4Piece extends SequentialCommandGroup {
                 AutoBuilder.followPath(pathGroup.get(4)), //e6Y
                 Commands.sequence(
                     superSystem.stow(),
+                    // Change to 3 seconds for Amp side and Source side versions
                     Commands.waitSeconds(2.3), // regualr path uses 2.4; shorter one uses .9
                     superSystem.shooterPivot.moveToHandoff(),
 
