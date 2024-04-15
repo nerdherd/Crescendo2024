@@ -512,7 +512,7 @@ public class RobotContainer {
   // PathPlannerPath b32 = PathPlannerPath.fromPathFile("b32Path");
   // PathPlannerPath b21 = PathPlannerPath.fromPathFile("b21Path");
   // PathPlannerPath b31 = PathPlannerPath.fromPathFile("b31Path");
-  PathPlannerPath b13 = PathPlannerPath.fromPathFile("b13Path");
+  PathPlannerPath b31 = PathPlannerPath.fromPathFile("b31Path");
   PathPlannerPath b2p6 = PathPlannerPath.fromPathFile("b2p6Path");
 
   // PathPlannerPath c14 = PathPlannerPath.fromPathFile("c14Path");
@@ -621,7 +621,7 @@ public class RobotContainer {
     }
 
     autoChooser.addOption("4PieceMiddle",     new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3)));
-    //autoChooser.addOption("5PieceSource", new Mid5PieceMiddle(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3,b13)));
+    //autoChooser.addOption("5PieceSource", new Mid5PieceMiddle(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3,b31)));
     //autoChooser.addOption("4PieceAmpSide",    new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d25,e5Y,aY3)));
     //autoChooser.addOption("4PieceSourceSide",    new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d27,e7Y,aY3)));
 
