@@ -27,12 +27,6 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
-import frc.robot.commands.autos.AutoCommands;
-import frc.robot.commands.autos.FivePieceEnd;
-import frc.robot.commands.autos.FivePieceSecond;
-import frc.robot.commands.autos.Mid3PieceDeadReckoning;
-import frc.robot.commands.autos.Mid3PiecePathOnly;
-import frc.robot.commands.autos.PoseEstimatorTest;
 import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.commands.autos.PathVariants.PathA;
@@ -46,7 +40,7 @@ import frc.robot.commands.autos.PathVariants.ThreePieceMid;
 import frc.robot.commands.autos.PathVariants.DriveToNoteTest;
 import frc.robot.commands.autos.PathVariants.FivePieceAuto;
 import frc.robot.subsystems.CANdleSubSystem;
-import frc.robot.subsystems.Climber;
+//import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CANdleSubSystem.Status;
 import frc.robot.subsystems.IndexerV2;
 import frc.robot.subsystems.IntakeRoller;
@@ -508,104 +502,104 @@ public class RobotContainer {
     // ));
   }
 
-  PathPlannerPath a01 = PathPlannerPath.fromPathFile("a01Path");
+  //PathPlannerPath a01 = PathPlannerPath.fromPathFile("a01Path");
   PathPlannerPath a02 = PathPlannerPath.fromPathFile("a02Path");
-  PathPlannerPath a03 = PathPlannerPath.fromPathFile("a03Path");
+  //PathPlannerPath a03 = PathPlannerPath.fromPathFile("a03Path");
   PathPlannerPath aY3 = PathPlannerPath.fromPathFile("aY3Path");  
   
-  PathPlannerPath b12 = PathPlannerPath.fromPathFile("b12Path");
-  PathPlannerPath b23 = PathPlannerPath.fromPathFile("b23Path");
-  PathPlannerPath b32 = PathPlannerPath.fromPathFile("b32Path");
-  PathPlannerPath b21 = PathPlannerPath.fromPathFile("b21Path");
-  PathPlannerPath b31 = PathPlannerPath.fromPathFile("b31Path");
+  //PathPlannerPath b12 = PathPlannerPath.fromPathFile("b12Path");
+  // PathPlannerPath b23 = PathPlannerPath.fromPathFile("b23Path");
+  // PathPlannerPath b32 = PathPlannerPath.fromPathFile("b32Path");
+  // PathPlannerPath b21 = PathPlannerPath.fromPathFile("b21Path");
+  // PathPlannerPath b31 = PathPlannerPath.fromPathFile("b31Path");
   PathPlannerPath b13 = PathPlannerPath.fromPathFile("b13Path");
   PathPlannerPath b2p6 = PathPlannerPath.fromPathFile("b2p6Path");
 
-  PathPlannerPath c14 = PathPlannerPath.fromPathFile("c14Path");
-  PathPlannerPath c24 = PathPlannerPath.fromPathFile("c24Path");
-  PathPlannerPath c34 = PathPlannerPath.fromPathFile("c34Path");
-  PathPlannerPath c35 = PathPlannerPath.fromPathFile("c35Path");
-  PathPlannerPath c36 = PathPlannerPath.fromPathFile("c36Path");
-  PathPlannerPath c37 = PathPlannerPath.fromPathFile("c37Path");
-  PathPlannerPath c38 = PathPlannerPath.fromPathFile("c38Path");
-  PathPlannerPath c18 = PathPlannerPath.fromPathFile("c18Path");
-  PathPlannerPath c17 = PathPlannerPath.fromPathFile("c17Path");
-  PathPlannerPath c16 = PathPlannerPath.fromPathFile("c16Path");
-  PathPlannerPath c15 = PathPlannerPath.fromPathFile("c15Path");
-  PathPlannerPath c28 = PathPlannerPath.fromPathFile("c28Path");
-  PathPlannerPath c27 = PathPlannerPath.fromPathFile("c27Path");
+  // PathPlannerPath c14 = PathPlannerPath.fromPathFile("c14Path");
+  // PathPlannerPath c24 = PathPlannerPath.fromPathFile("c24Path");
+  // PathPlannerPath c34 = PathPlannerPath.fromPathFile("c34Path");
+  // PathPlannerPath c35 = PathPlannerPath.fromPathFile("c35Path");
+  // PathPlannerPath c36 = PathPlannerPath.fromPathFile("c36Path");
+  // PathPlannerPath c37 = PathPlannerPath.fromPathFile("c37Path");
+  // PathPlannerPath c38 = PathPlannerPath.fromPathFile("c38Path");
+  // PathPlannerPath c18 = PathPlannerPath.fromPathFile("c18Path");
+  // PathPlannerPath c17 = PathPlannerPath.fromPathFile("c17Path");
+  // PathPlannerPath c16 = PathPlannerPath.fromPathFile("c16Path");
+  // PathPlannerPath c15 = PathPlannerPath.fromPathFile("c15Path");
+  // PathPlannerPath c28 = PathPlannerPath.fromPathFile("c28Path");
+  // PathPlannerPath c27 = PathPlannerPath.fromPathFile("c27Path");
   PathPlannerPath c26 = PathPlannerPath.fromPathFile("c26Path");
-  PathPlannerPath c25 = PathPlannerPath.fromPathFile("c25Path");
-  PathPlannerPath c25Stage = PathPlannerPath.fromPathFile("c25PathStage");
-  PathPlannerPath c26Short = PathPlannerPath.fromPathFile("c26PathShort");
+  //PathPlannerPath c25 = PathPlannerPath.fromPathFile("c25Path");
+  //PathPlannerPath c25Stage = PathPlannerPath.fromPathFile("c25PathStage");
+  //PathPlannerPath c26Short = PathPlannerPath.fromPathFile("c26PathShort");
   
-  PathPlannerPath d26ShortC = PathPlannerPath.fromPathFile("d26PathShortC");
+  //PathPlannerPath d26ShortC = PathPlannerPath.fromPathFile("d26PathShortC");
   PathPlannerPath d26 = PathPlannerPath.fromPathFile("d26Path");
   PathPlannerPath d25 = PathPlannerPath.fromPathFile("d25Path");
   PathPlannerPath d27 = PathPlannerPath.fromPathFile("d27Path");
-  PathPlannerPath d45 = PathPlannerPath.fromPathFile("d45Path");
-  PathPlannerPath d56 = PathPlannerPath.fromPathFile("d56Path");
-  PathPlannerPath d87 = PathPlannerPath.fromPathFile("d87Path");
-  PathPlannerPath d76 = PathPlannerPath.fromPathFile("d76Path");
-  PathPlannerPath d65 = PathPlannerPath.fromPathFile("d65Path");
-  PathPlannerPath d67 = PathPlannerPath.fromPathFile("d67Path");
-  PathPlannerPath d78 = PathPlannerPath.fromPathFile("d78Path");
-  PathPlannerPath d54 = PathPlannerPath.fromPathFile("d54Path");
+  // PathPlannerPath d45 = PathPlannerPath.fromPathFile("d45Path");
+  // PathPlannerPath d56 = PathPlannerPath.fromPathFile("d56Path");
+  // PathPlannerPath d87 = PathPlannerPath.fromPathFile("d87Path");
+  // PathPlannerPath d76 = PathPlannerPath.fromPathFile("d76Path");
+  // PathPlannerPath d65 = PathPlannerPath.fromPathFile("d65Path");
+  // PathPlannerPath d67 = PathPlannerPath.fromPathFile("d67Path");
+  // PathPlannerPath d78 = PathPlannerPath.fromPathFile("d78Path");
+  // PathPlannerPath d54 = PathPlannerPath.fromPathFile("d54Path");
 
-  PathPlannerPath e4Y = PathPlannerPath.fromPathFile("e4YPath");
-  PathPlannerPath e5Y = PathPlannerPath.fromPathFile("e5YPath");
-  PathPlannerPath e7Y = PathPlannerPath.fromPathFile("e7YPath");
-  PathPlannerPath e7Z = PathPlannerPath.fromPathFile("e7ZPath");
-  PathPlannerPath e8Z = PathPlannerPath.fromPathFile("e8ZPath");
+  // PathPlannerPath e4Y = PathPlannerPath.fromPathFile("e4YPath");
+  // PathPlannerPath e5Y = PathPlannerPath.fromPathFile("e5YPath");
+  // PathPlannerPath e7Y = PathPlannerPath.fromPathFile("e7YPath");
+  // PathPlannerPath e7Z = PathPlannerPath.fromPathFile("e7ZPath");
+  // PathPlannerPath e8Z = PathPlannerPath.fromPathFile("e8ZPath");
   PathPlannerPath e6Y = PathPlannerPath.fromPathFile("e6YPath");
-  PathPlannerPath e6YShort = PathPlannerPath.fromPathFile("e6YPathShort");
+  // PathPlannerPath e6YShort = PathPlannerPath.fromPathFile("e6YPathShort");
 
-  PathPlannerPath f04 = PathPlannerPath.fromPathFile("f04Path");
-  PathPlannerPath f05 = PathPlannerPath.fromPathFile("f05Path");
-  PathPlannerPath f06 = PathPlannerPath.fromPathFile("f06Path");
-  PathPlannerPath f07 = PathPlannerPath.fromPathFile("f07Path");
-  PathPlannerPath f08 = PathPlannerPath.fromPathFile("f08Path");
-  PathPlannerPath fS8 = PathPlannerPath.fromPathFile("fS8Path");
-  PathPlannerPath fast = PathPlannerPath.fromPathFile("c26TestPath");
+  // PathPlannerPath f04 = PathPlannerPath.fromPathFile("f04Path");
+  // PathPlannerPath f05 = PathPlannerPath.fromPathFile("f05Path");
+  // PathPlannerPath f06 = PathPlannerPath.fromPathFile("f06Path");
+  // PathPlannerPath f07 = PathPlannerPath.fromPathFile("f07Path");
+  // PathPlannerPath f08 = PathPlannerPath.fromPathFile("f08Path");
+  // PathPlannerPath fS8 = PathPlannerPath.fromPathFile("fS8Path");
+  // PathPlannerPath fast = PathPlannerPath.fromPathFile("c26TestPath");
 
 
   // final List<PathPlannerPath> pathGroupExample3 = List.of(
   //   a01, c15, a03
   // );
   
-  final List<PathPlannerPath> pathGroupFivePiece = List.of(
-     a03, b32, b21, c14
-  );
-  final List<PathPlannerPath> pathGroupThreePiece = List.of(
-     fS8, e8Z, c37, e7Z
-  );
-  final List<PathPlannerPath> pathGroupTestA = List.of(
-     a02
-  );
-  final List<PathPlannerPath> pathGroupTestB = List.of(
-     b23
-  );
-  final List<PathPlannerPath> pathGroupTestC = List.of(
-     fast
-  );
-  final List<PathPlannerPath> pathGroupTestD = List.of(
-     d45, d56
-  );
-  final List<PathPlannerPath> pathGroupTestE = List.of(
-     e5Y
-  );
-  final List<PathPlannerPath> pathGroupTestF = List.of(
-     f04
-  );
-  final List<PathPlannerPath> variantPathGroup = List.of(
-     a03, b32, b21, c14, d45, d56, e4Y
-  );
+  // final List<PathPlannerPath> pathGroupFivePiece = List.of(
+  //    a03, b32, b21, c14
+  // );
+  // final List<PathPlannerPath> pathGroupThreePiece = List.of(
+  //    fS8, e8Z, c37, e7Z
+  // );
+  // final List<PathPlannerPath> pathGroupTestA = List.of(
+  //    a02
+  // );
+  // final List<PathPlannerPath> pathGroupTestB = List.of(
+  //    b23
+  // );
+  // final List<PathPlannerPath> pathGroupTestC = List.of(
+  //    fast
+  // );
+  // final List<PathPlannerPath> pathGroupTestD = List.of(
+  //    d45, d56
+  // );
+  // final List<PathPlannerPath> pathGroupTestE = List.of(
+  //    e5Y
+  // );
+  // final List<PathPlannerPath> pathGroupTestF = List.of(
+  //    f04
+  // );
+  // final List<PathPlannerPath> variantPathGroup = List.of(
+  //    a03, b32, b21, c14, d45, d56, e4Y
+  // );
 
   private void initAutoChoosers() {
   	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands.none());
-    if (paths.contains("PoseEstimatorTest")) 
-    autoChooser.addOption("Pose Estimator Test Auto", new PoseEstimatorTest(swerveDrive,"PoseEstimatorTest", superSystem ));
+    // if (paths.contains("PoseEstimatorTest")) 
+    // autoChooser.addOption("Pose Estimator Test Auto", new PoseEstimatorTest(swerveDrive,"PoseEstimatorTest", superSystem ));
     
     // Testing/characterization autos
     // if (paths.contains("Test2M")) {
@@ -613,9 +607,9 @@ public class RobotContainer {
     //   autoChooser.addOption("Preload Taxi Straight", new PreloadTaxi(swerveDrive, pathGroupExample3, superSystem));
     // }
 
-    if (paths.contains("PoseEstimatorTest")) {
-      autoChooser.addOption("Pose Estimator Test Auto", new PoseEstimatorTest(swerveDrive,"PoseEstimatorTest", superSystem));
-    }
+    // if (paths.contains("PoseEstimatorTest")) {
+    //   autoChooser.addOption("Pose Estimator Test Auto", new PoseEstimatorTest(swerveDrive,"PoseEstimatorTest", superSystem));
+    // }
 
 
     // Note to self: IMU may not be facing the right way at the end of the auto
@@ -648,26 +642,26 @@ public class RobotContainer {
       autoChooser.addOption("New 4 Piece", new Reliable4Piece(swerveDrive, "NEW4Piece", superSystem));
     }
 
-    if (paths.contains("5PieceMid")){
-      autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5PieceMid", superSystem));
-    }
+    // if (paths.contains("5PieceMid")){
+    //   autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5PieceMid", superSystem));
+    // }
 
-    if (paths.contains("5PieceMidSecond")){
-      autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem));
-    }
+    // if (paths.contains("5PieceMidSecond")){
+    //   autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem));
+    // }
 
-    autoChooser.addOption("DriveToNoteTest", new DriveToNoteTest(swerveDrive, superSystem, noteCamera, 15, 10, 50, PathPlannerPath.fromPathFile("DriveForwards"), PathPlannerPath.fromPathFile("DriveBackwards")));
+    // autoChooser.addOption("DriveToNoteTest", new DriveToNoteTest(swerveDrive, superSystem, noteCamera, 15, 10, 50, PathPlannerPath.fromPathFile("DriveForwards"), PathPlannerPath.fromPathFile("DriveBackwards")));
 
-    autoChooser.setDefaultOption("Five Piece", new FivePieceAuto(swerveDrive, superSystem, pathGroupFivePiece, noteCamera));
-    autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, noteCamera));
-    autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, List.of(a02,b2p6), 0));
+    // autoChooser.setDefaultOption("Five Piece", new FivePieceAuto(swerveDrive, superSystem, pathGroupFivePiece, noteCamera));
+    // autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, noteCamera));
+    // autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, List.of(a02,b2p6), 0));
     //autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, List.of(b23), apriltagCamera, adjustmentCamera, 0));
     autoChooser.addOption("FivePieceMiddle",     new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3,b13)));
     autoChooser.addOption("FivePieceSourceSide", new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d27,e6Y,aY3,b13)));
     autoChooser.addOption("FivePieceAmpSide",    new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d25,e6Y,aY3,b13)));
 
     //autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 15, 10, 50, pathGroupTestD));
-    autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, List.of(e6Y)));
+    // autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, List.of(e6Y)));
     //autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, List.of(f04), apriltagCamera, noteCamera, adjustmentCamera));
     // autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, noteCamera));
     // autoChooser.addOption("Path C Testing", new PathC(swerveDrive, superSystem, pathGroupTestC));

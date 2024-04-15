@@ -25,7 +25,7 @@ public class SuperSystem {
     // add line below once new banner sensor is added
     // public BannerSensor bannerSensorTwo;
     // public BeamBreak noteSensor;
-    public ClimbActuator linearActuator;
+    //public ClimbActuator linearActuator;
     // public SwerveDrivetrain swerve;
     // public Climber climber;
 
@@ -45,7 +45,7 @@ public class SuperSystem {
         this.shooterRoller = shooterRoller;
         this.indexer = indexer;
         // this.climber = climber;
-        this.linearActuator = new ClimbActuator();
+        //this.linearActuator = new ClimbActuator();
         // this.colorSensor = new ColorSensor();
         this.bannerSensor = new BannerSensor();
         // add line below once we add new banner sensor
