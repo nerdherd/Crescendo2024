@@ -29,6 +29,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.autos.DriveToNoteTest;
 import frc.robot.commands.autos.Mid4Piece;
+import frc.robot.commands.autos.Mid5PieceMiddle;
 import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.commands.autos.ThreePieceMid;
@@ -597,27 +598,6 @@ public class RobotContainer {
   private void initAutoChoosers() {
   	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands.none());
-    // if (paths.contains("PoseEstimatorTest")) 
-    // autoChooser.addOption("Pose Estimator Test Auto", new PoseEstimatorTest(swerveDrive,"PoseEstimatorTest", superSystem ));
-    
-    // Testing/characterization autos
-    // if (paths.contains("Test2M")) {
-    //   // autoChooser.addOption("Test2M", new Test2M(swerveDrive));
-    //   autoChooser.addOption("Preload Taxi Straight", new PreloadTaxi(swerveDrive, pathGroupExample3, superSystem));
-    // }
-
-    // if (paths.contains("PoseEstimatorTest")) {
-    //   autoChooser.addOption("Pose Estimator Test Auto", new PoseEstimatorTest(swerveDrive,"PoseEstimatorTest", superSystem));
-    // }
-
-
-    // Note to self: IMU may not be facing the right way at the end of the auto
-    // if (paths.contains("Mid3Piece")) {
-    //   autoChooser.addOption("Mid3Piece", new Mid3Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
-    //   autoChooser.addOption("Mid3Piece Path Only", new Mid3PiecePathOnly(swerveDrive, "Mid3Piece", superSystem, apriltagCamera));
-    //   autoChooser.addOption("Mid3Piece Dead Reckoning", new Mid3PieceDeadReckoning(swerveDrive, "Mid3Piece", superSystem));
-    //   autoChooser.addOption("Mid2Piece", new Mid2Piece(swerveDrive, "Mid3Piece", superSystem, apriltagCamera, adjustmentCamera));
-    // }
 
     if (paths.contains("PreloadTaxiSourceSide")) {
       //autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, "PreloadTaxiSourceSide", superSystem));
@@ -634,36 +614,17 @@ public class RobotContainer {
 
     if (paths.contains("Reliable4Piece")) {
       autoChooser.setDefaultOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
-      // autoChooser.addOption("Reliable 4 Piece with Vision", new Reliable4PieceWithVision(swerveDrive, "Reliable4Piece", superSystem, apriltagCamera));
     }
 
     if (paths.contains("NEW4Piece")) {
       autoChooser.addOption("New 4 Piece", new Reliable4Piece(swerveDrive, "NEW4Piece", superSystem));
     }
 
-    // if (paths.contains("5PieceMid")){
-    //   autoChooser.addOption("5 Piece Mid", new FivePieceEnd(swerveDrive, "5PieceMid", superSystem));
-    // }
+    autoChooser.addOption("4PieceMiddle",     new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3)));
+    //autoChooser.addOption("5PieceSource", new Mid5PieceMiddle(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3,b13)));
+    //autoChooser.addOption("4PieceAmpSide",    new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d25,e5Y,aY3)));
+    //autoChooser.addOption("4PieceSourceSide",    new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d27,e7Y,aY3)));
 
-    // if (paths.contains("5PieceMidSecond")){
-    //   autoChooser.addOption("5 Piece Mid Second", new FivePieceSecond(swerveDrive, "5PieceMid", superSystem));
-    // }
-
-    // autoChooser.addOption("DriveToNoteTest", new DriveToNoteTest(swerveDrive, superSystem, noteCamera, 15, 10, 50, PathPlannerPath.fromPathFile("DriveForwards"), PathPlannerPath.fromPathFile("DriveBackwards")));
-
-    // autoChooser.setDefaultOption("Five Piece", new FivePieceAuto(swerveDrive, superSystem, pathGroupFivePiece, noteCamera));
-    // autoChooser.setDefaultOption("Three Piece", new ThreePieceMid(swerveDrive, superSystem, pathGroupThreePiece, noteCamera));
-    // autoChooser.addOption("PathA", new PathA(swerveDrive, superSystem, List.of(a02,b2p6), 0));
-    //autoChooser.addOption("PathB", new PathB(swerveDrive, superSystem, List.of(b23), apriltagCamera, adjustmentCamera, 0));
-    autoChooser.addOption("FivePieceMiddle",     new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3,b13)));
-    autoChooser.addOption("FivePieceSourceSide", new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d27,e6Y,aY3,b13)));
-    autoChooser.addOption("FivePieceAmpSide",    new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d25,e6Y,aY3,b13)));
-
-    //autoChooser.addOption("PathD", new PathD(swerveDrive, superSystem, noteCamera, 15, 10, 50, pathGroupTestD));
-    // autoChooser.addOption("PathE", new PathE(swerveDrive, superSystem, List.of(e6Y)));
-    //autoChooser.addOption("PathF", new PathF(swerveDrive, superSystem, List.of(f04), apriltagCamera, noteCamera, adjustmentCamera));
-    // autoChooser.addOption("TestPath", new Variant5Piece(swerveDrive, superSystem, variantPathGroup, noteCamera));
-    // autoChooser.addOption("Path C Testing", new PathC(swerveDrive, superSystem, pathGroupTestC));
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
     autosTab.add("Selected Auto", autoChooser);

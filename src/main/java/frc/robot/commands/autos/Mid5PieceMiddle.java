@@ -1,4 +1,4 @@
-package frc.robot.commands.autos.PathVariants;
+package frc.robot.commands.autos;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
