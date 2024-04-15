@@ -1,4 +1,4 @@
-package frc.robot.commands.autos;
+package frc.robot.commands.autos.PathVariants;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -20,7 +20,7 @@ import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.vision.NoteAssistance;
 
-public class Mid4Piece extends SequentialCommandGroup {
+public class Mid5PieceMiddle extends SequentialCommandGroup {
     
     // to be tested. Do not use it before test
     
@@ -44,7 +44,7 @@ public class Mid4Piece extends SequentialCommandGroup {
         return new Pose2d(tail.position, new Rotation2d(rad));
     } 
 
-    public Mid4Piece(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteCamera, List<PathPlannerPath> pathGroup){
+    public Mid5PieceMiddle(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteCamera, List<PathPlannerPath> pathGroup){
         Pose2d startingPose = GetStartPoseInPath(pathGroup.get(0));
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
