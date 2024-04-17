@@ -29,6 +29,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.autos.DriveToNoteTest;
 import frc.robot.commands.autos.Mid4Piece;
+import frc.robot.commands.autos.Mid4PieceSide;
 import frc.robot.commands.autos.Mid5PieceMiddle;
 import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
@@ -603,11 +604,11 @@ public class RobotContainer {
     autoChooser.addOption("Do Nothing", Commands.none());
 
     if (paths.contains("PreloadTaxiSourceSide")) {
-      //autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, "PreloadTaxiSourceSide", superSystem));
+      autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, List.of(PathPlannerPath.fromPathFile("PreloadTaxiSourceSide")), superSystem));
     }
 
     if (paths.contains("PreloadTaxiPodiumSide")) {
-      //autoChooser.addOption("Preload Taxi Podium Side", new PreloadTaxi(swerveDrive, "PreloadTaxiPodiumSide", superSystem));
+      autoChooser.addOption("Preload Taxi Podium Side", new PreloadTaxi(swerveDrive, List.of(PathPlannerPath.fromPathFile("PreloadTaxiPodiumSide")), superSystem));
     }
 
     if (paths.contains("TaxiOnly")) {
@@ -623,10 +624,10 @@ public class RobotContainer {
       autoChooser.addOption("New 4 Piece", new Reliable4Piece(swerveDrive, "NEW4Piece", superSystem));
     }
 
-    autoChooser.addOption("4PieceMiddle",     new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3)));
-    //autoChooser.addOption("5PieceSource", new Mid5PieceMiddle(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3,b31)));
-    autoChooser.addOption("4PieceAmpSide",    new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d25,e5Y,aY3)));
-    autoChooser.addOption("4PieceSourceSide",    new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d27,e7Y,aY3)));
+    autoChooser.addOption("4PieceMiddle",         new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3)));
+    autoChooser.addOption("5PieceMiddle",   new Mid5PieceMiddle(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3,b31)));
+    autoChooser.addOption("4PieceAmpSide",    new Mid4PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d25,e5Y,aY3)));
+    autoChooser.addOption("4PieceSourceSide", new Mid4PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d27,e7Y,aY3)));
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
