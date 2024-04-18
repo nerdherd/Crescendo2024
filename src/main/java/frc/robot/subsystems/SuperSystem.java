@@ -744,7 +744,7 @@ public class SuperSystem {
         Command command = Commands.sequence(
             // Prepare to shoot
             shooterRoller.setEnabledCommand(true),
-            shooterRoller.shootSpeakerAutoStart(),
+            shooterRoller.shootSpeakerAutoStart2(),
             Commands.deadline(
                 Commands.waitSeconds(0.4), // Was 0.2     3/3/24     But 0.8   @Code Orange
                 
@@ -771,6 +771,30 @@ public class SuperSystem {
         Command command = Commands.sequence(
             // Prepare to shoot
             shooterPivot.moveToSpeakerAuto(),
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker(),
+            Commands.deadline(
+                Commands.waitSeconds(0.6),
+                Commands.waitUntil(shooterRoller::atTargetVelocity)
+            ),
+            
+            // Shoot
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            Commands.waitUntil(() -> false)
+        ).finallyDo(interrupted -> {
+            indexer.stop();
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
+        return command;
+    }
+
+    public Command shootPodiumAuto() {
+        Command command = Commands.sequence(
+            // Prepare to shoot
+            shooterPivot.moveToSpeakerFar(),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
             Commands.deadline(

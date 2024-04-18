@@ -168,14 +168,7 @@ public class Mid4Piece extends SequentialCommandGroup {
 
                         Commands.deadline(
                             Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.3)),
-                            Commands.parallel(
-                                Commands.sequence(
-                                    superSystem.shootSequenceAdjustable(swerve),
-                                    Commands.waitSeconds(0.1),
-                                    superSystem.shoot()
-                                ),
-                                superSystem.intakeRoller.autoIntakeCommand()
-                            )
+                            superSystem.shootPodiumAuto()
                         )
                     )
                 )

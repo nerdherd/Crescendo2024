@@ -272,6 +272,7 @@ public final class Constants {
     public static final PrefDouble kTopOuttakeHigh  = new PrefDouble("Top Shooter Outtake High", 70); // Was 50    3/3/24 Code Orange
     public static final PrefDouble kTopOuttakeLow   = new PrefDouble("Top Shooter Outtake Low", 20);
     public static final PrefDouble kTopOuttakeLowAutostart   = new PrefDouble("Top Shooter Outtake Low", 50);// to save spain time
+    public static final PrefDouble kTopOuttakeHighAutostart   = new PrefDouble("Top Shooter Outtake High Auto", 70);// to save spain time
     public static final PrefDouble kTopOuttakeAuto1 = new PrefDouble("Top Shooter Outtake Auto 1", 20);
     public static final PrefDouble kTopOuttakeAuto2 = new PrefDouble("Top Shooter Outtake Auto 2", 100);
     public static final PrefDouble kTopOuttakeAuto3 = new PrefDouble("Top Shooter Outtake Auto 3", 100);
@@ -309,7 +310,7 @@ public final class Constants {
     public static final PrefDouble kSpeakerPosition  = new PrefDouble("Pivot Speaker Position", -52.5);
     public static final PrefDouble kSpeakerPositionAuto  = new PrefDouble("Pivot Speaker Position Auto", -48);
     public static final PrefDouble kSpeakerPositionAutoStart  = new PrefDouble("Pivot Speaker Position Auto", -40); // Change to 37
-    public static final PrefDouble kSpeakerPositionAutoStart2  = new PrefDouble("Pivot Speaker Position Auto", -28); // Change to 23
+    public static final PrefDouble kSpeakerPositionAutoStart2  = new PrefDouble("Pivot Speaker Position Auto", -26); // Change to 23
     public static final PrefDouble kSpeakerPosition2 = new PrefDouble("Pivot Speaker Position 2", -28);
     public static final PrefDouble kNeutralPosition  = new PrefDouble("Pivot Neutral Position", 36);
     public static final PrefDouble kAmpPosition      = new PrefDouble("Pivot Amp Position"    , 41.6);

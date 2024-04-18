@@ -188,16 +188,19 @@ public class RobotContainer {
             || driverController.getL2Button() 
             || driverController.getCircleButton()
             || driverController.getTriangleButton()
-            || (
-              driverController.getTouchpad() && superSystem.getIsPassing()
-            )
+            // || (
+            //   driverController.getTouchpad() && superSystem.getIsPassing()
+            // )
             // || driverController.getPSButton()
           ); // Turn to angle
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          if ((driverController.getTouchpad() && superSystem.getIsPassing())
-           || driverController.getTriangleButton()) {
+          if (
+          //   (driverController.getTouchpad() && superSystem.getIsPassing())
+          //  || 
+           driverController.getTriangleButton()) 
+           {
             if (!IsRedSide()) {
               return 315.0;
             } else {
