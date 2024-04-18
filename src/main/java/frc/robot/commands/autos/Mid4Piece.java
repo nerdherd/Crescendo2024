@@ -145,7 +145,7 @@ public class Mid4Piece extends SequentialCommandGroup {
                         superSystem.shooterPivot.moveToHandoff(),
 
                         Commands.deadline(
-                            Commands.waitUntil(() -> !superSystem.noteIntook()),
+                            Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.1)),
                             superSystem.shootSubwoofer()
                         ),
                         
@@ -167,7 +167,7 @@ public class Mid4Piece extends SequentialCommandGroup {
                         superSystem.backupIndexerAndShooterLess(),
 
                         Commands.deadline(
-                            Commands.waitUntil(() -> !superSystem.noteIntook()),
+                            Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.3)),
                             Commands.parallel(
                                 Commands.sequence(
                                     superSystem.shootSequenceAdjustable(swerve),

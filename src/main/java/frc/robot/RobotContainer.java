@@ -177,8 +177,8 @@ public class RobotContainer {
 
         // driverController::getSquareButton, // Field oriented
         () -> false, // should be robot oriented now on true
-
-        driverController::getCrossButton, // Towing
+        () -> false,
+        // driverController::getCrossButton, // Towing
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
         () -> {
@@ -280,7 +280,8 @@ public class RobotContainer {
     commandDriverController.share().whileTrue(
       Commands.runOnce(() -> swerveDrive.zeroGyroAndPoseAngle())
     );
-    commandDriverController.cross().whileTrue(swerveDrive.driveToAmpCommand(3, 3));
+    // commandDriverController.cross().whileTrue(swerveDrive.driveToAmpCommand(3, 3));
+    commandDriverController.cross().whileTrue(superSystem.eject());
     // commandDriverController.square().whileTrue(
     //   Commands.parallel(
     //     noteCamera.driveToNoteCommand(swerveDrive, 15, 0, 0, 10, 200, null),
@@ -530,6 +531,7 @@ public class RobotContainer {
   // PathPlannerPath c28 = PathPlannerPath.fromPathFile("c28Path");
   // PathPlannerPath c27 = PathPlannerPath.fromPathFile("c27Path");
   PathPlannerPath c26 = PathPlannerPath.fromPathFile("c26Path");
+  PathPlannerPath c26Fast = PathPlannerPath.fromPathFile("c26PathFast");
   //PathPlannerPath c25 = PathPlannerPath.fromPathFile("c25Path");
   //PathPlannerPath c25Stage = PathPlannerPath.fromPathFile("c25PathStage");
   //PathPlannerPath c26Short = PathPlannerPath.fromPathFile("c26PathShort");
@@ -603,13 +605,13 @@ public class RobotContainer {
   	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands.none());
 
-    if (paths.contains("PreloadTaxiSourceSide")) {
-      autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, List.of(PathPlannerPath.fromPathFile("PreloadTaxiSourceSide")), superSystem));
-    }
+    // if (paths.contains("PreloadTaxiSourceSide")) {
+    //   autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, List.of(PathPlannerPath.fromPathFile("PreloadTaxiSourceSide")), superSystem));
+    // }
 
-    if (paths.contains("PreloadTaxiPodiumSide")) {
-      autoChooser.addOption("Preload Taxi Podium Side", new PreloadTaxi(swerveDrive, List.of(PathPlannerPath.fromPathFile("PreloadTaxiPodiumSide")), superSystem));
-    }
+    // if (paths.contains("PreloadTaxiPodiumSide")) {
+    //   autoChooser.addOption("Preload Taxi Podium Side", new PreloadTaxi(swerveDrive, List.of(PathPlannerPath.fromPathFile("PreloadTaxiPodiumSide")), superSystem));
+    // }
 
     if (paths.contains("TaxiOnly")) {
       autoChooser.addOption("Taxi Only", AutoBuilder.buildAuto("TaxiOnly"));
@@ -624,10 +626,10 @@ public class RobotContainer {
       autoChooser.addOption("New 4 Piece", new Reliable4Piece(swerveDrive, "NEW4Piece", superSystem));
     }
 
-    autoChooser.addOption("4PieceMiddle",         new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3)));
-    autoChooser.addOption("5PieceMiddle",   new Mid5PieceMiddle(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d26,e6Y,aY3,b31)));
-    autoChooser.addOption("4PieceAmpSide",    new Mid4PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d25,e5Y,aY3)));
-    autoChooser.addOption("4PieceSourceSide", new Mid4PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,d27,e7Y,aY3)));
+    autoChooser.addOption("4PieceMiddle",         new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d26,e6Y,aY3)));
+    autoChooser.addOption("5PieceMiddle",   new Mid5PieceMiddle(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26Fast,d26,e6Y,aY3,b31)));
+    autoChooser.addOption("4PieceAmpSide",    new Mid4PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d25,e5Y,aY3)));
+    autoChooser.addOption("4PieceSourceSide", new Mid4PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d27,e7Y,aY3)));
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 

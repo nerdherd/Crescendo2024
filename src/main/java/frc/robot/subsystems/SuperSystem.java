@@ -199,7 +199,7 @@ public class SuperSystem {
             shooterRoller.setEnabledCommand(true),
             indexer.setEnabledCommand(true),
             indexer.reverseIndexCommand(),
-            Commands.waitSeconds(0.05),
+            Commands.waitSeconds(0.15),
             indexer.stopCommand(),
             shooterRoller.stopCommand()
         ).finallyDo(() -> {
@@ -698,7 +698,7 @@ public class SuperSystem {
             shooterPivot.moveToSpeaker(),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
-            Commands.waitSeconds(0.4), // Was 0.2     3/3/24     But 0.8   @Code Orange
+            Commands.waitSeconds(0.45), // Was 0.2     3/3/24     But 0.8   @Code Orange
             
             // Shoot
             indexer.setEnabledCommand(true),
@@ -800,7 +800,7 @@ public class SuperSystem {
                 shooterRoller.setEnabledCommand(true),
                 shooterRoller.shootSpeaker(),
                 Commands.race(
-                    Commands.waitUntil(() -> shooterPivot.atTargetPosition()),
+                    Commands.waitUntil(() -> shooterPivot.atTargetPositionAccurate()),
                     Commands.waitSeconds(0.8)
                 )
                 // ,

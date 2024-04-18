@@ -145,7 +145,7 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
                     superSystem.shooterPivot.moveToHandoff(),
 
                     Commands.deadline(
-                        Commands.waitUntil(() -> !superSystem.noteIntook()),
+                        Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.1)),
                         superSystem.shootSubwoofer()
                     ),
                     
@@ -167,7 +167,7 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
                     superSystem.backupIndexerAndShooterLess(),
 
                     Commands.deadline(
-                        Commands.waitUntil(() -> !superSystem.noteIntook()),
+                        Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.1)),
                         Commands.parallel(
                             Commands.sequence(
                                 superSystem.shootSequenceAdjustable(swerve),
@@ -187,14 +187,14 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
                 ),
                 Commands.waitUntil(superSystem::noteIntook)
             ),
-            Commands.parallel(
+            // Commands.parallel(
                 Commands.sequence(
                     superSystem.backupIndexerAndShooterLess(),
                     superSystem.shootSequenceAdjustable(swerve),
                     superSystem.shoot()
-                ),
-                swerve.turnToTag(RobotContainer.IsRedSide() ? 4 : 7)
-            )
+                )
+                // swerve.turnToTag(RobotContainer.IsRedSide() ? 4 : 7)
+            // )
         );
     }
 }
