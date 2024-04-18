@@ -98,15 +98,26 @@ public class Mid4Piece extends SequentialCommandGroup {
                 ),
             
                 // Shoot note 2 while moving to C start position
-                Commands.parallel(
-                    AutoBuilder.followPath(pathGroup.get(1)),//b2p6
+                // Commands.parallel(
+                //     AutoBuilder.followPath(pathGroup.get(1)),//b2p6
 
                     // note 2
-                    Commands.deadline(
+                    Commands.race(
+                        Commands.waitSeconds(2),
                         Commands.waitSeconds(0.4).andThen(Commands.waitUntil(() -> !superSystem.noteIntook())),
-                        superSystem.shootSubwooferAutoStart2()
-                    )
-                ),
+                        Commands.parallel(
+                            superSystem.prepareShooterVision(swerve),
+                            Commands.sequence(
+                                Commands.runOnce(() -> swerve.towModules()),
+                                Commands.waitSeconds(0.2),
+                                Commands.waitUntil(superSystem.shooterPivot::atTargetPositionAccurate),
+                                Commands.waitSeconds(0.1),
+                                superSystem.shoot()
+                            )
+                        )
+                        // superSystem.shootSubwooferAutoStart2()
+                    ),
+                // ),
 
                 // PATH CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
                 Commands.parallel(

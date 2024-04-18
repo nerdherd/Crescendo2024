@@ -391,6 +391,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         lastDistance = robotPose.getTranslation().getDistance(tagPose.getTranslation());
         // lastDistance = Math.sqrt(Math.pow(robotPose.getX()-tagPose.getX(), 2) + Math.pow(robotPose.getY()-tagPose.getY(), 2));
 
+        SmartDashboard.putNumber("Distance from tag", lastDistance);
         return lastDistance;
     }
     public double getSpeakerTurnToAngleTolerance ()
