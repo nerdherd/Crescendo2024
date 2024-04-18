@@ -45,7 +45,7 @@ public class Mid4Piece extends SequentialCommandGroup {
     } 
 
     public Mid4Piece(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteCamera, List<PathPlannerPath> pathGroup){
-        Pose2d startingPose = GetStartPoseInPath(pathGroup.get(0));
+        Pose2d startingPose = new Pose2d(1.33, 5.55, new Rotation2d());//GetStartPoseInPath(pathGroup.get(0));
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
@@ -164,13 +164,14 @@ public class Mid4Piece extends SequentialCommandGroup {
                             superSystem.intakeUntilSensedAuto(2.875)
                         ),
 
-                        superSystem.backupIndexerAndShooterLess(),
+                        superSystem.backupIndexerAndShooter(),
 
                         Commands.deadline(
                             Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.3)),
                             Commands.parallel(
                                 Commands.sequence(
                                     superSystem.shootSequenceAdjustable(swerve),
+                                    Commands.waitSeconds(0.1),
                                     superSystem.shoot()
                                 ),
                                 superSystem.intakeRoller.autoIntakeCommand()

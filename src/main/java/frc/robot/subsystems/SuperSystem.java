@@ -746,7 +746,7 @@ public class SuperSystem {
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeakerAutoStart(),
             Commands.deadline(
-                Commands.waitSeconds(0.32), // Was 0.2     3/3/24     But 0.8   @Code Orange
+                Commands.waitSeconds(0.4), // Was 0.2     3/3/24     But 0.8   @Code Orange
                 
                 Commands.deadline(
                     Commands.waitUntil(() -> 
