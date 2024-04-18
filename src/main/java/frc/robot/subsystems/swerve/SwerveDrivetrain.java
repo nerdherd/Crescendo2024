@@ -446,6 +446,22 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         );
     }
 
+    public Command turnToSubwoofer() {
+        return Commands.either(
+            turnToTag(4),
+            turnToTag(7),
+            () -> RobotContainer.IsRedSide()    
+        );
+    }
+
+    public Command turnToSubwoofer(double angleTolerance) {
+        return Commands.either(
+            turnToTag(4, angleTolerance),
+            turnToTag(7, angleTolerance),
+            () -> RobotContainer.IsRedSide()    
+        );
+    }
+
     public Command turnToTag(int tagID)
     {
         return Commands.sequence(

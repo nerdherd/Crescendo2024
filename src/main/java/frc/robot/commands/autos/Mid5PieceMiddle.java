@@ -53,129 +53,135 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
             
             Commands.sequence(
 
-            Commands.parallel(
-                // Drive to note 2
-                Commands.race(
-                    AutoBuilder.followPath(pathGroup.get(0)).andThen(Commands.waitSeconds(0.5)),//a02
-                    Commands.sequence(
-                        // enable after the preload gone
-                        Commands.waitSeconds(1.25),
-                        Commands.deadline(
-                            Commands.waitSeconds(2),
-                            Commands.waitUntil(superSystem::noteIntook)
+                Commands.parallel(
+                    // Drive to note 2
+                    Commands.race(
+                        AutoBuilder.followPath(pathGroup.get(0)).andThen(Commands.waitSeconds(0.5)),//a02
+                        Commands.sequence(
+                            // enable after the preload gone
+                            Commands.waitSeconds(1.25),
+                            Commands.deadline(
+                                Commands.waitSeconds(2),
+                                Commands.waitUntil(superSystem::noteIntook)
+                            )
                         )
+                    ),
+
+                    Commands.sequence(
+                        // Preload
+                        Commands.deadline(
+                            Commands.waitUntil(() -> !superSystem.noteIntook()),
+                            Commands.parallel(
+                                superSystem.shootSubwooferAutoStart(),
+                                superSystem.intakeRoller.autoIntakeCommand()
+                            )
+                        ),
+                        
+                        // Stop note from popping out
+                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                        superSystem.shooterRoller.setEnabledCommand(true),
+                        Commands.waitSeconds(0.1),
+
+                        Commands.deadline(
+                            Commands.waitUntil(superSystem::noteIntook),
+                            superSystem.intakeUntilSensedAuto(2.875)
+                        ),
+                        superSystem.backupIndexerAndShooterLess()
+                        
+                        // // shoot second piece
+                        // Commands.waitSeconds(0.25),
+                        // Commands.deadline(
+                        //     Commands.waitUntil(() -> !superSystem.noteIntook()),
+                        //     superSystem.shootSubwooferAutoStart2()
+                        // )
+                    )    
+                ),
+            
+                // Shoot note 2 while moving to C start position
+                // Commands.parallel(
+                //     AutoBuilder.followPath(pathGroup.get(1)),//b2p6
+
+                    // note 2
+                    Commands.race(
+                        Commands.waitSeconds(2),
+                        Commands.waitSeconds(0.4).andThen(Commands.waitUntil(() -> !superSystem.noteIntook())),
+                        Commands.parallel(
+                            superSystem.prepareShooterVision(swerve),
+                            Commands.sequence(
+                                Commands.runOnce(() -> swerve.towModules()),
+                                Commands.waitSeconds(0.2),
+                                Commands.waitUntil(superSystem.shooterPivot::atTargetPositionAccurate),
+                                Commands.waitSeconds(0.1),
+                                superSystem.shoot()
+                            )
+                        )
+                        // superSystem.shootSubwooferAutoStart2()
+                    ),
+                // ),
+
+                // PATH CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+                Commands.parallel(
+                    AutoBuilder.followPath(pathGroup.get(2)),//c26
+                    Commands.sequence(
+                        superSystem.stow(),
+                        Commands.waitSeconds(1.5),
+                        superSystem.shooterPivot.moveToHandoff(),
+                        superSystem.shooterPivot.setEnabledCommand(true)
+                    )
+                ),
+                
+                // PATH DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+                Commands.race(
+                    AutoBuilder.followPath(pathGroup.get(3)).andThen(Commands.waitSeconds(0.5)),//d26
+                    superSystem.intakeUntilSensedAuto(2.875),
+                    Commands.waitUntil(() -> superSystem.noteIntook())
+                ),
+
+                // Commands.either(
+                //     Commands.none(), 
+                //     Commands.race(
+                //         noteCamera.driveToNoteCommand(swerve, 15, 0, 0, 10, 200, null),   
+                //         superSystem.intakeUntilSensedAuto(3)
+                //     ),
+                //     () -> superSystem.noteIntook()
+                // ),
+                superSystem.backupIndexerAndShooterLess(),
+
+                // PATH EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+                Commands.parallel(
+                    AutoBuilder.followPath(pathGroup.get(4)), //e6Y
+                    Commands.sequence(
+                        superSystem.stow(),
+                        Commands.waitSeconds(2.3), // regular path uses 2.4; shorter one uses .9
+                        superSystem.shooterPivot.moveToHandoff(),
+
+                        Commands.deadline(
+                            Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.1)),
+                            superSystem.shootSubwoofer()
+                        ),
+                        
+                        superSystem.shooterRoller.setVelocityCommand(-10, -10),
+                        superSystem.shooterRoller.setEnabledCommand(true)
                     )
                 ),
 
-                Commands.sequence(
-                    // Preload
-                    Commands.deadline(
-                        Commands.waitUntil(() -> !superSystem.noteIntook()),
-                        Commands.parallel(
-                            superSystem.shootSubwooferAutoStart(),
-                            superSystem.intakeRoller.autoIntakeCommand()
+                // PATH LAST AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                Commands.race(
+                    Commands.waitSeconds(3),
+                    // Drive to note 123
+                    AutoBuilder.followPath(pathGroup.get(5)).andThen(Commands.waitSeconds(3)), //aY3
+                    Commands.sequence(
+                        Commands.deadline(
+                            Commands.waitUntil(superSystem::noteIntook),
+                            superSystem.intakeUntilSensedAuto(2.875)
+                        ),
+
+                        superSystem.backupIndexerAndShooter(),
+
+                        Commands.deadline(
+                            Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.3)),
+                            superSystem.shootPodiumAuto()
                         )
-                    ),
-                    
-                    // Stop note from popping out
-                    superSystem.shooterRoller.setVelocityCommand(-10, -10),
-                    superSystem.shooterRoller.setEnabledCommand(true),
-                    Commands.waitSeconds(0.1),
-
-                    Commands.deadline(
-                        Commands.waitUntil(superSystem::noteIntook),
-                        superSystem.intakeUntilSensedAuto(2.875)
-                    ),
-                    superSystem.backupIndexerAndShooterLess()
-                    
-                    // // shoot second piece
-                    // Commands.waitSeconds(0.25),
-                    // Commands.deadline(
-                    //     Commands.waitUntil(() -> !superSystem.noteIntook()),
-                    //     superSystem.shootSubwooferAutoStart2()
-                    // )
-                )    
-            ),
-            
-            // Shoot note 2 while moving back to C start position
-            Commands.parallel(
-                AutoBuilder.followPath(pathGroup.get(1)),//b2p6
-
-                // note 2
-                Commands.deadline(
-                    Commands.waitSeconds(0.4).andThen(Commands.waitUntil(() -> !superSystem.noteIntook())),
-                    superSystem.shootSubwooferAutoStart2()
-                )
-            ),
-
-            // PATH CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-            Commands.parallel(
-                AutoBuilder.followPath(pathGroup.get(2)),//c26
-                Commands.sequence(
-                    superSystem.stow(),
-                    Commands.waitSeconds(1.5),
-                    superSystem.shooterPivot.moveToHandoff(),
-                    superSystem.shooterPivot.setEnabledCommand(true)
-                )
-            ),
-                
-            // this is for PathD
-            Commands.race(
-                AutoBuilder.followPath(pathGroup.get(3)).andThen(Commands.waitSeconds(0.5)),//d26
-                superSystem.intakeUntilSensedAuto(2.875),
-                Commands.waitUntil(() -> superSystem.noteIntook())
-            ),
-
-            // Commands.either(
-            //     Commands.none(), 
-            //     Commands.race(
-            //         noteCamera.driveToNoteCommand(swerve, 15, 0, 0, 10, 200, null),   
-            //         superSystem.intakeUntilSensedAuto(3)
-            //     ),
-            //     () -> superSystem.noteIntook()
-            // ),
-            superSystem.backupIndexerAndShooterLess(),
-
-            // PATH EEEEEEEEE
-            Commands.parallel(
-                AutoBuilder.followPath(pathGroup.get(4)), //e6Y
-                Commands.sequence(
-                    superSystem.stow(),
-                    Commands.waitSeconds(2.3), // regular path uses 2.4; shorter one uses .9
-                    superSystem.shooterPivot.moveToHandoff(),
-
-                    Commands.deadline(
-                        Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.1)),
-                        superSystem.shootSubwoofer()
-                    ),
-                    
-                    superSystem.shooterRoller.setVelocityCommand(-10, -10),
-                    superSystem.shooterRoller.setEnabledCommand(true)
-                )
-            ),
-
-            // PATH LAST AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-            Commands.parallel(
-                // Drive to note 123
-                AutoBuilder.followPath(pathGroup.get(5)), //aY3
-                Commands.sequence(
-                    Commands.deadline(
-                        Commands.waitUntil(superSystem::noteIntook),
-                        superSystem.intakeUntilSensedAuto(2.875)
-                    ),
-
-                    superSystem.backupIndexerAndShooterLess(),
-
-                    Commands.deadline(
-                        Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.1)),
-                        Commands.parallel(
-                            Commands.sequence(
-                                superSystem.shootSequenceAdjustable(swerve),
-                                superSystem.shoot()
-                            ),
-                            superSystem.intakeRoller.autoIntakeCommand()
-                        )
-                    )
                     )
                 )
             ),
@@ -187,14 +193,22 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
                 ),
                 Commands.waitUntil(superSystem::noteIntook)
             ),
-            // Commands.parallel(
+            Commands.parallel(
                 Commands.sequence(
                     superSystem.backupIndexerAndShooterLess(),
-                    superSystem.shootSequenceAdjustable(swerve),
-                    superSystem.shoot()
-                )
-                // swerve.turnToTag(RobotContainer.IsRedSide() ? 4 : 7)
-            // )
+                    Commands.parallel(
+                        superSystem.prepareShooterVision(swerve),
+                        Commands.sequence(
+                            Commands.runOnce(() -> swerve.towModules()),
+                            Commands.waitSeconds(0.2),
+                            Commands.waitUntil(superSystem.shooterPivot::atTargetPositionAccurate),
+                            Commands.waitSeconds(0.1),
+                            superSystem.shoot()
+                        )
+                    )
+                ),
+                swerve.turnToSubwoofer()
+            )
         );
     }
 }
