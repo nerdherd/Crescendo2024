@@ -575,6 +575,10 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         backRight.setDesiredState(towModuleStates[3], false);
     }
 
+    public Command towCommand() {
+        return Commands.runOnce(this::towModules, this);
+    }
+
     public void initShuffleboard(LOG_LEVEL level) {
         if (level == LOG_LEVEL.OFF)  {
             return;

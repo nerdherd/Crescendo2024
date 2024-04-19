@@ -45,14 +45,12 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
     } 
 
     public Mid5PieceMiddle(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteCamera, List<PathPlannerPath> pathGroup){
-        Pose2d startingPose = GetStartPoseInPath(pathGroup.get(0));
+        Pose2d startingPose = new Pose2d(1.33, 5.55, new Rotation2d());//GetStartPoseInPath(pathGroup.get(0));
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
             Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
             
-            Commands.sequence(
-
             Commands.parallel(
                 // Drive to note 2
                 Commands.race(
@@ -96,16 +94,29 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
                     // )
                 )    
             ),
-            
-            // Shoot note 2 while moving back to C start position
+        
+            // Shoot note 2 while moving to C start position
             Commands.parallel(
-                AutoBuilder.followPath(pathGroup.get(1)),//b2p6
-
+                // AutoBuilder.followPath(pathGroup.get(1)),//b2p6
+                swerve.towCommand(),
                 // note 2
                 Commands.deadline(
                     Commands.waitSeconds(0.4).andThen(Commands.waitUntil(() -> !superSystem.noteIntook())),
                     superSystem.shootSubwooferAutoStart2()
                 )
+                // Commands.race(
+                //     superSystem.prepareShooterVision(swerve),
+                //     Commands.sequence(
+                //         Commands.race(
+                //             Commands.waitUntil(() -> superSystem.shooterPivot.atTargetPositionAccurate()),
+                //             Commands.waitSeconds(1.5)
+                //         ),
+                //         Commands.waitSeconds(0.2),
+                //         superSystem.indexer.setEnabledCommand(true),
+                //         superSystem.indexer.indexCommand(),
+                //         Commands.waitUntil(() -> !superSystem.noteIntook())
+                //     )
+                // )
             ),
 
             // PATH CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
@@ -118,8 +129,8 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
                     superSystem.shooterPivot.setEnabledCommand(true)
                 )
             ),
-                
-            // this is for PathD
+            
+            // PATH DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
             Commands.race(
                 AutoBuilder.followPath(pathGroup.get(3)).andThen(Commands.waitSeconds(0.5)),//d26
                 superSystem.intakeUntilSensedAuto(2.875),
@@ -136,7 +147,7 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
             // ),
             superSystem.backupIndexerAndShooterLess(),
 
-            // PATH EEEEEEEEE
+            // PATH EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
             Commands.parallel(
                 AutoBuilder.followPath(pathGroup.get(4)), //e6Y
                 Commands.sequence(
@@ -155,7 +166,8 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
             ),
 
             // PATH LAST AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-            Commands.parallel(
+            Commands.deadline(
+                Commands.waitSeconds(2.5).andThen(Commands.waitUntil(() -> !superSystem.noteIntook())),
                 // Drive to note 123
                 AutoBuilder.followPath(pathGroup.get(5)), //aY3
                 Commands.sequence(
@@ -164,18 +176,11 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
                         superSystem.intakeUntilSensedAuto(2.875)
                     ),
 
-                    superSystem.backupIndexerAndShooterLess(),
+                    superSystem.backupIndexerAndShooter(),
 
                     Commands.deadline(
-                        Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.1)),
-                        Commands.parallel(
-                            Commands.sequence(
-                                superSystem.shootSequenceAdjustable(swerve),
-                                superSystem.shoot()
-                            ),
-                            superSystem.intakeRoller.autoIntakeCommand()
-                        )
-                    )
+                        Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.3)),
+                        superSystem.shootPodiumAuto()
                     )
                 )
             ),
@@ -190,8 +195,18 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
             // Commands.parallel(
                 Commands.sequence(
                     superSystem.backupIndexerAndShooterLess(),
-                    superSystem.shootSequenceAdjustable(swerve),
-                    superSystem.shoot()
+                    Commands.parallel(
+                        superSystem.prepareShooterVision(swerve),
+                        Commands.sequence(
+                            Commands.race(
+                                Commands.waitUntil(() -> superSystem.shooterPivot.atTargetPositionAccurate()),
+                                Commands.waitSeconds(1.5)
+                            ),
+                            Commands.waitSeconds(0.2),
+                            superSystem.indexer.setEnabledCommand(true),
+                            superSystem.indexer.indexCommand()
+                        )
+                    )
                 )
                 // swerve.turnToTag(RobotContainer.IsRedSide() ? 4 : 7)
             // )

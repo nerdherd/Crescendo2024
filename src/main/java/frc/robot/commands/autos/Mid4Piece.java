@@ -99,25 +99,26 @@ public class Mid4Piece extends SequentialCommandGroup {
             
                 // Shoot note 2 while moving to C start position
                 Commands.parallel(
-                    AutoBuilder.followPath(pathGroup.get(1)),//b2p6
-
+                    // AutoBuilder.followPath(pathGroup.get(1)),//b2p6
+                    swerve.towCommand(),
                     // note 2
-                    // Commands.deadline(
-                    //     Commands.waitSeconds(0.4).andThen(Commands.waitUntil(() -> !superSystem.noteIntook())),
-                    //     superSystem.shootSubwooferAutoStart2()
-                    // ),
-                    Commands.race(
-                        superSystem.prepareShooterVision(swerve),
-                        Commands.sequence(
-                            Commands.race(
-                                Commands.waitUntil(() -> superSystem.shooterPivot.atTargetPositionAccurate()),
-                                Commands.waitSeconds(1.5)
-                            ),
-                            Commands.waitSeconds(0.2),
-                            superSystem.indexer.setEnabledCommand(true),
-                            superSystem.indexer.indexCommand()
-                        )
+                    Commands.deadline(
+                        Commands.waitSeconds(0.4).andThen(Commands.waitUntil(() -> !superSystem.noteIntook())),
+                        superSystem.shootSubwooferAutoStart2()
                     )
+                    // Commands.race(
+                    //     superSystem.prepareShooterVision(swerve),
+                    //     Commands.sequence(
+                    //         Commands.race(
+                    //             Commands.waitUntil(() -> superSystem.shooterPivot.atTargetPositionAccurate()),
+                    //             Commands.waitSeconds(1.5)
+                    //         ),
+                    //         Commands.waitSeconds(0.2),
+                    //         superSystem.indexer.setEnabledCommand(true),
+                    //         superSystem.indexer.indexCommand(),
+                    //         Commands.waitUntil(() -> !superSystem.noteIntook())
+                    //     )
+                    // )
                 ),
 
                 // PATH CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
