@@ -102,9 +102,21 @@ public class Mid4Piece extends SequentialCommandGroup {
                     AutoBuilder.followPath(pathGroup.get(1)),//b2p6
 
                     // note 2
-                    Commands.deadline(
-                        Commands.waitSeconds(0.4).andThen(Commands.waitUntil(() -> !superSystem.noteIntook())),
-                        superSystem.shootSubwooferAutoStart2()
+                    // Commands.deadline(
+                    //     Commands.waitSeconds(0.4).andThen(Commands.waitUntil(() -> !superSystem.noteIntook())),
+                    //     superSystem.shootSubwooferAutoStart2()
+                    // ),
+                    Commands.race(
+                        superSystem.prepareShooterVision(swerve),
+                        Commands.sequence(
+                            Commands.race(
+                                Commands.waitUntil(() -> superSystem.shooterPivot.atTargetPositionAccurate()),
+                                Commands.waitSeconds(1.5)
+                            ),
+                            Commands.waitSeconds(0.2),
+                            superSystem.indexer.setEnabledCommand(true),
+                            superSystem.indexer.indexCommand()
+                        )
                     )
                 ),
 
