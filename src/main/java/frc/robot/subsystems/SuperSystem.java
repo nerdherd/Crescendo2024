@@ -644,6 +644,16 @@ public class SuperSystem {
         command.addRequirements(shooterPivot, shooterRoller, indexer);
         return command;
     }
+
+    public Command prepareShooterPodium2() {
+        Command command = Commands.parallel(
+            shooterPivot.moveToSpeakerFar2(),
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker()
+        );
+        command.addRequirements(shooterPivot, shooterRoller, indexer);
+        return command;
+    }
     
 
     private boolean isPassing = false;

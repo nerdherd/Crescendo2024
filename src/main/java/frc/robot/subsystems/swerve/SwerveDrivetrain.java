@@ -457,6 +457,28 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             new TurnToAngleLive(() -> getTurnToSpecificTagAngle(tagID), this, angleTolerance)
         );
     }
+
+    public Command turnToSubwoofer() {
+        Command command = Commands.either(
+            turnToTag(4), 
+            turnToTag(7),
+            RobotContainer::IsRedSide
+        );
+
+        command.addRequirements(this);
+        return command;
+    }
+
+    public Command turnToSubwoofer(double angleTolerance) {
+        Command command = Commands.either(
+            turnToTag(4, angleTolerance), 
+            turnToTag(7, angleTolerance),
+            RobotContainer::IsRedSide
+        );
+
+        command.addRequirements(this);
+        return command;
+    }
     /**
      * Get the position of each swerve module
      * @return An array of swerve module positions

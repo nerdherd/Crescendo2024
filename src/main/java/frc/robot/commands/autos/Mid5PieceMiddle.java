@@ -158,10 +158,7 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
                     Commands.deadline(
                         Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.1)),
                         superSystem.shootSubwoofer()
-                    ),
-                    
-                    superSystem.shooterRoller.setVelocityCommand(-10, -10),
-                    superSystem.shooterRoller.setEnabledCommand(true)
+                    )   
                 )
             ),
 
@@ -175,8 +172,11 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
                         Commands.waitUntil(superSystem::noteIntook),
                         superSystem.intakeUntilSensedAuto(2.875)
                     ),
-
-                    superSystem.backupIndexerAndShooter(),
+                    
+                    Commands.parallel(
+                        superSystem.backupIndexerAndShooter(),
+                        superSystem.shooterPivot.moveToSpeakerFar()
+                    ),
 
                     Commands.deadline(
                         Commands.waitUntil(() -> !superSystem.noteIntook()).andThen(Commands.waitSeconds(0.3)),
@@ -192,24 +192,24 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
                 ),
                 Commands.waitUntil(superSystem::noteIntook)
             ),
-            // Commands.parallel(
+            Commands.parallel(
                 Commands.sequence(
                     superSystem.backupIndexerAndShooterLess(),
                     Commands.parallel(
-                        superSystem.prepareShooterVision(swerve),
+                        superSystem.prepareShooterPodium2(),
                         Commands.sequence(
                             Commands.race(
                                 Commands.waitUntil(() -> superSystem.shooterPivot.atTargetPositionAccurate()),
                                 Commands.waitSeconds(1.5)
                             ),
-                            Commands.waitSeconds(0.2),
+                            Commands.waitSeconds(0.35),
                             superSystem.indexer.setEnabledCommand(true),
                             superSystem.indexer.indexCommand()
                         )
                     )
-                )
-                // swerve.turnToTag(RobotContainer.IsRedSide() ? 4 : 7)
-            // )
+                ),
+                swerve.turnToSubwoofer()
+            )
         );
     }
 }
