@@ -25,7 +25,7 @@ public class SuperSystem {
     // add line below once new banner sensor is added
     // public BannerSensor bannerSensorTwo;
     // public BeamBreak noteSensor;
-    public ClimbActuator linearActuator;
+    //public ClimbActuator linearActuator;
     // public SwerveDrivetrain swerve;
     // public Climber climber;
 
@@ -45,7 +45,7 @@ public class SuperSystem {
         this.shooterRoller = shooterRoller;
         this.indexer = indexer;
         // this.climber = climber;
-        this.linearActuator = new ClimbActuator();
+        //this.linearActuator = new ClimbActuator();
         // this.colorSensor = new ColorSensor();
         this.bannerSensor = new BannerSensor();
         // add line below once we add new banner sensor
@@ -199,7 +199,7 @@ public class SuperSystem {
             shooterRoller.setEnabledCommand(true),
             indexer.setEnabledCommand(true),
             indexer.reverseIndexCommand(),
-            Commands.waitSeconds(0.05),
+            Commands.waitSeconds(0.15),
             indexer.stopCommand(),
             shooterRoller.stopCommand()
         ).finallyDo(() -> {
@@ -644,6 +644,16 @@ public class SuperSystem {
         command.addRequirements(shooterPivot, shooterRoller, indexer);
         return command;
     }
+
+    public Command prepareShooterPodium2() {
+        Command command = Commands.parallel(
+            shooterPivot.moveToSpeakerFar2(),
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker()
+        );
+        command.addRequirements(shooterPivot, shooterRoller, indexer);
+        return command;
+    }
     
 
     private boolean isPassing = false;
@@ -698,7 +708,7 @@ public class SuperSystem {
             shooterPivot.moveToSpeaker(),
             shooterRoller.setEnabledCommand(true),
             shooterRoller.shootSpeaker(),
-            Commands.waitSeconds(0.4), // Was 0.2     3/3/24     But 0.8   @Code Orange
+            Commands.waitSeconds(0.45), // Was 0.2     3/3/24     But 0.8   @Code Orange
             
             // Shoot
             indexer.setEnabledCommand(true),
@@ -744,9 +754,9 @@ public class SuperSystem {
         Command command = Commands.sequence(
             // Prepare to shoot
             shooterRoller.setEnabledCommand(true),
-            shooterRoller.shootSpeakerAutoStart(),
+            shooterRoller.shootSpeakerAutoStart2(),
             Commands.deadline(
-                Commands.waitSeconds(0.32), // Was 0.2     3/3/24     But 0.8   @Code Orange
+                Commands.waitSeconds(0.4), // Was 0.2     3/3/24     But 0.8   @Code Orange
                 
                 Commands.deadline(
                     Commands.waitUntil(() -> 
@@ -791,6 +801,30 @@ public class SuperSystem {
         return command;
     }
 
+    public Command shootPodiumAuto() {
+        Command command = Commands.sequence(
+            // Prepare to shoot
+            shooterPivot.moveToSpeakerFar(),
+            shooterRoller.setEnabledCommand(true),
+            shooterRoller.shootSpeaker(),
+            Commands.deadline(
+                Commands.waitSeconds(0.6),
+                Commands.waitUntil(shooterRoller::atTargetVelocity)
+            ),
+            
+            // Shoot
+            indexer.setEnabledCommand(true),
+            indexer.indexCommand(),
+            Commands.waitUntil(() -> false)
+        ).finallyDo(interrupted -> {
+            indexer.stop();
+            shooterRoller.stop();
+        });
+
+        command.addRequirements(shooterPivot, shooterRoller, indexer, intakeRoller);
+        return command;
+    }
+
     public Command shootSequenceAdjustable(SwerveDrivetrain swerve) {
         Command command = 
             // Commands.either(
@@ -800,7 +834,7 @@ public class SuperSystem {
                 shooterRoller.setEnabledCommand(true),
                 shooterRoller.shootSpeaker(),
                 Commands.race(
-                    Commands.waitUntil(() -> shooterPivot.atTargetPosition()),
+                    Commands.waitUntil(() -> shooterPivot.atTargetPositionAccurate()),
                     Commands.waitSeconds(0.8)
                 )
                 // ,

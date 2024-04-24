@@ -1,4 +1,4 @@
-package frc.robot.commands.autos.PathVariants;
+package frc.robot.commands.autos;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -20,7 +20,7 @@ import frc.robot.subsystems.SuperSystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.vision.NoteAssistance;
 
-public class Mid4Piece extends SequentialCommandGroup {
+public class Mid5PieceSide extends SequentialCommandGroup {
     
     // to be tested. Do not use it before test
     
@@ -44,7 +44,7 @@ public class Mid4Piece extends SequentialCommandGroup {
         return new Pose2d(tail.position, new Rotation2d(rad));
     } 
 
-    public Mid4Piece(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteCamera, List<PathPlannerPath> pathGroup){
+    public Mid5PieceSide(SwerveDrivetrain swerve, SuperSystem superSystem, NoteAssistance noteCamera, List<PathPlannerPath> pathGroup){
         Pose2d startingPose = GetStartPoseInPath(pathGroup.get(0));
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
@@ -141,8 +141,7 @@ public class Mid4Piece extends SequentialCommandGroup {
                 AutoBuilder.followPath(pathGroup.get(4)), //e6Y
                 Commands.sequence(
                     superSystem.stow(),
-                    // Change to 3 seconds for Amp side and Source side versions
-                    Commands.waitSeconds(2.3), // regualr path uses 2.4; shorter one uses .9
+                    Commands.waitSeconds(3), // regular path uses 2.4; shorter one uses .9
                     superSystem.shooterPivot.moveToHandoff(),
 
                     Commands.deadline(
