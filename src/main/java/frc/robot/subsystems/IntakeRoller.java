@@ -54,7 +54,7 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
         leftIntakeConfigurator = leftIntake.getConfigurator();
 
         rightIntake.setControl(followRequest);
-
+        
         CommandScheduler.getInstance().registerSubsystem(this);
 
         configureMotor();
