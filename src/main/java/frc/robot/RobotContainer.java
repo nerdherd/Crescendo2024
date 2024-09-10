@@ -646,7 +646,7 @@ public class RobotContainer {
   public void initShuffleboard() {
     imu.initShuffleboard(loggingLevel);
     swerveDrive.initShuffleboard(loggingLevel);
-    swerveDrive.initModuleShuffleboard(loggingLevel);    
+    swerveDrive.initModuleShuffleboard(LOG_LEVEL.MINIMAL);    
     noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
 
     shooterRoller.initShuffleboard(loggingLevel);
