@@ -67,28 +67,32 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         leftMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
         leftMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         leftMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
-        leftMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        leftMotorConfigs.CurrentLimits.SupplyCurrentLimit = 80;
         leftMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
         leftMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         leftMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
-        leftMotorConfigs.CurrentLimits.StatorCurrentLimit = 100;
+        leftMotorConfigs.CurrentLimits.StatorCurrentLimit = 80;
         leftMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         leftMotorConfigs.Audio.AllowMusicDurDisable = true;
+
+        leftShooterConfigurator.apply(leftMotorConfigs);
+
 
         TalonFXConfiguration rightMotorConfigs = new TalonFXConfiguration();
         rightShooterConfigurator.refresh(rightMotorConfigs);
         rightMotorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        rightMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
-        rightMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
+        rightMotorConfigs.Voltage.PeakForwardVoltage = 12;
+        rightMotorConfigs.Voltage.PeakReverseVoltage = -12;
         rightMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         rightMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
-        rightMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        rightMotorConfigs.CurrentLimits.SupplyCurrentLimit = 80;
         rightMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
         rightMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         rightMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
-        rightMotorConfigs.CurrentLimits.StatorCurrentLimit = 100;
+        rightMotorConfigs.CurrentLimits.StatorCurrentLimit = 80;
         rightMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         rightMotorConfigs.Audio.AllowMusicDurDisable = true;
+        rightShooterConfigurator.apply(rightMotorConfigs);
 
         StatusCode leftResponse  = leftShooterConfigurator.apply(leftMotorConfigs);
         StatusCode rightResponse = rightShooterConfigurator.apply(rightMotorConfigs);
@@ -128,6 +132,8 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         leftMotorConfigs.Slot0.kV = ShooterConstants.kVLeftMotor.get();
         
         TalonFXConfiguration rightMotorConfigs = new TalonFXConfiguration();
+
+        
         
         rightShooterConfigurator.refresh(rightMotorConfigs);
         ShooterConstants.kPRightMotor.loadPreferences();
@@ -138,7 +144,8 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         rightMotorConfigs.Slot0.kI = ShooterConstants.kIRightMotor.get();
         rightMotorConfigs.Slot0.kD = ShooterConstants.kDRightMotor.get();
         rightMotorConfigs.Slot0.kV = ShooterConstants.kVRightMotor.get();
-
+        leftShooterConfigurator.apply(leftMotorConfigs);
+        rightShooterConfigurator.apply(rightMotorConfigs);
         StatusCode leftResponse  = leftShooterConfigurator.apply(leftMotorConfigs);
         StatusCode rightResponse = rightShooterConfigurator.apply(rightMotorConfigs);
 
@@ -383,7 +390,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         tab.addNumber("Right Stator Current", () -> rightShooter.getStatorCurrent().getValueAsDouble());
         tab.addDouble("Right Shooter Applied Voltage", () -> rightShooter.getMotorVoltage().getValueAsDouble());
         tab.addDouble("Left Shooter Applied Voltage", () -> leftShooter.getMotorVoltage().getValueAsDouble());
-        
+        // tab.addDouble("Left Shooter Roller supply current", () -> leftShooter.getConfigurator())
     }
 }
 
