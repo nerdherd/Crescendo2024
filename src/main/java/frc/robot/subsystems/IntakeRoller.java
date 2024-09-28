@@ -76,7 +76,7 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
 
         leftIntakeConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         leftIntakeConfigs.MotorOutput.DutyCycleNeutralDeadband = IntakeConstants.kIntakeNeutralDeadband;
-        leftIntakeConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        leftIntakeConfigs.CurrentLimits.SupplyCurrentLimit = 10;
         leftIntakeConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         leftIntakeConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
         leftIntakeConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
@@ -96,11 +96,11 @@ public class IntakeRoller extends SubsystemBase implements Reportable {
 
         rightIntakeConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         rightIntakeConfigs.MotorOutput.DutyCycleNeutralDeadband = IntakeConstants.kIntakeNeutralDeadband;
-        rightIntakeConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        rightIntakeConfigs.CurrentLimits.SupplyCurrentLimit = 10;
         rightIntakeConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         rightIntakeConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
         rightIntakeConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
-        rightIntakeConfigs.CurrentLimits.StatorCurrentLimit = 100;
+        rightIntakeConfigs.CurrentLimits.StatorCurrentLimit = 50;
         rightIntakeConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         rightIntakeConfigs.Audio.AllowMusicDurDisable = true;
 

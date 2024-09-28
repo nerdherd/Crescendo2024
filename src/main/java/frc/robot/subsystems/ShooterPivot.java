@@ -83,11 +83,11 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         pivotConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
 
-        pivotConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        pivotConfigs.CurrentLimits.SupplyCurrentLimit = 10;
         pivotConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
-        pivotConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
+        pivotConfigs.CurrentLimits.SupplyCurrentThreshold = 20;
         pivotConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
-        pivotConfigs.CurrentLimits.StatorCurrentLimit = 100;
+        pivotConfigs.CurrentLimits.StatorCurrentLimit = 50;
         pivotConfigs.CurrentLimits.StatorCurrentLimitEnable = false;
         pivotConfigs.Audio.AllowMusicDurDisable = true;
 
@@ -107,11 +107,11 @@ public class ShooterPivot extends SubsystemBase implements Reportable {
         pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         pivotConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
 
-        pivotConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        pivotConfigs.CurrentLimits.SupplyCurrentLimit = 10;
         pivotConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
-        pivotConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
+        pivotConfigs.CurrentLimits.SupplyCurrentThreshold = 0;
         pivotConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
-        pivotConfigs.CurrentLimits.StatorCurrentLimit = 100;
+        pivotConfigs.CurrentLimits.StatorCurrentLimit = 50;
         pivotConfigs.CurrentLimits.StatorCurrentLimitEnable = false;
         pivotConfigs.Audio.AllowMusicDurDisable = true;
 

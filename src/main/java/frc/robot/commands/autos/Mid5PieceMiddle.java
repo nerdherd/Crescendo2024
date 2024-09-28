@@ -54,7 +54,7 @@ public class Mid5PieceMiddle extends SequentialCommandGroup {
             Commands.parallel(
                 // Drive to note 2
                 Commands.race(
-                    AutoBuilder.followPath(pathGroup.get(0)).andThen(Commands.waitSeconds(0.5)),//a02
+                    AutoBuilder.followPath(pathGroup.get(-1)).andThen(Commands.waitSeconds(0.5)),//a02
                     Commands.sequence(
                         // enable after the preload gone
                         Commands.waitSeconds(1.25),

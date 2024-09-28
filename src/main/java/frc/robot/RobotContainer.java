@@ -10,7 +10,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -27,21 +26,11 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
-import frc.robot.commands.autos.DriveToNoteTest;
 import frc.robot.commands.autos.Mid4Piece;
 import frc.robot.commands.autos.Mid4PieceSide;
 import frc.robot.commands.autos.Mid5PieceMiddle;
-import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
-import frc.robot.commands.autos.ThreePieceMid;
-import frc.robot.commands.autos.PathVariants.PathA;
-import frc.robot.commands.autos.PathVariants.PathAPre;
-import frc.robot.commands.autos.PathVariants.PathB;
-import frc.robot.commands.autos.PathVariants.PathD;
-import frc.robot.commands.autos.PathVariants.PathE;
-import frc.robot.commands.autos.PathVariants.PathF;
 import frc.robot.subsystems.CANdleSubSystem;
-//import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CANdleSubSystem.Status;
 import frc.robot.subsystems.IndexerV2;
 import frc.robot.subsystems.IntakeRoller;
@@ -75,7 +64,7 @@ public class RobotContainer {
     ControllerConstants.kDriverControllerPort);
   private final PS4Controller driverController = commandDriverController.getHID();
   private final CommandPS4Controller commandOperatorController = new CommandPS4Controller(
-      ControllerConstants.kOperatorControllerPort);
+    ControllerConstants.kOperatorControllerPort);
   private final PS4Controller operatorController = commandOperatorController.getHID();
 
   private final LOG_LEVEL loggingLevel = LOG_LEVEL.ALL;
@@ -86,7 +75,6 @@ public class RobotContainer {
   
   public CANdleSubSystem CANdle = new CANdleSubSystem();
   private SwerveJoystickCommand swerveJoystickCommand;
-
   
   /**
    * The container for the robot. Contain
@@ -100,7 +88,6 @@ public class RobotContainer {
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
-
     
     LimelightHelpers.setLEDMode_ForceBlink(VisionConstants.kLimelightBackName);
     LimelightHelpers.setLEDMode_ForceBlink(VisionConstants.kLimelightFrontName);
@@ -111,7 +98,6 @@ public class RobotContainer {
     // Configure the trigger bindings
     // Moved to teleop init
     
-
     DriverStation.reportWarning("Initalization complete", false);
       // NamedCommands.registerCommand("intakeBasic1", superSystem.intakeBasicHold());
       // NamedCommands.registerCommand("intakeBasic2", superSystem.stopIntaking());
@@ -611,14 +597,6 @@ public class RobotContainer {
   private void initAutoChoosers() {
   	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands.none());
-
-    // if (paths.contains("PreloadTaxiSourceSide")) {
-    //   autoChooser.addOption("Preload Taxi Source Side", new PreloadTaxi(swerveDrive, List.of(PathPlannerPath.fromPathFile("PreloadTaxiSourceSide")), superSystem));
-    // }
-
-    // if (paths.contains("PreloadTaxiPodiumSide")) {
-    //   autoChooser.addOption("Preload Taxi Podium Side", new PreloadTaxi(swerveDrive, List.of(PathPlannerPath.fromPathFile("PreloadTaxiPodiumSide")), superSystem));
-    // }
 
     if (paths.contains("TaxiOnly")) {
       autoChooser.addOption("Taxi Only", AutoBuilder.buildAuto("TaxiOnly"));
