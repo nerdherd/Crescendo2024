@@ -26,9 +26,9 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
+import frc.robot.commands.autos.BatteryTestingAuto;
 import frc.robot.commands.autos.Mid4Piece;
 import frc.robot.commands.autos.Mid4PieceSide;
-import frc.robot.commands.autos.Mid5PieceMiddle;
 import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.subsystems.CANdleSubSystem;
 import frc.robot.subsystems.CANdleSubSystem.Status;
@@ -509,6 +509,7 @@ public class RobotContainer {
   // PathPlannerPath b31 = PathPlannerPath.fromPathFile("b31Path");
   PathPlannerPath b31 = PathPlannerPath.fromPathFile("b31Path");
   PathPlannerPath b2p6 = PathPlannerPath.fromPathFile("b2p6Path");
+  PathPlannerPath batteryPath = PathPlannerPath.fromPathFile("OneMeterSquareAuto");
 
   // PathPlannerPath c14 = PathPlannerPath.fromPathFile("c14Path");
   // PathPlannerPath c24 = PathPlannerPath.fromPathFile("c24Path");
@@ -612,9 +613,9 @@ public class RobotContainer {
     }
 
     autoChooser.addOption("4PieceMiddle",         new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d26,e6Y,aY3)));
-    autoChooser.addOption("5PieceMiddle",   new Mid5PieceMiddle(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26Fast,d26,e6Y,aY3,b31)));
     autoChooser.addOption("4PieceAmpSide",    new Mid4PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d25,e5Y,aY3)));
     autoChooser.addOption("4PieceSourceSide", new Mid4PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d27,e7Y,aY3)));
+    autoChooser.addOption("BatteryTestingAuto", new BatteryTestingAuto(swerveDrive, superSystem, noteCamera, 0, 0, 0, batteryPath));
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 

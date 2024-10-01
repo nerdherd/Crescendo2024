@@ -634,7 +634,15 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
                 tab.addNumber("X Position (m)", () -> poseEstimator.getEstimatedPosition().getX());
                 tab.addNumber("Y Position (m)", () -> poseEstimator.getEstimatedPosition().getY());
                 tab.addNumber("Odometry Angle", () -> poseEstimator.getEstimatedPosition().getRotation().getDegrees());
+                tab.addNumber("Total Turn Stator Current", () ->
+                    backLeft.getTurnStatorCurrent() + backRight.getTurnStatorCurrent() + frontRight.getTurnStatorCurrent() + frontLeft.getTurnStatorCurrent());
+                tab.addNumber("Total Turn Supply Current", () ->
+                    backLeft.getTurnSupplyCurrent() + backRight.getTurnSupplyCurrent() + frontRight.getTurnSupplyCurrent() + frontLeft.getTurnSupplyCurrent());
                 tab.addString("Drive Mode", () -> this.driveMode.toString());
+                tab.addNumber("Total Drive Stator Current", () ->
+                    backLeft.getDriveStatorCurrent() + backRight.getDriveStatorCurrent() + frontRight.getDriveStatorCurrent() + frontLeft.getDriveStatorCurrent());
+                tab.addNumber("Total Drive Supply Current", () ->
+                    backLeft.getDriveSupplyCurrent() + backRight.getDriveSupplyCurrent() + frontRight.getDriveSupplyCurrent() + frontLeft.getDriveSupplyCurrent());
                 break;
         }
     }

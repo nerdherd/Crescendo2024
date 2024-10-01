@@ -317,6 +317,22 @@ public class SwerveModule implements Reportable {
         this.desiredState = state;
     }
 
+    public double getTurnStatorCurrent() {
+        return turnMotor.getStatorCurrent().getValueAsDouble();
+    }
+
+    public double getDriveStatorCurrent() {
+        return driveMotor.getStatorCurrent().getValueAsDouble();
+    }
+
+    public double getTurnSupplyCurrent() {
+        return turnMotor.getSupplyCurrent().getValueAsDouble();
+    }
+
+    public double getDriveSupplyCurrent() {
+        return driveMotor.getSupplyCurrent().getValueAsDouble();
+    }
+
     public void toggleVelocityControl(boolean velocityControlOn) {
         this.velocityControl = velocityControlOn;
     }
