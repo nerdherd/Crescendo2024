@@ -67,7 +67,7 @@ public class ShooterRoller extends SubsystemBase implements Reportable {
         leftMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
         leftMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         leftMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ShooterConstants.kShooterNeutralDeadband;
-        leftMotorConfigs.CurrentLimits.SupplyCurrentLimit = 40;
+        leftMotorConfigs.CurrentLimits.SupplyCurrentLimit = 70;
         leftMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
         leftMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 30;
         leftMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
