@@ -18,11 +18,13 @@ import frc.robot.subsystems.vision.NoteAssistance;
 
 public class ThreePieceMid extends SequentialCommandGroup{
     public ThreePieceMid(SwerveDrivetrain swerve, SuperSystem superSystem, List<PathPlannerPath> pathGroup, NoteAssistance na) {
-        Pose2d startingPose = new Pose2d(0.70, 4.37, Rotation2d.fromDegrees(-60));//pathGroup.get(0).();
+        Pose2d startingPose = pathGroup.get(0).getPreviewStartingHolonomicPose();
+
         addCommands(
-            //Commands.runOnce(() -> na.setLight(false)),
+            Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
-            Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
+            Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
+            Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
 
             // Preload
             Commands.deadline(
@@ -35,22 +37,17 @@ public class ThreePieceMid extends SequentialCommandGroup{
             Commands.parallel(
                 Commands.sequence(
                     superSystem.stow(),
-                    Commands.waitSeconds(1),
+                    Commands.waitSeconds(1),    
                     superSystem.shooterPivot.moveToHandoff()
                 ),
                 // Drive in front of mid note
                 Commands.deadline(
-                    Commands.waitSeconds(2.5),
-                    AutoBuilder.followPath(pathGroup.get(0))
-                )
-            ),
-
-            Commands.deadline(
-                Commands.waitUntil(superSystem::noteIntook),
-                superSystem.intakeUntilSensedAuto(6),
-                Commands.sequence(
-                    Commands.waitSeconds(0.1),
-                    na.driveToNoteCommand(swerve, 15, 0, 0, 10, 50, null)
+                    Commands.waitUntil(superSystem::noteIntook),
+                    superSystem.intakeUntilSensedAuto(6),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.1),
+                        AutoBuilder.followPath(pathGroup.get(0))
+                    )
                 )
             ),
             
@@ -107,17 +104,12 @@ public class ThreePieceMid extends SequentialCommandGroup{
                 ),
                 // Drive in front of mid note
                 Commands.deadline(
-                    Commands.waitSeconds(2.5),
-                    AutoBuilder.followPath(pathGroup.get(2))
-                )
-            ),
-
-            Commands.deadline(
-                Commands.waitUntil(superSystem::noteIntook),
-                superSystem.intakeUntilSensedAuto(4),
-                Commands.sequence(
-                    Commands.waitSeconds(0.1),
-                    na.driveToNoteCommand(swerve, 15, 0, 0, 10, 50, null)
+                    Commands.waitUntil(superSystem::noteIntook),
+                    superSystem.intakeUntilSensedAuto(4),
+                    Commands.sequence(
+                        Commands.waitSeconds(0.1),
+                        AutoBuilder.followPath(pathGroup.get(2))
+                    )
                 )
             ),
             

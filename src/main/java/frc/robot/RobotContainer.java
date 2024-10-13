@@ -29,7 +29,9 @@ import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.autos.Mid4Piece;
 import frc.robot.commands.autos.Mid4PieceSide;
 import frc.robot.commands.autos.Mid5PieceMiddle;
+import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
+import frc.robot.commands.autos.ThreePieceMid;
 import frc.robot.subsystems.CANdleSubSystem;
 import frc.robot.subsystems.CANdleSubSystem.Status;
 import frc.robot.subsystems.IndexerV2;
@@ -545,8 +547,8 @@ public class RobotContainer {
   // PathPlannerPath e4Y = PathPlannerPath.fromPathFile("e4YPath");
   // PathPlannerPath e5Y = PathPlannerPath.fromPathFile("e5YPath");
   // PathPlannerPath e7Y = PathPlannerPath.fromPathFile("e7YPath");
-  // PathPlannerPath e7Z = PathPlannerPath.fromPathFile("e7ZPath");
-  // PathPlannerPath e8Z = PathPlannerPath.fromPathFile("e8ZPath");
+  PathPlannerPath e7Z = PathPlannerPath.fromPathFile("e7ZPath");
+  PathPlannerPath e8Z = PathPlannerPath.fromPathFile("e8ZPath");
   PathPlannerPath e5Y = PathPlannerPath.fromPathFile("e5YPath");
   PathPlannerPath e6Y = PathPlannerPath.fromPathFile("e6YPath");
   PathPlannerPath e7Y = PathPlannerPath.fromPathFile("e7YPath");
@@ -558,7 +560,8 @@ public class RobotContainer {
   // PathPlannerPath f06 = PathPlannerPath.fromPathFile("f06Path");
   // PathPlannerPath f07 = PathPlannerPath.fromPathFile("f07Path");
   // PathPlannerPath f08 = PathPlannerPath.fromPathFile("f08Path");
-  // PathPlannerPath fS8 = PathPlannerPath.fromPathFile("fS8Path");
+  PathPlannerPath fZ7 = PathPlannerPath.fromPathFile("fZ7Path");
+  PathPlannerPath fS8 = PathPlannerPath.fromPathFile("fS8Path");
   // PathPlannerPath fast = PathPlannerPath.fromPathFile("c26TestPath");
 
 
@@ -600,6 +603,8 @@ public class RobotContainer {
 
     if (paths.contains("TaxiOnly")) {
       autoChooser.addOption("Taxi Only", AutoBuilder.buildAuto("TaxiOnly"));
+      // autoChooser.addOption("Preload Taxi Source", new PreloadTaxi(swerveDrive, List.of(a02), superSystem));
+      // autoChooser.addOption("Preload Taxi Amp", new PreloadTaxi(swerveDrive, List.of(a02), superSystem));
     }
     
 
@@ -607,14 +612,19 @@ public class RobotContainer {
       autoChooser.setDefaultOption("Reliable 4 Piece", new Reliable4Piece(swerveDrive, "Reliable4Piece", superSystem));
     }
 
-    if (paths.contains("NEW4Piece")) {
-      autoChooser.addOption("New 4 Piece", new Reliable4Piece(swerveDrive, "NEW4Piece", superSystem));
-    }
+    // if (paths.contains("NEW4Piece")) {
+    //   autoChooser.addOption("New 4 Piece", new Reliable4Piece(swerveDrive, "NEW4Piece", superSystem));
+    // }
 
-    autoChooser.addOption("4PieceMiddle",         new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d26,e6Y,aY3)));
+
+
+    // autoChooser.addOption("4PieceMiddle",         new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d26,e6Y,aY3)));
     autoChooser.addOption("5PieceMiddle",   new Mid5PieceMiddle(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26Fast,d26,e6Y,aY3,b31)));
-    autoChooser.addOption("4PieceAmpSide",    new Mid4PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d25,e5Y,aY3)));
-    autoChooser.addOption("4PieceSourceSide", new Mid4PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d27,e7Y,aY3)));
+    // autoChooser.addOption("4PieceAmpSide",    new Mid4PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d25,e5Y,aY3)));
+    // autoChooser.addOption("4PieceSourceSide", new Mid4PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d27,e7Y,aY3)));
+
+    autoChooser.addOption("Three Piece Source",   new ThreePieceMid(swerveDrive, superSystem, List.of(fS8, e8Z, fZ7, e7Z), noteCamera));
+
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
