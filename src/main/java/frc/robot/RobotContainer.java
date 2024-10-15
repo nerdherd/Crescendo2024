@@ -563,7 +563,7 @@ public class RobotContainer {
   PathPlannerPath fZ7 = PathPlannerPath.fromPathFile("fZ7Path");
   PathPlannerPath fS8 = PathPlannerPath.fromPathFile("fS8Path");
   // PathPlannerPath fast = PathPlannerPath.fromPathFile("c26TestPath");
-
+  PathPlannerPath fS7 = PathPlannerPath.fromPathFile("fS7");
 
   // final List<PathPlannerPath> pathGroupExample3 = List.of(
   //   a01, c15, a03
@@ -619,12 +619,12 @@ public class RobotContainer {
 
 
     // autoChooser.addOption("4PieceMiddle",         new Mid4Piece(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d26,e6Y,aY3)));
-    autoChooser.addOption("5PieceMiddle",   new Mid5PieceMiddle(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26Fast,d26,e6Y,aY3,b31)));
+    // autoChooser.addOption("5PieceMiddle",   new Middle(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26Fast,d26,e6Y,aY3,b31)));
     // autoChooser.addOption("4PieceAmpSide",    new Mid4PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d25,e5Y,aY3)));
     // autoChooser.addOption("4PieceSourceSide", new Mid4PieceSide(swerveDrive, superSystem, noteCamera, List.of(a02,b2p6,c26,    d27,e7Y,aY3)));
 
     autoChooser.addOption("Three Piece Source",   new ThreePieceMid(swerveDrive, superSystem, List.of(fS8, e8Z, fZ7, e7Z), noteCamera));
-
+    autoChooser.addOption("ThreePieceNote7", new ThreePieceMid(swerveDrive, superSystem, List.of(fS7, e7Z, fS8, e8Z), noteCamera));
 
     ShuffleboardTab autosTab = Shuffleboard.getTab("Autos");
 
