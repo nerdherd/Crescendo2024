@@ -17,8 +17,9 @@ public class Preload extends SequentialCommandGroup {
         Pose2d startingPose = pathGroup.get(0).getPreviewStartingHolonomicPose();
 
         addCommands(
-            // Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
-            Commands.runOnce(()->swerve.resetOdometryWithAlliance(startingPose)),
+            Commands.runOnce(swerve.getImu()::zeroAll),
+            Commands.runOnce(() -> swerve.resetGyroFromPoseWithAlliance(startingPose)),
+            Commands.runOnce(() -> swerve.resetOdometryWithAlliance(startingPose)),
             
             // A Start here
             // Preload
