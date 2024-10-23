@@ -27,7 +27,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.autos.Mid5PieceMiddle;
-import frc.robot.commands.autos.Preload;
+// import frc.robot.commands.autos.Preload;
 import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.commands.autos.ThreePieceMid;
@@ -159,7 +159,8 @@ public class RobotContainer {
           //   return turnPower;
           // }
           // SmartDashboard.putBoolean("Turn to angle 2", false);
-          return commandDriverController.getRightX(); // Rotation
+          // return commandDriverController.getRightX(); // Rotation
+          return 0.0;
         },
 
         // driverController::getSquareButton, // Field oriented
@@ -170,11 +171,13 @@ public class RobotContainer {
         () -> driverController.getR2Button(), // Precision mode (disabled)
         () -> {
           return (
-            driverController.getR1Button() 
-            || driverController.getL1Button() 
-            || driverController.getL2Button() 
-            || driverController.getCircleButton()
-            || driverController.getTriangleButton()
+            driverController.getRightX() > 0.0 
+            || driverController.getRightY() > 0.0
+            // driverController.getR1Button() 
+            // || driverController.getL1Button() 
+            // || driverController.getL2Button() 
+            // || driverController.getCircleButton()
+            // || driverController.getTriangleButton()
             // || (
             //   driverController.getTouchpad() && superSystem.getIsPassing()
             // )
@@ -183,40 +186,57 @@ public class RobotContainer {
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          if (
-          //   (driverController.getTouchpad() && superSystem.getIsPassing())
-          //  || 
-           driverController.getTriangleButton()) 
-           {
-            if (!IsRedSide()) {
-              return 315.0;
-            } else {
-              return 45.0;
+          if (Math.abs(driverController.getRightY()) > Math.abs(driverController.getRightX())) {
+            if (driverController.getRightY() < 0) {
+            return 0.0;
             }
+            else if (driverController.getRightY() > 0) {
+              return 180.0;
+            } 
           }
-          if (driverController.getL2Button()) {
-            return swerveDrive.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7); // TODO, update?
-            // 4 if red side, 7 if blue
-          }
-          if (driverController.getCircleButton()) { //turn to amp
-            if (!IsRedSide()){
+          else if ((Math.abs(driverController.getRightY()) < Math.abs(driverController.getRightX()))) {
+            if (driverController.getRightX() < 0) {
+              return 90.0;
+            }
+            else if (driverController.getRightX() > 0) {
               return 270.0;
             }
-            return 90.0;
           }
-          else 
-          if (driverController.getL1Button()) { //turn to speaker
-            return 0.0;
-          }
-          else if (driverController.getR1Button()) {
-            return 180.0;
-          }
+          return 0.0;
+        });
+
+          
+          // if (
+          // //   (driverController.getTouchpad() && superSystem.getIsPassing())
+          // //  || 
+          //  driverController.getTriangleButton()) 
+          //  {
+          //   if (!IsRedSide()) {
+          //     return 315.0;
+          //   } else {
+          //     return 45.0;
+          //   }
+          // }
+          // if (driverController.getL2Button()) {
+          //   return swerveDrive.getTurnToSpecificTagAngle(IsRedSide() ? 4 : 7); // TODO, update?
+          //   // 4 if red side, 7 if blue
+          // }
+          // if (driverController.getCircleButton()) { //turn to amp
+          //   if (!IsRedSide()){
+          //     return 270.0;
+          //   }
+          //   return 90.0;
+          // }
+          // else 
+          // if (driverController.getL1Button()) { //turn to speaker
+          //   return 0.0;
+          // }
+          // else if (driverController.getR1Button()) {
+          //   return 180.0;
+          // }
           // if (driverController.getPSButton()) { // Turn to shuffleboard angle
           //   return SmartDashboard.getNumber("Test Desired Angle", 0);
           // }
-          return 0.0; 
-        }
-      );
 
       swerveDrive.setDefaultCommand(swerveJoystickCommand);
 
@@ -604,7 +624,7 @@ public class RobotContainer {
     if (paths.contains("TaxiOnly")) {
       autoChooser.addOption("Taxi Only", AutoBuilder.buildAuto("TaxiOnly"));
       autoChooser.addOption("Preload Taxi Source", new PreloadTaxi(swerveDrive, List.of(aSY), superSystem));
-      autoChooser.addOption("Preload", new Preload(swerveDrive, List.of(a02), superSystem));
+      // autoChooser.addOption("Preload", new Preload(swerveDrive, List.of(a02), superSystem));
     }
     
 
