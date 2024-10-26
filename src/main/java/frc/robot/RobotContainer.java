@@ -76,6 +76,7 @@ public class RobotContainer {
   
   public CANdleSubSystem CANdle = new CANdleSubSystem();
   private SwerveJoystickCommand swerveJoystickCommand;
+  public boolean turnToAngleMode = false;
   
   /**
    * The container for the robot. Contain
@@ -170,19 +171,15 @@ public class RobotContainer {
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
         () -> {
-          return (
+          if (turnToAngleMode) {
+            return (
             driverController.getRightX() > 0.0 
             || driverController.getRightY() > 0.0
-            // driverController.getR1Button() 
-            // || driverController.getL1Button() 
-            // || driverController.getL2Button() 
-            // || driverController.getCircleButton()
-            // || driverController.getTriangleButton()
-            // || (
-            //   driverController.getTouchpad() && superSystem.getIsPassing()
-            // )
-            // || driverController.getPSButton()
-          ); // Turn to angle
+            );
+          } 
+          else {
+            return(false);  
+          }
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
