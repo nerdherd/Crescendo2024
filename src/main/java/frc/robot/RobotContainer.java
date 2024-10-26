@@ -172,8 +172,8 @@ public class RobotContainer {
         () -> {
           if (swerveDrive.getTurnToAngleMode()) {
             return (
-            driverController.getRightX() > 0.0 
-            || driverController.getRightY() > 0.0
+            Math.abs(driverController.getRightX()) > 0.05 
+            || Math.abs(driverController.getRightY()) > 0.05
             );
           } 
           else {
@@ -182,23 +182,16 @@ public class RobotContainer {
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          if (Math.abs(driverController.getRightY()) > Math.abs(driverController.getRightX())) {
-            if (driverController.getRightY() < 0) {
-            return 0.0;
+          double xValue = commandDriverController.getRightX();
+            double yValue = commandDriverController.getRightY();
+            double magnitude = Math.sqrt((xValue*xValue) + (yValue*yValue));
+            if (magnitude > 0.49) {
+              double angle = (90 + NerdyMath.radiansToDegrees(Math.atan2(commandDriverController.getRightY(), commandDriverController.getRightX())));
+              angle = (((-1 * angle) % 360) + 360) % 360;
+              SmartDashboard.putNumber("desired angle", angle);
+              return angle;
             }
-            else if (driverController.getRightY() > 0) {
-              return 180.0;
-            } 
-          }
-          else if ((Math.abs(driverController.getRightY()) < Math.abs(driverController.getRightX()))) {
-            if (driverController.getRightX() < 0) {
-              return 90.0;
-            }
-            else if (driverController.getRightX() > 0) {
-              return 270.0;
-            }
-          }
-          return 0.0;
+            return 1000.0;
         });
 
       swerveDrive.setDefaultCommand(swerveJoystickCommand);
