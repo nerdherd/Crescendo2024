@@ -479,6 +479,17 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         command.addRequirements(this);
         return command;
     }
+
+    public boolean turnToAngleMode = false;
+
+    public Command toggleTurnToAngleMode() {
+      return Commands.runOnce(() -> turnToAngleMode = !turnToAngleMode);
+    }
+
+    public boolean getTurnToAngleMode() {
+        return turnToAngleMode;
+    }
+
     /**
      * Get the position of each swerve module
      * @return An array of swerve module positions
