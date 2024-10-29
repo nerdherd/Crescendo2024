@@ -160,8 +160,15 @@ public class RobotContainer {
           // }
           // SmartDashboard.putBoolean("Turn to angle 2", false);
           // return commandDriverController.getRightX(); // Rotation
-          return 0.0;
+        
+          if (swerveDrive.getTurnToAngleMode()) {
+            return 0.0;
+          }
+          else {
+            return commandDriverController.getRightX();
+          }
         },
+
 
         // driverController::getSquareButton, // Field oriented
         () -> false, // should be robot oriented now on true
