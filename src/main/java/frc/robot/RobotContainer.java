@@ -159,6 +159,9 @@ public class RobotContainer {
           //   return turnPower;
           // }
           // SmartDashboard.putBoolean("Turn to angle 2", false);
+          if (swerveDrive.getTurnToAngleMode()) {
+            return 0.0;
+          }
           return commandDriverController.getRightX(); // Rotation
         },
 
