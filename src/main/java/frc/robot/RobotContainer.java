@@ -27,7 +27,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.autos.Mid5PieceMiddle;
-// import frc.robot.commands.autos.Preload;
+import frc.robot.commands.autos.Preload;
 import frc.robot.commands.autos.PreloadTaxi;
 import frc.robot.commands.autos.Reliable4Piece;
 import frc.robot.commands.autos.ThreePieceMid;
@@ -549,7 +549,7 @@ public class RobotContainer {
     if (paths.contains("TaxiOnly")) {
       autoChooser.addOption("Taxi Only", AutoBuilder.buildAuto("TaxiOnly"));
       autoChooser.addOption("Preload Taxi Source", new PreloadTaxi(swerveDrive, List.of(aSY), superSystem));
-      // autoChooser.addOption("Preload", new Preload(swerveDrive, List.of(a02), superSystem));
+      autoChooser.addOption("Preload", new Preload(swerveDrive, List.of(a02), superSystem));
     }
     
 
