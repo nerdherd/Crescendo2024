@@ -159,16 +159,8 @@ public class RobotContainer {
           //   return turnPower;
           // }
           // SmartDashboard.putBoolean("Turn to angle 2", false);
-          // return commandDriverController.getRightX(); // Rotation
-        
-          if (swerveDrive.getTurnToAngleMode()) {
-            return 0.0;
-          }
-          else {
-            return commandDriverController.getRightX();
-          }
+          return commandDriverController.getRightX(); // Rotation
         },
-
 
         // driverController::getSquareButton, // Field oriented
         () -> false, // should be robot oriented now on true
@@ -183,13 +175,23 @@ public class RobotContainer {
             || Math.abs(driverController.getRightY()) > 0.05
             );
           } 
+          else if (driverController.getCircleButton()) {
+            return(true);  
+          }
           else {
-            return(false);  
+            return(false);
           }
         }, 
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          double xValue = commandDriverController.getRightX();
+          if (driverController.getCircleButton()) { //turn to amp
+            if (!IsRedSide()){
+              return 270.0;
+            }
+            return 90.0;
+          } 
+          else {
+            double xValue = commandDriverController.getRightX();
             double yValue = commandDriverController.getRightY();
             double magnitude = Math.sqrt((xValue*xValue) + (yValue*yValue));
             if (magnitude > 0.49) {
@@ -199,6 +201,7 @@ public class RobotContainer {
               return angle;
             }
             return 1000.0;
+          }
         });
 
       swerveDrive.setDefaultCommand(swerveJoystickCommand);
