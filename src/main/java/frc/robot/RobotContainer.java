@@ -251,7 +251,7 @@ public class RobotContainer {
     );
     commandDriverController.touchpad().whileTrue(superSystem.shoot())
                                       .whileFalse(superSystem.stow());
-    commandDriverController.triangle().onTrue(swerveDrive.toggleTurnToAngleMode());
+    // commandDriverController.triangle().onTrue(swerveDrive.toggleTurnToAngleMode());
     
     commandDriverController.L2().whileTrue(Commands.sequence(
       Commands.race(
