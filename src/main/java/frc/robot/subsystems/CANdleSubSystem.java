@@ -112,7 +112,7 @@ public class CANdleSubSystem extends SubsystemBase {
                 changeAnimation(AnimationTypes.StrobeYellow);
                 break;
             case HASNOTE:
-                changeAnimation(AnimationTypes.StrobeRed);
+                changeAnimation(AnimationTypes.SingleFade);
                 // setColor(0, 255,    0);
                 break;
             case SHOOTER_READY:
