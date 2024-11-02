@@ -52,6 +52,7 @@ public class Reliable4Piece extends SequentialCommandGroup {
                 ),
                 // Piece 1 shot
                 Commands.parallel(
+                    superSystem.intakeRoller.intakeCommand(),
                     AutoBuilder.followPath(pathGroup.get(1)),
                     Commands.sequence(
                         superSystem.backupIndexerAndShooter(),
@@ -77,6 +78,7 @@ public class Reliable4Piece extends SequentialCommandGroup {
                 ),
                 // Piece 2 shot
                 Commands.parallel(
+                    superSystem.intakeRoller.intakeCommand(),
                     AutoBuilder.followPath(pathGroup.get(3)),
                     Commands.sequence(
                         superSystem.backupIndexerAndShooter(),
@@ -103,6 +105,7 @@ public class Reliable4Piece extends SequentialCommandGroup {
 
                 // Piece 3 shot
                 Commands.parallel(
+                    superSystem.intakeRoller.intakeCommand(),
                     AutoBuilder.followPath(pathGroup.get(5)),
                     Commands.sequence(
                         superSystem.backupIndexerAndShooter(),

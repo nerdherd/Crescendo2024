@@ -176,6 +176,7 @@ public class RobotContainer {
             return (
             Math.abs(driverController.getRightX()) > 0.05 
             || Math.abs(driverController.getRightY()) > 0.05
+            || driverController.getCircleButton()
             );
           } 
           else if (driverController.getCircleButton()) {
