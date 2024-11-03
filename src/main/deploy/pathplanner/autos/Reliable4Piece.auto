@@ -14,13 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Piece1Grab"
+            "pathName": "Piece3Grab"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Piece1Shoot"
+            "pathName": "Piece3Shoot"
           }
         },
         {
@@ -38,13 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Piece3Grab"
+            "pathName": "Piece1Grab"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Piece3Shoot"
+            "pathName": "Piece1Shoot"
           }
         },
         {
