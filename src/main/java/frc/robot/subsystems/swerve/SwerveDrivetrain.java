@@ -480,7 +480,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         return command;
     }
 
-    public boolean turnToAngleMode = true;
+    public boolean turnToAngleMode = false;
 
     public Command toggleTurnToAngleMode() {
       return Commands.runOnce(() -> turnToAngleMode = !turnToAngleMode);
